@@ -2,7 +2,12 @@
     "name": "tischmann/atlantis",
     "type": "library",
     "description": "Simple MVC framework",
-    "keywords": ["mvc", "framework", "simple", "fast"],
+    "keywords": [
+        "mvc",
+        "framework",
+        "simple",
+        "fast"
+    ],
     "authors": [
         {
             "name": "Yuriy Stolov",
@@ -12,9 +17,9 @@
     ],
     "autoload": {
         "psr-4": {
-            "Atlantis\\": "",
-            "Atlantis\\Controllers\\": "controllers/",
-            "Atlantis\\Models\\": "models/"
+            "Atlantis\\": "src/",
+            "Atlantis\\Controllers\\": "src/controllers/",
+            "Atlantis\\Models\\": "src/models/"
         }
     }
 }
