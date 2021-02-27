@@ -1,0 +1,13 @@
+{
+    "name": "tischmann/atlantis",
+    "type": "library",
+    "description": "Simple MVC framework",
+    "keywords": ["mvc", "framework", "simple", "fast"],
+    "authors": [
+        {
+            "name": "Yuriy Stolov",
+            "email": "yuriystolov@gmail.com",
+            "role": "Developer"
+        }
+    ],
+}
