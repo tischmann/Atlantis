@@ -14,7 +14,8 @@ class Auth
         if (Session::get('HASH') === $hash) {
             App::$user->__construct(Session::get('USER_ID'));
         } else {
-            Session::destroy();
+            Session::get('HASH');
+            Session::get('USER_ID');
         }
     }
 
