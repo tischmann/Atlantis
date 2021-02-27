@@ -12,7 +12,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "Atlantis\\": "/",
+            "Atlantis\\": "",
             "Atlantis\\Controllers\\": "controllers/",
             "Atlantis\\Models\\": "models/"
         }
