@@ -9,5 +9,12 @@
             "email": "yuriystolov@gmail.com",
             "role": "Developer"
         }
-    ]
+    ],
+    "autoload": {
+        "psr-4": {
+            "Atlantis\\": "/",
+            "Atlantis\\Controllers\\": "controllers/",
+            "Atlantis\\Models\\": "models/"
+        }
+    }
 }
