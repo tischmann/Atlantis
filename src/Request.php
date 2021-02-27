@@ -2,6 +2,9 @@
 
 namespace Atlantis;
 
+use Atlantis\Controllers\Controller;
+use ReflectionNamedType;
+use ReflectionProperty;
 use stdClass;
 
 class Request
@@ -19,17 +22,65 @@ class Request
         }
     }
 
-    public function validate(array $array)
+    public function getVariableType(string $key): string|false
     {
-        foreach ($array as $key => $validation) {
-            if (!property_exists($this, $key) && !self::request($key)) {
-                header("Content-Type: application/json; charset=UTF-8");
-                die(json_encode([
-                    "status" => 0,
-                    "message" => "Обязательный параметр {$key} не задан"
-                ], 256 | 32));
+        $property = new ReflectionProperty($this, $key);
+        $type = $property->getType();
+
+        $value = $this->{$key};
+
+        if ($type === null) {
+            if ((int)$value === $value) {
+                return 'int';
+            } else if ((string)$value === $value) {
+                return 'string';
+            } else if ((array)$value === $value) {
+                return 'array';
+            } else if ((object)$value === $value) {
+                return 'object';
+            } else {
+                return false;
             }
         }
+
+        assert($type instanceof ReflectionNamedType);
+
+        return $type->getName();
+    }
+
+    public function validate(array $array): bool
+    {
+        foreach ($array as $key => $validation) {
+            $variable = $this->{$key} ?? self::request($key) ?? null;
+
+            if ($variable === null) {
+                App::$error = new Error(
+                    message: "Параметр {$key} не задан"
+                );
+                return false;
+            }
+
+            foreach (explode('|', $validation) as $isType) {
+                if (!$isType) {
+                    continue;
+                }
+
+                $type = $this->getVariableType($key);
+
+                if ($type === false) {
+                    continue;
+                }
+
+                if (strtolower($type) != strtolower($isType)) {
+                    App::$error = new Error(
+                        message: "Тип данных {$key}: {$type} вместо {$isType}"
+                    );
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     private static function sanitize()

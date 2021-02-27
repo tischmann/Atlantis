@@ -112,7 +112,7 @@ final class Template
         foreach ($matches[1] ?? [] as $key => $val) {
             $this->content = str_replace(
                 $matches[0][$key],
-                App::$user->signedIn() ? '' : $val,
+                Auth::signedIn() ? '' : $val,
                 $this->content
             );
         }
@@ -131,7 +131,7 @@ final class Template
         foreach ($matches[1] ?? [] as $key => $val) {
             $this->content = str_replace(
                 $matches[0][$key],
-                App::$user->isAdmin() ? '' : $val,
+                Auth::isAdmin() ? '' : $val,
                 $this->content
             );
         }
@@ -150,7 +150,7 @@ final class Template
         foreach ($matches[1] ?? [] as $key => $val) {
             $this->content = str_replace(
                 $matches[0][$key],
-                App::$user->signedIn() ? $val : '',
+                Auth::signedIn() ? $val : '',
                 $this->content
             );
         }
@@ -169,7 +169,7 @@ final class Template
         foreach ($matches[1] ?? [] as $key => $val) {
             $this->content = str_replace(
                 $matches[0][$key],
-                App::$user->isAdmin() ? $val : '',
+                Auth::isAdmin() ? $val : '',
                 $this->content
             );
         }

@@ -5,14 +5,14 @@ namespace Atlantis;
 /**
  * Error class
  *
- * @var int $code Code (default: 0)
+ * @var int $status Status (default: 0)
  * @var string $title Title
  * @var string $message Message
  * @var string $type success | danger | warning | info | light | primary | secondary | dark
  */
 final class Error
 {
-    public int $code;
+    public int $status;
     public string $title;
     public string $message;
     public string $type;
@@ -20,12 +20,12 @@ final class Error
     public function __construct(
         string $title = '',
         string $message = '',
-        int $code = 0,
+        int $status = 0,
         string $type = 'light'
     ) {
         $this->title = $title ?: App::$lang->get('warning');
         $this->message = $message;
-        $this->code = $code;
+        $this->status = $status;
         $this->type = $type;
     }
 
@@ -39,9 +39,9 @@ final class Error
         return $this->type;
     }
 
-    public function getCode(): int
+    public function getStatus(): int
     {
-        return $this->code;
+        return $this->status;
     }
 
     public function getMessage(): string

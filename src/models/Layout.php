@@ -2,7 +2,7 @@
 
 namespace Atlantis\Models;
 
-use Atlantis\{App, Date, Query, Table, Template};
+use Atlantis\{App, Auth, Date, Query, Table, Template};
 use DateTime;
 use DateTimeZone;
 use stdClass;
@@ -62,16 +62,16 @@ class Layout extends Table
         ]
     ];
 
-    function getAll(): array
+    public static function available(): array
     {
-        $array = [];
-
-        foreach ($this::get() as $row) {
-            $layout = new self($row);
-            $array[$layout->id] = $layout;
+        if (Auth::isAdmin()) {
+            $layouts = Layout::get();
+        } else {
+            $layouts = self::whereIn('id', array_keys(App::$user->layouts))
+                ->get();
         }
 
-        return $array;
+        return array_values($layouts);
     }
 
     function date($date)
@@ -185,7 +185,7 @@ class Layout extends Table
         foreach ($this->layout as $type => $args) {
             $model = new $args['class']();
 
-            if (App::$user->canSelect($model::$tableName)) {
+            if (Auth::canSelect($model::$tableName)) {
                 $window = new Template('Layout/Window');
                 $window->set('type', $type)
                     ->set('content', $model->renderContent());

@@ -2,7 +2,7 @@
 
 namespace Atlantis\Models;
 
-use Atlantis\{App, Error, Query, Session, Table, Template};
+use Atlantis\{App, Auth, Error, Query, Session, Table, Template};
 use stdClass;
 
 class User extends Table
@@ -25,54 +25,6 @@ class User extends Table
             ->get();
     }
 
-    function login($login, $password): bool
-    {
-        $this->reset();
-
-        foreach ($this->fetchTableRowByLogin($login) as $row) {
-            if (!$this::checkHash($password, $row->password)) {
-                App::$error = new Error(
-                    title: App::$lang->get('warning'),
-                    message: App::$lang->get('bad_password'),
-                    type: 'warning'
-                );
-                return false;
-            }
-
-            $this->init($row);
-
-            Session::regenerate();
-
-            Session::set('USER_ID', $this->id);
-
-            return true;
-        }
-
-        App::$error = new Error(
-            title: App::$lang->get('warning'),
-            message: App::$lang->get('bad_login'),
-            type: 'warning'
-        );
-
-        return false;
-    }
-
-    function signedIn(): bool
-    {
-        if (!App::$user->id || !$this->id) {
-            return false;
-        }
-
-        return (bool) App::$user->id == $this->id;
-    }
-
-    function logout(): bool
-    {
-        $this->reset();
-        Session::destroy();
-        return true;
-    }
-
     function isAdmin(): bool
     {
         return $this->role == 1;
@@ -88,35 +40,6 @@ class User extends Table
             'email' => $this->email,
             'password' => $this::getHash($this->password),
         ];
-    }
-
-    function insert(): bool
-    {
-        if (!$this->checkAdd()) {
-            return false;
-        }
-
-        return parent::insert();
-    }
-
-    function delete(): bool
-    {
-        if (!$this->isAdmin()) {
-            return false;
-        }
-
-        return parent::delete();
-    }
-
-    function update(string $column, string $value): bool
-    {
-        $result = parent::update($column, $value);
-
-        if ($result) {
-            $this->init([$column => $value]);
-        }
-
-        return $result;
     }
 
     function checkAdd(): bool
@@ -203,16 +126,6 @@ class User extends Table
         }
 
         return false;
-    }
-
-    static function getHash(string $string): string
-    {
-        return password_hash($string, PASSWORD_DEFAULT);
-    }
-
-    static function checkHash(string $string, $hash): bool
-    {
-        return password_verify($string, $hash);
     }
 
     function getTableStructure(): stdClass
@@ -365,24 +278,5 @@ class User extends Table
             default:
                 return [];
         }
-    }
-
-    public function canSelect(string $table): bool
-    {
-        if ($this->isAdmin()) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public function availableLayouts(): array
-    {
-        if ($this->isAdmin()) {
-            return (new Layout())->getAll();
-        }
-
-        return $this::whereIn('id', array_keys($this->layouts))
-            ->get();
     }
 }

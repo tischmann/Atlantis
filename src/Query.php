@@ -165,8 +165,18 @@ class Query
         return $this;
     }
 
-    function where(string $column, string $sign, $value)
+    function where(...$args)
     {
+        switch (count($args)) {
+            case 2:
+                $sign = '=';
+                list($column, $value) = $args;
+                break;
+            case 3:
+                list($column, $sign, $value) = $args;
+                break;
+        }
+
         $prepared = ':' . md5($column);
 
         $this->where[] = (object) [
@@ -233,7 +243,7 @@ class Query
         return $this->db->statement->fetchAll();
     }
 
-    function first(): stdClass
+    function first(): false|stdClass
     {
         $this->offset(0);
         $this->limit(1);

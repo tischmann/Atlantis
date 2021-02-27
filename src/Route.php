@@ -2,7 +2,7 @@
 
 namespace Atlantis;
 
-use Atlantis\Controller;
+use Atlantis\Controllers\Controller;
 
 class Route
 {

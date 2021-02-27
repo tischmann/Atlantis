@@ -2,7 +2,7 @@
 
 namespace Atlantis;
 
-use Atlantis\Controllers\{ErrorController};
+use Atlantis\Controllers\{Controller};
 
 class Router
 {
@@ -22,13 +22,13 @@ class Router
         }
     }
 
-    public function parse(string $path, string $pathToValidate)
+    public function parse(string $path, string $pathToValidate): false|array
     {
         $paths = explode('/', $path);
         $pathsToValidate = explode('/', $pathToValidate);
 
         if (count($paths) != count($pathsToValidate)) {
-            return [implode('/', $paths), []];
+            return false;
         }
 
         $args = [];
@@ -44,23 +44,31 @@ class Router
             }
         );
 
-        return [implode('/', $paths), $args];
+        $parsedPath = implode('/', $paths);
+
+        if ($parsedPath != $pathToValidate) {
+            return false;
+        }
+
+        return $args;
     }
 
-    function validate(string $pathToValidate)
+    function validate(string $pathToValidate): false|Route
     {
         $method = strtolower($_SERVER['REQUEST_METHOD']);
 
         foreach ($this->routes[$method] as $path => $route) {
-            list($parsedPath, $args) = $this->parse($path, $pathToValidate);
+            $args = $this->parse($path, $pathToValidate);
 
-            if ($parsedPath === $pathToValidate) {
-                foreach ($args as $key => $val) {
-                    $route->args($key, $val);
-                }
-
-                return $route;
+            if ($args === false) {
+                continue;
             }
+
+            foreach ($args as $key => $val) {
+                $route->args($key, $val);
+            }
+
+            return $route;
         }
 
         return false;
@@ -72,7 +80,7 @@ class Router
         string $controller,
         string $action = 'index',
         array $args = []
-    ) {
+    ): Route {
         $this->routes[$method][$path] = new Route(
             method: $method,
             path: $path,
@@ -89,7 +97,7 @@ class Router
         string $controller,
         string $action = 'index',
         array $args = []
-    ) {
+    ): Route {
         return $this->add('post', $path, $controller, $action, $args);
     }
 
@@ -98,7 +106,7 @@ class Router
         string $controller,
         string $action = 'index',
         array $args = []
-    ) {
+    ): Route {
         return $this->add('get', $path, $controller, $action, $args);
     }
 
@@ -107,7 +115,7 @@ class Router
         string $controller,
         string $action = 'index',
         array $args = []
-    ) {
+    ): Route {
         return $this->add('put', $path, $controller, $action, $args);
     }
 
@@ -116,7 +124,7 @@ class Router
         string $controller,
         string $action = 'index',
         array $args = []
-    ) {
+    ): Route {
         return $this->add('delete', $path, $controller, $action, $args);
     }
 
@@ -126,9 +134,11 @@ class Router
             unset($this->routes[$route->method][$route->path]);
             $this->routes[$route->method]["{$prefix}{$route->path}"] = $route;
         }
+
+        return $this;
     }
 
-    public function resolve()
+    public function resolve(): Route
     {
         $uri = parse_url($_SERVER['REQUEST_URI']);
 
@@ -150,23 +160,9 @@ class Router
         $route = $this->validate($path);
 
         if (!$route) {
-            $route = new Route(
-                method: 'get',
-                path: $path,
-                controller: new ErrorController(),
-                action: 'notFound'
-            );
+            die((new Controller())->render('404'));
         } else if (!$route->methodExists()) {
-            $route = new Route(
-                method: 'get',
-                path: $path,
-                controller: new ErrorController(),
-                action: 'notFound'
-            );
-            App::$error = new Error(
-                message: "Метод " . $route->action . " не найден в "
-                    . get_class($route->controller)
-            );
+            die((new Controller())->render('404'));
         }
 
         $this->route = $route;

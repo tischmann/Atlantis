@@ -25,7 +25,9 @@ final class App
 
         Session::start();
 
-        static::$user = new User(Session::get('USER_ID'));
+        static::$user = new User();
+
+        Auth::auth();
 
         static::$router = new Router();
         static::$router->init();
