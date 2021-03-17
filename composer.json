@@ -8,6 +8,10 @@
         "simple",
         "fast"
     ],
+    "require": {
+        "php": "^8.0",
+        "firebase/php-jwt": "^5.2.1"
+    },
     "authors": [
         {
             "name": "Yuriy Stolov",

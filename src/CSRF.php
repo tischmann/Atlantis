@@ -6,7 +6,7 @@ final class CSRF
 {
     static function set(): string
     {
-        return Session::set('CSRF', bin2hex(random_bytes(64)));
+        return Session::set('CSRF', bin2hex(random_bytes(256)));
     }
 
     static function get()
@@ -31,17 +31,20 @@ final class CSRF
         $isset = self::isset();
 
         if (!$isset) {
-            App::$error = new Error(message: "CSRF not set");
-            return false;
+            Response::response(new Error(
+                message: App::$lang->get('error_csrf_not_set')
+            ));
         }
 
         $csrf = self::get();
 
-        $input = $request->csrf_token ?? $request->headers()['X-CSRF-Token'] ?? null;
+        $input = $request->csrf_token ?? $request->headers()['X-CSRF-Token']
+            ?? null;
 
         if ($input !== $csrf) {
-            App::$error = new Error(message: "CSRF not match");
-            return false;
+            Response::response(new Error(
+                message: App::$lang->get('error_csrf_not_match')
+            ));
         }
 
         return true;

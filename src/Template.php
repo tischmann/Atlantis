@@ -2,82 +2,98 @@
 
 namespace Atlantis;
 
-use Atlantis\Routing\Router;
+use Atlantis\Controllers\Controller;
+use stdClass;
 
 final class Template
 {
     public string $content = '';
+    public array $sections = [];
     public string $uniqid = '';
-    public array $tags = [];
+    public array $args = [];
 
-    function __construct(string $name)
+    const REGEX_VARIABLE = '/\[\$((?>(?R)|.)*?)\]/is';
+    const REGEX_METHODS = '/(\w+)+(\(\))?/i';
+    const REGEX_LAYOUT = '/\[layout=([a-z0-9_\-\/]+)\]/i';
+    const REGEX_INCLUDE = '/\[include=([a-z0-9_\-\/]+)\]/i';
+    const REGEX_SECTION = '/\[(section)=([a-z0-9_-]+)\]((?>(?R)|.)*?)\[\/\1\]/is';
+    const REGEX_YIELD = '/\[yield=([a-z0-9_\-\/]+)\]/i';
+    const REGEX_HOME =  '/\[(home)\]((?>(?R)|.)*?)\[\/\1\]/is';
+    const REGEX_LOADER = '/(\[loader\])/i';
+    const REGEX_CSRF = '/(\[csrf\])/i';
+    const REGEX_CSRF_TOKEN = '/(\[csrf-token\])/i';
+    const REGEX_NOT_AUTH = '/\[(!auth)\]((?>(?R)|.)*?)\[\/\1\]/is';
+    const REGEX_AUTH = '/\[(auth)\]((?>(?R)|.)*?)\[\/\1\]/is';
+    const REGEX_NOT_ADMIN = '/\[(!admin)\]((?>(?R)|.)*?)\[\/\1\]/is';
+    const REGEX_ADMIN = '/\[(admin)\]((?>(?R)|.)*?)\[\/\1\]/is';
+    const REGEX_LANG = '/\[lang=([a-z0-9_-]+)\]/';
+    const REGEX_TITLE = '/(\[title\])/i';
+    const REGEX_ERROR = '/\[error\]/i';
+    const REGEX_DATE = '/\[date=(.+)\]/i';
+    const REGEX_ENV = '/\[env=([A-Z0-9_\-]+)\]/';
+    const REGEX_LOAD = '/\[load=(.+)\]/';
+    const REGEX_UNIQID = '/(\[uniqid\])/i';
+    const REGEX_FOREACH = '/\[(foreach)\((\$[a-z0-9_-]+)\s*as\s*(\$[a-z0-9_-]+)\s*\)]((?>(?R)|.)*?)\[\/\1\]/is';
+    const REGEX_IF = '/\[(if)\s*((?>(?R)|.)*?)\]((?>(?R)|.)*?)\[\/\1\]/is';
+    const REGEX_IF_CONDITION = '/(!{0,2})\$((?>(?R)|.)*?)\s*$|\s+(\!\={1,2}|\={1,3}|\>|\<|\>\=|\<\=|\<\>)\s+(\S+)/i';
+    const REGEX_ELSEIF = '/\[(elseif)\s*((?>(?R)|.)*?)\]((?>(?R)|.)*?)\[\/\1\]/is';
+    const REGEX_ELSE = '/\[(else)\]((?>(?R)|.)*?)\[\/\1\]/is';
+
+    public function __construct(string $name, array $args = [])
     {
+        $this->args = $args;
         $this->content = $this->include($name);
         $this->uniqid = uniqid();
     }
 
-    function parse()
+    protected function parse()
     {
-        $this->parseHome()
+        $this->parseLayout()
+            ->parseChilds()
+            ->parseHome()
             ->parseLoader()
             ->parseNotAuth()
             ->parseNotAdmin()
             ->parseAuth()
             ->parseAdmin()
             ->parseStrings()
-            ->replaceTags()
+            ->parseIf()
+            ->parseForEach()
+            ->parseVariables()
             ->parseTitle()
             ->parseDate()
             ->parseUniqid()
             ->parseCSRF()
-            ->parseUser()
             ->parseEnv()
-            ->parseLoad()
-            ->parseLangJs()
-            ->parseIncludes();
+            ->parseLoad();
     }
 
-    function render()
+    public function render()
     {
         $this->parse();
         return $this->content;
     }
 
-    function include(string $name)
+    public function include(string $view)
     {
-        $path = "../templates/{$name}.tpl";
+        $path = "../views/{$view}.tpl.php";
 
         if (!file_exists($path)) {
-            return "Template '{$name}' not found";
+            Response::response(new Error(
+                message: App::$lang->get('error_view_not_found') . ": $view",
+                type: 'warning'
+            ));
         }
 
         return file_get_contents($path);
     }
 
-    function set(string $tag, $value)
+    protected function parseLayout()
     {
-        if (!array_key_exists($tag, $this->tags)) {
-            $this->tags[$tag] = $value;
-            return $this;
-        }
-
-        $this->tags[$tag] .= $value;
-
-        return $this;
-    }
-
-    function parseHome()
-    {
-        preg_match_all(
-            '/\[home\]([\S|\s]*?)\[\/home\]/i',
-            $this->content,
-            $matches
-        );
-
-        foreach ($matches[1] ?? [] as $key => $val) {
+        if (preg_match(self::REGEX_LAYOUT, $this->content, $matches)) {
             $this->content = str_replace(
-                $matches[0][$key],
-                App::$router->isHome() ? $val : '',
+                $matches[0],
+                $this->include("layouts/{$matches[1]}"),
                 $this->content
             );
         }
@@ -85,297 +101,448 @@ final class Template
         return $this;
     }
 
-    function parseLoader()
+    protected function parseChilds()
     {
-        preg_match_all('/(\[loader\])/i', $this->content, $matches);
-
-        foreach ($matches[1] ?? [] as $key => $val) {
-            $template = new Template('Core/Loader');
-            $this->content = str_replace(
-                $matches[0][$key],
-                $template->render(),
-                $this->content
-            );
-        }
+        do {
+            $exist = $this->parseSections();
+            $this->fillSections();
+            $this->parseIncludes();
+        } while ($exist);
 
         return $this;
     }
 
-    function parseNotAuth()
+    protected function parseInclude(string $content): bool
     {
-        preg_match_all(
-            '/\[notauth\]([\S|\s]*?)\[\/notauth\]/i',
-            $this->content,
-            $matches
-        );
-
-        foreach ($matches[1] ?? [] as $key => $val) {
-            $this->content = str_replace(
-                $matches[0][$key],
-                Auth::signedIn() ? '' : $val,
-                $this->content
-            );
-        }
-
-        return $this;
-    }
-
-    function parseNotAdmin()
-    {
-        preg_match_all(
-            '/\[notadmin\]([\S|\s]*?)\[\/notadmin\]/i',
-            $this->content,
-            $matches
-        );
-
-        foreach ($matches[1] ?? [] as $key => $val) {
-            $this->content = str_replace(
-                $matches[0][$key],
-                Auth::isAdmin() ? '' : $val,
-                $this->content
-            );
-        }
-
-        return $this;
-    }
-
-    function parseAuth()
-    {
-        preg_match_all(
-            '/\[auth\]([\S|\s]*?)\[\/auth\]/i',
-            $this->content,
-            $matches
-        );
-
-        foreach ($matches[1] ?? [] as $key => $val) {
-            $this->content = str_replace(
-                $matches[0][$key],
-                Auth::signedIn() ? $val : '',
-                $this->content
-            );
-        }
-
-        return $this;
-    }
-
-    function parseAdmin()
-    {
-        preg_match_all(
-            '/\[admin\]([\S|\s]*?)\[\/admin\]/i',
-            $this->content,
-            $matches
-        );
-
-        foreach ($matches[1] ?? [] as $key => $val) {
-            $this->content = str_replace(
-                $matches[0][$key],
-                Auth::isAdmin() ? $val : '',
-                $this->content
-            );
-        }
-
-        return $this;
-    }
-
-    function parseStrings()
-    {
-        preg_match_all(
-            '/\[lang=([a-z0-9_-]+)\]/',
-            $this->content,
-            $matches
-        );
-
-        foreach ($matches[1] ?? [] as $key => $val) {
-            $this->content = str_replace(
-                $matches[0][$key],
-                App::$lang->get($val),
-                $this->content
-            );
-        }
-
-        return $this;
-    }
-
-    function replaceTags()
-    {
-        foreach ($this->tags as $tag => $val) {
-            $this->content = str_replace("{{$tag}}", $val, $this->content);
-        }
-
-        return $this;
-    }
-
-    function parseTitle()
-    {
-        preg_match_all('/(\[title\])/i', $this->content, $matches);
-
-        // $key = "title_" . Router::controller();
-        // $string = App::$lang->get($key);
-
-        // if ($string != $key) {
-        //     $title = $string;
-
-        //     $key = "title_" . Router::controller() . "_" . Router::action();
-        //     $string = App::$lang->get($key);
-
-        //     if ($string != $key) {
-        //         $title .= " | {$string}";
-        //     }
-
-        //     $title .= ' | ' . getenv('APP_TITLE') ?: '';
-        // }
-
-        $title = getenv('APP_TITLE') ?: 'Atlantis';
-
-        foreach ($matches[1] ?? [] as $key => $val) {
-            $this->content = str_replace(
-                $matches[0][$key],
-                $title,
-                $this->content
-            );
-        }
-
-        return $this;
-    }
-
-
-    function parseDate()
-    {
-        preg_match_all('/\[date=(.+)\]/i', $this->content, $matches);
-
-        foreach ($matches[1] ?? [] as $key => $val) {
-            $this->content = str_replace(
-                $matches[0][$key],
-                date($val),
-                $this->content
-            );
-        }
-
-        return $this;
-    }
-
-    function parseCSRF()
-    {
-        preg_match_all('/(\[csrf\])/i', $this->content, $matches);
-
-        foreach ($matches[1] ?? [] as $key => $val) {
-            $csrf = CSRF::get() ?? CSRF::set();
-            $template = new Template('Core/CSRF');
-            $template->set('value', $csrf);
-            $this->content = str_replace(
-                $matches[0][$key],
-                $template->render(),
-                $this->content
-            );
-        }
-
-        preg_match_all('/(\[csrf-token\])/i', $this->content, $matches);
-
-        foreach ($matches[1] ?? [] as $key => $val) {
-            $csrf = CSRF::get() ?? CSRF::set();
-            $this->content = str_replace(
-                $matches[0][$key],
-                $csrf,
-                $this->content
-            );
-        }
-
-        return $this;
-    }
-
-    function parseUser()
-    {
-        preg_match_all('/\[user->(\w+)\]/i', $this->content, $matches);
-
-        foreach ($matches[1] ?? [] as $key => $val) {
-            $val = property_exists(App::$user, $val) ? App::$user->{$val} : '';
-            $this->content = str_replace(
-                $matches[0][$key],
-                $val,
-                $this->content
-            );
-        }
-
-        return $this;
-    }
-
-    function parseEnv()
-    {
-        preg_match_all('/\[env=([A-Z0-9_-]+)\]/', $this->content, $matches);
-
-        foreach ($matches[1] ?? [] as $key => $val) {
-            $this->content = str_replace(
-                $matches[0][$key],
-                getenv($val) ?: '',
-                $this->content
-            );
-        }
-
-        return $this;
-    }
-
-    function parseLoad()
-    {
-        preg_match_all('/\[load=(.+)\]/', $this->content, $matches);
-
-        foreach ($matches[1] ?? [] as $key => $val) {
-            $path = "./{$val}";
-            $content = file_exists($path) ? file_get_contents($path) : '';
-            $this->content = str_replace(
-                $matches[0][$key],
-                $content,
-                $this->content
-            );
-        }
-
-        return $this;
-    }
-
-    function parseLangJs()
-    {
-        preg_match_all('/(\[langjs\])/', $this->content, $matches);
-
-        foreach ($matches[1] ?? [] as $key => $val) {
-            $script = "<script>const LANG = {";
-
-            foreach (App::$lang->strings as $langkey => $langval) {
-                $script .= "{$langkey}: `{$langval}`,";
+        if (preg_match_all(self::REGEX_INCLUDE, $content, $matches)) {
+            foreach ($matches[1] as $key => $view) {
+                $this->content = str_replace(
+                    $matches[0][$key],
+                    View::render($view, $this->args),
+                    $this->content
+                );
             }
 
-            $script .= "}</script>";
+            return true;
+        }
 
+        return false;
+    }
+
+    protected function parseIncludes(): bool
+    {
+        do {
+            $exist = $this->parseInclude($this->content);
+        } while ($exist);
+
+        return false;
+    }
+
+    protected function parseSections(): bool
+    {
+        if (!preg_match_all(self::REGEX_SECTION, $this->content, $matches)) {
+            return false;
+        }
+
+        foreach ($matches[2] as $key => $view) {
+            $this->sections[$matches[2][$key]] = $matches[3][$key];
             $this->content = str_replace(
                 $matches[0][$key],
-                $script,
+                '',
                 $this->content
             );
+        }
+
+        return true;
+    }
+
+    protected function fillSections(): bool
+    {
+        if (!$this->sections) {
+            return false;
+        }
+
+        if (!preg_match_all(self::REGEX_YIELD, $this->content, $matches)) {
+            return false;
+        }
+
+        foreach ($matches[1] as $key => $section) {
+            $this->content = str_replace(
+                $matches[0][$key],
+                $this->sections[$section],
+                $this->content
+            );
+        }
+
+        return true;
+    }
+
+    protected function parseHome()
+    {
+        if (preg_match_all(self::REGEX_HOME, $this->content, $matches)) {
+            foreach ($matches[0] as $key => $tag) {
+                $val = App::$router->isHome() ? $matches[2][$key] : '';
+                $this->content = str_replace($tag, $val, $this->content);
+            }
         }
 
         return $this;
     }
 
-    function parseIncludes()
+    protected function parseLoader()
     {
-        preg_match_all(
-            '/\[include=([\w|\/]+)\.php(?:\?([^\]]+))?\]/i',
-            $this->content,
-            $matches
+        $this->content = preg_replace(
+            self::REGEX_LOADER,
+            View::render('loader', $this->args),
+            $this->content
         );
 
-        foreach ($matches[0] ?? [] as $key => $match) {
-            $args = [];
+        return $this;
+    }
 
-            foreach (explode('&', $matches[2][$key] ?? '') as $argument) {
-                $exp = explode('=', $argument);
+    protected function parseNotAuth()
+    {
+        if (preg_match_all(self::REGEX_NOT_AUTH, $this->content, $matches)) {
+            foreach ($matches[2] as $key => $val) {
+                $this->content = str_replace(
+                    $matches[0][$key],
+                    Auth::signedIn() ? '' : $val,
+                    $this->content
+                );
+            }
+        }
 
-                if (count($exp) > 1) {
-                    $args[$exp[0]] = $exp[1];
+        return $this;
+    }
+
+    protected function parseNotAdmin()
+    {
+        if (preg_match_all(self::REGEX_NOT_ADMIN, $this->content, $matches)) {
+            foreach ($matches[2] as $key => $val) {
+                $this->content = str_replace(
+                    $matches[0][$key],
+                    Auth::isAdmin() ? '' : $val,
+                    $this->content
+                );
+            }
+        }
+
+        return $this;
+    }
+
+    protected function parseAuth()
+    {
+        if (preg_match_all(self::REGEX_AUTH, $this->content, $matches)) {
+            foreach ($matches[2] as $key => $val) {
+                $this->content = str_replace(
+                    $matches[0][$key],
+                    Auth::signedIn() ? $val : '',
+                    $this->content
+                );
+            }
+        }
+
+        return $this;
+    }
+
+    protected function parseAdmin()
+    {
+        if (preg_match_all(self::REGEX_ADMIN, $this->content, $matches)) {
+            foreach ($matches[2] as $key => $val) {
+                $this->content = str_replace(
+                    $matches[0][$key],
+                    Auth::isAdmin() ? $val : '',
+                    $this->content
+                );
+            }
+        }
+
+        return $this;
+    }
+
+    protected function parseStrings()
+    {
+        if (preg_match_all(self::REGEX_LANG, $this->content, $matches)) {
+            foreach ($matches[1] as $key => $val) {
+                $this->content = str_replace(
+                    $matches[0][$key],
+                    App::$lang->get($val),
+                    $this->content
+                );
+            }
+        }
+
+        return $this;
+    }
+
+    protected function parseVariables(array $variables = null, string $content = null)
+    {
+        $variables = $variables ?? $this->args;
+        $contentToParse = $content ?? $this->content;
+
+        foreach ($variables as $name => $val) {
+            if (preg_match_all(self::REGEX_VARIABLE, $contentToParse, $matches)) {
+                foreach ($matches[0] as $key => $tag) {
+                    preg_match_all(self::REGEX_METHODS, $matches[1][$key], $methods);
+                    $value = $val;
+
+                    if (($methods[1][0] ?? false) != $name) {
+                        continue;
+                    }
+
+                    foreach ($methods[1] as $methodKey => $method) {
+                        if ($method == $name) {
+                            continue;
+                        }
+
+                        if ($methods[2][$methodKey]) {
+                            $value = $value->$method();
+                        } else {
+                            $value = $value->$method;
+                        }
+                    }
+
+                    if ((string) $value != $value) {
+                        Response::response(new Error(
+                            status: 500,
+                            message: App::$lang->get('error_bad_template_variable')
+                        ));
+                    }
+
+                    $contentToParse = str_replace(
+                        $tag,
+                        $value,
+                        $contentToParse
+                    );
                 }
             }
+        }
 
-            $this->content = str_replace(
-                $match,
-                View::include($matches[1][$key], $args),
+        if ($content !== null) {
+            return $contentToParse;
+        } else {
+            $this->content = $contentToParse;
+        }
+
+        return $this;
+    }
+
+    protected function getIfCondition(string $condition): bool
+    {
+        if (!preg_match(self::REGEX_IF_CONDITION, $condition, $matches)) {
+            return false;
+        }
+
+        $exp = explode(' ', $matches[2]);
+        $inversion = $matches[1];
+        $variable = trim($exp[0]);
+        $sign = trim($exp[1] ?? null);
+        $value = trim($exp[2] ?? null);
+
+        preg_match_all(self::REGEX_METHODS, $variable, $methods);
+
+        $variable = null;
+
+        foreach ($methods[1] as $key => $method) {
+            if (!$variable) {
+                $variable = $this->args[$method];
+                continue;
+            }
+
+            if ($methods[2][$key]) {
+                $variable = $variable->$method();
+            } else {
+                $variable = $variable->$method;
+            }
+        }
+
+        if ((string) $variable != $variable) {
+            Response::response(new Error(
+                status: 500,
+                message: App::$lang->get('error_bad_template_variable')
+            ));
+        }
+
+        // Inversion
+        switch ($inversion) {
+            case '!':
+                $variable = !$variable;
+                break;
+            case '!!':
+                $variable = !!$variable;
+                break;
+        }
+
+        if ($value == 'null') {
+            $value = null;
+        } else if ($value == 'true') {
+            $value = true;
+        } else if ($value == 'false') {
+            $value = false;
+        } else {
+            $value = trim($value, "\"'");
+        }
+
+        switch ($sign) {
+            case '<':
+                return $variable < $value;
+            case '>':
+                return $variable > $value;
+            case '<=':
+                return $variable <= $value;
+            case '>=':
+                return $variable >= $value;
+            case '!=':
+            case '<>':
+                return $variable != $value;
+            case '!==':
+                return $variable !== $value;
+            case '==':
+                return $variable == $value;
+            case '===':
+                return $variable === $value;
+            default:
+                return (bool) $variable;
+        }
+    }
+
+    protected function getElseCondition(string &$content): bool
+    {
+        if (preg_match(self::REGEX_ELSE, $content, $matches)) {
+            $content = trim($matches[2]);
+            return true;
+        }
+
+        return false;
+    }
+
+    protected function getElseIFCondition(string &$content): bool
+    {
+        if (preg_match_all(self::REGEX_ELSEIF, $content, $matches)) {
+            foreach ($matches[0] as $key => $pattern) {
+                if ($this->getIfCondition(trim($matches[2][$key]))) {
+                    $content = trim($matches[3][$key]);
+                    return true;
+                } else {
+                    $content = str_replace($pattern, '', $content);
+                }
+            }
+        }
+
+        return false;
+    }
+
+    protected function parseIf()
+    {
+        if (preg_match_all(self::REGEX_IF, $this->content, $matches)) {
+            foreach ($matches[0] as $key => $pattern) {
+                $content = trim($matches[3][$key]);
+
+                if ($this->getIfCondition(trim($matches[2][$key]))) {
+                    $this->content = str_replace(
+                        $pattern,
+                        $content,
+                        $this->content
+                    );
+                    return $this;
+                }
+
+
+                if ($this->getElseIFCondition($content)) {
+                    $this->content = str_replace(
+                        $pattern,
+                        $content,
+                        $this->content
+                    );
+                    return $this;
+                }
+
+                if ($this->getElseCondition($content)) {
+                    $this->content = str_replace(
+                        $pattern,
+                        $content,
+                        $this->content
+                    );
+                    return $this;
+                }
+            }
+        }
+
+        return $this;
+    }
+
+    protected function parseForEach()
+    {
+        if (preg_match_all(self::REGEX_FOREACH, $this->content, $matches)) {
+            foreach ($matches[0] as $key => $pattern) {
+                $iterableName = substr($matches[2][$key], 1);
+
+                if (!array_key_exists($iterableName, $this->args)) {
+                    Response::response(new Error(
+                        status: 500,
+                        message: App::$lang->get('error_bad_template_variable')
+                            . ": {$iterableName}"
+                    ));
+                }
+
+                $body = '';
+
+                foreach ($this->args[$iterableName] as $obj) {
+                    $body .= $this->parseVariables(
+                        [substr($matches[3][$key], 1) => $obj],
+                        $matches[4][$key]
+                    );
+                }
+
+                $this->content = str_replace($pattern, $body, $this->content);
+            }
+        }
+
+        return $this;
+    }
+
+    protected function parseTitle()
+    {
+        if (preg_match_all(self::REGEX_TITLE, $this->content, $matches)) {
+            $title = getenv('APP_TITLE') ?: 'Atlantis';
+
+            foreach ($matches[0] as $tag) {
+                $this->content = str_replace($tag, $title, $this->content);
+            }
+        }
+
+        return $this;
+    }
+
+    protected function parseDate()
+    {
+        if (preg_match_all(self::REGEX_DATE, $this->content, $matches)) {
+            foreach ($matches[1] as $key => $val) {
+                $this->content = str_replace(
+                    $matches[0][$key],
+                    date($val),
+                    $this->content
+                );
+            }
+        }
+
+        return $this;
+    }
+
+    protected function parseCSRF()
+    {
+        if (preg_match(self::REGEX_CSRF, $this->content)) {
+            $this->content = preg_replace(
+                self::REGEX_CSRF,
+                View::render('csrf', ['csrfToken' => CSRF::get() ?? CSRF::set()]),
+                $this->content
+            );
+        }
+
+        if (preg_match(self::REGEX_CSRF_TOKEN, $this->content)) {
+            $this->content = preg_replace(
+                self::REGEX_CSRF_TOKEN,
+                CSRF::get() ?? CSRF::set(),
                 $this->content
             );
         }
@@ -383,16 +550,46 @@ final class Template
         return $this;
     }
 
-    function parseUniqid()
+    protected function parseEnv()
     {
-        preg_match_all('/(\[uniqid\])/i', $this->content, $matches);
+        if (preg_match_all(self::REGEX_ENV, $this->content, $matches)) {
+            foreach ($matches[1] as $key => $val) {
+                $this->content = str_replace(
+                    $matches[0][$key],
+                    getenv($val) ?: '',
+                    $this->content
+                );
+            }
+        }
 
-        foreach ($matches[1] ?? [] as $key => $val) {
-            $this->content = str_replace(
-                $matches[0][$key],
-                $this->uniqid,
-                $this->content
-            );
+        return $this;
+    }
+
+    protected function parseLoad()
+    {
+        if (preg_match_all(self::REGEX_LOAD, $this->content, $matches)) {
+            foreach ($matches[1] as $key => $val) {
+                $this->content = str_replace(
+                    $matches[0][$key],
+                    file_get_contents("./{$val}") ?: '',
+                    $this->content
+                );
+            }
+        }
+
+        return $this;
+    }
+
+    protected function parseUniqid()
+    {
+        if (preg_match_all(self::REGEX_UNIQID, $this->content, $matches)) {
+            foreach ($matches[1] as $key => $val) {
+                $this->content = str_replace(
+                    $matches[0][$key],
+                    $this->uniqid,
+                    $this->content
+                );
+            }
         }
 
         return $this;

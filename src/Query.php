@@ -25,13 +25,13 @@ class Query
     public array $rightJoin = [];
     public array $fullJoin = [];
 
-    function __construct(array $args = [])
+    function __construct(Database $db = null)
     {
-        if ($args) {
-            $this->init($args);
+        if ($db) {
+            $this->db = $db;
+        } else if (App::$db ?? null) {
+            $this->db = App::$db;
         }
-
-        $this->db = $this->db ?? App::$db;
     }
 
     public function init(array $args)
@@ -49,7 +49,9 @@ class Query
 
     public function reset()
     {
-        $clone = clone ($this);
+        $db = $this->db;
+        $table = $this->table;
+
         $className = get_class($this);
         $clean = new $className();
 
@@ -61,8 +63,8 @@ class Query
             }
         }
 
-        $this->db = $clone->db;
-        $this->table = $clone->table;
+        $this->db = $db;
+        $this->table = $table;
 
         return $this;
     }
@@ -131,8 +133,9 @@ class Query
             $prepared = [];
 
             foreach ($array as $key => $value) {
-                $prepared[] = ':' . md5($column . $key);
-                $this->values[$prepared] = $value;
+                $preparedKey = md5($column . $key);
+                $prepared[] = ":{$preparedKey}";
+                $this->values[$preparedKey] = $value;
             }
 
             $this->where[] = (object) [
@@ -145,20 +148,63 @@ class Query
         return $this;
     }
 
+    function whereNotIn(string $column, $array)
+    {
+        if ($array) {
+            $prepared = [];
+
+            foreach ($array as $key => $value) {
+                $preparedKey = md5($column . $key);
+                $prepared[] = ":{$preparedKey}";
+                $this->values[$preparedKey] = $value;
+            }
+
+            $this->where[] = (object) [
+                'column' => $column,
+                'prepared' => '(' . implode(',', $prepared) . ')',
+                'sign' => 'NOT IN'
+            ];
+        }
+
+        return $this;
+    }
+
     function orWhereIn(string $column, $array)
     {
         if ($array) {
             $prepared = [];
 
             foreach ($array as $key => $value) {
-                $prepared[] = ':' . md5($column . $key);
-                $this->values[$prepared] = $value;
+                $preparedKey = md5($column . $key);
+                $prepared[] = ":{$preparedKey}";
+                $this->values[$preparedKey] = $value;
             }
 
             $this->orWhere[] = (object) [
                 'column' => $column,
                 'prepared' => '(' . implode(',', $prepared) . ')',
                 'sign' => 'IN'
+            ];
+        }
+
+        return $this;
+    }
+
+    function orWhereNotIn(string $column, $array)
+    {
+        if ($array) {
+            $prepared = [];
+
+            foreach ($array as $key => $value) {
+                $preparedKey = md5($column . $key);
+                $prepared[] = ":{$preparedKey}";
+                $this->values[$preparedKey] = $value;
+            }
+
+            $this->orWhere[] = (object) [
+                'column' => $column,
+                'prepared' => '(' . implode(',', $prepared) . ')',
+                'sign' => 'NOT IN'
             ];
         }
 
@@ -219,13 +265,13 @@ class Query
         return $this;
     }
 
-    function order(string $column, string $order = 'ASC')
+    function order(string $column, string $order = 'ASC', bool $reset = false)
     {
-        $this->order[] = (object) [
-            'column' => $column,
-            'order' => strtoupper($order)
-        ];
+        if ($reset) {
+            $this->order = [];
+        }
 
+        $this->order[$column] = strtoupper($order);
         return $this;
     }
 
@@ -238,30 +284,53 @@ class Query
 
     function get(): array
     {
-        $this->db->execute($this->getSelectQuery(), $this->values);
-        $this->reset();
-        return $this->db->statement->fetchAll();
+        return $this->db->fetchAll($this->getSelectQuery(), $this->values);
     }
 
     function first(): false|stdClass
     {
         $this->offset(0);
         $this->limit(1);
-        $this->db->execute($this->getSelectQuery(), $this->values);
-        $this->reset();
-        return $this->db->statement->fetch();
+        return  $this->db->fetch($this->getSelectQuery(), $this->values);
+    }
+
+    function find(int|string $id): stdClass|null
+    {
+        $query = clone ($this);
+
+        foreach ($query->reset()->where('id', $id)->get() as $obj) {
+            return $obj;
+        }
+
+        return null;
     }
 
     function count(): int
     {
-        $this->db->execute($this->getCountQuery(), $this->values);
-        $this->reset();
-        return (int) $this->db->statement->fetchColumn();
+        return (int) $this->db->fetchColumn($this->getCountQuery(), $this->values);
+    }
+
+    function exists(): bool
+    {
+        return (bool) $this->count();
     }
 
     function pluck(string $column): array
     {
         $this->select = [$column];
+        $array = [];
+
+        foreach ($this->get() as $key => $row) {
+            $array[$key] = $row->{$column};
+        }
+
+        return $array;
+    }
+
+    function distinct(string $column): array
+    {
+        $this->select = ["DISTINCT {$column}"];
+        $this->order($column, 'ASC', true);
 
         $array = [];
 
@@ -269,15 +338,12 @@ class Query
             $array[$key] = $row->{$column};
         }
 
-        $this->reset();
-
         return $array;
     }
 
     function delete()
     {
         $result = $this->db->execute($this->getDeleteQuery(), $this->values);
-        $this->reset();
         return $result;
     }
 
@@ -290,8 +356,6 @@ class Query
         }
 
         $this->db->execute($this->getInsertQuery(), $this->values);
-
-        $this->reset();
 
         return $this->db->lastInsertId();
     }
@@ -306,8 +370,6 @@ class Query
         }
         $result = $this->db->execute($this->getUpsertQuery(), $this->values);
 
-        $this->reset();
-
         return $result;
     }
 
@@ -320,8 +382,6 @@ class Query
         }
 
         $result = $this->db->execute($this->getUpdateQuery(), $this->values);
-
-        $this->reset();
 
         return $result;
     }
@@ -436,10 +496,10 @@ class Query
         $sql = '';
 
         if ($this->limit) {
+            $sql .= " LIMIT {$this->limit} ";
+
             if ($this->offset) {
-                $sql .= " LIMIT {$this->offset}, {$this->limit} ";
-            } else {
-                $sql .= " LIMIT {$this->limit} ";
+                $sql .= " OFFSET {$this->offset} ";
             }
         }
 
@@ -518,7 +578,8 @@ class Query
 
     protected function getCountQuery(): string
     {
-        return "SELECT COUNT(*) FROM {$this->table}
+        return <<<EOL
+        SELECT COUNT(*) FROM {$this->table}
         {$this->getInnerJoinSql()}
         {$this->getLeftJoinSql()}
         {$this->getRightJoinSql()}
@@ -526,12 +587,15 @@ class Query
         {$this->getWhereSql()}
         {$this->getGroupSql()}
         {$this->getOrderSql()}
-        {$this->getLimitSql()};";
+        {$this->getLimitSql()};
+        EOL;
     }
 
     protected function getSelectQuery(): string
     {
-        return "SELECT {$this->getSelectSql()} FROM {$this->table}
+        return <<<EOL
+        SELECT {$this->getSelectSql()}
+        FROM {$this->table}
         {$this->getInnerJoinSql()}
         {$this->getLeftJoinSql()}
         {$this->getRightJoinSql()}
@@ -539,26 +603,42 @@ class Query
         {$this->getWhereSql()}
         {$this->getGroupSql()}
         {$this->getOrderSql()}
-        {$this->getLimitSql()};";
+        {$this->getLimitSql()};
+        EOL;
     }
 
     protected function getDeleteQuery(): string
     {
-        return "DELETE FROM {$this->table} {$this->getWhereSql()} {$this->getLimitSql()};";
+        return <<<EOL
+        DELETE FROM {$this->table}
+        {$this->getWhereSql()}
+        {$this->getLimitSql()};
+        EOL;
     }
 
     protected function getInsertQuery(): string
     {
-        return "INSERT INTO {$this->table} SET {$this->getInsertSql()};";
+        return <<<EOL
+        INSERT INTO {$this->table} SET {$this->getInsertSql()};
+        EOL;
     }
 
     protected function getUpsertQuery(): string
     {
-        return "INSERT INTO {$this->table} {$this->getUpsertSql()} {$this->getWhereSql()} {$this->getLimitSql()};";
+        return <<<EOL
+        INSERT INTO {$this->table}
+        {$this->getUpsertSql()}
+        {$this->getWhereSql()}
+        {$this->getLimitSql()};
+        EOL;
     }
 
     protected function getUpdateQuery(): string
     {
-        return "UPDATE {$this->table} SET {$this->getUpdateSql()} {$this->getWhereSql()} {$this->getLimitSql()};";
+        return <<<EOL
+        UPDATE {$this->table} SET {$this->getUpdateSql()}
+        {$this->getWhereSql()}
+        {$this->getLimitSql()};
+        EOL;
     }
 }

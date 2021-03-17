@@ -160,9 +160,17 @@ class Router
         $route = $this->validate($path);
 
         if (!$route) {
-            die((new Controller())->render('404'));
+            Response::response(
+                new Error(
+                    status: 404,
+                    message: App::$lang->get('error_bad_route')
+                )
+            );
         } else if (!$route->methodExists()) {
-            die((new Controller())->render('404'));
+            Response::response(new Error(
+                status: 404,
+                message: App::$lang->get('error_method_not_exists') . ": {$route->action}"
+            ));
         }
 
         $this->route = $route;

@@ -2,10 +2,8 @@
 
 namespace Atlantis;
 
-use Atlantis\Controllers\Controller;
 use ReflectionNamedType;
 use ReflectionProperty;
-use stdClass;
 
 class Request
 {
@@ -30,13 +28,13 @@ class Request
         $value = $this->{$key};
 
         if ($type === null) {
-            if ((int)$value === $value) {
+            if (is_int($value)) {
                 return 'int';
-            } else if ((string)$value === $value) {
+            } else if (is_string($value)) {
                 return 'string';
-            } else if ((array)$value === $value) {
+            } else if (is_array($value)) {
                 return 'array';
-            } else if ((object)$value === $value) {
+            } else if (is_object($value)) {
                 return 'object';
             } else {
                 return false;
@@ -54,10 +52,9 @@ class Request
             $variable = $this->{$key} ?? self::request($key) ?? null;
 
             if ($variable === null) {
-                App::$error = new Error(
-                    message: "Параметр {$key} не задан"
-                );
-                return false;
+                Response::response(new Error(
+                    message: App::$lang->get('error_attr_not_set') . ": $key"
+                ));
             }
 
             foreach (explode('|', $validation) as $isType) {
@@ -72,10 +69,10 @@ class Request
                 }
 
                 if (strtolower($type) != strtolower($isType)) {
-                    App::$error = new Error(
-                        message: "Тип данных {$key}: {$type} вместо {$isType}"
-                    );
-                    return false;
+                    Response::response(new Error(
+                        message: App::$lang->get('error_attr_type_mismatch')
+                            . ": [{$key}] '{$type}' != '{$isType}'"
+                    ));
                 }
             }
         }

@@ -48,4 +48,19 @@ final class Error
     {
         return $this->message;
     }
+
+    public function html(): string
+    {
+        return View::render('error', ['error' => $this]);
+    }
+
+    public function json()
+    {
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->html();
+    }
 }

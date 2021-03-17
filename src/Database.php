@@ -5,11 +5,11 @@ namespace Atlantis;
 use PDO;
 use PDOException;
 use PDOStatement;
+use stdClass;
 
 final class Database
 {
     public PDO $pdo;
-    public PDOStatement $statement;
     private string $type;
     private string $host;
     private string $name;
@@ -60,17 +60,54 @@ final class Database
                 $this->options
             );
         } catch (PDOException $e) {
-            die($e->getMessage());
+            echo $e->getMessage(), PHP_EOL;
+            exit;
         }
     }
 
     public function execute(string $sql, array $values = []): bool
     {
         try {
-            $this->statement = $this->pdo->prepare($sql);
-            return $this->statement->execute($values);
+            return $this->pdo->prepare($sql)->execute($values);
         } catch (PDOException $e) {
-            die($e->getMessage() . ". SQL: {$sql}");
+            echo $e->getMessage() . ". SQL: {$sql}", PHP_EOL;
+            exit;
+        }
+    }
+
+    public function fetchAll(string $sql, array $values = []): array
+    {
+        try {
+            $statement = $this->pdo->prepare($sql);
+            $statement->execute($values);
+            return $statement->fetchAll();
+        } catch (PDOException $e) {
+            echo $e->getMessage() . ". SQL: {$sql}", PHP_EOL;
+            exit;
+        }
+    }
+
+    public function fetch(string $sql, array $values = [])
+    {
+        try {
+            $statement = $this->pdo->prepare($sql);
+            $statement->execute($values);
+            return $statement->fetch();
+        } catch (PDOException $e) {
+            echo $e->getMessage() . ". SQL: {$sql}", PHP_EOL;
+            exit;
+        }
+    }
+
+    public function fetchColumn(string $sql, array $values = [], int $column_number = 0)
+    {
+        try {
+            $statement = $this->pdo->prepare($sql);
+            $statement->execute($values);
+            return $statement->fetchColumn($column_number);
+        } catch (PDOException $e) {
+            echo $e->getMessage() . ". SQL: {$sql}", PHP_EOL;
+            exit;
         }
     }
 

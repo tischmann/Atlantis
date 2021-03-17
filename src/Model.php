@@ -9,10 +9,18 @@ use stdClass;
 
 class Model
 {
+    public int $id;
+    public Query $query;
+    public Pagination $pagination;
     public static string $tableName = 'undefined';
 
     function __construct(array|stdClass|int $args = null)
     {
+        $this->query = new Query();
+        $this->query->table($this::$tableName)->order('id', 'desc');
+
+        $this->pagination = new Pagination();
+
         if (!$args) {
             return $this;
         }
@@ -46,7 +54,7 @@ class Model
 
     function getPropertyType(string $property): string
     {
-        if (!property_exists($this, $property)) {
+        if (!property_exists(get_class($this), $property)) {
             return 'default';
         }
 
@@ -62,7 +70,7 @@ class Model
         return $propertyType->getName();
     }
 
-    public function init($args)
+    public function init(array|stdClass $args)
     {
         foreach ($args as $prop => $value) {
             switch ($this->getPropertyType($prop)) {
@@ -110,6 +118,11 @@ class Model
         }
 
         return $this;
+    }
+
+    public function render(): string
+    {
+        return '';
     }
 
     public static function __callStatic($name, $arguments)
