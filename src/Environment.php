@@ -4,17 +4,12 @@ namespace Atlantis;
 
 final class Environment
 {
-    public string $path;
-
-    public function __construct(string $dir, string $file = '.env')
+    public static function load(string $dir, string $file = '.env')
     {
-        $this->path = rtrim($dir, DIRECTORY_SEPARATOR) . '/' . trim($file);
-    }
+        $path = rtrim($dir, DIRECTORY_SEPARATOR) . '/' . trim($file);
 
-    public function load()
-    {
-        if (file_exists($this->path)) {
-            $lines = file($this->path, FILE_SKIP_EMPTY_LINES);
+        if (file_exists($path)) {
+            $lines = file($path, FILE_SKIP_EMPTY_LINES);
 
             foreach ($lines as $line) {
                 $line = trim($line);

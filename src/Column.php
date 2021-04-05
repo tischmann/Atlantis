@@ -30,6 +30,7 @@ class Column
     public int|string|float|null $update = null;
     public array $foreign = [];
     public string $comment = '';
+    public string $mask = '';
 
     public function __construct(
         string $column,
@@ -56,6 +57,7 @@ class Column
         int|string|float|null $update = null,
         array $foreign = [],
         string $comment = '',
+        string $mask = '',
     ) {
         $this->column = $column;
         $this->value = $value;
@@ -81,6 +83,7 @@ class Column
         $this->update = $update;
         $this->foreign = $foreign;
         $this->comment = $comment;
+        $this->mask = $mask;
 
         if ($this->type == 'int' && $length == 255) {
             $this->length = 12;
@@ -90,16 +93,18 @@ class Column
     public function volatable(): array
     {
         return [
+            'column' => $this->column,
             'name' => $this->name,
             'title' => $this->title,
             'width' => $this->width,
             'sort' => $this->sort,
             'dir' => $this->dir,
-            'edit' => $this->edit,
-            'resize' => $this->resize,
+            'edit' => $this->edit ? 1 : 0,
+            'resize' => $this->resize ? 1 : 0,
             'regex' => $this->regex,
-            'search' => $this->search,
-            'filter' => $this->filter,
+            'search' => $this->search ? 1 : 0,
+            'filter' => $this->filter ? 1 : 0,
+            'mask' => $this->mask,
         ];
     }
 

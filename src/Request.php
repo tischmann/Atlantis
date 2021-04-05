@@ -28,8 +28,12 @@ class Request
         $value = $this->{$key};
 
         if ($type === null) {
-            if (is_int($value)) {
+            if (is_int($value) || $value == (int) $value) {
                 return 'int';
+            } else if (is_bool($value)) {
+                return 'bool';
+            } else if (is_float($value) || $value == (float) $value) {
+                return 'float';
             } else if (is_string($value)) {
                 return 'string';
             } else if (is_array($value)) {
@@ -53,7 +57,7 @@ class Request
 
             if ($variable === null) {
                 Response::response(new Error(
-                    message: App::$lang->get('error_attr_not_set') . ": $key"
+                    message: lang('error_attr_not_set') . ": $key"
                 ));
             }
 
@@ -70,7 +74,7 @@ class Request
 
                 if (strtolower($type) != strtolower($isType)) {
                     Response::response(new Error(
-                        message: App::$lang->get('error_attr_type_mismatch')
+                        message: lang('error_attr_type_mismatch')
                             . ": [{$key}] '{$type}' != '{$isType}'"
                     ));
                 }

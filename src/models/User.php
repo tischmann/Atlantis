@@ -2,8 +2,7 @@
 
 namespace Atlantis\Models;
 
-use Atlantis\{App, Column, Error, Response, Volatable, Template};
-use stdClass;
+use Atlantis\{Column, Volatable};
 
 class User extends Volatable
 {
@@ -46,38 +45,45 @@ class User extends Volatable
             ),
             'login' => new Column(
                 column: 'login',
-                width: 100,
-                name: App::$lang->get('users_login'),
-                title: App::$lang->get('users_login'),
+                width: 300,
+                name: lang('users_login'),
+                title: lang('users_login'),
                 sort: 'text',
             ),
             'role' => new Column(
                 column: 'role',
                 width: 135,
-                name: App::$lang->get('users_role'),
-                title: App::$lang->get('users_role'),
+                name: lang('users_role'),
+                title: lang('users_role'),
                 sort: 'text',
                 resize: false,
             ),
             'name' => new Column(
                 column: 'name',
-                width: 150,
-                name: App::$lang->get('users_name'),
-                title: App::$lang->get('users_name'),
+                width: 300,
+                name: lang('users_name'),
+                title: lang('users_name'),
                 sort: 'text',
             ),
             'email' => new Column(
                 column: 'email',
                 width: 250,
-                name: App::$lang->get('users_email'),
-                title: App::$lang->get('users_email'),
+                name: lang('users_email'),
+                title: lang('users_email'),
+                sort: 'text',
+            ),
+            'remarks' => new Column(
+                column: 'remarks',
+                width: 300,
+                name: lang('users_remarks'),
+                title: lang('users_remarks'),
                 sort: 'text',
             ),
             'status' => new Column(
                 column: 'status',
                 width: 79,
-                name: App::$lang->get('users_status'),
-                title: App::$lang->get('users_status'),
+                name: lang('users_status'),
+                title: lang('users_status'),
                 sort: 'text',
                 resize: false,
             )
@@ -90,8 +96,8 @@ class User extends Volatable
             'remarks' => new Column(
                 column: 'remarks',
                 width: 250,
-                name: App::$lang->get('users_remarks'),
-                title: App::$lang->get('users_remarks'),
+                name: lang('users_remarks'),
+                title: lang('users_remarks'),
                 sort: 'text',
             ),
         ];
@@ -116,11 +122,27 @@ class User extends Volatable
                     return '';
                 }
 
-                return App::$lang->get('users_role_' . $this->role);
+                return lang('users_role_' . $this->role);
             case 'status':
-                return App::$lang->get('users_status_' . $this->status);
+                return lang('users_status_' . $this->status);
             default:
                 return parent::getTableColumnValue($column);
+        }
+    }
+
+    function getTableColumnTitle(Column $column): string|null
+    {
+        switch ($column) {
+            case 'role':
+                if ($this->role === null) {
+                    return '';
+                }
+
+                return lang('users_role_' . $this->role);
+            case 'status':
+                return lang('users_status_' . $this->status);
+            default:
+                return parent::getTableColumnTitle($column);
         }
     }
 
@@ -139,10 +161,11 @@ class User extends Volatable
     {
         switch ($column->column) {
             case 'role':
+            case 'status':
                 return 'select';
+            default:
+                return 'input';
         }
-
-        return 'input';
     }
 
     function getCellOptions(Column $column): array
@@ -150,8 +173,14 @@ class User extends Volatable
         switch ($column->column) {
             case 'role':
                 return [
-                    1 => App::$lang->get('user_role_1'),
-                    2 => App::$lang->get('user_role_2')
+                    0 => lang('users_role_0'),
+                    1 => lang('users_role_1'),
+                    2 => lang('users_role_2')
+                ];
+            case 'status':
+                return [
+                    0 => lang('users_status_0'),
+                    1 => lang('users_status_1')
                 ];
             default:
                 return [];

@@ -18,8 +18,6 @@ final class Template
     const REGEX_INCLUDE = '/\[include=([a-z0-9_\-\/]+)\]/i';
     const REGEX_SECTION = '/\[(section)=([a-z0-9_-]+)\]((?>(?R)|.)*?)\[\/\1\]/is';
     const REGEX_YIELD = '/\[yield=([a-z0-9_\-\/]+)\]/i';
-    const REGEX_HOME =  '/\[(home)\]((?>(?R)|.)*?)\[\/\1\]/is';
-    const REGEX_LOADER = '/(\[loader\])/i';
     const REGEX_CSRF = '/(\[csrf\])/i';
     const REGEX_CSRF_TOKEN = '/(\[csrf-token\])/i';
     const REGEX_NOT_AUTH = '/\[(!auth)\]((?>(?R)|.)*?)\[\/\1\]/is';
@@ -33,6 +31,7 @@ final class Template
     const REGEX_ENV = '/\[env=([A-Z0-9_\-]+)\]/';
     const REGEX_LOAD = '/\[load=(.+)\]/';
     const REGEX_UNIQID = '/(\[uniqid\])/i';
+    const REGEX_NONCE = '/(\[nonce\])/i';
     const REGEX_FOREACH = '/\[(foreach)\((\$[a-z0-9_-]+)\s*as\s*(\$[a-z0-9_-]+)\s*\)]((?>(?R)|.)*?)\[\/\1\]/is';
     const REGEX_IF = '/\[(if)\s*((?>(?R)|.)*?)\]((?>(?R)|.)*?)\[\/\1\]/is';
     const REGEX_IF_CONDITION = '/(!{0,2})\$((?>(?R)|.)*?)\s*$|\s+(\!\={1,2}|\={1,3}|\>|\<|\>\=|\<\=|\<\>)\s+(\S+)/i';
@@ -50,8 +49,6 @@ final class Template
     {
         $this->parseLayout()
             ->parseChilds()
-            ->parseHome()
-            ->parseLoader()
             ->parseNotAuth()
             ->parseNotAdmin()
             ->parseAuth()
@@ -63,6 +60,7 @@ final class Template
             ->parseTitle()
             ->parseDate()
             ->parseUniqid()
+            ->parseNonce()
             ->parseCSRF()
             ->parseEnv()
             ->parseLoad();
@@ -80,7 +78,7 @@ final class Template
 
         if (!file_exists($path)) {
             Response::response(new Error(
-                message: App::$lang->get('error_view_not_found') . ": $view",
+                message: lang('error_view_not_found') . ": $view",
                 type: 'warning'
             ));
         }
@@ -177,29 +175,6 @@ final class Template
         return true;
     }
 
-    protected function parseHome()
-    {
-        if (preg_match_all(self::REGEX_HOME, $this->content, $matches)) {
-            foreach ($matches[0] as $key => $tag) {
-                $val = App::$router->isHome() ? $matches[2][$key] : '';
-                $this->content = str_replace($tag, $val, $this->content);
-            }
-        }
-
-        return $this;
-    }
-
-    protected function parseLoader()
-    {
-        $this->content = preg_replace(
-            self::REGEX_LOADER,
-            View::render('loader', $this->args),
-            $this->content
-        );
-
-        return $this;
-    }
-
     protected function parseNotAuth()
     {
         if (preg_match_all(self::REGEX_NOT_AUTH, $this->content, $matches)) {
@@ -266,7 +241,7 @@ final class Template
             foreach ($matches[1] as $key => $val) {
                 $this->content = str_replace(
                     $matches[0][$key],
-                    App::$lang->get($val),
+                    lang($val),
                     $this->content
                 );
             }
@@ -305,7 +280,7 @@ final class Template
                     if ((string) $value != $value) {
                         Response::response(new Error(
                             status: 500,
-                            message: App::$lang->get('error_bad_template_variable')
+                            message: lang('error_bad_template_variable1')
                         ));
                     }
 
@@ -359,7 +334,7 @@ final class Template
         if ((string) $variable != $variable) {
             Response::response(new Error(
                 status: 500,
-                message: App::$lang->get('error_bad_template_variable')
+                message: lang('error_bad_template_variable2')
             ));
         }
 
@@ -480,7 +455,7 @@ final class Template
                 if (!array_key_exists($iterableName, $this->args)) {
                     Response::response(new Error(
                         status: 500,
-                        message: App::$lang->get('error_bad_template_variable')
+                        message: lang('error_bad_template_variable3')
                             . ": {$iterableName}"
                     ));
                 }
@@ -520,7 +495,7 @@ final class Template
             foreach ($matches[1] as $key => $val) {
                 $this->content = str_replace(
                     $matches[0][$key],
-                    date($val),
+                    strftime($val),
                     $this->content
                 );
             }
@@ -587,6 +562,21 @@ final class Template
                 $this->content = str_replace(
                     $matches[0][$key],
                     $this->uniqid,
+                    $this->content
+                );
+            }
+        }
+
+        return $this;
+    }
+
+    protected function parseNonce()
+    {
+        if (preg_match_all(self::REGEX_NONCE, $this->content, $matches)) {
+            foreach ($matches[1] as $key => $val) {
+                $this->content = str_replace(
+                    $matches[0][$key],
+                    Session::get('SCRIPT_NONCE'),
                     $this->content
                 );
             }

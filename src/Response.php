@@ -11,10 +11,24 @@ class Response
         $this->response = $response;
     }
 
+    public function headers()
+    {
+        header("Cache-Control: max-age=31536000");
+        header("X-XSS-Protection: 1; mode=block");
+        header("Content-Security-Policy: default-src 'self'; "
+            . "img-src 'self' data:; child-src 'none'; "
+            . "script-src 'self' 'nonce-" . Session::get('SCRIPT_NONCE') . "'; "
+            . "style-src 'self';");
+        header("Strict-Transport-Security: max-age=31536000; preload");
+        header("Cross-Origin-Resource-Policy: same-origin");
+        header("Cross-Origin-Opener-Policy: same-origin");
+        header("Cross-Origin-Opener-Policy: same-origin");
+    }
+
     public function json($response = null)
     {
         header("Content-Type: application/json; charset=UTF-8");
-        header("Cache-Control: max-age=31536000");
+        $this->headers();
 
         if ($response instanceof Error) {
             if ($response->status) {
@@ -28,7 +42,7 @@ class Response
     public function html($response = null)
     {
         header("Content-Type: text/html; charset=UTF-8");
-        header("Cache-Control: max-age=31536000");
+        $this->headers();
 
         if ($response instanceof Error) {
             if ($response->status) {

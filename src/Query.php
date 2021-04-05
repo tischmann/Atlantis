@@ -27,11 +27,11 @@ class Query
 
     function __construct(Database $db = null)
     {
-        if ($db) {
-            $this->db = $db;
-        } else if (App::$db ?? null) {
-            $this->db = App::$db;
-        }
+        $this->db = $db ?: new Database(
+            name: getenv('DB_NAME') ?: '',
+            user: getenv('DB_USER') ?: '',
+            pass: getenv('DB_PASS') ?: '',
+        );
     }
 
     public function init(array $args)
@@ -223,7 +223,7 @@ class Query
                 break;
         }
 
-        $prepared = ':' . md5($column);
+        $prepared = $value !== null ? ':' . md5($column) : 'NULL';
 
         $this->where[] = (object) [
             'column' => $column,
@@ -231,14 +231,26 @@ class Query
             'sign' => $sign
         ];
 
-        $this->values[$prepared] = $value;
+        if ($value !== null) {
+            $this->values[$prepared] = $value;
+        }
 
         return $this;
     }
 
-    function orWhere(string $column, string $sign, $value)
+    function orWhere(...$args)
     {
-        $prepared = ':' . md5($column);
+        switch (count($args)) {
+            case 2:
+                $sign = '=';
+                list($column, $value) = $args;
+                break;
+            case 3:
+                list($column, $sign, $value) = $args;
+                break;
+        }
+
+        $prepared = $value !== null ? ':' . md5($column) : 'NULL';
 
         $this->orWhere[] = (object) [
             'column' => $column,
@@ -246,7 +258,9 @@ class Query
             'sign' => $sign
         ];
 
-        $this->values[$prepared] = $value;
+        if ($value !== null) {
+            $this->values[$prepared] = $value;
+        }
 
         return $this;
     }

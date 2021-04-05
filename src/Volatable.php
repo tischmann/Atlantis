@@ -10,8 +10,24 @@ class Volatable extends Model
 {
     public stdClass $row;
     public array $layoutConfig = [];
-    public static bool $pagerEnabled = true;
-    public static bool $quickFilterEnabled = true;
+    public bool $pagerEnabled = true;
+    public bool $quickFilterEnabled = true;
+
+    function __construct(array|stdClass|int $args = null)
+    {
+        parent::__construct($args);
+
+        if ($this->pagerEnabled && $this->quickFilterEnabled) {
+            foreach ($this->getQuickFilter() as $filter) {
+                if ($filter->default) {
+                    $this->query = $filter->query;
+                    break;
+                }
+            }
+        }
+
+        return $this;
+    }
 
     public function getTableStructure(): array
     {
@@ -24,21 +40,32 @@ class Volatable extends Model
     {
         return [
             'total' => new QuickFilter(
-                label: App::$lang->get('total'),
-                title: App::$lang->get('total_title'),
-                query: clone $this->query
+                label: lang('total'),
+                title: lang('total_title'),
+                query: clone $this->getDefaultQuery()
             ),
         ];
     }
 
     public function getFilterItems(string $column): array
     {
+        $column = $this->getTableStructure()[$column];
+        $values = [];
+
+        foreach ($this->query->limit(0)->offset(0)->distinct($column->column) as $value) {
+            $clone = clone $this;
+            $clone->init([$column->column => $value]);
+
+            $values[] = [
+                'v' => $clone->getTableFilterValue($column),
+                't' => $clone->getTableFilterTitle($column),
+            ];
+        }
+
         return [
             'status' => 1,
             'items' => [
-                $column => $this->query->limit(0)
-                    ->offset(0)
-                    ->distinct($column),
+                $column->column => $values,
             ],
         ];
     }
@@ -53,8 +80,8 @@ class Volatable extends Model
     {
         $header = $this->getTableColumns();
 
-        foreach ($header as $key => $column) {
-            $header[$key] = $column->volatable();
+        foreach ($header as $index => $column) {
+            $header[$index] = $column->volatable();
         }
 
         return $header;
@@ -64,25 +91,45 @@ class Volatable extends Model
     {
         $columns = $this->getTableStructure();
 
-        foreach ($this->layoutConfig as $column => $config) {
-            if (!Auth::canSelect($this::$tableName, $column)) {
-                continue;
-            }
+        $array = [];
 
-            if (!array_key_exists($column, $columns)) {
-                continue;
+        if (!$this->layoutConfig) {
+            foreach ($columns as $column) {
+                $array[] = $column;
             }
+        } else {
+            foreach ($this->layoutConfig as $column => $config) {
+                if (!array_key_exists($column, $columns)) {
+                    continue;
+                }
 
-            if (array_key_exists('width', $config)) {
-                $columns[$column]->width = $config['width'];
-            }
+                if (!Auth::canSelect($this::$tableName, $column)) {
+                    continue;
+                }
 
-            if (array_key_exists('dir', $config)) {
-                $columns[$column]->dir = $config['dir'];
+                $value = $columns[$column];
+
+                if (array_key_exists('width', $config)) {
+                    $value->width = $config['width'];
+                }
+
+                if (array_key_exists('dir', $config)) {
+                    $value->dir = $config['dir'];
+                }
+
+                $array[] = $value;
             }
         }
 
-        return $columns;
+        foreach ($array as $index => $column) {
+            if ($column->column == 'id') {
+                $array[$index]->edit = false;
+            } else if (Auth::canUpdate($this::$tableName, $column->column)) {
+                $array[$index]->edit = true;
+            }
+        }
+
+        return $array;
     }
 
     public function getTableColumn($column): array
@@ -137,14 +184,24 @@ class Volatable extends Model
         return null;
     }
 
+    public function getTableFilterValue(Column $column): string
+    {
+        return $this->getTableColumnValue($column);
+    }
+
+    public function getTableFilterTitle(Column $column): string|null
+    {
+        return $this->getTableColumnTitle($column);
+    }
+
     public function getTableRows(): array
     {
         $rows = [];
         $layout = $this->getTableColumns();
 
         foreach ($this->query->get() as $row) {
-            $model = clone ($this);
-            $model->__construct($row);
+            $model = get_class($this);
+            $model = new $model($row);
 
             $columns = [];
 
@@ -167,7 +224,7 @@ class Volatable extends Model
     {
         $data = [
             'status' => 1,
-            'message' => App::$lang->get('success'),
+            'message' => lang('success'),
             'tbody' => $this->getTableRows()
         ];
 
@@ -175,7 +232,7 @@ class Volatable extends Model
             $data['pager'] = $this->pagination->total($this->getTotal());
         }
 
-        if (self::$quickFilterEnabled) {
+        if ($this->quickFilterEnabled) {
             $data['qfilter'] = [];
 
             foreach ($this->getQuickFilter() as $key => $qfilter) {
@@ -205,8 +262,8 @@ class Volatable extends Model
         return (object) [
             'deleterow' => (object) [
                 'data' => ['id' => $data->id],
-                'title' => App::$lang->get('table_delete_row'),
-                'text' => App::$lang->get('delete'),
+                'title' => lang('table_delete_row'),
+                'text' => lang('delete'),
                 'icon' => null,
             ],
         ];
@@ -232,8 +289,8 @@ class Volatable extends Model
     {
         if (!Auth::canDelete($this::$tableName)) {
             Response::response(new Error(
-                title: App::$lang->get('warning'),
-                message: App::$lang->get('access_denied'),
+                title: lang('warning'),
+                message: lang('access_denied'),
                 type: 'warning'
             ));
         }
@@ -247,14 +304,17 @@ class Volatable extends Model
     {
         if (!Auth::canUpdate($this::$tableName, $column->column)) {
             Response::response(new Error(
-                title: App::$lang->get('warning'),
-                message: App::$lang->get('access_denied'),
+                title: lang('warning'),
+                message: lang('access_denied'),
                 type: 'warning'
             ));
         }
 
         $this::where('id', '=', $this->id)
             ->update([$column->column => $column->value]);
+
+        $this->__construct($this->id);
+
         return $column;
     }
 
@@ -270,16 +330,28 @@ class Volatable extends Model
 
     function getCellInput(Column $column): stdClass
     {
-        if (!Auth::canUpdate($this::$tableName, $column->column)) {
+        $columnName = $column->column;
+
+        if (!Auth::canUpdate($this::$tableName, $columnName)) {
             Response::response(new Error(
-                title: App::$lang->get('warning'),
-                message: App::$lang->get('access_denied'),
+                title: lang('warning'),
+                message: lang('access_denied'),
                 type: 'warning'
             ));
         }
 
-        $raw = $this->{$column} ?? null;
-        $column = $this->getTableStructure()[$column];
+        $raw = $this->{$columnName} ?? null;
+        $columns = $this->getTableStructure();
+        $column = $columns[$columnName] ?? null;
+
+        if (!$column || $raw === null) {
+            Response::response(new Error(
+                title: lang('warning'),
+                message: lang('column_not_exists') . ": {$columnName}",
+                type: 'warning'
+            ));
+        }
+
         $column->value = $this->getTableColumnValue($column);
 
         $data = (object) [
@@ -305,16 +377,29 @@ class Volatable extends Model
     {
         if (!Auth::canSelect($this::$tableName)) {
             Response::response(new Error(
-                message: App::$lang->get('access_denied')
+                message: lang('access_denied')
             ));
         }
 
         $route = $route ?? "/volatable/{$this::$tableName}";
-        $pager = (int)($pager ?? $this::$pagerEnabled);
+        $pager = (int)($pager ?? $this->pagerEnabled);
 
         return View::render('volatable/table', [
             'route' => $route,
-            'pager' => $pager
+            'pager' => $pager,
         ]);
+    }
+
+    public function getTableRowSync(Column $column): array
+    {
+        return [
+            'row' => [
+                'css' => $this->getTableRowStyle(),
+            ],
+            'column' => [
+                'css' => $this->getTableColumnStyle($column),
+                'title' => $this->getTableColumnTitle($column),
+            ]
+        ];
     }
 }

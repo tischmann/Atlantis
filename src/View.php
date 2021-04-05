@@ -17,7 +17,7 @@ class View
         } else {
             Response::response(new Error(
                 status: 401,
-                message: App::$lang->get('error_view_not_found') . ": $view",
+                message: lang('error_view_not_found') . ": $view",
                 type: 'warning'
             ));
         }

@@ -16,9 +16,7 @@ class Model
 
     function __construct(array|stdClass|int $args = null)
     {
-        $this->query = new Query();
-        $this->query->table($this::$tableName)->order('id', 'desc');
-
+        $this->query = $this->getDefaultQuery();
         $this->pagination = new Pagination();
 
         if (!$args) {
@@ -32,6 +30,12 @@ class Model
         if (is_array($args) || is_object($args)) {
             $this->init($args);
         }
+    }
+
+    public function getDefaultQuery(): Query
+    {
+        return (new Query())->table($this::$tableName)
+            ->order('id', 'desc');
     }
 
     public function getClassName(): string
@@ -90,7 +94,9 @@ class Model
                     $this->{$prop} = (string) $value;
                     break;
                 case 'DateTime':
-                    $this->{$prop} = new DateTime($value ?? 'now');
+                    if (strtotime($value) > 0) {
+                        $this->{$prop} = new DateTime($value);
+                    }
                     break;
                 case 'stdClass':
                     $this->{$prop} = json_decode($value) ?? (object) [];

@@ -2,12 +2,11 @@
 
 namespace Atlantis;
 
-use Atlantis\Models\{User, Layout as ModelsLayout};
+use Atlantis\Models\{User, Layout};
 
-class Layout
+class Windows
 {
-    public int $id = 0;
-    public array $layout = [];
+    public Layout $layout;
     public array $windows = [];
     public array $resizers = [];
     static array $config = [
@@ -53,33 +52,40 @@ class Layout
         ]
     ];
 
-    function __construct(int $id = 0, array $layout = [])
+    function __construct(Layout $layout = null)
     {
-        $this->id = $id;
-        $this->layout = $layout;
+        if ($layout) {
+            $this->layout = $layout;
+        }
 
-        foreach ($this->layout as $type => $class) {
-            $this->windows[] = new Window($type, new $class());
+        foreach ($this->layout->layout as $type => $class) {
+            $this->windows[] = (object) [
+                'type' => $type,
+                'model' =>  new $class()
+            ];
         }
 
         foreach ($this->getResizers() as $type) {
-            $this->resizers[] = new WindowResizer($type, $this->getAxis($type));
+            $this->resizers[] = (object) [
+                'type' => $type,
+                'axis' => self::getAxis($type)
+            ];
         }
     }
 
-    public function available(): array
+    public static function available(): array
     {
         if (Auth::isAdmin()) {
-            $layouts = ModelsLayout::get();
+            $layouts = Layout::get();
         } else {
-            $layouts = ModelsLayout::whereIn(
+            $layouts = Layout::whereIn(
                 'id',
                 array_keys(User::current()->layouts)
             )->get();
         }
 
         foreach ($layouts as $key => $layout) {
-            $layouts[$key] = new ModelsLayout($layout);
+            $layouts[$key] = new Layout($layout);
         }
 
         return $layouts;
@@ -87,7 +93,7 @@ class Layout
 
     private function getType()
     {
-        $layout = array_keys($this->layout);
+        $layout = array_keys($this->layout->layout);
         $windows = array_column(static::$config, 'windows');
 
         foreach ($windows as $index => $values) {
@@ -99,7 +105,7 @@ class Layout
         return $index;
     }
 
-    private function getAxis(string $type): string
+    private static function getAxis(string $type): string
     {
         switch ($type) {
             case 'tb':

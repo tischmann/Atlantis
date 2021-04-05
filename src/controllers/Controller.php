@@ -2,7 +2,7 @@
 
 namespace Atlantis\Controllers;
 
-use Atlantis\{App, CSRF, Response, View};
+use Atlantis\{CSRF, Response, View};
 
 class Controller
 {

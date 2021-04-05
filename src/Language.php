@@ -9,23 +9,29 @@ final class Language
 
     public function __construct(string $code = 'ru')
     {
-        $this->change($code);
+        $this->code = $code;
+        $this->load();
+    }
+
+    public function load()
+    {
+        $this->strings = [];
+
+        foreach (glob("../lang/{$this->code}/*.php") as $path) {
+            $array = include $path;
+
+            if (is_array($array)) {
+                $this->strings = array_merge($array, $this->strings);
+            }
+        }
+
+        return $this;
     }
 
     public function change(string $code)
     {
         $this->code = $code;
-        $this->strings = [];
-
-        foreach (glob("../lang/{$this->code}/*.php") as $path) {
-            $strings = include $path;
-
-            if (!is_array($strings)) continue;
-
-            $this->strings = array_merge($strings, $this->strings);
-        }
-
-        return $this;
+        return $this->load();
     }
 
     public function get(string $key): string

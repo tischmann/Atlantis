@@ -2,7 +2,7 @@
 
 namespace Atlantis\Controllers;
 
-use Atlantis\{App, Column, Error, Request, Response, Volatable};
+use Atlantis\{Column, Error, Request, Response, Volatable};
 use Atlantis\Controllers\{Controller};
 use Atlantis\Models\{User};
 use Exception;
@@ -31,6 +31,27 @@ class VolatableController extends Controller
         $order = $request->order ?? [];
         $search = $request->search ?? [];
         $filter = $request->filter ?? [];
+        $qfilter = $request->qfilter ?? null;
+
+        if ($search) {
+            foreach ($search as $column => $value) {
+                $this->model->query->where($column, 'LIKE', "%{$value}%");
+            }
+        } else if ($filter) {
+            foreach ($filter as $column => $values) {
+                $this->model->query->whereIn($column, $values);
+            }
+        } else if ($qfilter) {
+            $this->model->query = $this->model->getQuickFilter()[$qfilter]->query;
+        }
+
+        if ($order) {
+            $this->model->query->order(
+                array_keys($order)[0],
+                array_values($order)[0],
+                true
+            );
+        }
 
         if ($page && $limit) {
             $this->model->pagination->__construct(
@@ -43,41 +64,22 @@ class VolatableController extends Controller
                 ->offset($this->model->pagination->offset);
         }
 
-        if ($order) {
-            $this->model->query->order(
-                array_keys($order)[0],
-                array_values($order)[0],
-                true
-            );
-        }
-
-        if ($search) {
-            $this->model->pagination->page(1);
-            $this->model->query->limit($this->model->pagination->limit)
-                ->offset($this->model->pagination->offset);
-
-            foreach ($search as $column => $value) {
-                $this->model->query->where($column, 'LIKE', "%{$value}%");
-            }
-        } else if ($filter) {
-            $this->model->pagination->page(1);
-            $this->model->query->limit($this->model->pagination->limit)
-                ->offset($this->model->pagination->offset);
-
-            foreach ($filter as $column => $values) {
-                $this->model->query->whereIn($column, $values);
-            }
-        }
-
         try {
             return $this->$action();
         } catch (Exception $ex) {
             Response::response(new Error(
-                title: App::$lang->get('warning'),
+                title: lang('warning'),
                 message: $ex->getMessage(),
                 type: 'danger'
             ));
         }
+    }
+
+    protected function resetPagination()
+    {
+        $this->model->pagination->page(1);
+        $this->model->query->limit($this->model->pagination->limit)
+            ->offset($this->model->pagination->offset);
     }
 
     protected function getModel()
@@ -96,7 +98,7 @@ class VolatableController extends Controller
         $request = new Request();
         $request->validate([
             'columns' => 'array',
-            'layout' => 'string',
+            'layout' => 'int',
             'window' => 'string'
         ]);
 
@@ -108,7 +110,7 @@ class VolatableController extends Controller
 
         return $this->getResponse([
             'status' => 1,
-            'message' => App::$lang->get('success')
+            'message' => lang('success')
         ]);
     }
 
@@ -134,7 +136,7 @@ class VolatableController extends Controller
     {
         return $this->getResponse([
             'status' => 1,
-            'message' => App::$lang->get('success'),
+            'message' => lang('success'),
             'content' => $this->model->getAddRowForm()
         ]);
     }
@@ -147,7 +149,7 @@ class VolatableController extends Controller
 
         return $this->getResponse([
             'status' => 1,
-            'message' => App::$lang->get('success')
+            'message' => lang('success')
         ]);
     }
 
@@ -157,7 +159,7 @@ class VolatableController extends Controller
 
         return $this->getResponse([
             'status' => 1,
-            'message' => App::$lang->get('success'),
+            'message' => lang('success'),
             'buttons' => $this->model->getRowActions($request),
         ]);
     }
@@ -172,17 +174,17 @@ class VolatableController extends Controller
 
         return $this->getResponse([
             'status' => 1,
-            'message' => App::$lang->get('success')
+            'message' => lang('success')
         ]);
     }
 
-    protected function cell(): string
+    protected function getCell(): string
     {
         $request = new Request();
 
         $request->validate(['id' => 'int', 'column' => 'string']);
 
-        $this->model->init($request->id);
+        $this->model->__construct($request->id);
 
         $column = new Column($request->column);
 
@@ -190,7 +192,7 @@ class VolatableController extends Controller
 
         $response = (object) [
             'status' => 1,
-            'message' => App::$lang->get('success'),
+            'message' => lang('success'),
             'type' => $input->type,
             'data' => $input->data,
             'value' => $input->value
@@ -210,7 +212,7 @@ class VolatableController extends Controller
         $request->validate([
             'id' => 'int',
             'column' => 'string',
-            'value' => 'string'
+            'value' => ''
         ]);
 
         $column = new Column(
@@ -218,12 +220,15 @@ class VolatableController extends Controller
             value: $request->value
         );
 
-        $column = $this->model->init($request->id)->updateColumn($column);
+        $this->model->__construct($request->id);
+
+        $column = $this->model->updateColumn($column);
 
         return $this->getResponse([
             'status' => 1,
-            'message' => App::$lang->get('success'),
-            'value' => $this->model->getTableColumnValue($column)
+            'message' => lang('success'),
+            'value' => $this->model->getTableColumnValue($column),
+            'sync' => $this->model->getTableRowSync($column)
         ]);
     }
 }
