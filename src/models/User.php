@@ -3,6 +3,7 @@
 namespace Atlantis\Models;
 
 use Atlantis\{Column, Volatable};
+use stdClass;
 
 class User extends Volatable
 {
@@ -190,7 +191,7 @@ class User extends Volatable
     public function setLayoutState(
         string $layout,
         string $window,
-        array $state = []
+        stdClass $state
     ): bool {
         if (!$layout) {
             return true;

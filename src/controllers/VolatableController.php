@@ -97,7 +97,7 @@ class VolatableController extends Controller
     {
         $request = new Request();
         $request->validate([
-            'columns' => 'array',
+            'columns' => 'object',
             'layout' => 'int',
             'window' => 'string'
         ]);
