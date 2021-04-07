@@ -28,18 +28,18 @@ class Request
         $value = $this->{$key};
 
         if ($type === null) {
-            if (is_int($value) || $value == (int) $value) {
-                return 'int';
+            if (is_string($value)) {
+                return 'string';
+            } else if (is_object($value)) {
+                return 'object';
+            } else if (is_array($value)) {
+                return 'array';
             } else if (is_bool($value)) {
                 return 'bool';
             } else if (is_float($value) || $value == (float) $value) {
                 return 'float';
-            } else if (is_string($value)) {
-                return 'string';
-            } else if (is_array($value)) {
-                return 'array';
-            } else if (is_object($value)) {
-                return 'object';
+            } else if (is_int($value) || $value == (int) $value) {
+                return 'int';
             } else {
                 return false;
             }
