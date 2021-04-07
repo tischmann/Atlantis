@@ -36,9 +36,9 @@ class Request
                 return 'array';
             } else if (is_bool($value)) {
                 return 'bool';
-            } else if (is_float($value) || $value == (float) $value) {
+            } else if (is_float($value)) {
                 return 'float';
-            } else if (is_int($value) || $value == (int) $value) {
+            } else if (is_int($value)) {
                 return 'int';
             } else {
                 return false;
