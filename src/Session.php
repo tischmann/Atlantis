@@ -40,20 +40,18 @@ final class Session
         Session::cookie('PHPSESSID', session_id());
     }
 
-    public static function cookie(string $key, $value)
+    public static function cookie(string $key, $value, array $options = [])
     {
-        setcookie(
-            $key,
-            $value,
-            [
-                'expires' => time() + 60 * 60 * 24 * 14,
-                'path' => '/',
-                'domain' => $_SERVER['HTTP_HOST'],
-                'secure' => true,
-                'httponly' => true,
-                'samesite' => 'Strict',
-            ]
-        );
+        $options = $options ?: [
+            'expires' => time() + 60 * 60 * 24 * 14,
+            'path' => '/',
+            'domain' => $_SERVER['HTTP_HOST'],
+            'secure' => true,
+            'httponly' => true,
+            'samesite' => 'Strict',
+        ];
+
+        setcookie($key, $value, $options);
     }
 
     public static function set(string $key, $value)

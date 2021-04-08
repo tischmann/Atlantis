@@ -32,7 +32,14 @@ class Router
         $lang = strtolower(static::$parsedRoute[0] ?? null);
 
         if (in_array($lang, Language::available())) {
-            Session::cookie('language', $lang);
+            Session::cookie('language', $lang,  [
+                'expires' => time() + 60 * 60 * 24 * 14,
+                'path' => '/',
+                'domain' => $_SERVER['HTTP_HOST'],
+                'secure' => true,
+                'httponly' => false,
+                'samesite' => 'Strict'
+            ]);
             $_COOKIE['language'] = $lang;
             array_shift(static::$parsedRoute);
         }
