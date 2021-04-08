@@ -28,9 +28,9 @@ class VolatableController extends Controller
 
         $page = $request->page ?? null;
         $limit = $request->limit ?? null;
-        $order = $request->order ?? [];
-        $search = $request->search ?? [];
-        $filter = $request->filter ?? [];
+        $order = (array) ($request->order ?? []);
+        $search = (array) ($request->search ?? []);
+        $filter = (array) ($request->filter ?? []);
         $qfilter = $request->qfilter ?? null;
 
         if ($search) {
