@@ -114,8 +114,8 @@ EOD;
             Session::cookie('jwr_token', null);
             Session::destroy();
             Response::response(new Error(
-                title: lang('warning'),
-                message: lang('refresh_token_expired'),
+                title: Language::get('warning'),
+                message: Language::get('refresh_token_expired'),
                 type: 'danger'
             ));
         }
@@ -219,16 +219,16 @@ EOD;
 
         if (!$fetchedUser) {
             Response::response(new Error(
-                title: lang('warning'),
-                message: lang('bad_login'),
+                title: Language::get('warning'),
+                message: Language::get('bad_login'),
                 type: 'warning'
             ));
         }
 
         if (!self::checkHash($password, $fetchedUser->password)) {
             Response::response(new Error(
-                title: lang('warning'),
-                message: lang('bad_password'),
+                title: Language::get('warning'),
+                message: Language::get('bad_password'),
                 type: 'warning'
             ));
         }
@@ -273,8 +273,8 @@ EOD;
     {
         if (!preg_match('/[a-zA-Z0-9]+/i', $login)) {
             Response::response(new Error(
-                title: lang('warning'),
-                message: lang('bad_login'),
+                title: Language::get('warning'),
+                message: Language::get('bad_login'),
                 type: 'warning'
             ));
         }
@@ -290,8 +290,8 @@ EOD;
 
         if (!preg_match('/^[A-Z0-9._%+-]+@[A-Z0-9-]+.+.[A-Z]{2,4}$/i', $email)) {
             Response::response(new Error(
-                title: lang('warning'),
-                message: lang('bad_email'),
+                title: Language::get('warning'),
+                message: Language::get('bad_email'),
                 type: 'warning'
             ));
         }
@@ -308,8 +308,8 @@ EOD;
 
         if (!$uppercase || !$lowercase || !$number || strlen($password) < $minLength) {
             Response::response(new Error(
-                title: lang('warning'),
-                message: lang('password_weak'),
+                title: Language::get('warning'),
+                message: Language::get('password_weak'),
                 type: 'warning'
             ));
         }
@@ -321,8 +321,8 @@ EOD;
     {
         if (User::where('login', $this->login)->exists()) {
             Response::response(new Error(
-                title: lang('warning'),
-                message: lang('user_exists'),
+                title: Language::get('warning'),
+                message: Language::get('user_exists'),
                 type: 'warning'
             ));
         }

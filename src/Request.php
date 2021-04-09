@@ -57,7 +57,7 @@ class Request
 
             if ($variable === null) {
                 Response::response(new Error(
-                    message: lang('error_attr_not_set') . ": $key"
+                    message: Language::get('error_attr_not_set') . ": $key"
                 ));
             }
 
@@ -74,7 +74,7 @@ class Request
 
                 if (strtolower($type) != strtolower($isType)) {
                     Response::response(new Error(
-                        message: lang('error_attr_type_mismatch')
+                        message: Language::get('error_attr_type_mismatch')
                             . ": [{$key}] '{$type}' != '{$isType}'"
                     ));
                 }

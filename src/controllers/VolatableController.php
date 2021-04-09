@@ -2,7 +2,7 @@
 
 namespace Atlantis\Controllers;
 
-use Atlantis\{Column, Error, Request, Response, Volatable};
+use Atlantis\{Column, Error, Language, Request, Response, Volatable};
 use Atlantis\Controllers\{Controller};
 use Atlantis\Models\{User};
 use Exception;
@@ -68,7 +68,7 @@ class VolatableController extends Controller
             return $this->$action();
         } catch (Exception $ex) {
             Response::response(new Error(
-                title: lang('warning'),
+                title: Language::get('warning'),
                 message: $ex->getMessage(),
                 type: 'danger'
             ));
@@ -110,7 +110,7 @@ class VolatableController extends Controller
 
         return $this->getResponse([
             'status' => 1,
-            'message' => lang('success')
+            'message' => Language::get('success')
         ]);
     }
 
@@ -136,7 +136,7 @@ class VolatableController extends Controller
     {
         return $this->getResponse([
             'status' => 1,
-            'message' => lang('success'),
+            'message' => Language::get('success'),
             'content' => $this->model->getAddRowForm()
         ]);
     }
@@ -149,7 +149,7 @@ class VolatableController extends Controller
 
         return $this->getResponse([
             'status' => 1,
-            'message' => lang('success')
+            'message' => Language::get('success')
         ]);
     }
 
@@ -159,7 +159,7 @@ class VolatableController extends Controller
 
         return $this->getResponse([
             'status' => 1,
-            'message' => lang('success'),
+            'message' => Language::get('success'),
             'buttons' => $this->model->getRowActions($request),
         ]);
     }
@@ -174,7 +174,7 @@ class VolatableController extends Controller
 
         return $this->getResponse([
             'status' => 1,
-            'message' => lang('success')
+            'message' => Language::get('success')
         ]);
     }
 
@@ -192,7 +192,7 @@ class VolatableController extends Controller
 
         $response = (object) [
             'status' => 1,
-            'message' => lang('success'),
+            'message' => Language::get('success'),
             'type' => $input->type,
             'data' => $input->data,
             'value' => $input->value
@@ -226,7 +226,7 @@ class VolatableController extends Controller
 
         return $this->getResponse([
             'status' => 1,
-            'message' => lang('success'),
+            'message' => Language::get('success'),
             'value' => $this->model->getTableColumnValue($column),
             'sync' => $this->model->getTableRowSync($column)
         ]);

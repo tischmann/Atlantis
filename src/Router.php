@@ -170,13 +170,13 @@ class Router
             Response::response(
                 new Error(
                     status: 404,
-                    message: lang('error_bad_route')
+                    message: Language::get('error_bad_route')
                 )
             );
         } else if (!method_exists($route->controller, $route->action)) {
             Response::response(new Error(
                 status: 404,
-                message: lang('error_method_not_exists') . ": {$route->action}"
+                message: Language::get('error_method_not_exists') . ": {$route->action}"
             ));
         }
 

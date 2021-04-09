@@ -32,7 +32,7 @@ final class CSRF
 
         if (!$isset) {
             Response::response(new Error(
-                message: lang('error_csrf_not_set')
+                message: Language::get('error_csrf_not_set')
             ));
         }
 
@@ -43,7 +43,7 @@ final class CSRF
 
         if ($input !== $csrf) {
             Response::response(new Error(
-                message: lang('error_csrf_not_match')
+                message: Language::get('error_csrf_not_match')
             ));
         }
 

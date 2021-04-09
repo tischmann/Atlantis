@@ -78,7 +78,7 @@ final class Template
 
         if (!file_exists($path)) {
             Response::response(new Error(
-                message: lang('error_view_not_found') . ": $view",
+                message: Language::get('error_view_not_found') . ": $view",
                 type: 'warning'
             ));
         }
@@ -241,7 +241,7 @@ final class Template
             foreach ($matches[1] as $key => $val) {
                 $this->content = str_replace(
                     $matches[0][$key],
-                    lang($val),
+                    Language::get($val),
                     $this->content
                 );
             }
@@ -280,7 +280,7 @@ final class Template
                     if ((string) $value != $value) {
                         Response::response(new Error(
                             status: 500,
-                            message: lang('error_bad_template_variable1')
+                            message: Language::get('error_bad_template_variable1')
                         ));
                     }
 
@@ -334,7 +334,7 @@ final class Template
         if ((string) $variable != $variable) {
             Response::response(new Error(
                 status: 500,
-                message: lang('error_bad_template_variable2')
+                message: Language::get('error_bad_template_variable2')
             ));
         }
 
@@ -455,7 +455,7 @@ final class Template
                 if (!array_key_exists($iterableName, $this->args)) {
                     Response::response(new Error(
                         status: 500,
-                        message: lang('error_bad_template_variable3')
+                        message: Language::get('error_bad_template_variable3')
                             . ": {$iterableName}"
                     ));
                 }

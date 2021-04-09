@@ -2,7 +2,7 @@
 
 namespace Atlantis\Models;
 
-use Atlantis\{Column, Volatable};
+use Atlantis\{Column, Language, Volatable};
 
 class Layout extends Volatable
 {
@@ -27,22 +27,22 @@ class Layout extends Volatable
             ),
             'name' => new Column(
                 column: 'name',
-                name: lang('layouts_name'),
-                title: lang('layouts_name_title'),
+                name: Language::get('layouts_name'),
+                title: Language::get('layouts_name_title'),
                 width: 200,
                 sort: 'text',
             ),
             'title' => new Column(
                 column: 'title',
-                name: lang('layouts_title'),
-                title: lang('layouts_title_title'),
+                name: Language::get('layouts_title'),
+                title: Language::get('layouts_title_title'),
                 width: 200,
                 sort: 'text',
             ),
             'remarks' => new Column(
                 column: 'remarks',
-                name: lang('layouts_remarks'),
-                title: lang('layouts_remarks_title'),
+                name: Language::get('layouts_remarks'),
+                title: Language::get('layouts_remarks_title'),
                 width: 200,
                 sort: 'text',
             )

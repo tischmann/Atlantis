@@ -23,7 +23,7 @@ final class Error
         int $status = 0,
         string $type = 'light'
     ) {
-        $this->title = $title ?: lang('warning');
+        $this->title = $title ?: Language::get('warning');
         $this->message = $message;
         $this->status = $status;
         $this->type = $type;

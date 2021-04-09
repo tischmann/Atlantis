@@ -10,7 +10,24 @@ final class Language
     public function __construct(string $code = 'ru')
     {
         $this->code = $code;
-        $this->load();
+    }
+
+    public static function get(string $key): string
+    {
+        if (!Session::get('LANG')) {
+            Session::set('LANG', []);
+            $code = Request::cookie('language') ?? getenv('APP_LANG') ?: 'ru';
+
+            foreach (glob("../lang/{$code}/*.php") as $path) {
+                $array = include $path;
+
+                if (is_array($array)) {
+                    Session::set('LANG', array_merge($array, Session::get('LANG')));
+                }
+            }
+        }
+
+        return Session::get('LANG')[$key] ?? $key;
     }
 
     public function load()
@@ -34,7 +51,7 @@ final class Language
         return $this->load();
     }
 
-    public function get(string $key): string
+    public function string(string $key): string
     {
         return $this->strings[$key] ?? $key;
     }

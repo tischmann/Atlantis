@@ -40,8 +40,8 @@ class Volatable extends Model
     {
         return [
             'total' => new QuickFilter(
-                label: lang('total'),
-                title: lang('total_title'),
+                label: Language::get('total'),
+                title: Language::get('total_title'),
                 query: clone $this->getDefaultQuery()
             ),
         ];
@@ -224,7 +224,7 @@ class Volatable extends Model
     {
         $data = [
             'status' => 1,
-            'message' => lang('success'),
+            'message' => Language::get('success'),
             'tbody' => $this->getTableRows()
         ];
 
@@ -262,8 +262,8 @@ class Volatable extends Model
         return (object) [
             'deleterow' => (object) [
                 'data' => ['id' => $data->id],
-                'title' => lang('table_delete_row'),
-                'text' => lang('delete'),
+                'title' => Language::get('table_delete_row'),
+                'text' => Language::get('delete'),
                 'icon' => null,
             ],
         ];
@@ -289,8 +289,8 @@ class Volatable extends Model
     {
         if (!Auth::canDelete($this::$tableName)) {
             Response::response(new Error(
-                title: lang('warning'),
-                message: lang('access_denied'),
+                title: Language::get('warning'),
+                message: Language::get('access_denied'),
                 type: 'warning'
             ));
         }
@@ -304,8 +304,8 @@ class Volatable extends Model
     {
         if (!Auth::canUpdate($this::$tableName, $column->column)) {
             Response::response(new Error(
-                title: lang('warning'),
-                message: lang('access_denied'),
+                title: Language::get('warning'),
+                message: Language::get('access_denied'),
                 type: 'warning'
             ));
         }
@@ -334,8 +334,8 @@ class Volatable extends Model
 
         if (!Auth::canUpdate($this::$tableName, $columnName)) {
             Response::response(new Error(
-                title: lang('warning'),
-                message: lang('access_denied'),
+                title: Language::get('warning'),
+                message: Language::get('access_denied'),
                 type: 'warning'
             ));
         }
@@ -346,8 +346,8 @@ class Volatable extends Model
 
         if (!$column || $raw === null) {
             Response::response(new Error(
-                title: lang('warning'),
-                message: lang('column_not_exists') . ": {$columnName}",
+                title: Language::get('warning'),
+                message: Language::get('column_not_exists') . ": {$columnName}",
                 type: 'warning'
             ));
         }
@@ -377,7 +377,7 @@ class Volatable extends Model
     {
         if (!Auth::canSelect($this::$tableName)) {
             Response::response(new Error(
-                message: lang('access_denied')
+                message: Language::get('access_denied')
             ));
         }
 
