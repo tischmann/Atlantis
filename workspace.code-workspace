@@ -1,0 +1,41 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"remoteAuthority": "wsl+Ubuntu-20.04",
+	"settings": {
+		"es6-css-minify.cssMinPath": "/css",
+		"es6-css-minify.jsMapSource": "map",
+		"es6-css-minify.cssMapSource": "map",
+		"es6-css-minify.genCSSmap": true,
+		"es6-css-minify.genJSmap": true,
+		"es6-css-minify.minifyOnSave": "yes",
+		"es6-css-minify.css": {
+			"rebase": false
+		}
+	},
+	"launch": {
+		// Use IntelliSense to learn about possible attributes.
+		// Hover to view descriptions of existing attributes.
+		// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "Listen for XDebug",
+				"type": "php",
+				"request": "launch",
+				"port": 9003
+			},
+			{
+				"name": "Launch currently open script",
+				"type": "php",
+				"request": "launch",
+				"program": "${file}",
+				"cwd": "${fileDirname}",
+				"port": 9003
+			}
+		]
+	}
+}
