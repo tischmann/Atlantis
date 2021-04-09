@@ -136,13 +136,17 @@ class Volatable extends Model
     {
         $value = $this->getTableColumnValue($column);
         $title = $this->getTableColumnTitle($column);
+        $style = $this->getTableColumnStyle($column);
 
         $column = [
-            'c' => $this->getTableColumnStyle($column),
             'v' => $value,
         ];
 
-        if ($title !== $value) {
+        if ($style) {
+            $column['c'] = $style;
+        }
+
+        if ($title !== $value && $title) {
             $column['t'] = $title;
         }
 
@@ -210,11 +214,18 @@ class Volatable extends Model
                 $columns[] = $model->getTableColumn($column);
             }
 
-            $rows[] = [
+            $array = [
                 'i' => $row->id,
-                'c' => $model->getTableRowStyle(),
                 'r' => $columns,
             ];
+
+            $style = $model->getTableRowStyle();
+
+            if ($style) {
+                $array['c'] = $style;
+            }
+
+            $rows[] = $array;
         }
 
         return $rows;
