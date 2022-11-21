@@ -1,0 +1,109 @@
+#!/usr/bin/php
+<?php
+
+declare(strict_types=1);
+
+use Tischmann\Atlantis\{Console, Migration};
+
+require_once __DIR__ . "/bootstrap/require.php";
+
+require_once __DIR__ . "/bootstrap/config.php";
+
+require_once __DIR__ . "/bootstrap/autoloader.php";
+
+$namespace = "Tischmann\\Atlantis\\Migrations\\";
+
+foreach (Console::parse($argv) as $command => $value) {
+    switch ($command) {
+        case 'remove':
+            Console::separator();
+            Console::print("Очистка БД", "");
+            Console::separator();
+
+            foreach (glob(__DIR__ . "/database/*.php") as $path) {
+                $migration = $namespace . basename($path, ".php");
+
+                $migration = new $migration();
+
+                assert($migration instanceof Migration);
+
+                if (!$migration->drop()) {
+                    Console::print(
+                        "Ошибка при удалении таблицы",
+                        $migration::name()
+                    );
+                } else {
+                    Console::print("Таблица удалена", $migration::name());
+                }
+            }
+
+            Console::separator();
+            Console::print("Очистка БД завершена", "");
+            Console::separator();
+            break;
+        case 'create':
+            Console::separator();
+            Console::print("Создание БД", "");
+            Console::separator();
+
+            foreach (glob(__DIR__ . "/database/*.php") as $path) {
+                $migration = $namespace . basename($path, ".php");
+
+                $migration = new $migration();
+
+                assert($migration instanceof Migration);
+
+                if (!$migration->create()) {
+                    Console::print(
+                        "Ошибка при создании таблицы",
+                        $migration::name()
+                    );
+                } else {
+                    Console::print("Таблица создана", $migration::name());
+                }
+            }
+
+            Console::separator();
+            Console::print("Создание БД завершено", "");
+            Console::separator();
+            break;
+        case 'seed':
+            Console::separator();
+            Console::print("Заполнение БД", "");
+            Console::separator();
+
+            foreach (glob(__DIR__ . "/database/*.php") as $path) {
+                $migration = $namespace . basename($path, ".php");
+
+                $migration = new $migration();
+
+                assert($migration instanceof Migration);
+
+                if (!$migration->truncate()) {
+                    Console::print(
+                        "Ошибка при очистке таблицы",
+                        $migration::name()
+                    );
+                } else {
+                    Console::print("Таблица очищена", $migration::name());
+
+                    if (!($inserted = $migration->seed())) {
+                        Console::print(
+                            "Ошибка при заполнении таблицы",
+                            $migration::name()
+                        );
+                    } else {
+                        Console::print(
+                            "Записей добавлено: {$inserted}",
+                            $migration::name()
+                        );
+                    }
+                }
+            }
+
+            Console::separator();
+            Console::print("Заполнение БД завершено", "");
+            Console::separator();
+            break;
+    }
+}
