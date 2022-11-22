@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Tischmann\Atlantis\{Auth, Router, Cookie, Session};
+use Tischmann\Atlantis\{Router, Cookie, Session};
 
 require_once "require.php";
 
@@ -19,8 +19,6 @@ Session::start(name: 'PHPSESSID', id: Cookie::get('PHPSESSID'));
 Cookie::set('PHPSESSID', session_id());
 
 if (intval(getenv('APP_DEBUG'))) Cookie::set('XDEBUG_SESSION', 'VSCODE');
-
-Auth::authorize();
 
 require_once "routes.php";
 

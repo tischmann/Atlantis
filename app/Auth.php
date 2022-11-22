@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Tischmann\Atlantis;
+namespace App;
 
 use App\Models\{User};
 
-use Tischmann\Atlantis\Exceptions\NotFoundException;
+use Tischmann\Atlantis\Exceptions\{NotFoundException};
+
+use Tischmann\Atlantis\{Session};
 
 /**
  * Авторизация пользователя

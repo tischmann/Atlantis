@@ -4,14 +4,27 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Models\{User};
+use App\{Auth};
 
-use Tischmann\Atlantis\{Auth, Facade, Request, Response,  Session, View};
+use Tischmann\Atlantis\{Facade, Request, Response, Template, View};
 
-use Tischmann\Atlantis\Exceptions\{MethodNotExistsException, NotFoundException, RouteNotFoundException};
+use Tischmann\Atlantis\Exceptions\{MethodNotExistsException, RouteNotFoundException};
 
 class Controller extends Facade
 {
+    public function __construct()
+    {
+        $user = Auth::authorize();
+
+        Template::ifDirective('auth', function (...$args) use ($user) {
+            return $user->exists();
+        });
+
+        Template::ifDirective('admin', function (...$args) use ($user) {
+            return $user->isAdmin();
+        });
+    }
+
     public function index(Request $request)
     {
         $view = View::make(
@@ -25,53 +38,6 @@ class Controller extends Facade
     public function phpinfo(Request $request)
     {
         phpinfo();
-    }
-
-    public function signIn(Request $request)
-    {
-        $request->validate([
-            'login' => ['required', 'string'],
-            'password' => ['required', 'string']
-        ]);
-
-        $login = $request->request('login');
-
-        $password = $request->request('password');
-
-        $user = User::find($login, 'login');
-
-        if ($user->exists()) {
-            if (password_verify($password, $user->password)) {
-                session_regenerate_id();
-
-                Session::set('user_id', $user->id);
-
-                Response::redirect('/');
-            } else {
-                $view = View::make(
-                    view: 'errors/404',
-                    args: ['message' => 'Wrong password']
-                );
-
-                Response::echo($view->render());
-            }
-        } else {
-            $view = View::make(
-                view: 'errors/404',
-                args: ['message' => 'User not found']
-            );
-
-            Response::echo($view->render());
-        }
-    }
-
-    public function signOut(Request $request)
-    {
-        Session::delete('user_id');
-
-        session_regenerate_id();
-
-        Response::redirect('/');
     }
 
     public function __call($name, $arguments): mixed

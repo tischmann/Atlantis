@@ -10,17 +10,7 @@ final class View
 
     public function __construct(public string $view, public array $args = [])
     {
-        $user = Auth::user();
-
         $this->template = new Template($view, $args);
-
-        Template::ifDirective('auth', function (...$args) use ($user) {
-            return $user->exists();
-        });
-
-        Template::ifDirective('admin', function (...$args) use ($user) {
-            return $user->isAdmin();
-        });
 
         Template::directive('referrer', function (...$args) {
             return $_SERVER['HTTP_REFERER'] ?? '/';

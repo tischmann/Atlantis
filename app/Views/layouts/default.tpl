@@ -18,12 +18,13 @@
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#ffffff">
     <meta name="msapplication-TileColor" content="#ffffff">
     <title>{{env=APP_TITLE}}</title>
+    <link rel="preload" href="/css/tailwind.min.css" as="style" media="all">
     <link rel="preload" href="/css/app.min.css" as="style" media="all">
 </head>
 
-<body style="margin:0;padding:0">
+<body class="m-0 p-0">
     {{yield=body}}
-    <script src="/js/app.min.js" nonce="{{nonce}}"></script>
+    <script src="/js/app.min.js" type="module" nonce="{{nonce}}"></script>
 </body>
 
 </html>
