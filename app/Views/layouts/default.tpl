@@ -18,7 +18,7 @@
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#ffffff">
     <meta name="msapplication-TileColor" content="#ffffff">
     <title>{{env=APP_TITLE}}</title>
-    <link rel="preload" href="/css/app.css" as="style" media="all">
+    <link rel="preload" href="/app.css" as="style" media="all">
     <style>
         body {
             margin: 0;
@@ -38,6 +38,7 @@
 
 <body>
     {{yield=body}}
+    <script src="/app.js"></script>
     <script src="/pwa.js"></script>
 </body>
 

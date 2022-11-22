@@ -71,7 +71,9 @@ final class Locale
 
         $strings = [];
 
-        foreach (glob(getenv('APP_ROOT') . "/lang/{$locale}/*.php") as $path) {
+        $path = getenv('APP_ROOT') . "/lang/{$locale}.php";
+
+        if (file_exists($path)) {
             $array = require_once $path;
             if (is_array($array)) $strings = array_merge($array, $strings);
         }
