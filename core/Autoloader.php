@@ -77,6 +77,6 @@ final class Autoloader
         }
 
         if ($found) require_once $path;
-        else throw new Exception("Класс {$className} не найден");
+        else throw new \Exception("Класс {$className} не найден");
     }
 }

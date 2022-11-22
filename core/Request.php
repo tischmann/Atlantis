@@ -186,10 +186,11 @@ class Request
                 switch ($assert) {
                     default:
                         if ($type !== $assert) {
-                            throw new Exception(
+                            throw new \Exception(
                                 Locale::get('error_variable_type_mismatch')
                                     . " - {$variable}: {$type} != ["
-                                    . implode(" | ", $types) . "]"
+                                    . implode(" | ", $types) . "]",
+                                500
                             );
                         }
                         break;

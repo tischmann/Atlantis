@@ -10,10 +10,6 @@ require_once "config.php";
 
 require_once "autoloader.php";
 
-set_exception_handler('Tischmann\Atlantis\Exception::handler');
-
-set_error_handler('Tischmann\Atlantis\Error::handler');
-
 Session::start(name: 'PHPSESSID', id: Cookie::get('PHPSESSID'));
 
 Cookie::set('PHPSESSID', session_id());

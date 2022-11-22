@@ -92,7 +92,7 @@ class DateTime extends \DateTime
 
         try {
             $date = new static($dateTime);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return false;
         }
 

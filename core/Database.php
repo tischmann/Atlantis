@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Tischmann\Atlantis;
 
-use Tischmann\Atlantis\Exceptions\{DatabaseException};
-
 use PDO;
 
 use PDOException;
@@ -25,7 +23,7 @@ final class Database extends PDO
      * @param string $password Пароль пользователя базы данных
      * @param array $options Массив опций подключения к базе данных
      * 
-     * @throws DatabaseException
+     * @throws \Exception
      */
     public function __construct(
         string $dsn = "mysql:host=localhost;dbname=;charset=utf8;port=3306",
@@ -42,7 +40,7 @@ final class Database extends PDO
         try {
             parent::__construct($dsn, $username, $password, $options);
         } catch (PDOException $exception) {
-            throw new DatabaseException($exception->getMessage());
+            throw new \Exception($exception->getMessage(), 500);
         }
     }
 
@@ -52,14 +50,14 @@ final class Database extends PDO
      * @param string $statement Текст запроса
      * @param array $values Массив значений для подстановки в запрос 
      * @return bool true в случае успеха, иначе false
-     * @throws DatabaseException
+     * @throws \Exception
      */
     public function execute(string $statement, array $values = []): bool
     {
         try {
             return $this->prepare($statement)->execute($values);
         } catch (PDOException $exception) {
-            throw new DatabaseException($exception->getMessage());
+            throw new \Exception($exception->getMessage(), 500);
         }
     }
 
@@ -69,7 +67,7 @@ final class Database extends PDO
      * @param string $statement Текст запроса
      * @param array $values Массив значений для подстановки в запрос
      * @return array Массив объектов данных
-     * @throws DatabaseException
+     * @throws \Exception
      */
     public function fetchAll(string $statement, array $values = []): array
     {
@@ -78,7 +76,7 @@ final class Database extends PDO
             $pdoStatement->execute($values);
             return $pdoStatement->fetchAll();
         } catch (PDOException $exception) {
-            throw new DatabaseException($exception->getMessage());
+            throw new \Exception($exception->getMessage(), 500);
         }
     }
 
@@ -88,7 +86,7 @@ final class Database extends PDO
      * @param string $statement Текст запроса
      * @param array $values Массив значений для подстановки в запрос
      * @return mixed Значение столбца 
-     * @throws DatabaseException
+     * @throws \Exception
      */
     public function fetchColumn(
         string $statement,
@@ -100,7 +98,7 @@ final class Database extends PDO
             $pdoStatement->execute($values);
             return $pdoStatement->fetchColumn($column);
         } catch (PDOException $exception) {
-            throw new DatabaseException($exception->getMessage());
+            throw new \Exception($exception->getMessage(), 500);
         }
     }
 }

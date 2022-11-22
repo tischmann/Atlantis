@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Tischmann\Atlantis;
 
-use Tischmann\Atlantis\Exceptions\{RouteNotFoundException};
-
 /**
  * Маршрутизатор
  * 
@@ -46,7 +44,7 @@ final class Router
      * Разрешение маршрута
      *
      * @return mixed
-     * @throws RouteNotFoundException Маршрут не найден
+     * @throws \Exception
      */
     public function resolve(): mixed
     {
@@ -65,10 +63,10 @@ final class Router
             assert($route instanceof Route);
 
             if ($route->validate($this->request->uri)) {
-                return $route->resolve(request: $this->request);
+                return $route->resolve($this->request);
             }
         }
 
-        throw new RouteNotFoundException();
+        throw new \Exception(Locale::get('error_404'), 404);
     }
 }

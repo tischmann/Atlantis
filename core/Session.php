@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Tischmann\Atlantis;
 
-use Tischmann\Atlantis\Exceptions\{NotFoundException};
-
 final class Session
 {
     private function __construct()
@@ -57,14 +55,11 @@ final class Session
      * Получение значения из сессии
      *
      * @param string $key Ключ
-     * @return mixed Значение 
-     * @throws NotFoundException Если значения нет
+     * @return mixed Значение или null, если значения нет
      */
     public static function get(string $key): mixed
     {
-        if (!static::has($key)) throw new NotFoundException();
-
-        return $_SESSION[$key];
+        return $_SESSION[$key] ?? null;
     }
 
     /**

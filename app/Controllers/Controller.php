@@ -4,48 +4,17 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\{Auth};
-
-use Tischmann\Atlantis\{Facade, Request, Response, Template, View};
-
-use Tischmann\Atlantis\Exceptions\{MethodNotExistsException, RouteNotFoundException};
+use Tischmann\Atlantis\{Facade, Locale, Request, Response, View};
 
 class Controller extends Facade
 {
-    public function __construct()
+    public function index()
     {
-        $user = Auth::authorize();
-
-        Template::ifDirective('auth', function (...$args) use ($user) {
-            return $user->exists();
-        });
-
-        Template::ifDirective('admin', function (...$args) use ($user) {
-            return $user->isAdmin();
-        });
-    }
-
-    public function index(Request $request)
-    {
-        $view = View::make(
-            view: 'welcome',
-            args: ['user' => Auth::user()]
-        );
-
-        Response::echo($view->render());
-    }
-
-    public function phpinfo(Request $request)
-    {
-        phpinfo();
+        Response::echo(View::make(view: 'welcome')->render());
     }
 
     public function __call($name, $arguments): mixed
     {
-        if (intval(getenv('APP_DEBUG'))) {
-            throw new MethodNotExistsException($this, $name);
-        }
-
-        throw new RouteNotFoundException();
+        throw new \Exception(Locale::get('error_404'), 404);
     }
 }

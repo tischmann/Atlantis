@@ -90,8 +90,6 @@ final class Route
 
         if ($this->title) putenv("APP_TITLE={$this->title}");
 
-        $args = ['request' => $request];
-
-        $this->controller->{$this->action}(...$args);
+        $this->controller->{$this->action}($request);
     }
 }

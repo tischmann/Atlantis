@@ -83,17 +83,17 @@ final class Template
         $path = getenv('APP_ROOT') . "/app/Views/{$view}.tpl";
 
         if (!file_exists($path)) {
-            throw new Exception("Представление не найдено: {$path}");
+            throw new \Exception("Представление не найдено: {$path}");
         }
 
         try {
             $content = file_get_contents($path);
         } catch (\Exception $exception) {
-            throw new Exception($exception->getMessage());
+            throw new \Exception($exception->getMessage());
         }
 
         if ($content === false) {
-            throw new Exception(error_get_last()['message'] ?? '');
+            throw new \Exception(error_get_last()['message'] ?? '');
         }
 
         return $content;
@@ -609,7 +609,7 @@ final class Template
 
             try {
                 $replacement = file_get_contents($path);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $replacement = Locale::get('access_denied');
             }
 
