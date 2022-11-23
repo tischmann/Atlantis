@@ -14,5 +14,6 @@
             "email": "yuriystolov@gmail.com"
         }
     ],
-    "require": {}
+    "require": {},
+    "license": "MIT"
 }
