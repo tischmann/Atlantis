@@ -12,7 +12,7 @@ class Controller extends Facade
 {
     public function index()
     {
-        Response::echo(View::make(view: 'welcome')->render());
+        Response::send(View::make(view: 'welcome')->render());
     }
 
     public function __call($name, $arguments): mixed

@@ -38,8 +38,8 @@
 
 <body>
     {{yield=body}}
-    <script src="/app.js"></script>
-    <script src="/pwa.js"></script>
+    <script src="/app.js" nonce="{{nonce}}"></script>
+    <script src="/pwa.js" nonce="{{nonce}}"></script>
 </body>
 
 </html>

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tischmann\Atlantis;
 
+use Exception;
+
 /**
  * Маршрутизатор
  * 
@@ -74,6 +76,6 @@ final class Router
             }
         }
 
-        throw new \Exception(Locale::get('error_404'), 404);
+        throw new Exception(Locale::get('error_404'), 404);
     }
 }
