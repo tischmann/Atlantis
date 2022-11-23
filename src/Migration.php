@@ -218,7 +218,9 @@ abstract class Migration
 
             $sql = "ALTER TABLE {$table} " . implode(', ', $foreigns) . ";";
 
-            $query = new Query(table: $table);
+            $query = new Query();
+
+            $query->table($table);
 
             if (!($result = $query->execute($sql))) break;
         }
