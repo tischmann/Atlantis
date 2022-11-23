@@ -14,7 +14,8 @@ $extensions = [
     'json',
     'zlib',
     'curl',
-    'memcache'
+    'memcache',
+    'xml',
 ];
 
 foreach ($extensions as $extension) {

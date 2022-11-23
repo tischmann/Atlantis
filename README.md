@@ -32,8 +32,6 @@ Atlantis — это простой и легкий MVC PHP-фреймворк.
 
 /bootstrap/app.php — файл загрузки приложения
 
-/bootstrap/autoloader.php — файл автозагрузки
-
 /bootstrap/config.php — файл конфигурации приложения
 
 /bootstrap/require.php — файл зависимостей приложения

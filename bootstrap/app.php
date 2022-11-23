@@ -8,7 +8,7 @@ require_once "require.php";
 
 require_once "config.php";
 
-require_once "autoloader.php";
+require_once __DIR__ . '/../vendor/autoload.php';
 
 Session::start(name: 'PHPSESSID', id: Cookie::get('PHPSESSID'));
 
