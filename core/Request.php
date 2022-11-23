@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tischmann\Atlantis;
 
+use InvalidArgumentException;
+
 /**
  * Класс HTTP запроса
  * 
@@ -23,14 +25,8 @@ class Request
     private array $__files = []; // Файлы
     private array $__args = []; // Аргументы запроса
 
-    /**
-     * Конструктор
-     *
-     * @param array $args Аргументы запроса
-     */
     public function __construct()
     {
-
         $this->uri = self::uri();
 
         $this->method = self::method();
@@ -56,11 +52,21 @@ class Request
         $this->__files = $_FILES;
     }
 
+    /**
+     * Возвращает метод запроса
+     * 
+     * @return string Метод запроса
+     */
     public static function method(): string
     {
         return strtoupper($_SERVER['REQUEST_METHOD'] ?? '');
     }
 
+    /**
+     * Возвращает URI запроса в виде массива
+     * 
+     * @return array URI запроса
+     */
     public static function uri(): array
     {
         $uri = parse_url(strtolower($_SERVER['REQUEST_URI']));
@@ -82,10 +88,10 @@ class Request
     }
 
     /**
-     * Фильтрация данных переменной
+     * Фильтрует переменную
      * 
      * @param string $value Переменная
-     * @return mixed Отфильтрованная переменная
+     * @return mixed Фильтрованная переменная
      */
     public static function sanitize(mixed $value): mixed
     {
@@ -97,6 +103,11 @@ class Request
         };
     }
 
+    /**
+     * Возвращает локаль из URI
+     * 
+     * @return string Локаль
+     */
     public static function locale(): ?string
     {
         $uri = parse_url($_SERVER['REQUEST_URI']);
@@ -149,52 +160,36 @@ class Request
     /**
      * Валидация переменных запроса
      *
-     * @param array $validation Массив валидации: ['name' => ['type' | 'required'], ...] 
+     * @param array $vars Массив валидации: ['name' => ['type' | 'required'], ...] 
      * @return self
+     * @throws InvalidArgumentException В случае ошибки валидации
      */
-    public function validate(array $validation): self
+    public function validate(array $vars): self
     {
-        foreach ($validation as $variable => $types) {
+        foreach ($vars as $key => $types) {
             if (!in_array('required', $types)) continue;
 
-            $types = array_diff($types, ['required']);
+            $variable = $this->request($key);
 
-            foreach ($types as $assert) {
-                $assert = mb_strtolower($assert);
+            if ($variable === null || $variable === '') {
+                throw new InvalidArgumentException(
+                    Locale::get('error_required') . ": {$key}"
+                );
+            }
 
-                if (!mb_strlen($assert)) continue;
+            foreach (array_diff($types, ['required']) as $assert) {
+                if (!strlen($assert)) continue;
 
-                $type = null;
+                $assert = strtolower($assert);
 
-                switch (true) {
-                    case key_exists($variable, $this->__input):
-                        $type = gettype($this->__input[$variable]);
-                        break;
-                    case key_exists($variable, $this->__post):
-                        $type = gettype($this->__post[$variable]);
-                        break;
-                    case key_exists($variable, $this->__get):
-                        $type = gettype($this->__get[$variable]);
-                        break;
-                    case key_exists($variable, $this->__args):
-                        $type = gettype($this->__args[$variable]);
-                        break;
-                }
+                $type = gettype($variable);
 
-                $value = $this->request($variable);
+                if ($type === $assert) continue;
 
-                switch ($assert) {
-                    default:
-                        if ($type !== $assert) {
-                            throw new \Exception(
-                                Locale::get('error_variable_type_mismatch')
-                                    . " - {$variable}: {$type} != ["
-                                    . implode(" | ", $types) . "]",
-                                500
-                            );
-                        }
-                        break;
-                }
+                throw new InvalidArgumentException(
+                    locale::get('error_type_mismatch')
+                        . ": {$key} ({$type} != {$assert})"
+                );
             }
         }
 
@@ -276,10 +271,10 @@ class Request
     }
 
     /**
-     * Возвращает значение переменной запроса ($_GET, $_POST, $this->__args)
+     * Возвращает значение переменной запроса, производя поиск во всех источниках
      *
      * @param mixed $key Имя переменной запроса
-     * @return mixed Значение переменной запроса
+     * @return mixed Значение переменной запроса, если не найдено, то null
      */
     public function request(?string $key = null): mixed
     {
@@ -288,11 +283,13 @@ class Request
                 $this->__get,
                 $this->__post,
                 $this->__args,
+                $this->__route,
                 $this->__input
             );
         }
 
-        return $this->__args[$key]
+        return $this->__route[$key]
+            ?? $this->__args[$key]
             ?? $this->__input[$key]
             ?? $this->__post[$key]
             ?? $this->__get[$key]
@@ -351,11 +348,21 @@ class Request
         return null;
     }
 
+    /**
+     * Воозвращает массив файлов, загруженных в запросе ($_FILES)
+     *
+     * @return array Массив файлов
+     */
     public function files(): array
     {
         return $this->__files;
     }
 
+    /**
+     * Возвращает тип данных для ответа
+     * 
+     * @return string Тип данных для ответа (json, html, xml, text, any)
+     */
     public static function accept(): string
     {
         $headers = implode(" ", headers_list());
@@ -367,10 +374,15 @@ class Request
             str_contains($headers, 'text/html') => 'html',
             str_contains($headers, 'text/xml') => 'xml',
             str_contains($headers, 'text/plain') => 'text',
-            default => 'html',
+            default => 'any',
         };
     }
 
+    /**
+     * Возвращает тип данных запроса
+     * 
+     * @return string Тип данных запроса (json, html, xml, text, form, any)
+     */
     public static function type(): string
     {
         $headers = $_SERVER['CONTENT_TYPE']  ?? '';
@@ -384,7 +396,7 @@ class Request
             str_contains($headers, 'text/plain') => 'text',
             str_contains($headers, 'application/x-www-form-urlencoded') => 'form',
             str_contains($headers, 'multipart/form-data') => 'form',
-            default => 'html',
+            default => 'any',
         };
     }
 }

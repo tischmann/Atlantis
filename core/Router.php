@@ -48,16 +48,23 @@ final class Router
      */
     public function resolve(): mixed
     {
-        $routes = array_merge(
-            static::$routes['ANY']['any']['any'] ?? [],
-            static::$routes[$this->request->method]['any']['any'] ?? [],
-            static::$routes['ANY'][$this->request->accept]['any'] ?? [],
-            static::$routes['ANY']['any'][$this->request->type] ?? [],
-            static::$routes[$this->request->method][$this->request->accept]['any'] ?? [],
-            static::$routes[$this->request->method]['any'][$this->request->type] ?? [],
-            static::$routes['ANY'][$this->request->accept][$this->request->type] ?? [],
-            static::$routes[$this->request->method][$this->request->accept][$this->request->type] ?? []
-        );
+        $routes = static::$routes[$this->request->method][$this->request->accept][$this->request->type] ?? null;
+
+        $routes ??= static::$routes[$this->request->method]['any'][$this->request->type] ?? null;
+
+        $routes ??= static::$routes[$this->request->method][$this->request->accept]['any'] ?? null;
+
+        $routes ??= static::$routes[$this->request->method]['any']['any'] ?? null;
+
+        $routes ??= static::$routes['ANY'][$this->request->accept][$this->request->type] ?? null;
+
+        $routes ??= static::$routes['ANY']['any'][$this->request->type] ?? null;
+
+        $routes ??= static::$routes['ANY'][$this->request->accept]['any'] ?? null;
+
+        $routes ??= static::$routes['ANY']['any']['any'] ?? null;
+
+        $routes ??= [];
 
         foreach ($routes as $route) {
             assert($route instanceof Route);

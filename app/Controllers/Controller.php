@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use Tischmann\Atlantis\{Facade, Locale, Request, Response, View};
+use BadMethodCallException;
+
+use Tischmann\Atlantis\{CSRF, Facade, Locale, Request, Response, View};
 
 class Controller extends Facade
 {
@@ -15,6 +17,6 @@ class Controller extends Facade
 
     public function __call($name, $arguments): mixed
     {
-        throw new \Exception(Locale::get('error_404'), 404);
+        throw new BadMethodCallException(Locale::get('error_404'), 404);
     }
 }

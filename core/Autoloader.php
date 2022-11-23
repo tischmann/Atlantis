@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tischmann\Atlantis;
 
+use Exception;
+
 final class Autoloader
 {
     private const NAMESPACE_SEPARATOR = "\\";
@@ -67,16 +69,19 @@ final class Autoloader
 
                 $path = "{$root}/{$dir}{$filename}.php";
 
-                if (file_exists($path)) {
-                    $found = true;
-                    break 2;
+                if (!file_exists($path)) {
+                    throw new Exception("File not found:{$dir}{$filename}.php");
+                    exit;
+                }
+
+                try {
+                    require_once $path;
+                } catch (Exception $e) {
+                    die("Error {$e->getCode()}: {$e->getMessage()}");
                 }
             }
 
             $namespace = rtrim($namespace, static::NAMESPACE_SEPARATOR);
         }
-
-        if ($found) require_once $path;
-        else throw new \Exception("Класс {$className} не найден");
     }
 }

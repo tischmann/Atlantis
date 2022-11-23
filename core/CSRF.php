@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tischmann\Atlantis;
 
+use Exception;
+
 /**
  * Класс для защиты от CSRF атак
  * 
@@ -59,7 +61,7 @@ final class CSRF
     /**
      * Производит проверку токенов
      * 
-     * @throws \Exception Если токен не найден
+     * @throws Exception Если токен не найден
      */
     public static function verify(Request $request): void
     {
@@ -83,6 +85,6 @@ final class CSRF
 
         CSRF::flush();
 
-        if (!$verified) throw new \Exception(Locale::get('error_403'), 403);
+        if (!$verified) throw new Exception(Locale::get('error_403'), 403);
     }
 }
