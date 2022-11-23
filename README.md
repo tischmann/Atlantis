@@ -44,27 +44,15 @@ Atlantis — это простой и легкий MVC PHP-фреймворк.
 
 /lang — директория языков
 
-/log — директория журналов (требуется chmod 777)
-
 /public — директория публичных файлов
 
 /public/index.php — файл точки входа
-
-/public/fonts — директория шрифтов
-
-/public/images — директория изображений
 
 /public/app.js — главный файл JavaScript
 
 /public/pwa.js — файл Progressive Web App
 
 /public/app.css — главный файл CSS
-
-/resources — директория ресурсов
-
-/resources/css — директория ресурсов CSS
-
-/resources/js — директория ресурсов JavaScript
 
 /routes — директория маршрутов
 

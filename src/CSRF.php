@@ -85,6 +85,6 @@ final class CSRF
 
         CSRF::flush();
 
-        if (!$verified) throw new Exception(Locale::get('error_403'), 403);
+        if (!$verified) throw new Exception("Access denied", 403);
     }
 }

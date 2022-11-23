@@ -76,6 +76,6 @@ final class Router
             }
         }
 
-        throw new Exception(Locale::get('error_404'), 404);
+        throw new Exception("Route not found", 404);
     }
 }

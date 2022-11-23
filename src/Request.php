@@ -172,9 +172,7 @@ class Request
             $variable = $this->request($key);
 
             if ($variable === null || $variable === '') {
-                throw new InvalidArgumentException(
-                    Locale::get('error_required') . ": {$key}"
-                );
+                throw new InvalidArgumentException("{$key} is required");
             }
 
             foreach (array_diff($types, ['required']) as $assert) {
@@ -187,8 +185,7 @@ class Request
                 if ($type === $assert) continue;
 
                 throw new InvalidArgumentException(
-                    locale::get('error_type_mismatch')
-                        . ": {$key} ({$type} != {$assert})"
+                    "Invalid type: {$key} ({$type} != {$assert})"
                 );
             }
         }
