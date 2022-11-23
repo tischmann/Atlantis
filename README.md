@@ -118,9 +118,9 @@ DB_NAME — имя базы
 
 DB_CHARSET — кодировка базы данных
 
-DB_USER — пользователь базы данных
+DB_USERNAME — пользователь базы данных
 
-DB_PASS — пароль базы данных
+DB_PASSWORD — пароль базы данных
 
 MEMCACHED_HOST — хост Memcached
 

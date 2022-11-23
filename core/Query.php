@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Tischmann\Atlantis;
 
+use ReflectionClass;
+
 /**
- * Класс запроса
+ * Класс SQL запроса
  *
  * @author Yuriy Stolov <yuriystolov@gmail.com>
  */
-final class Query extends Facade
+final class Query
 {
+    private string $table = ''; // Имя таблицы
     private int $uniqid = 0; // Уникальный идентификатор
     private array $select = []; // Список полей для выборки
     private array $order = []; // Список полей для сортировки
@@ -31,50 +34,44 @@ final class Query extends Facade
     /**
      * Конструктоор
      * 
-     * @param string $table Таблица для выборки
-     * @param Database|null $db Объект базы данных для выполнения запроса или null для получения объекта базы данных по умолчанию
+     * @param ?Database $database Объект базы данных
      */
-    public function __construct(
-        public string $table,
-        public ?Database $db = null,
-    ) {
-        $this->db ??= $this->getDefaultDatabase();
-    }
-
-    /**
-     * Возвращает объект базы данных по умолчанию
-     * 
-     * @return Database
-     */
-    public function getDefaultDatabase(): Database
+    public function __construct(private ?Database $database = null)
     {
-        $dsn = (getenv('DB_TYPE'))
-            . ":host=" . (getenv('DB_HOST'))
-            . ";dbname=" . (getenv('DB_NAME'))
-            . ";charset=" . (getenv('DB_CHARSET') ?: 'utf8')
-            . ";port=" . (getenv('DB_PORT') ?: '3306');
+        $this->database ??= Database::connect();
+    }
 
-        return new Database(
-            dsn: $dsn,
-            username: getenv('DB_USER'),
-            password: getenv('DB_PASS'),
-        );
+    public function __clone()
+    {
+        foreach ($this as $property => $value) {
+            if (is_object($value)) {
+                $reflectionClass = new ReflectionClass($value);
+
+                if ($reflectionClass->isCloneable()) {
+                    $this->{$property} = clone $value;
+                }
+            }
+        }
     }
 
     /**
-     * Журналирование операций
+     * Журналирование
      * 
-     * @param bool $status true - включено, false - выключено
+     * @param bool $status true - включить, false - выключить
      * @return self
      */
     public function log(bool $status = true): self
     {
-        $this->db->execute("SET global general_log = " . intval($status) . ";");
+        $this->database->execute(
+            "SET global general_log = ?;",
+            [intval($status)]
+        );
+
         return $this;
     }
 
     /**
-     * Сброс значений по умолчанию
+     * Сброс значений по умолчанию, кроме имени таблицы
      */
     public function reset(): self
     {
@@ -103,7 +100,7 @@ final class Query extends Facade
      * @param string $table Таблица для выборки
      * @return self
      */
-    public function setTable(string $table): self
+    public function table(string $table): self
     {
         $this->table = $table;
         return $this;
@@ -118,7 +115,7 @@ final class Query extends Facade
      */
     public function execute(string $statement, array $values = []): bool
     {
-        return $this->db->execute($statement, $values);
+        return $this->database->execute($statement, $values);
     }
 
     /**
@@ -290,7 +287,9 @@ final class Query extends Facade
                     list($closure) = $args;
 
                     $nested = clone $this;
+
                     $nested->reset();
+
                     $nested->uniqid = $this->uniqid;
 
                     $closure($nested);
@@ -308,6 +307,7 @@ final class Query extends Facade
                     }
 
                     $this->values = array_merge($this->values, $nested->values);
+
                     $this->uniqid = $nested->uniqid;
 
                     return $this;
@@ -353,6 +353,7 @@ final class Query extends Facade
                 }
 
                 $min = $this->getPrepareValue((string) $min);
+
                 $max = $this->getPrepareValue((string) $max);
 
                 $this->whereAnd[] = "`{$column}` BETWEEN {$min} AND {$max}";
@@ -716,7 +717,7 @@ final class Query extends Facade
      */
     public function delete(): bool
     {
-        $result = $this->db->execute($this->getDeleteQuery(), $this->values);
+        $result = $this->database->execute($this->getDeleteQuery(), $this->values);
 
         $this->reset();
 
@@ -730,7 +731,7 @@ final class Query extends Facade
      */
     public function truncate(): bool
     {
-        $result = $this->db->execute($this->getTruncateQuery());
+        $result = $this->database->execute($this->getTruncateQuery());
 
         $this->reset();
 
@@ -749,11 +750,11 @@ final class Query extends Facade
 
         if (!$this->insert) return 0;
 
-        $this->db->execute($this->getInsertQuery(), $this->values);
+        $this->database->execute($this->getInsertQuery(), $this->values);
 
         $this->reset();
 
-        return (int) $this->db->lastInsertId();
+        return (int) $this->database->lastInsertId();
     }
 
     /**
@@ -768,7 +769,7 @@ final class Query extends Facade
 
         if (!$this->upsert) return false;
 
-        $result = $this->db->execute($this->getUpsertQuery(), $this->values);
+        $result = $this->database->execute($this->getUpsertQuery(), $this->values);
 
         $this->reset();
 
@@ -789,7 +790,7 @@ final class Query extends Facade
 
         $sql = $this->getUpdateQuery();
 
-        $result = $this->db->execute($sql, $this->values);
+        $result = $this->database->execute($sql, $this->values);
 
         $this->reset();
 
