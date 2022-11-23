@@ -16,6 +16,8 @@ Cookie::set('PHPSESSID', session_id());
 
 if (intval(getenv('APP_DEBUG'))) Cookie::set('XDEBUG_SESSION', 'VSCODE');
 
+require_once "directives.php";
+
 require_once "routes.php";
 
 Router::bootstrap();
