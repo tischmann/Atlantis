@@ -8,17 +8,16 @@ require_once __DIR__ . "/../core/Autoloader.php";
 
 spl_autoload_register("Tischmann\Atlantis\Autoloader::load");
 
-// Подключаем базовые классы приложения
-Autoloader::add('App', 'app');
-
-Autoloader::add('Tischmann\Atlantis\Migrations', 'database');
-
 // Подключаем классы фреймворка
 Autoloader::add('Tischmann\Atlantis', 'core');
 
-// Подключаем дополнительные классы
+// Подключаем базовые классы приложения
+Autoloader::add('App', 'app');
+
+// Подключаем классы базы данных
+Autoloader::add('Tischmann\Atlantis\Migrations', 'database');
 
 // Подключение автозагрузчика зависимостей Composer
-if (file_exists('../vendor/autoloader.php')) {
-    require_once '../vendor/autoloader.php';
+if (file_exists(__DIR__ . '/../vendor/autoloader.php')) {
+    require_once __DIR__ . '/../vendor/autoloader.php';
 }
