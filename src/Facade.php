@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tischmann\Atlantis;
 
+use InvalidArgumentException;
+
 /**
  * Фасад для классов приложения.
  * 
@@ -52,8 +54,13 @@ class Facade
     public function __fill(object|array $traversable): self
     {
         foreach ($traversable as $key => $value) {
-            if (!property_exists($this, $key)) continue;
-            $this->{$key} = $this->__typify($value ??= '', $this->__type($key));
+            if (property_exists($this, $key)) {
+                $value ??= '';
+
+                $value = $this->__typify($value, $this->__type($key));
+
+                $this->{$key} = $value;
+            }
         }
 
         return $this;
@@ -65,6 +72,7 @@ class Facade
      * @param mixed $variable Переменная
      * @param string $type Тип переменной
      * @return mixed Типизированная переменная
+     * @throws InvalidArgumentException Если задан неверный формат
      */
     public function __typify(mixed $variable, string $type): mixed
     {
@@ -79,13 +87,41 @@ class Facade
                 return json_decode($variable, true) ?? [];
             case 'object':
                 return json_decode($variable) ?? (object) [];
-            case 'Tischmann\Atlantis\Time':
-            case 'Tischmann\Atlantis\Date':
-            case 'Tischmann\Atlantis\DateTime':
             case 'DateTime':
-                return $type::validate($variable) ? new $type($variable) : null;
+                if (!DateTimeUtilites::isValid($variable)) {
+                    throw new InvalidArgumentException(
+                        'Invalid date format',
+                        500
+                    );
+                }
+
+                return new $type($variable);
             default:
                 return $variable;
+        }
+    }
+
+    /**
+     * Возвращает представление переменной для записи в БД
+     *
+     * @param mixed $variable Переменная
+     * @return mixed Представление переменной или null
+     */
+    public function __stringify(mixed $variable): mixed
+    {
+        switch ($this->__type($variable)) {
+            case 'bool':
+                return intval($variable);
+            case 'int':
+            case 'float':
+                return $variable;
+            case 'array':
+            case 'object':
+                return json_encode($variable, 32 | 256) ?: null;
+            case 'DateTime':
+                return $variable ? $variable->format('Y-m-d H:i:s') : null;
+            default:
+                return strval($variable) ?: null;
         }
     }
 

@@ -6,20 +6,58 @@ namespace Tischmann\Atlantis;
 
 abstract class Migration
 {
-    protected static $foreigns = [];
-
-    abstract public static function name(): string;
-
-    abstract public static function query(): Query;
+    /**
+     * Массив внешних ключей
+     *
+     * @param array
+     */
+    protected static array $foreigns = [];
 
     /**
-     * Возвращает имя табличного класса 
+     * Возвращает имя таблицы
      * 
-     * @return string Имя табличного класса
+     * @return string Имя таблицы
      */
-    public function table(): string
+    abstract public static function name(): string;
+
+    /**
+     * Возвращает массив столбцов таблицы
+     * 
+     * @return array Массив столбцов таблицы
+     */
+    public function columns(): array
     {
-        return Table::class;
+        return [
+            new Column(
+                name: 'id',
+                type: 'bigint',
+                autoincrement: true,
+                primary: true,
+            ),
+            new Column(
+                name: 'created_at',
+                type: 'datetime',
+                default: 'CURRENT_TIMESTAMP',
+            ),
+            new Column(
+                name: 'updated_at',
+                type: 'datetime',
+                default: null,
+                update: 'CURRENT_TIMESTAMP',
+            )
+        ];
+    }
+
+    /**
+     * Возвращает объект запроса
+     * 
+     * @return Query Объект запроса
+     */
+    public static function query(): Query
+    {
+        $query = new Query();
+        $query->table(static::name());
+        return $query;
     }
 
     /**
@@ -31,13 +69,6 @@ abstract class Migration
     {
         return 0;
     }
-
-    /**
-     * Возвращает массив столбцов таблицы
-     * 
-     * @return array Массив столбцов таблицы
-     */
-    abstract public function columns(): array;
 
     /**
      * Создание таблицы в базе данных

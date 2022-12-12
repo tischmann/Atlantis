@@ -4,30 +4,27 @@ declare(strict_types=1);
 
 namespace Tischmann\Atlantis;
 
+use DateTime;
+
 use Exception;
 
 use IntlDateFormatter;
 
 /**
- * Класс для работы с датой и временем
+ * Класс утилит
  * 
  * @author Yuriy Stolov <yuriystolov@gmail.com>
  */
-class DateTime extends \DateTime
+class DateTimeUtilites
 {
-    public function __toString()
-    {
-        return $this->format("Y-m-d H:i:s");
-    }
-
     /**
      * Возвращает год в виде числа
      * 
      * @return int Год
      */
-    public function getYear(): int
+    public static function getYear(DateTime $date): int
     {
-        return intval($this->format("Y"));
+        return intval($date->format("Y"));
     }
 
     /**
@@ -35,9 +32,9 @@ class DateTime extends \DateTime
      * 
      * @return int Месяц
      */
-    public function getMonth(): int
+    public static function getMonth(DateTime $date): int
     {
-        return intval($this->format("m"));
+        return intval($date->format("m"));
     }
 
     /**
@@ -45,9 +42,9 @@ class DateTime extends \DateTime
      *
      * @return int День
      */
-    public function getDay(): int
+    public static function getDay(DateTime $date): int
     {
-        return intval($this->format("d"));
+        return intval($date->format("d"));
     }
 
     /**
@@ -55,9 +52,9 @@ class DateTime extends \DateTime
      * 
      * @return int Часы
      */
-    public function getHours(): int
+    public static function getHours(DateTime $date): int
     {
-        return intval($this->format("H"));
+        return intval($date->format("H"));
     }
 
     /**
@@ -65,9 +62,9 @@ class DateTime extends \DateTime
      * 
      * @return int Минуты
      */
-    public function getMinutes(): int
+    public static function getMinutes(DateTime $date): int
     {
-        return intval($this->format("i"));
+        return intval($date->format("i"));
     }
 
     /**
@@ -75,24 +72,24 @@ class DateTime extends \DateTime
      * 
      * @return int Секунды
      */
-    public function getSeconds(): int
+    public static function getSeconds(DateTime $date): int
     {
-        return intval($this->format("s"));
+        return intval($date->format("s"));
     }
 
     /**
      * Проверяет корректность строкового представления даты и времени
      * 
-     * @param string $dateTime Строковое представление даты и времени
+     * @param string $dateString Строковое представление даты и времени
      * @return bool true - корректно, false - некорректно
      */
-    public static function validate(string $dateTime): bool
+    public static function isValid(string $dateString): bool
     {
-        if (!$dateTime) return false;
+        if (!$dateString) return false;
 
         try {
-            $date = new static($dateTime);
-        } catch (\Exception $e) {
+            $date = new DateTime($dateString);
+        } catch (Exception $e) {
             return false;
         }
 
@@ -104,10 +101,16 @@ class DateTime extends \DateTime
     /**
      * Возвращает строковое представление даты и времени для выбранной локали и в выбранном формате
      * 
+     * @param DateTime $date Дата и время
+     * @param string $locale Локаль
+     * @param string $pattern Формат даты и времени
      * @return string Строковое представление даты и времени
      */
-    public function localeFormat(string $locale = 'ru', string $pattern = 'd MMMM kk:mm'): string
-    {
+    public static function localeFormat(
+        DateTime $date,
+        string $locale = 'ru',
+        string $pattern = 'd MMMM kk:mm'
+    ): string {
         $locale = match ($locale) {
             'af' => 'af-ZA',
             'am' => 'am-ET',
@@ -221,6 +224,6 @@ class DateTime extends \DateTime
 
         $formatter->setPattern($pattern);
 
-        return $formatter->format($this);
+        return $formatter->format($date);
     }
 }

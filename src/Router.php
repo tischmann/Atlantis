@@ -64,9 +64,12 @@ final class Router
 
         $routes ??= static::$routes['ANY'][$this->request->accept]['any'] ?? null;
 
-        $routes ??= static::$routes['ANY']['any']['any'] ?? null;
-
         $routes ??= [];
+
+        $routes = array_merge(
+            $routes,
+            static::$routes['ANY']['any']['any'] ?? []
+        );
 
         foreach ($routes as $route) {
             assert($route instanceof Route);

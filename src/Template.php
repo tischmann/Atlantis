@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tischmann\Atlantis;
 
+use DateTime;
+
 final class Template
 {
     protected array $each = [];
@@ -327,17 +329,9 @@ final class Template
             if ($inverse) {
                 $replace = !$variable ? $replace : '';
             } elseif ($sign && $value != '') {
-                $replace = match ($sign) {
-                    '==' => $variable == $value ? $replace : '',
-                    '!=' => $variable != $value ? $replace : '',
-                    '>=' => $variable >= $value ? $replace : '',
-                    '<=' => $variable <= $value ? $replace : '',
-                    '>' => $variable > $value ? $replace : '',
-                    '<' => $variable < $value ? $replace : '',
-                    'in' => in_array($variable, explode(',', preg_replace('/\s*,\s*/', ',', $value))) ? $replace : '',
-                    '!in' => !in_array($variable, explode(',', preg_replace('/\s*,\s*/', ',', $value))) ? $replace : '',
-                    default => ''
-                };
+                $replace = static::parseCondition($variable, $sign, $value)
+                    ? $replace
+                    : '';
             } else {
                 $replace = $variable ? $replace : '';
             }
@@ -346,6 +340,64 @@ final class Template
         }
 
         return $this;
+    }
+
+    /**
+     * Парсинг условия
+     * 
+     * @param mixed $variable Переменная
+     * @param string $sign Знак
+     * @param mixed $value Значение
+     * @return bool true - если условие выполняется, иначе false
+     */
+    protected static function parseCondition(
+        mixed $variable,
+        string $sign,
+        string $value
+    ): bool {
+        $conditions = explode('||', $value);
+
+        if (count($conditions) == 1) {
+            return match ($sign) {
+                '==' => $variable == $value,
+                '!=' => $variable != $value,
+                '>=' => $variable >= $value,
+                '<=' => $variable <= $value,
+                '>' => $variable > $value,
+                '<' => $variable < $value,
+                'in' => in_array(
+                    $variable,
+                    explode(',', preg_replace('/\s*,\s*/', ',', $value))
+                ),
+                '!in' => !in_array(
+                    $variable,
+                    explode(',', preg_replace('/\s*,\s*/', ',', $value))
+                ),
+                default => false
+            };
+        }
+
+        $inverse = in_array($sign, ['!=', '!in']);
+
+        $result = $inverse ? true : false;
+
+        foreach ($conditions as $chunk) {
+            if ($inverse) {
+                $result = $result && static::parseCondition(
+                    $variable,
+                    $sign,
+                    $chunk
+                );
+            } else {
+                $result = $result || static::parseCondition(
+                    $variable,
+                    $sign,
+                    $chunk
+                );
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -478,15 +530,20 @@ final class Template
             $variable = $args[$name];
 
             if ($isObject) {
-                switch (true) {
-                    case method_exists($variable, $property):
-                        $variable = $variable->{$property}(...$arguments);
-                        break;
-                    case property_exists($variable, $property):
-                        $variable = $variable->{$property};
-                        break;
-                    default:
-                        continue 2;
+                if (is_array($variable)) {
+                    if (!array_key_exists($property, $variable)) continue;
+                    $variable = $variable[$property];
+                } else if (is_object($variable)) {
+                    switch (true) {
+                        case method_exists($variable, $property):
+                            $variable = $variable->{$property}(...$arguments);
+                            break;
+                        case property_exists($variable, $property):
+                            $variable = $variable->{$property};
+                            break;
+                        default:
+                            continue 2;
+                    }
                 }
             }
 
@@ -518,13 +575,9 @@ final class Template
             case 'object':
                 if ($variable instanceof DateTime) {
                     return $variable->format('Y-m-d H:i:s');
-                } else if ($variable instanceof Date) {
-                    return $variable->format('Y-m-d');
-                } else if ($variable instanceof Time) {
-                    return $variable->format('H:i:s');
                 }
             default:
-                return json_encode($variable, 256);
+                return json_encode($variable, 256 | 128 | 32);
         }
     }
 
