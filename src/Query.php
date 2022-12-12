@@ -587,7 +587,7 @@ final class Query
     {
         $query = clone $this;
 
-        return $query->db->fetchAll($query->getSelectQuery(), $query->values);
+        return $query->database->fetchAll($query->getSelectQuery(), $query->values);
     }
 
     /**
@@ -601,7 +601,7 @@ final class Query
 
         $query->offset(0)->limit(1);
 
-        $rows = $query->db->fetchAll($query->getSelectQuery(), $query->values);
+        $rows = $query->database->fetchAll($query->getSelectQuery(), $query->values);
 
         return $rows[0] ?? (object) [];
     }
@@ -635,7 +635,7 @@ final class Query
             return $this->countDistinct($column);
         }
 
-        return intval($query->db->fetchColumn(
+        return intval($query->database->fetchColumn(
             $query->getCountQuery(),
             $query->values
         ));
@@ -651,7 +651,7 @@ final class Query
     {
         $query = clone $this;
 
-        return intval($query->db->fetchColumn(
+        return intval($query->database->fetchColumn(
             $query->getCountDistinctQuery($column),
             $query->values
         ));
