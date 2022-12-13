@@ -18,20 +18,16 @@
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#ffffff">
     <meta name="msapplication-TileColor" content="#ffffff">
     <title>{{env=APP_TITLE}}</title>
-    <link rel="preload" href="/app.css" as="style" media="all">
+    <link rel="stylesheet" href="/tailwind-elements.css" media="all">
+    <link rel="stylesheet" href="/tailwind.css" media="all">
+    <link rel="stylesheet" href="/fontawesome.css" media="all">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="/app.css" media="all">
     <style>
         body {
             margin: 0;
             padding: 0;
-        }
-
-        main {
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
         }
     </style>
 </head>
@@ -40,6 +36,7 @@
     {{yield=body}}
     <script src="/app.js" nonce="{{nonce}}"></script>
     <script src="/pwa.js" nonce="{{nonce}}"></script>
+    <script src="/tailwind.js" nonce="{{nonce}}"></script>
 </body>
 
 </html>

@@ -42,9 +42,9 @@ final class Locale
     {
         return array_map(
             function ($path) {
-                return strtolower(basename($path));
+                return strtolower(basename($path, ".php"));
             },
-            glob(getenv('APP_ROOT') . "/lang/*", GLOB_ONLYDIR)
+            glob(getenv('APP_ROOT') . "/lang/*.php")
         );
     }
 

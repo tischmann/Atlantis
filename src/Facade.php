@@ -107,21 +107,23 @@ class Facade
      * @param mixed $variable Переменная
      * @return mixed Представление переменной или null
      */
-    public function __stringify(mixed $variable): mixed
+    public function __stringify(string $property): mixed
     {
-        switch ($this->__type($variable)) {
+        switch ($this->__type($property)) {
             case 'bool':
-                return intval($variable);
+                return intval($this->{$property});
             case 'int':
             case 'float':
-                return $variable;
+                return $this->{$property};
             case 'array':
             case 'object':
-                return json_encode($variable, 32 | 256) ?: null;
+                return json_encode($this->{$property}, 32 | 256) ?: null;
             case 'DateTime':
-                return $variable ? $variable->format('Y-m-d H:i:s') : null;
+                return $this->{$property} ?
+                    $this->{$property}->format('Y-m-d H:i:s')
+                    : null;
             default:
-                return strval($variable) ?: null;
+                return strval($this->{$property}) ?: null;
         }
     }
 

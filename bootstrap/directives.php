@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\User;
 use Tischmann\Atlantis\Template;
 
 Template::directive('referrer', function (...$args) {
@@ -24,4 +25,12 @@ $uniqid = uniqid();
 
 Template::directive('uniqid', function (...$args) use ($uniqid) {
     return $uniqid;
+});
+
+Template::ifDirective('auth', function (...$args) {
+    return User::current()->role !== User::ROLE_GUEST;
+});
+
+Template::ifDirective('admin', function (...$args) {
+    return User::current()->role === User::ROLE_ADMIN;
 });

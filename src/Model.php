@@ -73,8 +73,8 @@ abstract class Model extends Facade
 
         $this->created_at = new DateTime();
 
-        foreach ($this as $property) {
-            $insert[$property] = $this->__stringify($this->{$property});
+        foreach ($this as $property => $value) {
+            $insert[$property] = $this->__stringify($property);
         }
 
         if ($insert) {
@@ -103,12 +103,12 @@ abstract class Model extends Facade
 
         $update = [];
 
-        foreach ($this as $property) {
+        foreach ($this as $property => $value) {
             if ($property === 'id') continue;
 
             if ($current->{$property} === $this->{$property}) continue;
 
-            $update[$property] = $this->__stringify($this->{$property});
+            $update[$property] = $this->__stringify($property);
         }
 
         if ($update) {

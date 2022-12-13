@@ -311,17 +311,22 @@ final class Template
                 $variable = $args[$variable];
 
                 if ($isObject) {
-                    if (property_exists($variable, $property)) {
-                        $variable = $variable->{$property};
-                    } else if (method_exists($variable, $property)) {
-                        $variable = $variable->{$property}(...$arguments);
+                    if (is_array($variable)) {
+                        if (array_key_exists($property, $variable)) {
+                            $variable = $variable[$property];
+                        } else {
+                            continue;
+                        }
                     } else {
-                        continue;
+                        if (property_exists($variable, $property)) {
+                            $variable = $variable->{$property};
+                        } else if (method_exists($variable, $property)) {
+                            $variable = $variable->{$property}(...$arguments);
+                        } else {
+                            continue;
+                        }
                     }
                 }
-            } else if ($inverse && !$sign && !$value) {
-                $content = str_replace($tag, $replace, $content);
-                continue;
             } else {
                 continue;
             }
@@ -419,7 +424,7 @@ final class Template
 
             $iterable = $args[$name] ?? null;
 
-            if (!$iterable) continue;
+            if ($iterable === null) continue;
 
             $search = $set[0];
 
@@ -436,10 +441,16 @@ final class Template
             $body = $set[9];
 
             if ($isObject) {
-                if (property_exists($iterable, $property)) {
-                    $iterable = $iterable->{$property};
-                } else if (method_exists($iterable, $property)) {
-                    $iterable = $iterable->{$property}(...$arguments);
+                if (is_array($iterable)) {
+                    if (array_key_exists($property, $iterable)) {
+                        $iterable = $iterable[$property];
+                    }
+                } else {
+                    if (property_exists($iterable, $property)) {
+                        $iterable = $iterable->{$property};
+                    } else if (method_exists($iterable, $property)) {
+                        $iterable = $iterable->{$property}(...$arguments);
+                    }
                 }
             }
 
