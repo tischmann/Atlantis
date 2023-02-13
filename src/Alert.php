@@ -11,7 +11,7 @@ namespace Tischmann\Atlantis;
  */
 class Alert
 {
-    public function __construct(public int $status = 0, public string $message = '')
+    public function __construct(public int $status = -1, public string $message = '')
     {
     }
 }

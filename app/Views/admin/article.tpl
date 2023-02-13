@@ -1,7 +1,5 @@
 {{layout=default}}
 {{section=body}}
-{{include=admin/breadcrumbs}}
-{{include=alert}}
 <main class="container mx-auto">
     <form method="post">
         <article class="m-6">

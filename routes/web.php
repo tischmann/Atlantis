@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Controllers\{AdminController, ArticlesController, IndexController, UsersController};
+use App\Controllers\{AdminController, ArticlesController, CategoriesController, IndexController, UsersController};
 use App\Models\User;
 use Tischmann\Atlantis\{Router, Route};
 
@@ -20,6 +20,7 @@ Router::add(new Route(
 ));
 
 // Админка
+
 if (User::current()->isAdmin()) {
     Router::add(new Route(
         controller: new AdminController(),
@@ -28,37 +29,91 @@ if (User::current()->isAdmin()) {
         method: 'GET'
     ));
 
+    // Категории
+
     Router::add(new Route(
-        controller: new ArticlesController(),
-        path: 'admin/articles',
-        action: 'getArticles',
+        controller: new CategoriesController(),
+        path: 'categories',
+        action: 'index',
         method: 'GET'
     ));
 
     Router::add(new Route(
+        controller: new CategoriesController(),
+        path: 'categories',
+        action: 'index',
+        method: 'GET'
+    ));
+
+    Router::add(new Route(
+        controller: new CategoriesController(),
+        path: 'categories/order',
+        action: 'orderCategories',
+        method: 'POST'
+    ));
+
+    Router::add(new Route(
+        controller: new CategoriesController(),
+        path: 'category/add',
+        action: 'newCategory',
+        method: 'GET'
+    ));
+
+    Router::add(new Route(
+        controller: new CategoriesController(),
+        path: 'category/add',
+        action: 'addCategory',
+        method: 'POST'
+    ));
+
+    Router::add(new Route(
+        controller: new CategoriesController(),
+        path: 'category/edit/{id}',
+        action: 'getCategory',
+        method: 'GET'
+    ));
+
+    Router::add(new Route(
+        controller: new CategoriesController(),
+        path: 'category/edit/{id}',
+        action: 'updateCategory',
+        method: 'POST'
+    ));
+
+    // Статьи
+
+    Router::add(new Route(
         controller: new ArticlesController(),
-        path: 'edit/article/{id}',
+        path: 'articles',
+        action: 'getArticles',
+        method: 'GET'
+    ));
+
+
+    Router::add(new Route(
+        controller: new ArticlesController(),
+        path: 'article/edit/{id}',
         action: 'getArticleEditor',
         method: 'GET'
     ));
 
     Router::add(new Route(
         controller: new ArticlesController(),
-        path: 'edit/article/{id}',
+        path: 'article/edit/{id}',
         action: 'updateArticle',
         method: 'POST'
     ));
 
     Router::add(new Route(
         controller: new ArticlesController(),
-        path: 'add/article',
+        path: 'article/add',
         action: 'addArticle',
         method: 'PUT'
     ));
 
     Router::add(new Route(
         controller: new ArticlesController(),
-        path: 'delete/article/{id}',
+        path: 'article/delete/{id}',
         action: 'deleteArticle',
         method: 'DELETE'
     ));

@@ -8,6 +8,8 @@ use DateTime;
 
 final class Template
 {
+    public string $content = '';
+
     protected array $each = [];
 
     protected static array $directives = [];
@@ -20,11 +22,13 @@ final class Template
 
     public const REGEX_INCLUDE = '/\{{2}include=([a-z0-9_\-\/]+)\}{2}/i';
 
-    public const REGEX_SECTION = '/\{{2}(section)=(\w+)\}{2}((?>(?R)|.)*?)\{{2}\/\1\}{2}/is';
+    public const REGEX_SECTION = '/\{{2}(section)=(\w+)\}{2}(.*(?=\{{2}\/\1\}{2}))\{{2}\/\1\}{2}/is';
 
     public const REGEX_YIELD = '/\{{2}yield=([a-z0-9_\-\/]+)\}{2}/i';
 
-    public const REGEX_FORM = '/<form\b[^>]*>(.*?)<\/form>/is';
+    public const REGEX_CSRF = '/\{{2}csrf\}{2}/is';
+
+    public const REGEX_CSRF_TOKEN = '/\{{2}csrf-token\}{2}/is';
 
     public const REGEX_LANG = '/\{{2}lang=(\w+)\}{2}/i';
 
@@ -34,7 +38,15 @@ final class Template
 
     public const REGEX_EACH = '/\{{2}(each)\s+\$(\w+)(\-\>)?(\w+)?(\(([\w\,\-]*)\))?\sas\s(?:\$(\w+)\s\=\>\s)?\$(\w+)\}{2}((?>(?R)|.)*?)\{{2}\/\1\}{2}/is';
 
-    public const REGEX_IF = '/\{{2}(if)\s+(\!)?\$(\w+)(\-\>)?(\w+)?(\(([\w\,\-]*)\))?\s*(\={2}|\!\=|\<|\>|\<\=|\>\=|in|\!in)?\s*([^\}]*)\}{2}((?>(?R)|.)*?)\{{2}\/\1\}{2}/is';
+    public const REGEX_EACH_FIRST = '/\{{2}(first)\}{2}((?>(?R)|.)*?)\{{2}\/\1\}{2}/is';
+
+    public const REGEX_EACH_LAST = '/\{{2}(last)\}{2}((?>(?R)|.)*?)\{{2}\/\1\}{2}/is';
+
+    public const REGEX_EACH_ODD = '/\{{2}(odd)\}{2}((?>(?R)|.)*?)\{{2}\/\1\}{2}/is';
+
+    public const REGEX_EACH_EVEN = '/\{{2}(even)\}{2}((?>(?R)|.)*?)\{{2}\/\1\}{2}/is';
+
+    public const REGEX_IF = '/\{{2}(if)\s+(\!)?\$(\w+)(\-\>)?(\w+)?(\(([\w\,\-]*)\))?\s*(\={2}|\!\=|\<|\>|\<\=|\>\=|in|\!in)?\s*(\S*)\}{2}((?>(?R)|.)*?)\{{2}\/\1\}{2}/is';
 
     public const REGEX_IF_DIRECTIVE = '/\{{2}(if)\s+(\!)?(\w+)(?:\(([^|)]*)\))?\s*\}{2}((?>(?R)|.)*?)\{{2}\/\1\}{2}/is';
 
@@ -66,18 +78,25 @@ final class Template
         $this->content = $this->raw();
 
         $this->parseLayout()
+            ->parseAllConditions($this->content, $this->args)
             ->parseIncludes()
-            ->parseEnv()
-            ->parseDirectives()
-            ->parseIfDirectives()
-            ->parseIf($this->content, $this->args)
+            ->parseAllConditions($this->content, $this->args)
             ->parseEach($this->content, $this->args)
+            ->parseAllConditions($this->content, $this->args)
             ->parseVariables($this->content, $this->args)
+            ->parseEnv()
             ->parseTranslation()
             ->parseCSRF()
             ->parseLoad();
 
         return $this->content;
+    }
+
+    protected function parseAllConditions(string &$content, array $args): self
+    {
+        return $this->parseIf($content, $args)
+            ->parseIfDirectives()
+            ->parseDirectives();
     }
 
     protected static function load(string $view): string
@@ -305,6 +324,14 @@ final class Template
 
             $value = $set[9];
 
+            if (($value[0] ?? null) === '$') {
+                $value = $tmp = "{{" . $value . "}}";
+
+                $this->parseVariables($value, [...$this->args, ...$args]);
+
+                if ($tmp == $value) continue;
+            }
+
             $replace = $set[10];
 
             if (array_key_exists($variable, $args)) {
@@ -457,6 +484,10 @@ final class Template
             $replace = '';
 
             if (is_iterable($iterable) || is_object($iterable)) {
+                $iteration = 1;
+
+                $count = is_iterable($iterable) ? count($iterable) : count(get_object_vars($iterable));
+
                 foreach ($iterable as $k => $v) {
                     $bodyClone = $body;
 
@@ -466,11 +497,49 @@ final class Template
 
                     $nestedArgs = array_merge($this->args, $nestedArgs);
 
-                    $this->parseIf($bodyClone, $nestedArgs)
+                    $this->parseAllConditions($bodyClone, $nestedArgs)
                         ->parseEach($bodyClone, $nestedArgs)
                         ->parseVariables($bodyClone, $nestedArgs);
 
+                    if (preg_match(static::REGEX_EACH_FIRST, $bodyClone, $m)) {
+                        $bodyClone = str_replace(
+                            $m[0],
+                            $iteration > 1 ? '' : $m[2],
+                            $bodyClone
+                        );
+                    }
+
+                    if ($count === $iteration) {
+                        if (preg_match(static::REGEX_EACH_LAST, $bodyClone, $m)) {
+                            $bodyClone = str_replace(
+                                $m[0],
+                                $m[2],
+                                $bodyClone
+                            );
+                        }
+                    }
+
+                    if ($iteration % 2 == 0) {
+                        if (preg_match(static::REGEX_EACH_EVEN, $bodyClone, $m)) {
+                            $bodyClone = str_replace(
+                                $m[0],
+                                $m[2],
+                                $bodyClone
+                            );
+                        }
+                    } else {
+                        if (preg_match(static::REGEX_EACH_ODD, $bodyClone, $m)) {
+                            $bodyClone = str_replace(
+                                $m[0],
+                                $m[2],
+                                $bodyClone
+                            );
+                        }
+                    }
+
                     $replace .= $bodyClone;
+
+                    $iteration++;
                 }
             } else {
                 $replace = $this->stringifyVariable($iterable);
@@ -600,24 +669,41 @@ final class Template
     protected function parseCSRF(): self
     {
         preg_match_all(
-            static::REGEX_FORM,
+            static::REGEX_CSRF,
             $this->content,
             $matches,
             PREG_SET_ORDER
         );
 
         foreach ($matches as $set) {
-            $search = $set[1];
+            $search = $set[0];
 
             list($key, $token) = CSRF::set();
 
-            $replace = <<<EOL
-            <input type="hidden" name="{$key}" value="{$token}"/>
-            EOL;
+            $replace = '<input type="hidden" name="' . $key . '" value="' . $token . '"/>';
 
             $this->content = str_replace(
                 $search,
-                $search . $replace,
+                $replace,
+                $this->content
+            );
+        }
+
+        preg_match_all(
+            static::REGEX_CSRF_TOKEN,
+            $this->content,
+            $matches,
+            PREG_SET_ORDER
+        );
+
+        foreach ($matches as $set) {
+            $search = $set[0];
+
+            list($key, $token) = CSRF::set();
+
+            $this->content = str_replace(
+                $search,
+                $token,
                 $this->content
             );
         }

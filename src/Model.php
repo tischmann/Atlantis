@@ -103,10 +103,18 @@ abstract class Model extends Facade
 
         $update = [];
 
+        $columns = [];
+
+        foreach ($this->table()->columns() as $column) {
+            $columns[$column->name] = $column;
+        }
+
         foreach ($this as $property => $value) {
             if ($property === 'id') continue;
 
             if ($current->{$property} === $this->{$property}) continue;
+
+            if (!array_key_exists($property, $columns)) continue;
 
             $update[$property] = $this->__stringify($property);
         }
@@ -140,5 +148,27 @@ abstract class Model extends Facade
         foreach ($column as $col) $query->orWhere($col, $value);
 
         return self::make()->__fill($query->first());
+    }
+
+    /**
+     * Возвращает массив моделей из запроса
+     *
+     * @param Query $query Запрос
+     * @param string $key Ключ
+     * @return array Массив моделей
+     */
+    public static function fill(Query $query, string $key = 'id'): array
+    {
+        $array = [];
+
+        foreach ($query->get() as $row) {
+            $model = new static();
+
+            $model->__fill($row);
+
+            $array[$model->{$key}] = $model;
+        }
+
+        return $array;
     }
 }

@@ -22,9 +22,14 @@ final class CSRF
     /**
      * Удаляет все токены
      */
-    public static function flush()
+    public static function flush(string $key = null)
     {
-        $_SESSION[static::SESSION_KEY] = [];
+        if ($key === null) Session::delete(static::SESSION_KEY);
+        else {
+            $tokens = static::tokens();
+            unset($tokens[$key]);
+            Session::set(static::SESSION_KEY, $tokens);
+        }
     }
 
     /**
@@ -34,8 +39,11 @@ final class CSRF
      */
     public static function tokens(): array
     {
-        $_SESSION[static::SESSION_KEY] ??= [];
-        return $_SESSION[static::SESSION_KEY];
+        if (!Session::has(static::SESSION_KEY)) {
+            Session::set(static::SESSION_KEY, []);
+        }
+
+        return Session::get(static::SESSION_KEY);
     }
 
     /**
@@ -78,13 +86,17 @@ final class CSRF
 
                 foreach (static::tokens() as $key => $token) {
                     if (!array_key_exists($key, $args)) continue;
-                    if (($verified = $args[$key] === $token)) break;
+                    if (($verified = $args[$key] === $token)) {
+                        static::flush($key);
+                        break;
+                    }
                 }
             }
         }
 
-        CSRF::flush();
-
-        if (!$verified) throw new Exception("Access denied", 403);
+        if (!$verified) {
+            CSRF::flush();
+            throw new Exception("CSRF token is required!", 403);
+        }
     }
 }

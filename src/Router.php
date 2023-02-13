@@ -74,8 +74,14 @@ final class Router
         foreach ($routes as $route) {
             assert($route instanceof Route);
 
-            if ($route->validate($this->request->uri)) {
+            if ($route->uri && $this->request->uri) {
+                if ($route->validate($this->request->uri)) {
+                    return $route->resolve($this->request);
+                }
+            } else if (!$route->uri && !$this->request->uri) {
                 return $route->resolve($this->request);
+            } else {
+                continue;
             }
         }
 

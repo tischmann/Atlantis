@@ -73,15 +73,25 @@ class Request
 
         $uri = is_array($uri) ? $uri : [];
 
-        $uri = explode('/', $uri['path'] ?? '');
+        $chunks = explode('/', $uri['path'] ?? '');
 
-        array_shift($uri);
+        $uri = [];
+
+        foreach ($chunks as $chunk) {
+            if (empty($chunk)) continue;
+
+            $uri[] = $chunk;
+        }
 
         $chunk = strval(reset($uri));
 
         if (Locale::exists($chunk)) {
             putenv("APP_LOCALE={$chunk}");
             array_shift($uri);
+        }
+
+        if (count($uri) === 1) {
+            if ($uri[0] === '') return [];
         }
 
         return $uri;

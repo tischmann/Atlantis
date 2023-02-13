@@ -6,7 +6,7 @@ namespace App\Controllers;
 
 use App\Models\{Article, Category};
 use Exception;
-use Tischmann\Atlantis\{Alert, Controller, CSRF, Image, Locale, Request, Response, View};
+use Tischmann\Atlantis\{Alert, Breadcrumb, Controller, CSRF, Image, Locale, Request, Response, View};
 
 class ArticlesController extends Controller
 {
@@ -28,10 +28,6 @@ class ArticlesController extends Controller
             'admin/articles',
             [
                 'articles' => $articles,
-                'breadcrumbs' => [
-                    ['title' => Locale::get('adminpanel'), 'href' => '/admin'],
-                    ['title' => Locale::get('adminpanel_articles'), 'href' => '']
-                ],
                 'alert' => $this->getAlert()
             ]
         );
@@ -88,11 +84,6 @@ class ArticlesController extends Controller
                 'article' => $article,
                 'locales' => $locales,
                 'categories' => $categories,
-                'breadcrumbs' => [
-                    ['title' => Locale::get('adminpanel'), 'href' => '/admin'],
-                    ['title' => Locale::get('adminpanel_articles'), 'href' => '/admin/articles'],
-                    ['title' => $article->title, 'href' => '']
-                ],
                 'alert' => $this->getAlert()
             ]
         );
@@ -113,6 +104,8 @@ class ArticlesController extends Controller
         $id = $request->route('id');
 
         $article = Article::find($id);
+
+        assert($article instanceof Article);
 
         if (!$article->exists()) {
             throw new Exception('Article not found');

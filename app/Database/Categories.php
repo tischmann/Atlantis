@@ -24,6 +24,14 @@ class Categories extends Migration
                 description: 'Родительская категория',
             ),
             new Column(
+                name: 'position',
+                type: 'int',
+                length: 3,
+                default: null,
+                index: true,
+                description: 'Порядок сортировки',
+            ),
+            new Column(
                 name: 'slug',
                 type: 'varchar',
                 length: 255,

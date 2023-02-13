@@ -12,7 +12,9 @@ class IndexController extends Controller
     public function index(): void
     {
         Response::send(
-            View::make('welcome', ['user' => User::current()])->render()
+            View::make('welcome', [
+                'user' => User::current()
+            ])->render()
         );
     }
 }

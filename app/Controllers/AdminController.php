@@ -4,25 +4,18 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use Tischmann\Atlantis\{Controller, Locale, Response, View};
+use Tischmann\Atlantis\{Breadcrumb, Controller, Locale, Request, Response, View};
 
 class AdminController extends Controller
 {
     use ArticlesTrait;
 
-    public function index(): void
+    public function index(Request $request)
     {
-        $this->checkAdmin();
-
-        $view = View::make(
-            'admin/index',
-            [
-                'breadcrumbs' => [
-                    ['title' => Locale::get('adminpanel'), 'href' => '']
-                ]
-            ]
-        );
-
-        Response::send($view->render());
+        Response::send(View::make(view: 'admin/index', args: [
+            'breadcrumbs' => [
+                new Breadcrumb(label: Locale::get('adminpanel')),
+            ],
+        ])->render());
     }
 }

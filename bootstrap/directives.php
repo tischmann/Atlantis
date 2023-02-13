@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\User;
-use Tischmann\Atlantis\Template;
+use Tischmann\Atlantis\{CSRF, Template};
 
 Template::directive('referrer', function (...$args) {
     return $_SERVER['HTTP_REFERER'] ?? '/';

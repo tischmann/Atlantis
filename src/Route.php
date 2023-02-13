@@ -35,9 +35,14 @@ final class Route
         public array $args = [],
     ) {
         $this->method = strtoupper($this->method);
+
         $this->accept = strtolower($this->accept);
+
         $this->type = strtolower($this->type);
-        $this->uri = explode('/', $this->path);
+
+        $this->path = trim($this->path);
+
+        $this->uri = $this->path ? explode('/', $this->path) : [];
     }
 
     /**
@@ -48,8 +53,6 @@ final class Route
      */
     public function validate(array $uri): bool
     {
-        if (!$uri) return true;
-
         if (count($uri) !== count($this->uri)) return false;
 
         $args = [];

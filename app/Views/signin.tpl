@@ -1,9 +1,10 @@
 {{layout=default}}
 {{section=body}}
 <main class="w-screen h-screen flex flex-col items-center justify-center select-none">
-    {{include=error}}
-    <div class="block p-6 sm:rounded-lg sm:shadow-lg bg-white w-full max-w-sm">
-        <form action="/signin" method="post">
+    <img src="android-chrome-192x192.png" width="192px" height="192px" alt="Sign in">
+    <div class="block p-6 rounded-lg bg-sky-200 w-full max-w-sm">
+        <form method="post">
+            {{csrf}}
             <div class="form-group mb-6">
                 <label for="loginInput" class="form-label inline-block mb-2 text-gray-700">{{lang=signin_login}}</label>
                 <input type="text" class="form-control

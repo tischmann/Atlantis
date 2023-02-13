@@ -9,6 +9,7 @@ use App\Models\{User};
 use Exception;
 
 use Tischmann\Atlantis\{
+    Alert,
     Controller,
     Cookie,
     CSRF,
@@ -30,7 +31,10 @@ class UsersController extends Controller
         try {
             CSRF::verify($request);
         } catch (Exception $e) {
-            return $this->signInError();
+            Response::redirect('/signin', new Alert(
+                status: 0,
+                message: $e->getMessage()
+            ));
         }
 
         $request->validate([
@@ -49,11 +53,17 @@ class UsersController extends Controller
         assert($user instanceof User);
 
         if (!$user->exists()) {
-            return $this->signInError();
+            Response::redirect('/signin', new Alert(
+                status: 0,
+                message: Locale::get('signin_error_user_not_found')
+            ));
         }
 
         if (!password_verify($password, $user->password)) {
-            return $this->signInError();
+            Response::redirect('/signin', new Alert(
+                status: 0,
+                message: Locale::get('signin_error_bad_password')
+            ));
         }
 
         $month = time() + 60 * 60 * 24 * 30;
@@ -63,13 +73,6 @@ class UsersController extends Controller
         $user->signIn();
 
         Response::redirect('/');
-    }
-
-    private function signInError(): void
-    {
-        Response::send(View::make('signin', [
-            'error' => Locale::get('signin_error'),
-        ])->render());
     }
 
     public function signOut()

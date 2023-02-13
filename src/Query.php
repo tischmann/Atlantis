@@ -566,6 +566,19 @@ final class Query
     }
 
     /**
+     * Добавляет сортировку для выборки в случайном порядке
+     * 
+     * @param bool $reset Сброс сортировки перед добавлением     * 
+     * @return self
+     */
+    public function random(bool $reset = false): self
+    {
+        if ($reset) $this->order = [];
+        $this->order['RAND()'] = '';
+        return $this;
+    }
+
+    /**
      * Устанавливает лимит для выборки
      * 
      * @param int $limit Лимит

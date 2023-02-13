@@ -36,11 +36,16 @@ class Facade
     /**
      * Создаёт экземпляр класса
      *
+     * @param array|object|null $fill Данные для заполнения свойств класса
      * @return self Экземпляр класса
      */
-    public static function make(): static
+    public static function make(array|object|null $fill = null): static
     {
-        return new static();
+        $instance = new static();
+
+        if ($fill !== null) $instance->__fill($fill);
+
+        return $instance;
     }
 
     /**
@@ -76,6 +81,8 @@ class Facade
      */
     public function __typify(mixed $variable, string $type): mixed
     {
+        if ($variable === null) return null;
+
         switch ($type) {
             case 'bool':
                 return boolval($variable);
