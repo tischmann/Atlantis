@@ -116,10 +116,11 @@ class Facade
     {
         switch ($this->__type($property)) {
             case 'bool':
-                return intval($this->{$property});
+                $value = intval($this->{$property});
+                return $value ?: null;
             case 'int':
             case 'float':
-                return $this->{$property};
+                return $this->{$property} ?: null;
             case 'array':
             case 'object':
                 return json_encode($this->{$property}, 32 | 256) ?: null;

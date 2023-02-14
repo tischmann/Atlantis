@@ -1,21 +1,17 @@
-{{layout=default}}
-{{section=body}}
-<main class="container mx-auto">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 m-4">
-        {{each $articles as $article}}
-        <div class="bg-gray-100 rounded p-4">
-            <div class="relative">
-                <img src="{{$article->image}}" width="400" height="300" alt="{{$article->title}}"
-                    class="w-full rounded">
-                <div class="absolute top-0 p-4 flex flex-col gap-4">
-                    <a href="/edit/category/{{$article->category_id}}"
-                        class="inline-block py-2 px-3 backdrop-blur-lg text-white text-xs font-bold rounded border-2 border-white hover:underline">{{$article->category_title}}</a>
-                </div>
-                <a href="/edit/article/{{$article->id}}"
-                    class="absolute bottom-4 inset-x-4 p-4 text-center backdrop-blur-lg rounded font-semibold border-2 border-white text-white text-xl hover:underline">{{$article->title}}</a>
-            </div>
-        </div>
-        {{/each}}
+<main class="container mx-auto ">
+    <div class="p-4 flex sticky-top bg-white">
+        {{breadcrumbs}}
     </div>
+    <div class="mx-4 mb-4 text-gray-500 font-semibold flex items-center gap-4 uppercase">
+        <h1>{{lang=articles}}</h1>
+        <div class="h-0.5 w-full rounded-full bg-gray-500"></div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mx-4">
+        {{items}}
+    </div>
+    <a href="/{{env=APP_LOCALE}}/article/add" class="h-16 w-16 fixed flex 
+    items-center justify-center bottom-4 right-4 text-white text-xl
+    rounded-full bg-pink-600 hover:bg-pink-700 hover:shadow-lg 
+    active:bg-pink-700 focus:bg-pink-700 transition-all ease-in-out"><i class="fas fa-plus"></i></a>
+    <div class="h-24"></div>
 </main>
-{{/section}}

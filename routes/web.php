@@ -68,6 +68,13 @@ if (User::current()->isAdmin()) {
 
     Router::add(new Route(
         controller: new CategoriesController(),
+        path: 'category/add',
+        action: 'addCategory',
+        method: 'PUT'
+    ));
+
+    Router::add(new Route(
+        controller: new CategoriesController(),
         path: 'category/edit/{id}',
         action: 'getCategory',
         method: 'GET'
@@ -80,12 +87,33 @@ if (User::current()->isAdmin()) {
         method: 'POST'
     ));
 
+    Router::add(new Route(
+        controller: new CategoriesController(),
+        path: 'category/delete/{id}',
+        action: 'confirmDeleteCategory',
+        method: 'GET'
+    ));
+
+    Router::add(new Route(
+        controller: new CategoriesController(),
+        path: 'category/delete/{id}',
+        action: 'deleteCategory',
+        method: 'POST'
+    ));
+
+    Router::add(new Route(
+        controller: new CategoriesController(),
+        path: 'category/delete/{id}',
+        action: 'deleteCategory',
+        method: 'DELETE'
+    ));
+
     // Статьи
 
     Router::add(new Route(
         controller: new ArticlesController(),
         path: 'articles',
-        action: 'getArticles',
+        action: 'index',
         method: 'GET'
     ));
 

@@ -73,7 +73,15 @@ abstract class Model extends Facade
 
         $this->created_at = new DateTime();
 
+        $columns = [];
+
+        foreach ($this->table()->columns() as $column) {
+            $columns[$column->name] = $column;
+        }
+
         foreach ($this as $property => $value) {
+            if (!array_key_exists($property, $columns)) continue;
+
             $insert[$property] = $this->__stringify($property);
         }
 
@@ -128,6 +136,17 @@ abstract class Model extends Facade
         }
 
         return true;
+    }
+
+    /**
+     * Удаление модели
+     *
+     * @param string $key Ключ
+     * @return boolean true если удалена, false если нет
+     */
+    public function delete(string $key = 'id'): bool
+    {
+        return static::query()->where($key, $this->{$key})->limit(1)->delete();
     }
 
     /**

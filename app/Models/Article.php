@@ -29,19 +29,65 @@ class Article extends Model
         parent::__construct();
 
         $this->defineCategory();
+
+        $this->defineImage();
+
+        if (!$this->short_text) {
+            $this->short_text = $this->defineShortText();
+        }
     }
 
     public function __fill(object|array $traversable): self
     {
         parent::__fill($traversable);
 
-        return $this->defineCategory();
+        $this->defineCategory();
+
+        $this->defineImage();
+
+        if (!$this->short_text) {
+            $this->short_text = $this->defineShortText();
+        }
+
+        return $this;
+    }
+
+    public function defineShortText(): string
+    {
+        preg_match('/^(?:[^\.]+\.){3}/', $this->full_text, $matches);
+
+        if ($matches) return $matches[0];
+
+        $text = strip_tags($this->full_text);
+
+        $text = preg_replace('/\s+/', ' ', $text);
+
+        $text = mb_substr($text, 0, 200) . '...';
+
+        return $text;
+    }
+
+    public function defineImage(): self
+    {
+        $placeholder = "/images/placeholder.svg";
+
+        $this->image = $this->image
+            ? "/images/articles/{$this->id}/{$this->image}"
+            : $placeholder;
+
+        if (!is_file(getenv('APP_ROOT') . "/public{$this->image}")) {
+            $this->image = $placeholder;
+        }
+
+        return $this;
     }
 
     public function defineCategory(): self
     {
         if ($this->category_id) {
             $category = Category::find($this->category_id);
+
+            assert($category instanceof Category);
 
             $this->category_title = $category->title;
 

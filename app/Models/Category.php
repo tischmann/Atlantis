@@ -12,8 +12,6 @@ use Tischmann\Atlantis\{Migration, Model};
 
 class Category extends Model
 {
-    public const DEPRECATED_SLUGS = ['admin'];
-
     public array $children = [];
 
     public function __construct(
@@ -58,13 +56,17 @@ class Category extends Model
         return $children;
     }
 
-    public function save(): bool
+    public function insert(): bool
     {
-        if (in_array($this->slug, self::DEPRECATED_SLUGS)) {
-            throw new Exception("Slug '{$this->slug}' is deprecated");
+        $category = Category::find($this->slug, 'slug');
+
+        assert($category instanceof Category);
+
+        if ($category->id) {
+            throw new Exception("Category with slug '{$category->slug}' already exists");
         }
 
-        return parent::save();
+        return parent::insert();
     }
 
     public static function table(): Migration

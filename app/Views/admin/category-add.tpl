@@ -24,7 +24,7 @@
                 border border-solid border-gray-300 rounded transition
                 ease-in-out m-0 focus:text-gray-700 focus:bg-white 
                 focus:border-blue-600 focus:outline-none" id="categoryTitle" name="title"
-                placeholder="{{lang=category_title}}" value="{{category_title}}" required />
+                placeholder="{{lang=category_title}}" value="" required />
         </div>
         <div class="mb-4">
             <label for="categoryParent"
@@ -45,27 +45,13 @@
                         border border-solid border-gray-300 rounded transition
                         ease-in-out m-0 focus:text-gray-700 focus:bg-white 
                         focus:border-blue-600 focus:outline-none" id="categorySlug" name="slug"
-                placeholder="{{lang=category_slug}}" value="{{category_slug}}" required />
+                placeholder="{{lang=category_slug}}" value="" required />
         </div>
-        {{category_children}}
-        <div class="mt-8 mb-4 flex gap-4 justify-between items-center">
-            <a href="/category/delete/{{category_id}}"
-                class="inline-block px-6 py-2.5 bg-pink-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-pink-700 hover:shadow-lg focus:bg-pink-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-rpinked-800 active:shadow-lg transition duration-150 ease-in-out">{{lang=delete}}</a>
-            <div class="flex-grow flex justify-end gap-4 items-center">
-                <a href="/categories"
-                    class="inline-block px-6 py-2.5 bg-gray-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg focus:bg-gray-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gray-800 active:shadow-lg transition duration-150 ease-in-out">{{lang=cancel}}</a>
-                <button type="submit"
-                    class="inline-block px-6 py-2.5 bg-sky-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-sky-700 hover:shadow-lg focus:bg-sky-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-sky-800 active:shadow-lg transition duration-150 ease-in-out">{{lang=save}}</button>
-            </div>
-
+        <div class="mt-8 mb-4 flex gap-4 justify-end items-center">
+            <a href="/categories"
+                class="inline-block px-6 py-2.5 bg-gray-200 text-gray-700 font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-gray-300 hover:shadow-lg focus:bg-gray-300 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gray-400 active:shadow-lg transition duration-150 ease-in-out">{{lang=cancel}}</a>
+            <button type="submit"
+                class="inline-block px-6 py-2.5 bg-sky-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-sky-700 hover:shadow-lg focus:bg-sky-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-sky-800 active:shadow-lg transition duration-150 ease-in-out">{{lang=add}}</button>
         </div>
     </form>
-    <script src="/js/sortable.js" nonce="{{nonce}}"></script>
-    <script nonce="{{nonce}}">
-        new Sortable(document.getElementById('childrenCategories'), {
-            handle: '.handle',
-            animation: 150,
-            ghostClass: 'bg-sky-200'
-        });
-    </script>
 </main>

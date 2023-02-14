@@ -5,90 +5,112 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Models\{Article, Category};
+
 use Exception;
-use Tischmann\Atlantis\{Alert, Breadcrumb, Controller, CSRF, Image, Locale, Request, Response, View};
+
+use Tischmann\Atlantis\{
+    Alert,
+    Breadcrumb,
+    Controller,
+    CSRF,
+    Image,
+    Locale,
+    Request,
+    Response,
+    Template,
+    View
+};
 
 class ArticlesController extends Controller
 {
     use ArticlesTrait;
 
-    public function getArticles(): void
+    public function index(): void
     {
         $this->checkAdmin();
 
-        $articles = [];
+        $items = '';
 
-        $query = Article::query();
+        foreach (Article::fill(Article::query()) as $article) {
+            assert($article instanceof Article);
 
-        foreach ($query->get() as $row) {
-            $articles[] = $this->processArticle(Article::make()->__fill($row));
+            $items .= Template::make('admin/articles-item', [
+                'article_id' => $article->id,
+                'article_image' => $article->image,
+                'article_title' => $article->title,
+                'article_description' => $article->short_text,
+            ])->render();
         }
 
-        $view = View::make(
+        Response::send(View::make(
             'admin/articles',
             [
-                'articles' => $articles,
-                'alert' => $this->getAlert()
+                'breadcrumbs' => AdminController::renderBreadcrumbs([
+                    new Breadcrumb(
+                        url: '/admin',
+                        label: Locale::get('adminpanel')
+                    ),
+                    new Breadcrumb(
+                        label: Locale::get('articles')
+                    ),
+                ]),
+                'items' => $items
             ]
-        );
-
-        Response::send($view->render());
+        )->render());
     }
 
     public function getArticle(Request $request): void
     {
-        $this->checkAdmin();
+        $id = $request->route('id');
 
-        $article = Article::find($request->route('id'));
+        $article = Article::find($id);
 
-        $view = View::make(
+        assert($article instanceof Article);
+
+        if (!$article->id) {
+            throw new Exception("Article ID:{$id} not found");
+        }
+
+        Response::send(View::make(
             'article',
-            [
-                'article' => $this->processArticle($article),
-            ]
-        );
-
-        Response::send($view->render());
+            []
+        )->render());
     }
 
     public function getArticleEditor(Request $request): void
     {
         $this->checkAdmin();
 
-        $article = Article::find($request->route('id'));
+        $id = $request->route('id');
 
-        $article = $this->processArticle($article);
+        $article = Article::find($id);
 
-        $locales = [];
+        assert($article instanceof Article);
 
-        foreach (Locale::available() as $locale) {
-            $locales[$locale] = [
-                'title' => Locale::get("locale_{$locale}"),
-                'selected' => getenv('APP_LOCALE') === $locale
-            ];
+        if (!$article->id) {
+            throw new Exception("Article ID:{$id} not found");
         }
 
-        $categories = [];
-
-        $query = Category::query()->where('locale', $article->locale);
-
-        foreach ($query->get() as $row) {
-            $category = (object) get_object_vars(Category::make()->__fill($row));
-            $category->selected = $article->category_id == $category->id;
-            $categories[] = $category;
-        }
-
-        $view = View::make(
+        Response::send(View::make(
             'admin/article',
             [
-                'article' => $article,
-                'locales' => $locales,
-                'categories' => $categories,
-                'alert' => $this->getAlert()
+                'locales_options' => $this->getLocalesOptions($article->locale),
+                'category_options' => $this->getCategoriesOptions($article),
+                'breadcrumbs' => AdminController::renderBreadcrumbs([
+                    new Breadcrumb(
+                        url: '/admin',
+                        label: Locale::get('adminpanel')
+                    ),
+                    new Breadcrumb(
+                        url: '/articles',
+                        label: Locale::get('articles')
+                    ),
+                    new Breadcrumb(
+                        label: $article->title
+                    ),
+                ]),
             ]
-        );
-
-        Response::send($view->render());
+        )->render());
     }
 
     public function updateArticle(Request $request): void
@@ -229,5 +251,28 @@ class ArticlesController extends Controller
                 message: "Article saved"
             )
         );
+    }
+
+    public static function getCategoriesOptions(Article $article): string
+    {
+        $options = Template::make('option', [
+            'value' => '',
+            'title' => '',
+            'label' => '',
+            'selected' => !$article->category_id ? 'selected' : '',
+        ])->render();
+
+        foreach (Category::fill(Category::query()) as $category) {
+            assert($category instanceof Category);
+
+            $options .= Template::make('option', [
+                'value' => $category->id,
+                'title' => $category->title,
+                'label' => $category->title,
+                'selected' => $category->id == $article->category_id ? 'selected' : '',
+            ])->render();
+        }
+
+        return $options;
     }
 }

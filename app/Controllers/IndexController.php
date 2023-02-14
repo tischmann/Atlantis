@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Models\User;
-use Tischmann\Atlantis\{Controller, View, Response};
+use Tischmann\Atlantis\{Controller, View, Response, Template};
 
 class IndexController extends Controller
 {
@@ -13,7 +12,9 @@ class IndexController extends Controller
     {
         Response::send(
             View::make('index', [
-                'admin' => $this->getAdminMenu()
+                'admin' => $this->isAdmin()
+                    ? Template::make('admin')->render()
+                    : '',
             ])->render()
         );
     }

@@ -12,6 +12,31 @@ class AdminController extends Controller
 
     public function index(Request $request)
     {
+        $this->checkAdmin();
+
+        $items = '';
+
+        $sections = [
+            'categories' => [
+                'label' => Locale::get('categories'),
+                'url' => '/categories',
+                'icon' => 'fas fa-sitemap',
+                'title' => Locale::get('categories'),
+            ],
+            'articles' => [
+                'label' => Locale::get('articles'),
+                'url' => '/articles',
+                'icon' => 'fas fa-newspaper',
+                'title' => Locale::get('articles'),
+            ],
+        ];
+
+        foreach ($sections as $item => $args) {
+            $items .= Template::make(
+                template: 'admin/index-item',
+                args: $args
+            )->render();
+        }
 
         Response::send(
             View::make(
@@ -22,7 +47,7 @@ class AdminController extends Controller
                             new Breadcrumb(label: Locale::get('adminpanel')),
                         ]
                     ),
-                    'admin' => $this->getAdminMenu(),
+                    'items' => $items,
                 ]
             )->render()
         );
