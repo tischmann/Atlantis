@@ -174,6 +174,8 @@ class User extends Model
 
         $user = self::find($payload?->id ?? 0);
 
+        assert($user instanceof self);
+
         if ($user->refresh_token !== $refresh_token || !$refresh_token) {
             $this->signOut();
             throw new TokenExpiredException();

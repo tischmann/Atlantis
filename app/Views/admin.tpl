@@ -17,7 +17,7 @@
     </div>
     <div class="offcanvas-body flex-grow p-4 overflow-y-auto">
         <div class="flex flex-col gap-8 md:gap-4 text-gray-500 text-xl md:text-base">
-            {{include=admin/list}}
+            {{menu}}
         </div>
     </div>
 </div>

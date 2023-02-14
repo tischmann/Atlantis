@@ -34,8 +34,7 @@
 </head>
 
 <body>
-    {{include=alert}}
-    {{yield=body}}
+    {{body}}
     <script src="/tailwind.js" nonce="{{nonce}}"></script>
     <script src="/app.js" nonce="{{nonce}}"></script>
     <script src="/pwa.js" nonce="{{nonce}}"></script>

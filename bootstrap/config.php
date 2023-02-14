@@ -42,6 +42,13 @@ mb_language('uni');
 
 // Настройки приложения
 
+$env = [
+    'APP_ROOT',
+    'APP_NONCE',
+    'APP_LOCALE',
+    'APP_TITLE'
+];
+
 putenv("APP_ROOT=" . dirname(__FILE__, 2));
 
 putenv('APP_NONCE=' . bin2hex(random_bytes(32)));
@@ -51,5 +58,13 @@ $config = getenv('APP_ROOT') . "/.env";
 if (!file_exists($config)) die("Файл конфигурации не найден!");
 
 foreach (file($config, FILE_SKIP_EMPTY_LINES) as $line) {
-    if (preg_match("/^\s*([A-Z_0-9]+=.*)$/", $line)) putenv(trim($line));
+    if (preg_match("/^\s*([A-Z_0-9]+=.*)$/", $line)) {
+        $key = explode('=', $line)[0];
+
+        $env[] = $key;
+
+        putenv(trim($line));
+    }
 }
+
+define('ENVIRONMENT_VARIABLES', $env);

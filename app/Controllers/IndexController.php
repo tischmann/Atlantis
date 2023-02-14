@@ -12,8 +12,8 @@ class IndexController extends Controller
     public function index(): void
     {
         Response::send(
-            View::make('welcome', [
-                'user' => User::current()
+            View::make('index', [
+                'admin' => $this->getAdminMenu()
             ])->render()
         );
     }

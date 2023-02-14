@@ -23,7 +23,9 @@ class UsersController extends Controller
 {
     public function signinForm(): void
     {
-        Response::send(View::make('signin')->render());
+        Response::send(
+            View::make('signin', ['csrf' => $this->getCsrfInput()])->render()
+        );
     }
 
     public function signin(Request $request)

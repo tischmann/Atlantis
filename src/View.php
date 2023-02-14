@@ -8,18 +8,19 @@ final class View
 {
     protected Template $template;
 
-    public function __construct(public string $view, public array $args = [])
-    {
-        $alert = Session::get('alert');
-
-        if ($alert) Session::delete('alert');
-
+    public function __construct(
+        public string $view,
+        public array $args = [],
+        string $layout = 'default'
+    ) {
         $this->template = new Template(
-            $view,
+            "layouts/{$layout}",
             [
-                'alert' => $alert ?: new Alert(),
-                'breadcrumbs' => [],
-                ...$args
+                ...$args,
+                'body' => Template::make(
+                    template: $view,
+                    args: $args
+                )->render(),
             ]
         );
     }

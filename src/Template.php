@@ -6,766 +6,93 @@ namespace Tischmann\Atlantis;
 
 use DateTime;
 
+use Exception;
+
 final class Template
 {
-    public string $content = '';
-
-    protected array $each = [];
-
-    protected static array $directives = [];
-
-    protected static array $ifDirectives = [];
-
-    public const REGEX_VARIABLE = '/\{{2}\s*\$(\w+)(\-\>)?(\w+)?(\(([\w\,\-]*)\))?\s*\}{2}/';
-
-    public const REGEX_LAYOUT = '/\{{2}layout=([a-z0-9_\-\/]+)\}{2}/i';
-
-    public const REGEX_INCLUDE = '/\{{2}include=([a-z0-9_\-\/]+)\}{2}/i';
-
-    public const REGEX_SECTION = '/\{{2}(section)=(\w+)\}{2}(.*(?=\{{2}\/\1\}{2}))\{{2}\/\1\}{2}/is';
-
-    public const REGEX_YIELD = '/\{{2}yield=([a-z0-9_\-\/]+)\}{2}/i';
-
-    public const REGEX_CSRF = '/\{{2}csrf\}{2}/is';
-
-    public const REGEX_CSRF_TOKEN = '/\{{2}csrf-token\}{2}/is';
-
-    public const REGEX_LANG = '/\{{2}lang=(\w+)\}{2}/i';
-
-    public const REGEX_ENV = '/\{{2}env=(\w+)\}{2}/i';
-
-    public const REGEX_LOAD = '/\{{2}load=(.+)\}{2}/';
-
-    public const REGEX_EACH = '/\{{2}(each)\s+\$(\w+)(\-\>)?(\w+)?(\(([\w\,\-]*)\))?\sas\s(?:\$(\w+)\s\=\>\s)?\$(\w+)\}{2}((?>(?R)|.)*?)\{{2}\/\1\}{2}/is';
-
-    public const REGEX_EACH_FIRST = '/\{{2}(first)\}{2}((?>(?R)|.)*?)\{{2}\/\1\}{2}/is';
-
-    public const REGEX_EACH_LAST = '/\{{2}(last)\}{2}((?>(?R)|.)*?)\{{2}\/\1\}{2}/is';
-
-    public const REGEX_EACH_ODD = '/\{{2}(odd)\}{2}((?>(?R)|.)*?)\{{2}\/\1\}{2}/is';
-
-    public const REGEX_EACH_EVEN = '/\{{2}(even)\}{2}((?>(?R)|.)*?)\{{2}\/\1\}{2}/is';
-
-    public const REGEX_IF = '/\{{2}(if)\s+(\!)?\$(\w+)(\-\>)?(\w+)?(\(([\w\,\-]*)\))?\s*(\={2}|\!\=|\<|\>|\<\=|\>\=|in|\!in)?\s*(\S*)\}{2}((?>(?R)|.)*?)\{{2}\/\1\}{2}/is';
-
-    public const REGEX_IF_DIRECTIVE = '/\{{2}(if)\s+(\!)?(\w+)(?:\(([^|)]*)\))?\s*\}{2}((?>(?R)|.)*?)\{{2}\/\1\}{2}/is';
-
-    public const REGEX_DIRECTIVE = '/(\{{2}(\w+)(?:\(([^|)]*)\))?\}{2})/is';
+    public string $content = ''; // The content of the template file
 
     public function __construct(
-        protected string $view,
+        protected string $template,
         protected array $args = []
     ) {
+
+        $this->content = $this->read();
     }
 
-    public static function ifDirective(string $name, callable $callback): void
+    public static function make(string $template, array $args = []): Template
     {
-        static::$ifDirectives[$name] = $callback;
+        return new static($template, $args);
     }
 
-    public static function directive(string $name, callable $callback): void
+    public function read(): string
     {
-        static::$directives[$name] = $callback;
+        $file = __DIR__ . '/../app/Views/' . $this->template . '.tpl';
+
+        if (!file_exists($file)) {
+            throw new Exception('View file not found: ' . $file);
+        }
+
+        return file_get_contents($file);
     }
 
-    /**
-     * Отрисовка шаблона
-     * 
-     * @return string HTML-код шаблона
-     */
     public function render(): string
     {
-        $this->content = $this->raw();
+        $alert = Session::get('alert');
 
-        $this->parseLayout()
-            ->parseAllConditions($this->content, $this->args)
-            ->parseIncludes()
-            ->parseAllConditions($this->content, $this->args)
-            ->parseEach($this->content, $this->args)
-            ->parseAllConditions($this->content, $this->args)
-            ->parseVariables($this->content, $this->args)
-            ->parseEnv()
-            ->parseTranslation()
-            ->parseCSRF()
-            ->parseLoad();
+        if ($alert) Session::delete('alert');
 
-        return $this->content;
-    }
+        $alert = $alert ?: new Alert();
 
-    protected function parseAllConditions(string &$content, array $args): self
-    {
-        return $this->parseIf($content, $args)
-            ->parseIfDirectives()
-            ->parseDirectives();
-    }
+        $strings = [];
 
-    protected static function load(string $view): string
-    {
-        $path = getenv('APP_ROOT') . "/app/Views/{$view}.tpl";
-
-        if (!file_exists($path)) {
-            throw new \Exception("Представление не найдено: {$path}");
+        foreach (Locale::getLocale(getenv('APP_LOCALE')) as $key => $value) {
+            $strings["lang={$key}"] = $value;
         }
 
-        try {
-            $content = file_get_contents($path);
-        } catch (\Exception $exception) {
-            throw new \Exception($exception->getMessage());
+        $env = [];
+
+        foreach (ENVIRONMENT_VARIABLES as $key) {
+            $env["env=$key"] = getenv($key);
         }
 
-        if ($content === false) {
-            throw new \Exception(error_get_last()['message'] ?? '');
-        }
+        $this->args = [
+            ...$env,
+            'nonce' => getenv('APP_NONCE'),
+            ...$strings,
+            'breadcrumbs' => '',
+            'alert' => $alert->toHtml(),
+            ...$this->args,
+        ];
 
-        return $content;
-    }
+        $parsed = $this->content;
 
-    public function raw(): string
-    {
-        return static::load($this->view);
-    }
-
-    /**
-     * Парсинг макета
-     * 
-     * @return self 
-     */
-    protected function parseLayout(): self
-    {
-        if (preg_match(static::REGEX_LAYOUT, $this->content, $matches)) {
-            $tag = $matches[0];
-            $layout = $matches[1];
-            $this->content = str_replace(
-                $tag,
-                static::load("layouts/{$layout}"),
-                $this->content
+        foreach ($this->args as $key => $value) {
+            $parsed = str_replace(
+                '{{' . $key . '}}',
+                $this->stringify($value),
+                $parsed
             );
         }
 
-        return $this;
+        return $parsed;
     }
 
-    protected function parseIncludes(): self
+    private function stringify(mixed $value): string
     {
-        do {
-            $sections = $this->parseSections();
-            $this->fillSections($sections);
-            $this->parseInclude();
-        } while ($sections);
-
-        return $this;
-    }
-
-    /**
-     * Парсинг секций
-     * 
-     * @return array 
-     */
-    protected function parseSections(): array
-    {
-        $sections = [];
-
-        preg_match_all(
-            static::REGEX_SECTION,
-            $this->content,
-            $matches,
-            PREG_SET_ORDER
-        );
-
-        foreach ($matches as $set) {
-            $tag = $set[0];
-            $key = $set[2];
-            $value = $set[3];
-            $sections[$key] = $value;
-            $this->content = str_replace($tag, '', $this->content);
-        }
-
-        return $sections;
-    }
-
-    /**
-     * Заполнение секций
-     * 
-     * @param array $sections Секции
-     * @return self 
-     */
-    protected function fillSections(array $sections = []): self
-    {
-        if (!$sections) return $this;
-
-        preg_match_all(
-            static::REGEX_YIELD,
-            $this->content,
-            $matches,
-            PREG_SET_ORDER
-        );
-
-        foreach ($matches as $set) {
-            $tag = $set[0];
-            $key = $set[1];
-            $this->content = str_replace($tag, $sections[$key], $this->content);
-        }
-
-        return $this;
-    }
-
-    protected function parseInclude(): self
-    {
-        preg_match_all(
-            static::REGEX_INCLUDE,
-            $this->content,
-            $matches,
-            PREG_SET_ORDER
-        );
-
-        foreach ($matches as $set) {
-            $tag = $set[0];
-
-            $view = $set[1];
-
-            $view = new View(view: $view, args: $this->args);
-
-            $this->content = str_replace($tag, $view->render(), $this->content);
-        }
-
-        return $this;
-    }
-
-    protected function parseDirectives(): self
-    {
-        preg_match_all(
-            static::REGEX_DIRECTIVE,
-            $this->content,
-            $matches,
-            PREG_SET_ORDER
-        );
-
-        foreach ($matches as $set) {
-            $tag = $set[0];
-
-            $directive = $set[2];
-
-            $args = explode(',', $set[3] ?? '');
-
-            if (!array_key_exists($directive, static::$directives)) continue;
-
-            $replace = static::$directives[$directive](...$args);
-
-            $this->content = str_replace($tag, $replace, $this->content);
-        }
-
-        return $this;
-    }
-
-    protected function parseIfDirectives(): self
-    {
-        preg_match_all(
-            static::REGEX_IF_DIRECTIVE,
-            $this->content,
-            $matches,
-            PREG_SET_ORDER
-        );
-
-        foreach ($matches as $set) {
-            $tag = $set[0];
-
-            $inverse = boolval($set[2] ?? false);
-
-            $directive = $set[3];
-
-            $args = explode(',', $set[4] ?? '');
-
-            $replace = $set[5];
-
-            if (!array_key_exists($directive, static::$ifDirectives)) continue;
-
-            $result = boolval(static::$ifDirectives[$directive](...$args));
-
-            if ($inverse) $result = !$result;
-
-            $this->content = str_replace(
-                $tag,
-                $result ? $replace : '',
-                $this->content
-            );
-        }
-
-        return $this;
-    }
-
-    /**
-     * Парсинг условия
-     * 
-     * @return self
-     */
-    protected function parseIf(string &$content, array $args): self
-    {
-        preg_match_all(
-            static::REGEX_IF,
-            $content,
-            $matches,
-            PREG_SET_ORDER
-        );
-
-        foreach ($matches as $set) {
-            $tag = $set[0];
-
-            $inverse = boolval($set[2] ?? false);
-
-            $variable = $set[3];
-
-            $isObject = boolval($set[4] ?? false);
-
-            $property = $set[5];
-
-            $arguments = explode(',', $set[7]);
-
-            $sign = $set[8];
-
-            $value = $set[9];
-
-            if (($value[0] ?? null) === '$') {
-                $value = $tmp = "{{" . $value . "}}";
-
-                $this->parseVariables($value, [...$this->args, ...$args]);
-
-                if ($tmp == $value) continue;
-            }
-
-            $replace = $set[10];
-
-            if (array_key_exists($variable, $args)) {
-                $variable = $args[$variable];
-
-                if ($isObject) {
-                    if (is_array($variable)) {
-                        if (array_key_exists($property, $variable)) {
-                            $variable = $variable[$property];
-                        } else {
-                            continue;
-                        }
-                    } else {
-                        if (property_exists($variable, $property)) {
-                            $variable = $variable->{$property};
-                        } else if (method_exists($variable, $property)) {
-                            $variable = $variable->{$property}(...$arguments);
-                        } else {
-                            continue;
-                        }
-                    }
-                }
-            } else {
-                continue;
-            }
-
-            if ($inverse) {
-                $replace = !$variable ? $replace : '';
-            } elseif ($sign && $value != '') {
-                $replace = static::parseCondition($variable, $sign, $value)
-                    ? $replace
-                    : '';
-            } else {
-                $replace = $variable ? $replace : '';
-            }
-
-            $content = str_replace($tag, $replace, $content);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Парсинг условия
-     * 
-     * @param mixed $variable Переменная
-     * @param string $sign Знак
-     * @param mixed $value Значение
-     * @return bool true - если условие выполняется, иначе false
-     */
-    protected static function parseCondition(
-        mixed $variable,
-        string $sign,
-        string $value
-    ): bool {
-        $conditions = explode('||', $value);
-
-        if (count($conditions) == 1) {
-            return match ($sign) {
-                '==' => $variable == $value,
-                '!=' => $variable != $value,
-                '>=' => $variable >= $value,
-                '<=' => $variable <= $value,
-                '>' => $variable > $value,
-                '<' => $variable < $value,
-                'in' => in_array(
-                    $variable,
-                    explode(',', preg_replace('/\s*,\s*/', ',', $value))
-                ),
-                '!in' => !in_array(
-                    $variable,
-                    explode(',', preg_replace('/\s*,\s*/', ',', $value))
-                ),
-                default => false
-            };
-        }
-
-        $inverse = in_array($sign, ['!=', '!in']);
-
-        $result = $inverse ? true : false;
-
-        foreach ($conditions as $chunk) {
-            if ($inverse) {
-                $result = $result && static::parseCondition(
-                    $variable,
-                    $sign,
-                    $chunk
-                );
-            } else {
-                $result = $result || static::parseCondition(
-                    $variable,
-                    $sign,
-                    $chunk
-                );
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * Парсинг цикла
-     * 
-     * @return self
-     */
-    protected function parseEach(string &$content, array $args): self
-    {
-        preg_match_all(
-            static::REGEX_EACH,
-            $content,
-            $matches,
-            PREG_SET_ORDER
-        );
-
-        foreach ($matches as $set) {
-            $name = $set[2];
-
-            $iterable = $args[$name] ?? null;
-
-            if ($iterable === null) continue;
-
-            $search = $set[0];
-
-            $isObject = boolval($set[3] ?? false);
-
-            $property = $set[4] ?? null;
-
-            $arguments = explode(',', $set[6] ?? '');
-
-            $key = $set[7] ?? null;
-
-            $value = $set[8];
-
-            $body = $set[9];
-
-            if ($isObject) {
-                if (is_array($iterable)) {
-                    if (array_key_exists($property, $iterable)) {
-                        $iterable = $iterable[$property];
-                    }
-                } else {
-                    if (property_exists($iterable, $property)) {
-                        $iterable = $iterable->{$property};
-                    } else if (method_exists($iterable, $property)) {
-                        $iterable = $iterable->{$property}(...$arguments);
-                    }
-                }
-            }
-
-            $replace = '';
-
-            if (is_iterable($iterable) || is_object($iterable)) {
-                $iteration = 1;
-
-                $count = is_iterable($iterable) ? count($iterable) : count(get_object_vars($iterable));
-
-                foreach ($iterable as $k => $v) {
-                    $bodyClone = $body;
-
-                    $nestedArgs = [$value => $v];
-
-                    if ($key) $nestedArgs[$key] = $k;
-
-                    $nestedArgs = array_merge($this->args, $nestedArgs);
-
-                    $this->parseAllConditions($bodyClone, $nestedArgs)
-                        ->parseEach($bodyClone, $nestedArgs)
-                        ->parseVariables($bodyClone, $nestedArgs);
-
-                    if (preg_match(static::REGEX_EACH_FIRST, $bodyClone, $m)) {
-                        $bodyClone = str_replace(
-                            $m[0],
-                            $iteration > 1 ? '' : $m[2],
-                            $bodyClone
-                        );
-                    }
-
-                    if ($count === $iteration) {
-                        if (preg_match(static::REGEX_EACH_LAST, $bodyClone, $m)) {
-                            $bodyClone = str_replace(
-                                $m[0],
-                                $m[2],
-                                $bodyClone
-                            );
-                        }
-                    }
-
-                    if ($iteration % 2 == 0) {
-                        if (preg_match(static::REGEX_EACH_EVEN, $bodyClone, $m)) {
-                            $bodyClone = str_replace(
-                                $m[0],
-                                $m[2],
-                                $bodyClone
-                            );
-                        }
-                    } else {
-                        if (preg_match(static::REGEX_EACH_ODD, $bodyClone, $m)) {
-                            $bodyClone = str_replace(
-                                $m[0],
-                                $m[2],
-                                $bodyClone
-                            );
-                        }
-                    }
-
-                    $replace .= $bodyClone;
-
-                    $iteration++;
-                }
-            } else {
-                $replace = $this->stringifyVariable($iterable);
-            }
-
-            $content = str_replace($search, $replace, $content);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Парсинг строковых переменных локализации
-     * 
-     * @return self
-     */
-    protected function parseTranslation(): self
-    {
-        preg_match_all(
-            static::REGEX_LANG,
-            $this->content,
-            $matches,
-            PREG_SET_ORDER
-        );
-
-        foreach ($matches as $set) {
-            $tag = $set[0];
-            $key = $set[1];
-            $this->content = str_replace(
-                $tag,
-                Locale::get($key),
-                $this->content
-            );
-        }
-
-        return $this;
-    }
-
-    /**
-     * Парсинг переменных в теле шаблона
-     * 
-     * @return self
-     */
-    protected function parseVariables(string &$content, array $args): self
-    {
-        preg_match_all(
-            static::REGEX_VARIABLE,
-            $content,
-            $matches,
-            PREG_SET_ORDER
-        );
-
-        foreach ($matches as $set) {
-            if (!array_key_exists($set[1], $args)) continue;
-
-            $isObject = boolval($set[2] ?? false);
-
-            $property = $set[3] ?? null;
-
-            if ($isObject && !$property) continue;
-
-            $search = $set[0];
-
-            $name = $set[1];
-
-            $arguments = explode(',', $set[5] ?? '');
-
-            $variable = $args[$name];
-
-            if ($isObject) {
-                if (is_array($variable)) {
-                    if (!array_key_exists($property, $variable)) continue;
-                    $variable = $variable[$property];
-                } else if (is_object($variable)) {
-                    switch (true) {
-                        case method_exists($variable, $property):
-                            $variable = $variable->{$property}(...$arguments);
-                            break;
-                        case property_exists($variable, $property):
-                            $variable = $variable->{$property};
-                            break;
-                        default:
-                            continue 2;
-                    }
-                }
-            }
-
-            $replace = $this->stringifyVariable($variable);
-
-            $content = str_replace(
-                $search,
-                $replace,
-                $content
-            );
-        }
-
-        return $this;
-    }
-
-    /**
-     * Преобразование переменной в строку
-     * 
-     * @return string Строковое значение переменной
-     */
-    protected function stringifyVariable(mixed $variable): string
-    {
-        switch (gettype($variable)) {
-            case 'string':
-            case 'integer':
-            case 'boolean':
-            case 'double':
-                return strval($variable);
-            case 'object':
-                if ($variable instanceof DateTime) {
-                    return $variable->format('Y-m-d H:i:s');
-                }
+        switch (true) {
+            case is_bool($value):
+                return intval($value);
+            case is_int($value):
+            case is_float($value):
+                return strval($value);
+            case $value instanceof DateTime:
+                return $value->format('Y-m-d H:i:s');
+            case is_array($value):
+            case is_object($value):
+                return json_encode($value, 32 | 256) ?: '';
             default:
-                return json_encode($variable, 256 | 128 | 32);
+                return strval($value);
         }
-    }
-
-    /**
-     * Парсинг защиты от CSRF-атак в теле шаблона
-     * 
-     * @return self
-     */
-    protected function parseCSRF(): self
-    {
-        preg_match_all(
-            static::REGEX_CSRF,
-            $this->content,
-            $matches,
-            PREG_SET_ORDER
-        );
-
-        foreach ($matches as $set) {
-            $search = $set[0];
-
-            list($key, $token) = CSRF::set();
-
-            $replace = '<input type="hidden" name="' . $key . '" value="' . $token . '"/>';
-
-            $this->content = str_replace(
-                $search,
-                $replace,
-                $this->content
-            );
-        }
-
-        preg_match_all(
-            static::REGEX_CSRF_TOKEN,
-            $this->content,
-            $matches,
-            PREG_SET_ORDER
-        );
-
-        foreach ($matches as $set) {
-            $search = $set[0];
-
-            list($key, $token) = CSRF::set();
-
-            $this->content = str_replace(
-                $search,
-                $token,
-                $this->content
-            );
-        }
-
-        return $this;
-    }
-
-    /**
-     * Парсинг переменных окружения в теле шаблона
-     * 
-     * @return self
-     */
-    protected function parseEnv(): self
-    {
-        preg_match_all(
-            static::REGEX_ENV,
-            $this->content,
-            $matches,
-            PREG_SET_ORDER
-        );
-
-        foreach ($matches as $set) {
-            $tag = $set[0];
-            $name = $set[1];
-            $value = getenv(strtoupper($name)) ?: '';
-            $this->content = str_replace($tag, $value, $this->content);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Парсинг загружаемых файлов в теле шаблона
-     * 
-     * @return self
-     */
-    protected function parseLoad(): self
-    {
-        preg_match_all(
-            static::REGEX_LOAD,
-            $this->content,
-            $matches,
-            PREG_SET_ORDER
-        );
-
-        foreach ($matches as $set) {
-            $tag = $set[0];
-            $path = $set[1];
-
-            $path = getenv('APP_ROOT') . "/public/{$path}";
-
-            if (!file_exists($path)) continue;
-
-            try {
-                $replacement = file_get_contents($path);
-            } catch (\Exception $e) {
-                $replacement = Locale::get('access_denied');
-            }
-
-            $this->content = str_replace($tag, $replacement, $this->content);
-        }
-
-        return $this;
     }
 }

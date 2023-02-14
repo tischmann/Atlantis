@@ -33,6 +33,13 @@ final class Locale
         return self::$locales[$locale][$key] ?? $key;
     }
 
+    public static function getLocale(string $locale): array
+    {
+        self::$locales[$locale] ??= static::load($locale);
+
+        return self::$locales[$locale];
+    }
+
     /**
      * Возвращает массив доступных локалей
      *

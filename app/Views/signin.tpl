@@ -1,5 +1,3 @@
-{{layout=default}}
-{{section=body}}
 <main class="w-screen h-screen flex flex-col items-center justify-center select-none">
     <img src="android-chrome-192x192.png" width="192px" height="192px" alt="Sign in">
     <div class="block p-6 rounded-lg bg-sky-200 w-full max-w-sm">
@@ -73,4 +71,3 @@
         </form>
     </div>
 </main>
-{{/section}}

@@ -81,8 +81,6 @@ class Facade
      */
     public function __typify(mixed $variable, string $type): mixed
     {
-        if ($variable === null) return null;
-
         switch ($type) {
             case 'bool':
                 return boolval($variable);
