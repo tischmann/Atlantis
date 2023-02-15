@@ -54,10 +54,13 @@
             <div class="mb-4">
                 <label for="articleImageInput"
                     class="form-label inline-block mb-1 text-gray-500">{{lang=article_image}}</label>
-                <input type="hidden" value="" name="image" id="articleImageInput">
+                <input type="hidden" value="{{article_image}}" name="image" id="articleImageInput">
                 <input type='file' id="articleImageFile" class="hidden" aria-label="{{lang=article_image}}">
-                <img src="{{article_image}}" id="articleImage" width="400px" height="300px" alt="{{article_title}}"
+                <img src="{{article_image_url}}" id="articleImage" width="400px" height="300px" alt="{{article_title}}"
                     class="rounded w-full object-cover">
+                <div id="imageDeleteButton"
+                    class="w-full block mt-4 text-center px-6 py-2.5 bg-pink-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-pink-700 hover:shadow-lg focus:bg-pink-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-pink-800 active:shadow-lg transition duration-150 ease-in-out cursor-pointer">
+                    {{lang=delete_image}}</div>
             </div>
         </div>
         <div class="mb-4 w-full">
@@ -158,6 +161,11 @@
         const file = document.getElementById('articleImageFile')
 
         const input = document.getElementById('articleImageInput')
+
+        document.getElementById('imageDeleteButton').addEventListener('click', () => {
+            img.setAttribute('src', '/images/placeholder.svg')
+            input.value = ''
+        })
 
         const loadImage = (file, width = 800, height = 600) => {
             if (!file) return

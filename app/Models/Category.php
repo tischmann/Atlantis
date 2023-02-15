@@ -15,7 +15,7 @@ class Category extends Model
     public array $children = [];
 
     public function __construct(
-        public int $parent_id = 0,
+        public ?int $parent_id = null,
         public int $position = 0,
         public string $locale = '',
         public string $title = '',

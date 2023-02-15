@@ -156,7 +156,7 @@ if (User::current()->isAdmin()) {
     Router::add(new Route(
         controller: new ArticlesController(),
         path: 'delete/article/{id}',
-        action: 'deleteArticleConfirmation',
+        action: 'confirmDeleteArticle',
         method: 'GET'
     ));
 

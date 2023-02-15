@@ -9,6 +9,7 @@ use App\Models\{Category};
 use Exception;
 
 use Tischmann\Atlantis\{
+    Alert,
     Breadcrumb,
     Controller,
     CSRF,
@@ -93,7 +94,6 @@ class CategoriesController extends Controller
             'title' => ['required'],
             'slug' => ['required'],
             'locale' => ['required'],
-            'parent_id' => ['required'],
         ]);
 
         CSRF::verify($request);
@@ -114,13 +114,21 @@ class CategoriesController extends Controller
 
         $category->locale = $request->request('locale');
 
-        $category->parent_id = intval($request->request('parent_id'));
+        $parent_id = $request->request('parent_id');
+
+        $category->parent_id = $parent_id ? intval($parent_id) : null;
 
         if (!$category->save()) {
             throw new Exception('Category not added');
         }
 
-        Response::redirect('/' . getenv('APP_LOCALE') . '/admin/categories');
+        Response::redirect(
+            url: '/' . getenv('APP_LOCALE') . '/admin/categories',
+            alert: new Alert(
+                status: 1,
+                message: Locale::get('category_added')
+            )
+        );
     }
 
     public function getCategory(Request $request)
@@ -221,7 +229,13 @@ class CategoriesController extends Controller
             }
         }
 
-        Response::redirect('/' . getenv('APP_LOCALE') . '/admin/categories');
+        Response::redirect(
+            url: '/' . getenv('APP_LOCALE') . '/admin/categories',
+            alert: new Alert(
+                status: 1,
+                message: Locale::get('category_ordered')
+            )
+        );
     }
 
     public function updateCategory(Request $request)
@@ -232,7 +246,6 @@ class CategoriesController extends Controller
             'id' => ['required'],
             'title' => ['required'],
             'slug' => ['required'],
-            'parent_id' => ['required'],
             'locale' => ['required'],
         ]);
 
@@ -254,7 +267,7 @@ class CategoriesController extends Controller
 
         $locale = strval($request->request('locale'));
 
-        $parent_id = intval($request->request('parent_id'));
+        $parent_id = $request->request('parent_id');
 
         $children = $request->request('children');
 
@@ -282,13 +295,19 @@ class CategoriesController extends Controller
 
         $category->locale = $locale;
 
-        $category->parent_id = $parent_id;
+        $category->parent_id = $parent_id ? intval($parent_id) : null;
 
         if (!$category->save()) {
             throw new Exception("Category ID:{$id} not saved");
         }
 
-        Response::redirect('/' . getenv('APP_LOCALE') . '/admin/categories');
+        Response::redirect(
+            url: '/' . getenv('APP_LOCALE') . '/admin/categories',
+            alert: new Alert(
+                status: 1,
+                message: Locale::get('category_saved')
+            )
+        );
     }
 
     public function confirmDeleteCategory(Request $request)
@@ -343,10 +362,24 @@ class CategoriesController extends Controller
         }
 
         if (!$category->delete()) {
-            throw new Exception("Category ID:{$id} not deleted");
+            Response::redirect(
+                url: '/' . getenv('APP_LOCALE') . '/admin/categories',
+                alert: new Alert(
+                    status: 1,
+                    message: Locale::get('category_delete_error')
+                )
+            );
+
+            exit;
         }
 
-        Response::redirect('/' . getenv('APP_LOCALE') . '/admin/categories');
+        Response::redirect(
+            url: '/' . getenv('APP_LOCALE') . '/admin/categories',
+            alert: new Alert(
+                status: 1,
+                message: Locale::get('category_deleted')
+            )
+        );
     }
 
     public static function getParentsOptions(Category $category): string
@@ -372,7 +405,7 @@ class CategoriesController extends Controller
             $parents_options .= Template::make(
                 'option',
                 [
-                    'value' => $parent->id,
+                    'value' => $parent->id ? $parent->id : '',
                     'title' => $parent->title,
                     'label' => $parent->title,
                     'selected' => $parent->id === $category->parent_id

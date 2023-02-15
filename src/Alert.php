@@ -21,17 +21,11 @@ class Alert
     {
         if ($this->status === -1) return '';
 
-        $view = match ($this->status) {
-            0 => 'alert-warning',
-            default => 'alert-warning'
-        };
-
         $template = new Template(
-            template: $view,
+            template: 'alert',
             args: [
                 'title' => getenv('APP_TITLE'),
-                'message' => $this->message,
-                'nonce' => getenv('APP_NONCE')
+                'message' => $this->message
             ]
         );
 

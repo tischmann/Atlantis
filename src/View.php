@@ -13,10 +13,15 @@ final class View
         public array $args = [],
         string $layout = 'default'
     ) {
+        $alert = Session::get('alert') ?? new Alert();
+
+        Session::delete('alert');
+
         $this->template = new Template(
             "layouts/{$layout}",
             [
                 ...$args,
+                'alert' => $alert->toHtml(),
                 'body' => Template::make(
                     template: $view,
                     args: $args

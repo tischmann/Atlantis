@@ -17,8 +17,8 @@ class Article extends Model
     public string $image_url = '';
 
     public function __construct(
-        public int $author_id = 0,
-        public int $category_id = 0,
+        public ?int $author_id = null,
+        public ?int $category_id = null,
         public string $locale = '',
         public string $title = '',
         public string $image = '',

@@ -36,6 +36,11 @@ return [
     'category_children' => 'Дочерние категории',
     'category_delete_confirm' => 'Вы действительно хотите удалить категорию',
     'category_children_will_be_deleted' => 'Также будут удалены все дочерние категории',
+    'category_saved' => 'Категория сохранена',
+    'category_added' => 'Категория добавлена',
+    'category_deleted' => 'Категория удалена',
+    'category_delete_error' => 'Ошибка удаления категории',
+    'category_ordered' => 'Категории отсортированы',
     // Статьи
     'article_new' => 'Новая статья',
     'article_edit' => 'Редактирование статьи',
@@ -45,4 +50,10 @@ return [
     'article_image' => 'Изображение',
     'article_short_text' => 'Краткое описание',
     'article_full_text' => 'Полное описание',
+    'article_saved' => 'Статья сохранена',
+    'article_added' => 'Статья добавлена',
+    'article_delete_confirm' => 'Вы действительно хотите удалить статью',
+    'article_deleted' => 'Статья удалена',
+    'article_delete_error' => 'Ошибка удаления статьи',
+    'delete_image' => 'Удалить изображение',
 ];

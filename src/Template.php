@@ -38,12 +38,6 @@ final class Template
 
     public function render(): string
     {
-        $alert = Session::get('alert');
-
-        if ($alert) Session::delete('alert');
-
-        $alert = $alert ?: new Alert();
-
         $strings = [];
 
         foreach (Locale::getLocale(getenv('APP_LOCALE')) as $key => $value) {
@@ -61,7 +55,6 @@ final class Template
             'nonce' => getenv('APP_NONCE'),
             ...$strings,
             'breadcrumbs' => '',
-            'alert' => $alert->toHtml(),
             'admin' => '',
             'pagination' => '',
             ...$this->args,

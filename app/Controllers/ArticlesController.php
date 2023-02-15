@@ -13,7 +13,6 @@ use Tischmann\Atlantis\{
     Breadcrumb,
     Controller,
     CSRF,
-    Image,
     Locale,
     Request,
     Response,
@@ -34,7 +33,13 @@ class ArticlesController extends Controller
 
             $items .= Template::make('admin/articles-item', [
                 'article_id' => $article->id,
+                'article_category_id' => $article->category_id,
+                'article_category_title' => $article->category_title,
                 'article_image_url' => $article->image_url,
+                'article_views' => $article->views,
+                'article_rating' => $article->rating,
+                'article_created_at' => $article->created_at,
+                'article_updated_at' => $article->updated_at,
                 'article_title' => $article->title,
                 'article_description' => $article->short_text,
             ])->render();
@@ -111,7 +116,7 @@ class ArticlesController extends Controller
                 label: Locale::get('adminpanel')
             ),
             new Breadcrumb(
-                url: '/articles',
+                url: '/admin/articles',
                 label: Locale::get('articles')
             ),
         ];
@@ -140,7 +145,8 @@ class ArticlesController extends Controller
                 'csrf-token' => CSRF::set()[1],
                 'article_id' => $article->id,
                 'article_title' => $article->title,
-                'article_image' => $article->image_url,
+                'article_image' => $article->image,
+                'article_image_url' => $article->image_url,
                 'article_short_text' => $article->short_text,
                 'article_full_text' => $article->full_text,
                 'delete_button' => $delete_button,
@@ -161,204 +167,13 @@ class ArticlesController extends Controller
 
         $article = Article::find($id);
 
-        Response::json([
-            'csrf' => CSRF::set()[1],
-            'location' => self::uploadArticleFullTextImage($article)
-        ]);
-
-        exit;
-    }
-
-    public function updateArticle(Request $request): void
-    {
-        $this->checkAdmin();
-
-        CSRF::verify($request);
-
-        $request->validate([
-            'title' => ['required'],
-        ]);
-
-        $id = $request->route('id');
-
-        $article = Article::find($id);
-
-        assert($article instanceof Article);
-
-        if (!$article->exists()) {
-            throw new Exception('Article not found');
-        }
-
-        $changed = false;
-
-        // Title
-
-        $title = strval($request->post('title'));
-
-        if ($title && $title != $article->title) {
-            $article->title = $title;
-            $changed = true;
-        }
-
-        // Locale
-
-        $locale = strval($request->post('locale'));
-
-        if ($locale && $locale != $article->locale) {
-            $article->locale = $locale;
-            $changed = true;
-        }
-
-        // Category
-
-        $category = intval($request->post('category_id'));
-
-        if ($category && $category != $article->category_id) {
-            $article->category_id = $category;
-            $changed = true;
-        }
-
-        // Image
-
-        $pictureBase64 = $request->post('image');
-
-        if ($pictureBase64) {
-            static::uploadArticleMainImage($article, $pictureBase64);
-            $changed = true;
-        }
-
-        // Short text
-
-        $shortText = strval($request->post('short_text'));
-
-        if ($shortText && $shortText != $article->short_text) {
-            $article->short_text = $shortText;
-            $changed = true;
-        }
-
-        // Full text
-
-        $fullText = strval($request->post('full_text'));
-
-        if ($fullText && $fullText != $article->full_text) {
-            $article->full_text = $fullText;
-            $changed = true;
-        }
-
-        if ($changed) {
-            if (!$article->save()) {
-                Response::redirect(
-                    url: "/" . getenv('APP_LOCALE') . "/edit/article/{$article->id}",
-                    alert: new Alert(
-                        status: 0,
-                        message: "Error while saving article"
-                    )
-                );
-            }
-        }
-
-        static::removeTempImages($article);
-
-        Response::redirect(
-            url: "/" . getenv('APP_LOCALE') . '/articles',
-            alert: new Alert(
-                status: 1,
-                message: "Article saved"
-            )
-        );
-    }
-
-    public static function getCategoriesOptions(Article $article): string
-    {
-        $options = Template::make('option', [
-            'value' => '',
-            'title' => '',
-            'label' => '',
-            'selected' => !$article->category_id ? 'selected' : '',
-        ])->render();
-
-        foreach (Category::fill(Category::query()) as $category) {
-            assert($category instanceof Category);
-
-            $options .= Template::make('option', [
-                'value' => $category->id,
-                'title' => $category->title,
-                'label' => $category->title,
-                'selected' => $category->id == $article->category_id ? 'selected' : '',
-            ])->render();
-        }
-
-        return $options;
-    }
-
-    public static function removeTempImages(Article $article)
-    {
-        $root = getenv('APP_ROOT');
-
-        $imagesInArticle = [$article->image];
-
-        preg_match_all(
-            '/([0-9a-zA-Z]+\.webp)/',
-            $article->full_text,
-            $matches,
-            PREG_SET_ORDER
-        );
-
-        foreach ($matches as $match) {
-            $imagesInArticle[] = $match[1];
-        }
-
-        foreach (glob("{$root}/public/images/articles/{$article->id}/*.webp") as $file) {
-            $imageInFolder = basename($file);
-
-            if (!in_array($imageInFolder, $imagesInArticle)) {
-                unlink($file);
-            }
-        }
-    }
-
-    public static function uploadArticleMainImage(
-        Article &$article,
-        string $base64Image
-    ) {
-        $dase64Data = Image::getBase64Data($base64Image, false);
-
-        $filename = md5(bin2hex(random_bytes(128))) . '.webp';
-
-        $imagesDir = 'images/articles';
-
-        $saveDir =  "{$imagesDir}/{$article->id}";
-
-        $root = getenv('APP_ROOT') . "/public";
-
-        if (!file_exists("{$root}/{$imagesDir}")) {
-            mkdir("{$root}/{$imagesDir}", 0755, true);
-        }
-
-        if (!file_exists("{$root}/{$saveDir}")) {
-            mkdir("{$root}/{$saveDir}", 0755, true);
-        }
-
-        $newImage = "{$root}/{$saveDir}/{$filename}";
-
-        if (!Image::base64ToWebp($dase64Data, $newImage)) {
-            Response::redirect(
-                url: "/edit/article/{$article->id}",
-                alert: new Alert(
-                    status: 0,
-                    message: "Error while saving image"
-                )
-            );
-        }
-
-        $article->image = $filename;
-    }
-
-    public function uploadArticleFullTextImage(Article $article): string
-    {
         $imageFolder = $article->id
             ? "images/articles/{$article->id}"
             : 'images/articles/temp';
+
+        if (!is_file($imageFolder)) {
+            mkdir($imageFolder, 0775, true);
+        }
 
         if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
             header("Access-Control-Allow-Methods: POST, OPTIONS");
@@ -451,6 +266,271 @@ class ArticlesController extends Controller
 
         $baseurl = $protocol . $_SERVER["HTTP_HOST"];
 
-        return $baseurl . "/" . $filetowrite;
+        $location = $baseurl . "/" . $filetowrite;
+
+        Response::json([
+            'csrf' => CSRF::set()[1],
+            'image' => basename($location),
+            'location' => $location
+        ]);
+
+        exit;
+    }
+
+    public function addArticle(Request $request)
+    {
+        $this->checkAdmin();
+
+        CSRF::verify($request);
+
+        $request->validate([
+            'title' => ['required'],
+            'locale' => ['required'],
+            'short_text' => ['required'],
+            'full_text' => ['required'],
+        ]);
+
+        $article = new Article();
+
+        $title = $request->request('title');
+
+        if (!$title) {
+            throw new Exception('Title is required');
+        }
+
+        $article->title = strval($title);
+
+        $article->locale = strval($request->request('locale'));
+
+        $category_id = $request->request('category_id');
+
+        $article->category_id = $category_id ? intval($category_id) : null;
+
+        $article->short_text = strval($request->request('short_text'));
+
+        $article->full_text = strval($request->request('full_text'));
+
+        $article->image = strval($request->request('image'));
+
+        if (!$article->save()) {
+            throw new Exception('Article not saved');
+        }
+
+        Response::redirect(
+            "/" . getenv('APP_LOCALE') . "/admin/articles",
+            new Alert(
+                status: 1,
+                message: Locale::get('article_added')
+            )
+        );
+    }
+
+    public function updateArticle(Request $request): void
+    {
+        $this->checkAdmin();
+
+        CSRF::verify($request);
+
+        $request->validate([
+            'title' => ['required'],
+        ]);
+
+        $id = $request->route('id');
+
+        $article = Article::find($id);
+
+        assert($article instanceof Article);
+
+        if (!$article->exists()) {
+            throw new Exception('Article not found');
+        }
+
+        $changed = false;
+
+        // Title
+
+        $title = strval($request->request('title'));
+
+        if ($title && $title != $article->title) {
+            $article->title = $title;
+            $changed = true;
+        }
+
+        // Locale
+
+        $locale = strval($request->request('locale'));
+
+        if ($locale && $locale != $article->locale) {
+            $article->locale = $locale;
+            $changed = true;
+        }
+
+        // Category
+
+        $category = $request->request('category_id');
+
+        if ($category != $article->category_id) {
+            $article->category_id = $category ? intval($category) : null;
+            $changed = true;
+        }
+
+        // Image
+
+        $image = $request->request('image');
+
+        if ($image != $article->image) {
+            $article->image = $image;
+            $changed = true;
+        }
+
+        // Short text
+
+        $shortText = strval($request->request('short_text'));
+
+        if ($shortText && $shortText != $article->short_text) {
+            $article->short_text = $shortText;
+            $changed = true;
+        }
+
+        // Full text
+
+        $fullText = strval($request->request('full_text'));
+
+        if ($fullText && $fullText != $article->full_text) {
+            $article->full_text = $fullText;
+            $changed = true;
+        }
+
+        if ($changed) {
+            if (!$article->save()) {
+                Response::redirect(
+                    url: "/" . getenv('APP_LOCALE') . "/edit/article/{$article->id}",
+                    alert: new Alert(
+                        status: 0,
+                        message: "Error while saving article"
+                    )
+                );
+            }
+        }
+
+        static::removeTempImages($article);
+
+        Response::redirect(
+            url: "/" . getenv('APP_LOCALE') . '/admin/articles',
+            alert: new Alert(
+                status: 1,
+                message: Locale::get('article_saved')
+            )
+        );
+    }
+
+    public function confirmDeleteArticle(Request $request)
+    {
+        $this->checkAdmin();
+
+        $id = intval($request->route('id'));
+
+        $article = Article::find($id);
+
+        assert($article instanceof Article);
+
+        if (!$article->id) {
+            throw new Exception("Article ID:{$id} not found");
+        }
+
+        Response::send(View::make('admin/confirmation', [
+            'csrf' => $this->getCsrfInput(),
+            'back_url'  => '/admin/articles',
+            'message' => Locale::get('article_delete_confirm')
+                . " {$article->title}?",
+            'form_action' => "/article/delete/{$article->id}",
+            'form_method' => 'POST',
+        ])->render());
+    }
+
+    public function deleteArticle(Request $request)
+    {
+        $this->checkAdmin();
+
+        CSRF::verify($request);
+
+        $id = intval($request->route('id'));
+
+        $article = Article::find($id);
+
+        assert($article instanceof Article);
+
+        if (!$article->id) {
+            throw new Exception("Article ID:{$id} not found");
+        }
+
+        if (!$article->delete()) {
+            Response::redirect(
+                url: '/' . getenv('APP_LOCALE') . '/admin/articles',
+                alert: new Alert(
+                    status: 1,
+                    message: Locale::get('article_delete_error')
+                )
+            );
+
+            exit;
+        }
+
+        Response::redirect(
+            url: '/' . getenv('APP_LOCALE') . '/admin/articles',
+            alert: new Alert(
+                status: 1,
+                message: Locale::get('article_deleted')
+            )
+        );
+    }
+
+    public static function getCategoriesOptions(Article $article): string
+    {
+        $options = Template::make('option', [
+            'value' => '',
+            'title' => '',
+            'label' => '',
+            'selected' => !$article->category_id ? 'selected' : '',
+        ])->render();
+
+        foreach (Category::fill(Category::query()) as $category) {
+            assert($category instanceof Category);
+
+            $options .= Template::make('option', [
+                'value' => $category->id,
+                'title' => $category->title,
+                'label' => $category->title,
+                'selected' => $category->id == $article->category_id ? 'selected' : '',
+            ])->render();
+        }
+
+        return $options;
+    }
+
+    public static function removeTempImages(Article $article)
+    {
+        $root = getenv('APP_ROOT');
+
+        $imagesInArticle = [$article->image];
+
+        preg_match_all(
+            '/([0-9a-zA-Z]+\.webp)/',
+            $article->full_text,
+            $matches,
+            PREG_SET_ORDER
+        );
+
+        foreach ($matches as $match) {
+            $imagesInArticle[] = $match[1];
+        }
+
+        foreach (glob("{$root}/public/images/articles/{$article->id}/*.webp") as $file) {
+            $imageInFolder = basename($file);
+
+            if (!in_array($imageInFolder, $imagesInArticle)) {
+                unlink($file);
+            }
+        }
     }
 }
