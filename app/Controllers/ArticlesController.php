@@ -23,9 +23,7 @@ use Tischmann\Atlantis\{
 
 class ArticlesController extends Controller
 {
-    use ArticlesTrait;
-
-    public function index(): void
+    public function getArticles(): void
     {
         $this->checkAdmin();
 
@@ -36,7 +34,7 @@ class ArticlesController extends Controller
 
             $items .= Template::make('admin/articles-item', [
                 'article_id' => $article->id,
-                'article_image' => $article->image,
+                'article_image_url' => $article->image_url,
                 'article_title' => $article->title,
                 'article_description' => $article->short_text,
             ])->render();
@@ -77,7 +75,14 @@ class ArticlesController extends Controller
         )->render());
     }
 
-    public function getArticleEditor(Request $request): void
+    public function newArticle(Request $request)
+    {
+        $this->checkAdmin();
+
+        $this->getArticleEditor($request, new Article());
+    }
+
+    public function editArticle(Request $request)
     {
         $this->checkAdmin();
 
@@ -91,26 +96,77 @@ class ArticlesController extends Controller
             throw new Exception("Article ID:{$id} not found");
         }
 
+        $this->getArticleEditor($request, $article);
+    }
+
+    protected function getArticleEditor(
+        Request $request,
+        Article $article
+    ) {
+        static::removeTempImages($article);
+
+        $breadcrumbs = [
+            new Breadcrumb(
+                url: '/admin',
+                label: Locale::get('adminpanel')
+            ),
+            new Breadcrumb(
+                url: '/articles',
+                label: Locale::get('articles')
+            ),
+        ];
+
+        $delete_button = '';
+
+        if ($article->id) {
+            $breadcrumbs[] = new Breadcrumb(
+                label: $article->title
+            );
+
+            $delete_button = Template::make(
+                template: 'admin/delete-button',
+                args: ['href' => "/delete/article/{$article->id}"]
+            )->render();
+        } else {
+            $breadcrumbs[] = new Breadcrumb(
+                label: Locale::get('article_new')
+            );
+        }
+
         Response::send(View::make(
             'admin/article',
             [
+                'csrf' => $this->getCsrfInput(),
+                'csrf-token' => CSRF::set()[1],
+                'article_id' => $article->id,
+                'article_title' => $article->title,
+                'article_image' => $article->image_url,
+                'article_short_text' => $article->short_text,
+                'article_full_text' => $article->full_text,
+                'delete_button' => $delete_button,
                 'locales_options' => $this->getLocalesOptions($article->locale),
                 'category_options' => $this->getCategoriesOptions($article),
-                'breadcrumbs' => AdminController::renderBreadcrumbs([
-                    new Breadcrumb(
-                        url: '/admin',
-                        label: Locale::get('adminpanel')
-                    ),
-                    new Breadcrumb(
-                        url: '/articles',
-                        label: Locale::get('articles')
-                    ),
-                    new Breadcrumb(
-                        label: $article->title
-                    ),
-                ]),
+                'breadcrumbs' => AdminController::renderBreadcrumbs($breadcrumbs),
             ]
         )->render());
+    }
+
+    public function uploadArticleImage(Request $request)
+    {
+        $this->checkAdmin();
+
+        CSRF::verify($request);
+
+        $id = $request->route('id');
+
+        $article = Article::find($id);
+
+        Response::json([
+            'csrf' => CSRF::set()[1],
+            'location' => self::uploadArticleFullTextImage($article)
+        ]);
+
+        exit;
     }
 
     public function updateArticle(Request $request): void
@@ -120,7 +176,7 @@ class ArticlesController extends Controller
         CSRF::verify($request);
 
         $request->validate([
-            'title' => ['required', 'string'],
+            'title' => ['required'],
         ]);
 
         $id = $request->route('id');
@@ -167,51 +223,8 @@ class ArticlesController extends Controller
         $pictureBase64 = $request->post('image');
 
         if ($pictureBase64) {
-            $dase64Data = Image::getBase64Data($pictureBase64, false);
-
-            $filename = md5(bin2hex(random_bytes(128))) . '.webp';
-
-            $saveDir = Image::ARTICLES_IMAGES_DIR . "/{$article->id}";
-
-            $root = getenv('APP_ROOT') . "/public";
-
-            if (!file_exists("{$root}/" . Image::ARTICLES_IMAGES_DIR)) {
-                mkdir("{$root}/" . Image::ARTICLES_IMAGES_DIR, 0755, true);
-            }
-
-            if (!file_exists("{$root}/{$saveDir}")) {
-                mkdir("{$root}/{$saveDir}", 0755, true);
-            }
-
-            $newImage = "{$root}/{$saveDir}/{$filename}";
-
-            $oldImage = $article->image ? "{$root}/{$saveDir}/{$article->image}" : null;
-
-            if (Image::base64ToWebp($dase64Data, $newImage)) {
-                if ($oldImage && is_file($oldImage)) {
-                    if (!unlink($oldImage)) {
-                        Response::redirect(
-                            url: '/edit/article/' . $id,
-                            alert: new Alert(
-                                status: 0,
-                                message: "Error while deleting old image"
-                            )
-                        );
-                    }
-                }
-
-                $article->image = $filename;
-
-                $changed = true;
-            } else {
-                Response::redirect(
-                    url: '/edit/article/' . $id,
-                    alert: new Alert(
-                        status: 0,
-                        message: "Error while saving image"
-                    )
-                );
-            }
+            static::uploadArticleMainImage($article, $pictureBase64);
+            $changed = true;
         }
 
         // Short text
@@ -235,7 +248,7 @@ class ArticlesController extends Controller
         if ($changed) {
             if (!$article->save()) {
                 Response::redirect(
-                    url: '/edit/article/' . $id,
+                    url: "/" . getenv('APP_LOCALE') . "/edit/article/{$article->id}",
                     alert: new Alert(
                         status: 0,
                         message: "Error while saving article"
@@ -244,8 +257,10 @@ class ArticlesController extends Controller
             }
         }
 
+        static::removeTempImages($article);
+
         Response::redirect(
-            url: '/admin/articles',
+            url: "/" . getenv('APP_LOCALE') . '/articles',
             alert: new Alert(
                 status: 1,
                 message: "Article saved"
@@ -274,5 +289,168 @@ class ArticlesController extends Controller
         }
 
         return $options;
+    }
+
+    public static function removeTempImages(Article $article)
+    {
+        $root = getenv('APP_ROOT');
+
+        $imagesInArticle = [$article->image];
+
+        preg_match_all(
+            '/([0-9a-zA-Z]+\.webp)/',
+            $article->full_text,
+            $matches,
+            PREG_SET_ORDER
+        );
+
+        foreach ($matches as $match) {
+            $imagesInArticle[] = $match[1];
+        }
+
+        foreach (glob("{$root}/public/images/articles/{$article->id}/*.webp") as $file) {
+            $imageInFolder = basename($file);
+
+            if (!in_array($imageInFolder, $imagesInArticle)) {
+                unlink($file);
+            }
+        }
+    }
+
+    public static function uploadArticleMainImage(
+        Article &$article,
+        string $base64Image
+    ) {
+        $dase64Data = Image::getBase64Data($base64Image, false);
+
+        $filename = md5(bin2hex(random_bytes(128))) . '.webp';
+
+        $imagesDir = 'images/articles';
+
+        $saveDir =  "{$imagesDir}/{$article->id}";
+
+        $root = getenv('APP_ROOT') . "/public";
+
+        if (!file_exists("{$root}/{$imagesDir}")) {
+            mkdir("{$root}/{$imagesDir}", 0755, true);
+        }
+
+        if (!file_exists("{$root}/{$saveDir}")) {
+            mkdir("{$root}/{$saveDir}", 0755, true);
+        }
+
+        $newImage = "{$root}/{$saveDir}/{$filename}";
+
+        if (!Image::base64ToWebp($dase64Data, $newImage)) {
+            Response::redirect(
+                url: "/edit/article/{$article->id}",
+                alert: new Alert(
+                    status: 0,
+                    message: "Error while saving image"
+                )
+            );
+        }
+
+        $article->image = $filename;
+    }
+
+    public function uploadArticleFullTextImage(Article $article): string
+    {
+        $imageFolder = $article->id
+            ? "images/articles/{$article->id}"
+            : 'images/articles/temp';
+
+        if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+            header("Access-Control-Allow-Methods: POST, OPTIONS");
+
+            Response::send([
+                'error' => 'Invalid method'
+            ], 400);
+
+            exit;
+        }
+
+        reset($_FILES);
+
+        $temp = current($_FILES);
+
+        if (!is_uploaded_file($temp['tmp_name'])) {
+            Response::send([
+                'error' => 'Error uploading file'
+            ], 500);
+
+            exit;
+        }
+
+        if (preg_match("/([^\w\s\d\-_~,;:\[\]\(\).])|([\.]{2,})/", $temp['name'])) {
+            Response::send([
+                'error' => 'Invalid file name'
+            ], 400);
+
+            exit;
+        }
+
+        $extensions = ["gif", "jpg", "png", "webp", "jpeg", "bmp"];
+
+        $fileExtension = strtolower(
+            pathinfo(
+                $temp['name'],
+                PATHINFO_EXTENSION
+            )
+        );
+
+        if (!in_array($fileExtension, $extensions)) {
+            Response::send([
+                'error' => 'Invalid extension'
+            ], 400);
+
+            exit;
+        }
+
+        $filename = md5(bin2hex(random_bytes(128))) . '.webp';
+
+        $filetowrite = $imageFolder . "/" . $filename;
+
+        $quality = 80;
+
+        switch ($fileExtension) {
+            case 'gif':
+                $im = imagecreatefromgif($temp['tmp_name']);
+                break;
+            case 'jpg':
+            case 'jpeg':
+                $im = imagecreatefromjpeg($temp['tmp_name']);
+                break;
+            case 'png':
+                $im = imagecreatefrompng($temp['tmp_name']);
+                break;
+            case 'bmp':
+                $im = imagecreatefrombmp($temp['tmp_name']);
+                break;
+            case 'webp':
+                $im = imagecreatefromwebp($temp['tmp_name']);
+            default:
+                Response::json([
+                    'error' => 'Unsupported image format'
+                ]);
+
+                exit;
+        }
+
+        if (!imagewebp($im, $filetowrite, $quality)) {
+            Response::json([
+                'error' => 'Error converting image to webp'
+            ]);
+
+            exit;
+        }
+
+        $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on'
+            ? "https://"
+            : "http://";
+
+        $baseurl = $protocol . $_SERVER["HTTP_HOST"];
+
+        return $baseurl . "/" . $filetowrite;
     }
 }

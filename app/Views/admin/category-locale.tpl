@@ -1,4 +1,4 @@
-<form action="/categories/order" method="post"
+<form action="/admin/categories/order" method="post"
     class="flex flex-wrap rounded-xl gap-4 bg-sky-600 p-4 shadow-lg text-sky-800">
     {{csrf}}
     <div

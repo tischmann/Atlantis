@@ -87,7 +87,7 @@ final class Response
             'json' => static::json($response),
             'text' => static::text($response),
             'xml' => static::xml($response),
-            'default' => var_dump($response)
+            default => var_dump($response)
         };
     }
 

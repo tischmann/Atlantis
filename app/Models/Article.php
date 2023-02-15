@@ -14,6 +14,8 @@ class Article extends Model
 
     public string $category_slug = '';
 
+    public string $image_url = '';
+
     public function __construct(
         public int $author_id = 0,
         public int $category_id = 0,
@@ -54,6 +56,8 @@ class Article extends Model
 
     public function defineShortText(): string
     {
+        if (!strlen($this->full_text)) return '';
+
         preg_match('/^(?:[^\.]+\.){3}/', $this->full_text, $matches);
 
         if ($matches) return $matches[0];
@@ -71,12 +75,10 @@ class Article extends Model
     {
         $placeholder = "/images/placeholder.svg";
 
-        $this->image = $this->image
-            ? "/images/articles/{$this->id}/{$this->image}"
-            : $placeholder;
+        $this->image_url = "/images/articles/{$this->id}/{$this->image}";
 
-        if (!is_file(getenv('APP_ROOT') . "/public{$this->image}")) {
-            $this->image = $placeholder;
+        if (!is_file(getenv('APP_ROOT') . "/public{$this->image_url}")) {
+            $this->image_url = $placeholder;
         }
 
         return $this;

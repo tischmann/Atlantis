@@ -33,21 +33,14 @@ if (User::current()->isAdmin()) {
 
     Router::add(new Route(
         controller: new CategoriesController(),
-        path: 'categories',
+        path: 'admin/categories',
         action: 'index',
         method: 'GET'
     ));
 
     Router::add(new Route(
         controller: new CategoriesController(),
-        path: 'categories',
-        action: 'index',
-        method: 'GET'
-    ));
-
-    Router::add(new Route(
-        controller: new CategoriesController(),
-        path: 'categories/order',
+        path: 'admin/categories/order',
         action: 'orderCategories',
         method: 'POST'
     ));
@@ -112,36 +105,71 @@ if (User::current()->isAdmin()) {
 
     Router::add(new Route(
         controller: new ArticlesController(),
-        path: 'articles',
-        action: 'index',
-        method: 'GET'
-    ));
-
-
-    Router::add(new Route(
-        controller: new ArticlesController(),
-        path: 'article/edit/{id}',
-        action: 'getArticleEditor',
+        path: 'admin/articles',
+        action: 'getArticles',
         method: 'GET'
     ));
 
     Router::add(new Route(
         controller: new ArticlesController(),
-        path: 'article/edit/{id}',
+        path: 'upload/article/image/{id}',
+        action: 'uploadArticleImage',
+        method: 'POST'
+    ));
+
+
+    Router::add(new Route(
+        controller: new ArticlesController(),
+        path: 'edit/article/{id}',
+        action: 'editArticle',
+        method: 'GET'
+    ));
+
+    Router::add(new Route(
+        controller: new ArticlesController(),
+        path: 'edit/article/{id}',
         action: 'updateArticle',
         method: 'POST'
     ));
 
     Router::add(new Route(
         controller: new ArticlesController(),
-        path: 'article/add',
+        path: 'add/article',
+        action: 'newArticle',
+        method: 'GET'
+    ));
+
+    Router::add(new Route(
+        controller: new ArticlesController(),
+        path: 'add/article',
+        action: 'addArticle',
+        method: 'POST'
+    ));
+
+    Router::add(new Route(
+        controller: new ArticlesController(),
+        path: 'add/article',
         action: 'addArticle',
         method: 'PUT'
     ));
 
     Router::add(new Route(
         controller: new ArticlesController(),
-        path: 'article/delete/{id}',
+        path: 'delete/article/{id}',
+        action: 'deleteArticleConfirmation',
+        method: 'GET'
+    ));
+
+    Router::add(new Route(
+        controller: new ArticlesController(),
+        path: 'delete/article/{id}',
+        action: 'deleteArticle',
+        method: 'POST'
+    ));
+
+    Router::add(new Route(
+        controller: new ArticlesController(),
+        path: 'delete/article/{id}',
         action: 'deleteArticle',
         method: 'DELETE'
     ));

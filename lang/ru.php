@@ -37,6 +37,7 @@ return [
     'category_delete_confirm' => 'Вы действительно хотите удалить категорию',
     'category_children_will_be_deleted' => 'Также будут удалены все дочерние категории',
     // Статьи
+    'article_new' => 'Новая статья',
     'article_edit' => 'Редактирование статьи',
     'article_title' => 'Заголовок',
     'article_locale' => 'Язык',

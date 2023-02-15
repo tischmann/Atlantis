@@ -85,37 +85,6 @@ class CategoriesController extends Controller
         );
     }
 
-    public function newCategory(Request $request)
-    {
-        $this->checkAdmin();
-
-        $category = new Category();
-
-        Response::send(
-            View::make(
-                view: 'admin/category-add',
-                args: [
-                    'breadcrumbs' => AdminController::renderBreadcrumbs([
-                        new Breadcrumb(
-                            url: '/admin',
-                            label: Locale::get('adminpanel')
-                        ),
-                        new Breadcrumb(
-                            url: '/categories',
-                            label: Locale::get('categories')
-                        ),
-                        new Breadcrumb(
-                            label: Locale::get('category_new')
-                        ),
-                    ]),
-                    'csrf' => $this->getCsrfInput(),
-                    'parents_options' => $this->getParentsOptions($category),
-                    'locales_options' => $this->getLocalesOptions(getenv('APP_LOCALE')),
-                ]
-            )->render()
-        );
-    }
-
     public function addCategory(Request $request)
     {
         $this->checkAdmin();
@@ -151,10 +120,10 @@ class CategoriesController extends Controller
             throw new Exception('Category not added');
         }
 
-        Response::redirect('/' . getenv('APP_LOCALE') . '/categories');
+        Response::redirect('/' . getenv('APP_LOCALE') . '/admin/categories');
     }
 
-    public function getCategory(Request $request): void
+    public function getCategory(Request $request)
     {
         $this->checkAdmin();
 
@@ -172,26 +141,54 @@ class CategoriesController extends Controller
             throw new Exception("Category ID:{$id} not found");
         }
 
+        $this->getCategoryEditor($request, $category);
+    }
+
+    public function newCategory(Request $request)
+    {
+        $this->checkAdmin();
+
+        $this->getCategoryEditor($request, new Category());
+    }
+
+    protected function getCategoryEditor(Request $request, Category $category)
+    {
+        $delete_button = '';
+
+        $breadcrumbs = [
+            new Breadcrumb(
+                url: '/admin',
+                label: Locale::get('adminpanel')
+            ),
+            new Breadcrumb(
+                url: '/admin/categories',
+                label: Locale::get('categories')
+            ),
+            ...$this->getParentBreadcrumbs($category),
+            new Breadcrumb(label: $category->title)
+        ];
+
+        if ($category->id) {
+            $delete_button = Template::make(
+                template: 'admin/delete-button',
+                args: ['href' => "/delete/category/{$category->id}"]
+            )->render();
+
+            $breadcrumbs[] = new Breadcrumb(label: $category->title);
+        } else {
+            $breadcrumbs[] = new Breadcrumb(label: Locale::get('category_new'));
+        }
+
         Response::send(
             View::make(
                 'admin/category',
                 [
                     'csrf' => $this->getCsrfInput(),
-                    'breadcrumbs' => AdminController::renderBreadcrumbs([
-                        new Breadcrumb(
-                            url: '/admin',
-                            label: Locale::get('adminpanel')
-                        ),
-                        new Breadcrumb(
-                            url: '/categories',
-                            label: Locale::get('categories')
-                        ),
-                        ...$this->getParentBreadcrumbs($category),
-                        new Breadcrumb(label: $category->title)
-                    ]),
+                    'breadcrumbs' => AdminController::renderBreadcrumbs($breadcrumbs),
                     'category_id' => $category->id,
                     'category_title' => $category->title,
                     'category_slug' => $category->slug,
+                    'delete_button' => $delete_button,
                     'locales_options' => $this->getLocalesOptions($category->locale),
                     'parents_options' => $this->getParentsOptions($category),
                     'category_children' => $this->getChildrenCategories($category),
@@ -224,7 +221,7 @@ class CategoriesController extends Controller
             }
         }
 
-        Response::redirect('/' . getenv('APP_LOCALE') . '/categories');
+        Response::redirect('/' . getenv('APP_LOCALE') . '/admin/categories');
     }
 
     public function updateCategory(Request $request)
@@ -291,7 +288,7 @@ class CategoriesController extends Controller
             throw new Exception("Category ID:{$id} not saved");
         }
 
-        Response::redirect('/' . getenv('APP_LOCALE') . '/categories');
+        Response::redirect('/' . getenv('APP_LOCALE') . '/admin/categories');
     }
 
     public function confirmDeleteCategory(Request $request)
@@ -310,7 +307,7 @@ class CategoriesController extends Controller
 
         Response::send(View::make('admin/confirmation', [
             'csrf' => $this->getCsrfInput(),
-            'back_url'  => '/categories',
+            'back_url'  => '/admin/categories',
             'message' => Locale::get('category_delete_confirm')
                 . " {$category->title}? "
                 . Locale::get('category_children_will_be_deleted') . "!",
@@ -349,7 +346,7 @@ class CategoriesController extends Controller
             throw new Exception("Category ID:{$id} not deleted");
         }
 
-        Response::redirect('/' . getenv('APP_LOCALE') . '/categories');
+        Response::redirect('/' . getenv('APP_LOCALE') . '/admin/categories');
     }
 
     public static function getParentsOptions(Category $category): string

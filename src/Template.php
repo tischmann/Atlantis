@@ -62,14 +62,16 @@ final class Template
             ...$strings,
             'breadcrumbs' => '',
             'alert' => $alert->toHtml(),
+            'admin' => '',
+            'pagination' => '',
             ...$this->args,
         ];
 
         $parsed = $this->content;
 
         foreach ($this->args as $key => $value) {
-            $parsed = str_replace(
-                '{{' . $key . '}}',
+            $parsed = preg_replace(
+                '/\{{2}' . $key . '\}{2}/',
                 $this->stringify($value),
                 $parsed
             );

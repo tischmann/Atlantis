@@ -23,7 +23,7 @@ class Alert
 
         $view = match ($this->status) {
             0 => 'alert-warning',
-            default => 'alert-danger'
+            default => 'alert-warning'
         };
 
         $template = new Template(

@@ -3929,10 +3929,6 @@ textarea.form-control.is-invalid {
   margin: 0px;
 }
 
-.m-6 {
-  margin: 1.5rem;
-}
-
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
@@ -4023,10 +4019,6 @@ textarea.form-control.is-invalid {
   height: 100vh;
 }
 
-.h-8 {
-  height: 2rem;
-}
-
 .h-0\.5 {
   height: 0.125rem;
 }
@@ -4037,10 +4029,6 @@ textarea.form-control.is-invalid {
 
 .h-24 {
   height: 6rem;
-}
-
-.h-12 {
-  height: 3rem;
 }
 
 .w-full {
@@ -4155,24 +4143,10 @@ textarea.form-control.is-invalid {
   gap: 0.5rem;
 }
 
-.space-x-2 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-x-reverse: 0;
-  margin-right: calc(0.5rem * var(--tw-space-x-reverse));
-  margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)));
-}
-
-.overflow-hidden {
-  overflow: hidden;
-}
-
 .truncate {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.text-ellipsis {
-  text-overflow: ellipsis;
 }
 
 .whitespace-nowrap {
@@ -4380,19 +4354,9 @@ textarea.form-control.is-invalid {
   padding-bottom: 0.625rem;
 }
 
-.py-5 {
-  padding-top: 1.25rem;
-  padding-bottom: 1.25rem;
-}
-
 .px-4 {
   padding-left: 1rem;
   padding-right: 1rem;
-}
-
-.py-4 {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
 }
 
 .py-3 {
@@ -4400,8 +4364,8 @@ textarea.form-control.is-invalid {
   padding-bottom: 0.75rem;
 }
 
-.pr-10 {
-  padding-right: 2.5rem;
+.pb-4 {
+  padding-bottom: 1rem;
 }
 
 .text-center {
@@ -4494,14 +4458,14 @@ textarea.form-control.is-invalid {
   color: rgb(55 65 81 / var(--tw-text-opacity));
 }
 
-.text-gray-900 {
-  --tw-text-opacity: 1;
-  color: rgb(17 24 39 / var(--tw-text-opacity));
-}
-
 .text-gray-500 {
   --tw-text-opacity: 1;
   color: rgb(107 114 128 / var(--tw-text-opacity));
+}
+
+.text-gray-900 {
+  --tw-text-opacity: 1;
+  color: rgb(17 24 39 / var(--tw-text-opacity));
 }
 
 .text-sky-800 {
@@ -4795,13 +4759,13 @@ textarea.form-control.is-invalid {
   .lg\:grid-cols-5 {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
+
+  .lg\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (min-width: 1280px) {
-  .xl\:grid-cols-5 {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-  }
-
   .xl\:grid-cols-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
