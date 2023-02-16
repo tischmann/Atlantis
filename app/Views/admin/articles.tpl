@@ -6,7 +6,7 @@
         <h1>{{lang=articles}}</h1>
         <div class="h-0.5 w-full rounded-full bg-gray-500"></div>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mx-4">
+    <div class="accordion mx-4" id="accordionArticles">
         {{items}}
     </div>
     <a href="/{{env=APP_LOCALE}}/add/article" class="h-16 w-16 fixed flex 
