@@ -13,8 +13,11 @@ use Throwable;
  */
 class Alert
 {
-    public function __construct(public int $status = -1, public string $message = '')
-    {
+    public function __construct(
+        public int $status = -1,
+        public string $message = '',
+        public string $html = ''
+    ) {
     }
 
     public function toHtml(): string
@@ -25,7 +28,8 @@ class Alert
             template: 'alert',
             args: [
                 'title' => getenv('APP_TITLE'),
-                'message' => $this->message
+                'message' => $this->message,
+                'html' => $this->html
             ]
         );
 
@@ -54,15 +58,30 @@ class Alert
                 ->render();
         }
 
-        Response::send(
-            View::make(
-                view: 'error',
-                args: [
+        $accept = Request::accept();
+
+        $response = [
+            'message' => $exception->getMessage(),
+            'trace' => $trace
+        ];
+
+        $response = match ($accept) {
+            'html' => View::make(
+                'error',
+                [
                     'message' => $exception->getMessage(),
                     'trace' => $traceHtml
                 ]
-            )->render()
-        );
+            )->render(),
+            'text' => $exception->getMessage()
+                . ". Trace: " . json_encode($trace, 32 | 256),
+            default => [
+                'message' => $exception->getMessage(),
+                'trace' => $trace
+            ]
+        };
+
+        Response::send($response);
     }
 
     public static function errorHandler(

@@ -12,9 +12,3 @@ if (window.location.protocol === 'http:') {
     link.href = window.location.href.replace('http://', 'https://')
     requireHTTPS.classList.remove('hidden')
 }
-
-window.onload = () => {
-    document.head.querySelectorAll('link[rel="preload"]').forEach((link) => {
-        link.setAttribute('rel', 'stylesheet')
-    })
-}

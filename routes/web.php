@@ -173,6 +173,13 @@ if (User::current()->isAdmin()) {
         action: 'deleteArticle',
         method: 'DELETE'
     ));
+
+    Router::add(new Route(
+        controller: new AdminController(),
+        path: 'fetch/admin/articles/{category_id}',
+        action: 'fetchArticles',
+        method: 'POST'
+    ));
 }
 
 if (User::current()->exists()) {

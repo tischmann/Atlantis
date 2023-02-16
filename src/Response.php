@@ -82,7 +82,9 @@ final class Response
     {
         static::headers($code);
 
-        match (Request::accept()) {
+        $accept = Request::accept();
+
+        match ($accept) {
             'html' => static::html($response),
             'json' => static::json($response),
             'text' => static::text($response),

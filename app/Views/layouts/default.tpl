@@ -37,6 +37,8 @@
     {{body}}
     {{alert}}
     <script src="/tailwind.js" nonce="{{nonce}}"></script>
+    <script src="/js/lazyfetch.js" nonce="{{nonce}}"></script>
+    <script src="/js/lazyload.min.js" nonce="{{nonce}}"></script>
     <script src="/app.js" nonce="{{nonce}}"></script>
     <script src="/pwa.js" nonce="{{nonce}}"></script>
 </body>

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Models\{Article, Category};
+use App\Models\{Article, Category, User};
 
 use Exception;
 
@@ -15,6 +15,7 @@ use Tischmann\Atlantis\{
     CSRF,
     Image,
     Locale,
+    Pagination,
     Request,
     Response,
     Template,
@@ -35,7 +36,7 @@ class ArticlesController extends Controller
                     'id',
                     '()',
                     Article::query()->distinct('category_id')
-                )->order('title', 'ASC')
+                )->order('position', 'ASC')
         );
 
         foreach ($categories as $category) {
@@ -43,7 +44,8 @@ class ArticlesController extends Controller
 
             $items = '';
 
-            $query = Article::query()->where('category_id', '=', $category->id);
+            $query = Article::query()->where('category_id', '=', $category->id)
+                ->limit(Pagination::DEFAULT_LIMIT);
 
             foreach (Article::fill($query) as $article) {
                 assert($article instanceof Article);
@@ -101,9 +103,40 @@ class ArticlesController extends Controller
             throw new Exception("Article ID:{$id} not found");
         }
 
+        $edit = User::current()->isAdmin()
+            ? Template::make(
+                'admin/article-edit-button',
+                [
+                    'href' => "/" . getenv('APP_LOCALE') . "/edit/article/$article->id"
+                ]
+            )->render()
+            : '';
+
         Response::send(View::make(
             'article',
-            []
+            [
+                'breadcrumbs' => AdminController::renderBreadcrumbs([
+                    new Breadcrumb(
+                        url: "/" . getenv('APP_LOCALE') . "/category/{$article->category_id}",
+                        label: $article->category_title
+                    ),
+                    new Breadcrumb(
+                        label: $article->title
+                    ),
+                ]),
+                'edit' => $edit,
+                'article_id' => $article->id,
+                'article_category_id' => $article->category_id,
+                'article_category_title' => $article->category_title,
+                'article_image_url' => $article->image_url,
+                'article_views' => $article->views,
+                'article_rating' => $article->rating,
+                'article_created_at' => $article->created_at,
+                'article_updated_at' => $article->updated_at,
+                'article_title' => $article->title,
+                'article_short_text' => $article->short_text,
+                'article_full_text' => html_entity_decode($article->full_text),
+            ]
         )->render());
     }
 
@@ -352,10 +385,42 @@ class ArticlesController extends Controller
             throw new Exception('Article not saved');
         }
 
+        foreach (glob(getenv('APP_ROOT') . "/public/images/articles/temp/*.webp") as $file) {
+            $filename = basename($file);
+
+            if ($filename == $article->image) {
+                if (!is_dir(getenv('APP_ROOT') . "/public/images")) {
+                    mkdir(getenv('APP_ROOT') . "/public/images", 0775);
+                }
+
+                if (!is_dir(getenv('APP_ROOT') . "/public/images/articles")) {
+                    mkdir(getenv('APP_ROOT') . "/public/images/articles", 0775);
+                }
+
+                if (!is_dir(getenv('APP_ROOT') . "/public/images/articles/{$article->id}")) {
+                    mkdir(getenv('APP_ROOT') . "/public/images/articles/{$article->id}", 0775);
+                }
+
+                rename($file, getenv('APP_ROOT') . "/public/images/articles/{$article->id}/{$filename}");
+            }
+        }
+
         Response::redirect(
             "/" . getenv('APP_LOCALE') . "/admin/articles",
             new Alert(
                 status: 1,
+                html: Template::make('admin/articles-saved', [
+                    'article_id' => $article->id,
+                    'article_category_id' => $article->category_id,
+                    'article_category_title' => $article->category_title,
+                    'article_image_url' => $article->image_url,
+                    'article_views' => $article->views,
+                    'article_rating' => $article->rating,
+                    'article_created_at' => $article->created_at,
+                    'article_updated_at' => $article->updated_at,
+                    'article_title' => $article->title,
+                    'article_description' => $article->short_text,
+                ])->render(),
                 message: Locale::get('article_added')
             )
         );
@@ -455,6 +520,18 @@ class ArticlesController extends Controller
             url: "/" . getenv('APP_LOCALE') . '/admin/articles',
             alert: new Alert(
                 status: 1,
+                html: Template::make('admin/articles-saved', [
+                    'article_id' => $article->id,
+                    'article_category_id' => $article->category_id,
+                    'article_category_title' => $article->category_title,
+                    'article_image_url' => $article->image_url,
+                    'article_views' => $article->views,
+                    'article_rating' => $article->rating,
+                    'article_created_at' => $article->created_at,
+                    'article_updated_at' => $article->updated_at,
+                    'article_title' => $article->title,
+                    'article_description' => $article->short_text,
+                ])->render(),
                 message: Locale::get('article_saved')
             )
         );

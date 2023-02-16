@@ -9,7 +9,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 font-medium mx-4">
         {{items}}
     </div>
-    <a href="/{{env=APP_LOCALE}}/category/add" class="h-16 w-16 fixed flex 
+    <a href="/{{env=APP_LOCALE}}/category/add" aria-label="{{lang=add}}" class="h-16 w-16 fixed flex 
     items-center justify-center bottom-4 right-4 text-white text-xl
     rounded-full bg-pink-600 hover:bg-pink-700 hover:shadow-lg 
     active:bg-pink-700 focus:bg-pink-700 transition-all ease-in-out"><i class="fas fa-plus"></i></a>

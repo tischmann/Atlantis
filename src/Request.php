@@ -78,7 +78,7 @@ class Request
         $uri = [];
 
         foreach ($chunks as $chunk) {
-            if (empty($chunk)) continue;
+            if (!strlen($chunk)) continue;
 
             $uri[] = $chunk;
         }

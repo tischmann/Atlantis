@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use Tischmann\Atlantis\{Breadcrumb, Controller, Locale, Request, Response, Template, View};
+use App\Models\Article;
+use Tischmann\Atlantis\{Breadcrumb, Controller, Locale, Pagination, Request, Response, Template, View};
 
 class AdminController extends Controller
 {
@@ -58,8 +59,8 @@ class AdminController extends Controller
         foreach ($breadcrumbs as $breadcrumb) {
             $items .= Template::make(
                 template: $breadcrumb->url
-                    ? 'admin/breadcrumb-url'
-                    : 'admin/breadcrumb-span',
+                    ? 'breadcrumb-url'
+                    : 'breadcrumb-span',
                 args: [
                     'label' => $breadcrumb->label,
                     'url' => $breadcrumb->url,
@@ -67,6 +68,71 @@ class AdminController extends Controller
             )->render();
         }
 
-        return Template::make('admin/breadcrumbs', ['items' => $items])->render();
+        return Template::make('breadcrumbs', ['items' => $items])->render();
+    }
+
+    public function fetchArticles(Request $request): void
+    {
+        $category_id = $request->route('category_id');
+
+        $pagination = new Pagination();
+
+        $html = '';
+
+        $page = 1;
+
+        $total = 0;
+
+        $limit = Pagination::DEFAULT_LIMIT;
+
+        if ($category_id) {
+            $limit = $request->request('limit');
+
+            $limit = intval($limit ?? Pagination::DEFAULT_LIMIT);
+
+            $query = Article::query()
+                ->where('category_id', $category_id)
+                ->order('id', 'DESC');
+
+            $total = $query->count();
+
+            if ($total > $limit) {
+                $page = intval($request->request('page') ?? 1);
+
+                $offset = ($page - 1) * $limit;
+
+                if ($limit) $query->limit($limit);
+
+                if ($offset) $query->offset($offset);
+
+                foreach (Article::fill($query) as $article) {
+                    $html .= Template::make('admin/articles-item', [
+                        'article_id' => $article->id,
+                        'article_category_id' => $article->category_id,
+                        'article_category_title' => $article->category_title,
+                        'article_image_url' => $article->image_url,
+                        'article_views' => $article->views,
+                        'article_rating' => $article->rating,
+                        'article_created_at' => $article->created_at,
+                        'article_updated_at' => $article->updated_at,
+                        'article_title' => $article->title,
+                        'article_description' => $article->short_text,
+                    ])->render();
+                }
+            }
+        }
+
+        $pagination = new Pagination(
+            total: $total,
+            page: $page,
+            limit: $limit
+        );
+
+        Response::json([
+            'status' => 1,
+            'html' => $html,
+            'page' => $pagination->page,
+            'last' => $pagination->last,
+        ]);
     }
 }

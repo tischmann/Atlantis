@@ -9,7 +9,7 @@
     <div class="accordion mx-4" id="accordionArticles">
         {{items}}
     </div>
-    <a href="/{{env=APP_LOCALE}}/add/article" class="h-16 w-16 fixed flex 
+    <a href="/{{env=APP_LOCALE}}/add/article" aria-label="{{lang=add}}" class="h-16 w-16 fixed flex 
     items-center justify-center bottom-4 right-4 text-white text-xl
     rounded-full bg-pink-600 hover:bg-pink-700 hover:shadow-lg 
     active:bg-pink-700 focus:bg-pink-700 transition-all ease-in-out"><i class="fas fa-plus"></i></a>

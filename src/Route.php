@@ -53,25 +53,31 @@ final class Route
      */
     public function validate(array $uri): bool
     {
-        if (count($uri) !== count($this->uri)) return false;
+        if (count($uri) !== count($this->uri)) {
+            return false;
+        }
 
         $args = [];
 
         foreach ($this->uri as $index => $chunk) {
             if (!preg_match(self::REGEX_ARGS, $chunk, $matches)) continue;
 
-            $value = $uri[$index];
+            $value = strval($uri[$index]);
 
             $optional = $matches[1] === '?';
 
             $key = $matches[2];
 
-            if (empty($value) && !$optional) continue;
+            if (!strlen($value) && !$optional) {
+                continue;
+            }
 
             $this->uri[$index] = $args[$key] = $value;
         }
 
-        if (array_diff($uri, $this->uri)) return false;
+        if (array_diff($uri, $this->uri)) {
+            return false;
+        }
 
         $this->args = array_merge($this->args, $args);
 
