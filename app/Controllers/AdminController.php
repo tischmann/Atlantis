@@ -47,6 +47,7 @@ class AdminController extends Controller
                         ]
                     ),
                     'items' => $items,
+                    'app_title' => getenv('APP_TITLE') . " - " . Locale::get('adminpanel'),
                 ]
             )->render()
         );

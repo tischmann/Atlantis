@@ -2,8 +2,16 @@
 
 declare(strict_types=1);
 
-use App\Controllers\{AdminController, ArticlesController, CategoriesController, IndexController, UsersController};
+use App\Controllers\{
+    AdminController,
+    ArticlesController,
+    CategoriesController,
+    IndexController,
+    UsersController
+};
+
 use App\Models\User;
+
 use Tischmann\Atlantis\{Router, Route};
 
 // Главная
@@ -16,7 +24,7 @@ Router::add(new Route(
     controller: new ArticlesController(),
     path: 'article/{id}',
     action: 'getArticle',
-    method: 'GET'
+    method: 'GET',
 ));
 
 // Админка

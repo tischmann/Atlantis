@@ -17,16 +17,17 @@
     <link rel="manifest" href="/webmanifest.json">
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#ffffff">
     <meta name="msapplication-TileColor" content="#ffffff">
-    <title>{{env=APP_TITLE}}</title>
+    <title>{{app_title}}</title>
     <link rel="stylesheet" href="/tailwind.css" media="all">
-    <link rel="stylesheet" href="/fontawesome.css" media="all">
+    <link rel="preload" as="style" href="/fontawesome.css" media="all">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet"
+    <link rel="preload" as="style"
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" />
-    <link rel="stylesheet" href="/app.css" media="all">
+    <link rel="preload" as="style" href="/app.css" media="all">
     <style>
         body {
+            /* font-family: 'Inter'; */
             margin: 0;
             padding: 0;
         }
@@ -36,11 +37,11 @@
 <body>
     {{body}}
     {{alert}}
-    <script src="/tailwind.js" nonce="{{nonce}}"></script>
-    <script src="/js/lazyfetch.js" nonce="{{nonce}}"></script>
-    <script src="/js/lazyload.min.js" nonce="{{nonce}}"></script>
-    <script src="/app.js" nonce="{{nonce}}"></script>
-    <script src="/pwa.js" nonce="{{nonce}}"></script>
+    <script src="/tailwind.js" nonce="{{nonce}}" async></script>
+    <script src="/js/lazyfetch.js" nonce="{{nonce}}" async></script>
+    <script src="/js/lazyload.min.js" nonce="{{nonce}}" async></script>
+    <script src="/app.js" nonce="{{nonce}}" async></script>
+    <script src="/pwa.js" nonce="{{nonce}}" async></script>
 </body>
 
 </html>

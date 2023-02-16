@@ -109,6 +109,7 @@ final class Template
         static::$cached_args = [
             ...$env,
             ...$strings,
+            'app_title' => getenv('APP_TITLE'),
             'nonce' => getenv('APP_NONCE'),
             'breadcrumbs' => '',
             'admin' => '',

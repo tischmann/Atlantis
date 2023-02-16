@@ -80,7 +80,8 @@ class CategoriesController extends Controller
                             label: Locale::get('categories')
                         ),
                     ]),
-                    'items' => $localesItems
+                    'items' => $localesItems,
+                    'app_title' => getenv('APP_TITLE') . " - " . Locale::get('categories'),
                 ]
             )->render()
         );
@@ -172,8 +173,7 @@ class CategoriesController extends Controller
                 url: '/admin/categories',
                 label: Locale::get('categories')
             ),
-            ...$this->getParentBreadcrumbs($category),
-            new Breadcrumb(label: $category->title)
+            ...$this->getParentBreadcrumbs($category)
         ];
 
         if ($category->id) {
@@ -200,6 +200,10 @@ class CategoriesController extends Controller
                     'locales_options' => $this->getLocalesOptions($category->locale),
                     'parents_options' => $this->getParentsOptions($category),
                     'category_children' => $this->getChildrenCategories($category),
+                    'app_title' => getenv('APP_TITLE') . " - "
+                        . ($category->id
+                            ? $category->title
+                            : Locale::get('category_new')),
                 ]
             )->render()
         );
@@ -332,6 +336,8 @@ class CategoriesController extends Controller
                 . Locale::get('category_children_will_be_deleted') . "!",
             'form_action' => "/category/delete/{$category->id}",
             'form_method' => 'POST',
+            'app_title' => getenv('APP_TITLE') . " - "
+                . Locale::get('category_delete_title'),
         ])->render());
     }
 

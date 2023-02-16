@@ -40,7 +40,7 @@ final class Response
             . "default-src 'self'; "
             . "img-src 'self' data: blob: https:; "
             . "child-src 'self' https:;"
-            . "script-src 'strict-dynamic' 'nonce-" . getenv('APP_NONCE') . "'; "
+            . "script-src https: http: 'strict-dynamic' 'nonce-" . getenv('APP_NONCE') . "' 'unsafe-inline'; "
             . "style-src 'unsafe-inline' https:; "
             . "frame-src 'none';"
             . "font-src 'self' https:; ");

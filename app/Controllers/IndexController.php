@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use Tischmann\Atlantis\{Controller, View, Response, Template};
+use Tischmann\Atlantis\{Controller, Locale, View, Response, Template};
 
 class IndexController extends Controller
 {
@@ -15,6 +15,7 @@ class IndexController extends Controller
                 'admin' => $this->isAdmin()
                     ? Template::make('admin')->render()
                     : '',
+                'app_title' => getenv('APP_TITLE') . " - " . Locale::get('home'),
             ])->render()
         );
     }

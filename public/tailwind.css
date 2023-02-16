@@ -4071,6 +4071,10 @@ textarea.form-control.is-invalid {
   margin-left: 1rem;
 }
 
+.mr-0 {
+  margin-right: 0px;
+}
+
 .block {
   display: block;
 }
@@ -4596,6 +4600,11 @@ textarea.form-control.is-invalid {
   color: rgb(219 39 119 / var(--tw-text-opacity));
 }
 
+.text-black {
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity));
+}
+
 .underline {
   text-decoration-line: underline;
 }
@@ -4722,6 +4731,11 @@ textarea.form-control.is-invalid {
   background-color: rgb(209 213 219 / var(--tw-bg-opacity));
 }
 
+.hover\:bg-sky-600:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(2 132 199 / var(--tw-bg-opacity));
+}
+
 .hover\:px-5:hover {
   padding-left: 1.25rem;
   padding-right: 1.25rem;
@@ -4735,6 +4749,16 @@ textarea.form-control.is-invalid {
 .hover\:text-pink-600:hover {
   --tw-text-opacity: 1;
   color: rgb(219 39 119 / var(--tw-text-opacity));
+}
+
+.hover\:text-pink-800:hover {
+  --tw-text-opacity: 1;
+  color: rgb(157 23 77 / var(--tw-text-opacity));
+}
+
+.hover\:text-white:hover {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
 .hover\:shadow-lg:hover {

@@ -86,7 +86,8 @@ class ArticlesController extends Controller
                         label: Locale::get('articles')
                     ),
                 ]),
-                'items' => $accordion_items
+                'items' => $accordion_items,
+                'app_title' => getenv('APP_TITLE') . " - " . Locale::get('articles'),
             ]
         )->render());
     }
@@ -124,6 +125,7 @@ class ArticlesController extends Controller
                         label: $article->title
                     ),
                 ]),
+                'app_title' => getenv('APP_TITLE') . " - {$article->title}",
                 'edit' => $edit,
                 'article_id' => $article->id,
                 'article_category_id' => $article->category_id,
@@ -213,6 +215,10 @@ class ArticlesController extends Controller
                 'locales_options' => $this->getLocalesOptions($article->locale),
                 'category_options' => $this->getCategoriesOptions($article),
                 'breadcrumbs' => AdminController::renderBreadcrumbs($breadcrumbs),
+                'app_title' => getenv('APP_TITLE') . " - "
+                    . ($article->id
+                        ? $article->title
+                        : Locale::get('article_new')),
             ]
         )->render());
     }
@@ -558,6 +564,8 @@ class ArticlesController extends Controller
                 . " {$article->title}?",
             'form_action' => "/article/delete/{$article->id}",
             'form_method' => 'POST',
+            'app_title' => getenv('APP_TITLE') . " - "
+                . Locale::get('article_delete_title'),
         ])->render());
     }
 
