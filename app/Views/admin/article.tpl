@@ -54,9 +54,27 @@
             <div class="mb-4">
                 <label for="articleImageInput"
                     class="form-label inline-block mb-1 text-gray-500">{{lang=article_image}}</label>
+                <select class="form-select appearance-none block w-full px-3 py-1.5
+                        text-base font-normal text-gray-700 bg-white bg-clip-padding 
+                        bg-no-repeat border border-solid border-gray-300 rounded
+                        transition ease-in-out m-0 focus:text-gray-700 focus:bg-white 
+                        focus:border-blue-600 focus:outline-none mb-4" id="articleImageSelect">
+                    <option value="1920|1080">1920x1080 (16:9)</option>
+                    <option value="1280|720">1280x720 (16:9)</option>
+                    <option value="1024|576">1024x576 (16:9)</option>
+                    <option value="800|450">800x450 (16:9)</option>
+                    <option value="1920|1080">1920x1440 (4:3)</option>
+                    <option value="1280|960">1280x960 (4:3)</option>
+                    <option value="1024|768">1024x768 (4:3)</option>
+                    <option value="800|600" selected>800x600 (4:3)</option>
+                    <option value="1920|1920">1920x1920 (1:1)</option>
+                    <option value="1280|1280">1280x1280 (1:1)</option>
+                    <option value="1024|1024">1024x1024 (1:1)</option>
+                    <option value="800|800">800x800 (1:1)</option>
+                </select>
                 <input type="hidden" value="{{article_image}}" name="image" id="articleImageInput">
                 <input type='file' id="articleImageFile" class="hidden" aria-label="{{lang=article_image}}">
-                <img src="{{article_image_url}}" id="articleImage" width="400px" height="300px" alt="{{article_title}}"
+                <img src="{{article_image_url}}" id="articleImage" width="800" height="600" alt="{{article_title}}"
                     class="rounded w-full object-cover">
                 <div id="imageDeleteButton"
                     class="w-full block mt-4 text-center px-6 py-2.5 bg-pink-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-pink-700 hover:shadow-lg focus:bg-pink-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-pink-800 active:shadow-lg transition duration-150 ease-in-out cursor-pointer">
@@ -162,15 +180,21 @@
 
         const input = document.getElementById('articleImageInput')
 
+        const dimensions = document.getElementById('articleImageSelect')
+
         document.getElementById('imageDeleteButton').addEventListener('click', () => {
             img.setAttribute('src', '/images/placeholder.svg')
             input.value = ''
         })
 
-        const loadImage = (file, width = 800, height = 600) => {
-            if (!file) return
+        const loadImage = (file, width, height) => {
+            if (!file || !width || !height) return
 
             const formData = new FormData();
+
+            formData.append('width', width);
+
+            formData.append('height', height);
 
             formData.append('file', file, file.name);
 
@@ -185,27 +209,8 @@
                 .then(response => response.json())
                 .then(data => {
                     input.value = data.image
-
+                    img.src = data.location
                     csrf = data.csrf
-
-                    const imageReader = new FileReader();
-
-                    imageReader.onload = (function (f) {
-                        return function (e) {
-                            const image = new Image();
-
-                            image.src = e.target.result
-
-                            image.onload = (function () {
-                                new IMage(image.src).rect(width, height)
-                                    .then((base64) => {
-                                        img.setAttribute('src', base64)
-                                    })
-                            })()
-                        }
-                    })(file)
-
-                    imageReader.readAsDataURL(file)
                 })
                 .catch(error => {
                     console.error('Error:', error)
@@ -213,11 +218,19 @@
         }
 
         file.addEventListener('change', function (event) {
-            loadImage(event.target.files[0])
+            loadImage(event.target.files[0],
+                img.getAttribute('width'),
+                img.getAttribute('height'))
         })
 
         img.addEventListener('click', function (event) {
             file.dispatchEvent(new MouseEvent('click'));
+        })
+
+        dimensions.addEventListener('change', function (event) {
+            const [width, height] = event.target.value.split('|')
+            img.setAttribute('width', width)
+            img.setAttribute('height', height)
         })
     </script>
 </main>

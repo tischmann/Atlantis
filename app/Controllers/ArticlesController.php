@@ -13,6 +13,7 @@ use Tischmann\Atlantis\{
     Breadcrumb,
     Controller,
     CSRF,
+    Image,
     Locale,
     Request,
     Response,
@@ -165,13 +166,17 @@ class ArticlesController extends Controller
 
         $id = $request->route('id');
 
+        $width = intval($request->request('width'));
+
+        $height = intval($request->request('height'));
+
         $article = Article::find($id);
 
         $imageFolder = $article->id
             ? "images/articles/{$article->id}"
             : 'images/articles/temp';
 
-        if (!is_file($imageFolder)) {
+        if (!is_dir($imageFolder)) {
             mkdir($imageFolder, 0775, true);
         }
 
@@ -244,12 +249,17 @@ class ArticlesController extends Controller
                 break;
             case 'webp':
                 $im = imagecreatefromwebp($temp['tmp_name']);
+                break;
             default:
                 Response::json([
                     'error' => 'Unsupported image format'
                 ]);
 
                 exit;
+        }
+
+        if ($width && $height) {
+            $im = Image::resize($im, $width, $height);
         }
 
         if (!imagewebp($im, $filetowrite, $quality)) {
