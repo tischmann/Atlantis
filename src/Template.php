@@ -27,12 +27,38 @@ final class Template
         return new static($template, $args);
     }
 
+    public static function html(string $template, array $args = []): string
+    {
+        return (new static($template, $args))->render();
+    }
+
+    public static function echo(string $template, array $args = [])
+    {
+        echo (new static($template, $args))->render();
+    }
+
     public function read(): string
     {
         $file = __DIR__ . '/../app/Views/' . $this->template . '.tpl';
 
         if (!file_exists($file)) {
-            throw new Exception('View file not found: ' . $file);
+            $file = __DIR__ . '/../app/Views/' . $this->template . '.php';
+
+            if (!file_exists($file)) {
+                throw new Exception('View file not found: ' . $this->template);
+            }
+
+            if (!in_array('ob_gzhandler', ob_list_handlers())) {
+                ob_start('ob_gzhandler');
+            } else {
+                ob_start();
+            }
+
+            extract($this->args);
+
+            require $file;
+
+            return ob_get_clean();
         }
 
         return file_get_contents($file);
@@ -40,7 +66,7 @@ final class Template
 
     public function render(): string
     {
-        $this->args = [...static::getCachedArgs(), ...$this->args];
+        $args = [...static::getCachedArgs(), ...$this->args];
 
         $parsed = $this->content;
 
@@ -56,9 +82,26 @@ final class Template
 
             $key = $set[1];
 
-            if (!array_key_exists($key, $this->args)) continue;
+            switch ($key) {
+                case 'csrf':
+                    list($key, $value) = CSRF::set();
 
-            $replace = $this->stringify($this->args[$key]);
+                    $replace = Template::html(
+                        'csrf',
+                        ['key' => $key, 'value' => $value]
+                    );
+                    break;
+                case 'csrf-token':
+                    list($key, $value) = CSRF::set();
+
+                    $replace = $value;
+                    break;
+                default:
+                    if (!array_key_exists($key, $args)) continue 2;
+
+                    $replace = $this->stringify($args[$key]);
+                    break;
+            }
 
             $parsed = str_replace($search, $replace, $parsed);
         }

@@ -4,74 +4,252 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Models\Article;
-use Tischmann\Atlantis\{Breadcrumb, Controller, Locale, Pagination, Request, Response, Template, View};
+use App\Models\{
+    Article,
+    Category
+};
+
+use Exception;
+
+use Tischmann\Atlantis\{
+    Breadcrumb,
+    Controller,
+    Locale,
+    Pagination,
+    Request,
+    Response,
+    Template,
+    View
+};
 
 class AdminController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Вывод главной страницы админпанели
+     */
+    public function index()
     {
         $this->checkAdmin();
 
-        $items = '';
+        $app_title = getenv('APP_TITLE') . " - " . Locale::get('adminpanel');
 
-        $sections = [
-            'categories' => [
-                'label' => Locale::get('categories'),
-                'url' => '/admin/categories',
-                'icon' => 'fas fa-sitemap',
-                'title' => Locale::get('categories'),
-            ],
-            'articles' => [
-                'label' => Locale::get('articles'),
-                'url' => '/admin/articles',
-                'icon' => 'fas fa-newspaper',
-                'title' => Locale::get('articles'),
-            ],
-        ];
-
-        foreach ($sections as $item => $args) {
-            $items .= Template::make(
-                template: 'admin/index-item',
-                args: $args
-            )->render();
-        }
-
-        Response::send(
-            View::make(
-                view: 'admin/index',
-                args: [
-                    'breadcrumbs' => $this->renderBreadcrumbs(
-                        [
-                            new Breadcrumb(label: Locale::get('adminpanel')),
-                        ]
-                    ),
-                    'items' => $items,
-                    'app_title' => getenv('APP_TITLE') . " - " . Locale::get('adminpanel'),
-                ]
-            )->render()
+        View::send(
+            'admin/index',
+            [
+                'app_title' => $app_title,
+                'breadcrumbs' => [new Breadcrumb(Locale::get('adminpanel'))],
+                'items' => [
+                    'categories' => [
+                        'label' => Locale::get('categories'),
+                        'url' => '/admin/categories',
+                        'icon' => 'fas fa-sitemap',
+                        'title' => Locale::get('categories'),
+                    ],
+                    'articles' => [
+                        'label' => Locale::get('articles'),
+                        'url' => '/admin/articles',
+                        'icon' => 'fas fa-newspaper',
+                        'title' => Locale::get('articles'),
+                    ],
+                ],
+            ]
         );
     }
 
-    public static function renderBreadcrumbs(array $breadcrumbs): string
+    /**
+     * Вывод списка категорий в админпанели
+     */
+    public function getCategories(Request $request): void
     {
-        $items = '';
+        $this->checkAdmin();
 
-        foreach ($breadcrumbs as $breadcrumb) {
-            $items .= Template::make(
-                template: $breadcrumb->url
-                    ? 'breadcrumb-url'
-                    : 'breadcrumb-span',
-                args: [
-                    'label' => $breadcrumb->label,
-                    'url' => $breadcrumb->url,
-                ]
-            )->render();
+        $items = [];
+
+        $query = Category::query()
+            ->where('parent_id', null)
+            ->order('position', 'ASC');
+
+        foreach (Category::fill($query) as $category) {
+            assert($category instanceof Category);
+
+            if (!array_key_exists($category->locale, $items)) {
+                $items[$category->locale] = [];
+            }
+
+            $items[$category->locale][] = $category;
         }
 
-        return Template::make('breadcrumbs', ['items' => $items])->render();
+        $app_title = getenv('APP_TITLE') . " - " . Locale::get('categories');
+
+        View::send(
+            'admin/categories',
+            [
+                'app_title' => $app_title,
+                'breadcrumbs' => [
+                    new Breadcrumb(
+                        url: '/admin',
+                        label: Locale::get('adminpanel')
+                    ),
+                    new Breadcrumb(
+                        label: Locale::get('categories')
+                    ),
+                ],
+                'items' => $items,
+            ]
+        );
     }
 
+    /**
+     * Вывод формы редактирования категории
+     *
+     * @param Request $request
+     * 
+     * @throws Exception
+     */
+    public function getCategory(Request $request)
+    {
+        $this->checkAdmin();
+
+        $request->validate([
+            'id' => ['required'],
+        ]);
+
+        $id = intval($request->route('id'));
+
+        $category = Category::find($id);
+
+        assert($category instanceof Category);
+
+        if (!$category->id) {
+            throw new Exception("Category ID:{$id} not found");
+        }
+
+        $this->getCategoryEditor($category);
+    }
+
+    /**
+     * Форма добавления категории
+     *
+     * @param Request $request
+     * 
+     * @return void
+     */
+    public function newCategory(Request $request)
+    {
+        $this->checkAdmin();
+
+        $this->getCategoryEditor();
+    }
+
+    /**
+     * Вывод формы добавления/редактирования категории
+     * 
+     * @param Category $category Категория
+     */
+    public function getCategoryEditor(Category $category = new Category())
+    {
+        $this->checkAdmin();
+
+        $parentBreadcrumbs = [];
+
+        if ($category->parent_id) {
+            $parent = Category::find($category->parent_id);
+
+            assert($parent instanceof Category);
+
+            while (true) {
+                $parentBreadcrumbs[] = new Breadcrumb(
+                    $parent->title,
+                    '/category/edit/' . $parent->id
+                );
+
+                $parent = Category::find($parent->parent_id);
+
+                if (!$parent->id) break;
+            }
+        }
+
+        $parentBreadcrumbs = array_reverse($parentBreadcrumbs);
+
+        $breadcrumbs = [
+            new Breadcrumb(
+                url: '/admin',
+                label: Locale::get('adminpanel')
+            ),
+            new Breadcrumb(
+                url: '/admin/categories',
+                label: Locale::get('categories')
+            ),
+            ...$parentBreadcrumbs
+        ];
+
+        if ($category->id) {
+            $breadcrumbs[] = new Breadcrumb($category->title);
+        } else {
+            $breadcrumbs[] = new Breadcrumb(Locale::get('category_new'));
+        }
+
+        $app_title = $category->id ? $category->title : Locale::get('category_new');
+
+        $app_title = getenv('APP_TITLE') . " - " . $app_title;
+
+        View::send(
+            'admin/category',
+            [
+                'app_title' => $app_title,
+                'breadcrumbs' => $breadcrumbs,
+                'category' => $category,
+
+            ]
+        );
+    }
+
+    /**
+     * Вывод списка статей в админпанели
+     */
+    public function getArticles(): void
+    {
+        $this->checkAdmin();
+
+        $items = [];
+
+        $query = Category::query()
+            ->where('id', '()', Article::query()->distinct('category_id'))
+            ->order('position', 'ASC');
+
+        foreach (Category::fill($query) as $category) {
+            assert($category instanceof Category);
+
+            $query = Article::query()->where('category_id', $category->id)
+                ->limit(Pagination::DEFAULT_LIMIT);
+
+            $items[] = Article::fill($query);
+        }
+
+        $app_title = getenv('APP_TITLE') . " - " . Locale::get('articles');
+
+        View::send(
+            'admin/articles',
+            [
+                'app_title' => $app_title,
+                'breadcrumbs' => [
+                    new Breadcrumb(
+                        url: '/admin',
+                        label: Locale::get('adminpanel')
+                    ),
+                    new Breadcrumb(
+                        label: Locale::get('articles')
+                    ),
+                ],
+                'items' => $items,
+
+            ]
+        );
+    }
+
+    /**
+     * Динамическая подгрузка статей в админпанели
+     */
     public function fetchArticles(Request $request): void
     {
         $category_id = $request->route('category_id');
@@ -107,18 +285,9 @@ class AdminController extends Controller
                 if ($offset) $query->offset($offset);
 
                 foreach (Article::fill($query) as $article) {
-                    $html .= Template::make('admin/articles-item', [
-                        'article_id' => $article->id,
-                        'article_category_id' => $article->category_id,
-                        'article_category_title' => $article->category_title,
-                        'article_image_url' => $article->image_url,
-                        'article_views' => $article->views,
-                        'article_rating' => $article->rating,
-                        'article_created_at' => $article->created_at,
-                        'article_updated_at' => $article->updated_at,
-                        'article_title' => $article->title,
-                        'article_description' => $article->short_text,
-                    ])->render();
+                    $html .= Template::html('admin/articles-item', [
+                        'article' => $article,
+                    ]);
                 }
             }
         }

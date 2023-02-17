@@ -15,7 +15,6 @@ use Tischmann\Atlantis\{
     CSRF,
     Image,
     Locale,
-    Pagination,
     Request,
     Response,
     Template,
@@ -24,74 +23,6 @@ use Tischmann\Atlantis\{
 
 class ArticlesController extends Controller
 {
-    public function getArticles(): void
-    {
-        $this->checkAdmin();
-
-        $accordion_items = '';
-
-        $categories = Category::fill(
-            Category::query()
-                ->where(
-                    'id',
-                    '()',
-                    Article::query()->distinct('category_id')
-                )->order('position', 'ASC')
-        );
-
-        foreach ($categories as $category) {
-            assert($category instanceof Category);
-
-            $items = '';
-
-            $query = Article::query()->where('category_id', '=', $category->id)
-                ->limit(Pagination::DEFAULT_LIMIT);
-
-            foreach (Article::fill($query) as $article) {
-                assert($article instanceof Article);
-
-                $items .= Template::make('admin/articles-item', [
-                    'article_id' => $article->id,
-                    'article_category_id' => $article->category_id,
-                    'article_category_title' => $article->category_title,
-                    'article_image_url' => $article->image_url,
-                    'article_views' => $article->views,
-                    'article_rating' => $article->rating,
-                    'article_created_at' => $article->created_at,
-                    'article_updated_at' => $article->updated_at,
-                    'article_title' => $article->title,
-                    'article_description' => $article->short_text,
-                ])->render();
-            }
-
-            $accordion_items .= Template::make(
-                template: 'admin/article-accordion-item',
-                args: [
-                    'category_id' => $category->id,
-                    'category_title' => $category->title,
-                    'items' => $items,
-                ]
-            )->render();
-        }
-
-        Response::send(View::make(
-            'admin/articles',
-            [
-                'breadcrumbs' => AdminController::renderBreadcrumbs([
-                    new Breadcrumb(
-                        url: '/admin',
-                        label: Locale::get('adminpanel')
-                    ),
-                    new Breadcrumb(
-                        label: Locale::get('articles')
-                    ),
-                ]),
-                'items' => $accordion_items,
-                'app_title' => getenv('APP_TITLE') . " - " . Locale::get('articles'),
-            ]
-        )->render());
-    }
-
     public function getArticle(Request $request): void
     {
         $id = $request->route('id');
@@ -113,33 +44,23 @@ class ArticlesController extends Controller
             )->render()
             : '';
 
-        Response::send(View::make(
+        View::send(
             'article',
             [
-                'breadcrumbs' => AdminController::renderBreadcrumbs([
+                'app_title' => getenv('APP_TITLE') . " - {$article->title}",
+                'breadcrumbs' => [
                     new Breadcrumb(
+                        label: $article->category->title,
                         url: "/" . getenv('APP_LOCALE') . "/category/{$article->category_id}",
-                        label: $article->category_title
                     ),
                     new Breadcrumb(
                         label: $article->title
                     ),
-                ]),
-                'app_title' => getenv('APP_TITLE') . " - {$article->title}",
+                ],
                 'edit' => $edit,
-                'article_id' => $article->id,
-                'article_category_id' => $article->category_id,
-                'article_category_title' => $article->category_title,
-                'article_image_url' => $article->image_url,
-                'article_views' => $article->views,
-                'article_rating' => $article->rating,
-                'article_created_at' => $article->created_at,
-                'article_updated_at' => $article->updated_at,
-                'article_title' => $article->title,
-                'article_short_text' => $article->short_text,
-                'article_full_text' => html_entity_decode($article->full_text),
+                'article' => $article,
             ]
-        )->render());
+        );
     }
 
     public function newArticle(Request $request)
@@ -200,11 +121,9 @@ class ArticlesController extends Controller
             );
         }
 
-        Response::send(View::make(
+        View::send(
             'admin/article',
             [
-                'csrf' => $this->getCsrfInput(),
-                'csrf-token' => CSRF::set()[1],
                 'article_id' => $article->id,
                 'article_title' => $article->title,
                 'article_image' => $article->image,
@@ -214,13 +133,13 @@ class ArticlesController extends Controller
                 'delete_button' => $delete_button,
                 'locales_options' => $this->getLocalesOptions($article->locale),
                 'category_options' => $this->getCategoriesOptions($article),
-                'breadcrumbs' => AdminController::renderBreadcrumbs($breadcrumbs),
+                'breadcrumbs' => $breadcrumbs,
                 'app_title' => getenv('APP_TITLE') . " - "
                     . ($article->id
                         ? $article->title
                         : Locale::get('article_new')),
             ]
-        )->render());
+        );
     }
 
     public function uploadArticleImage(Request $request)
@@ -344,7 +263,6 @@ class ArticlesController extends Controller
         $location = $baseurl . "/" . $filetowrite;
 
         Response::json([
-            'csrf' => CSRF::set()[1],
             'image' => basename($location),
             'location' => $location
         ]);
@@ -416,16 +334,7 @@ class ArticlesController extends Controller
             new Alert(
                 status: 1,
                 html: Template::make('admin/articles-saved', [
-                    'article_id' => $article->id,
-                    'article_category_id' => $article->category_id,
-                    'article_category_title' => $article->category_title,
-                    'article_image_url' => $article->image_url,
-                    'article_views' => $article->views,
-                    'article_rating' => $article->rating,
-                    'article_created_at' => $article->created_at,
-                    'article_updated_at' => $article->updated_at,
-                    'article_title' => $article->title,
-                    'article_description' => $article->short_text,
+                    'article' => $article,
                 ])->render(),
                 message: Locale::get('article_added')
             )
@@ -527,46 +436,11 @@ class ArticlesController extends Controller
             alert: new Alert(
                 status: 1,
                 html: Template::make('admin/articles-saved', [
-                    'article_id' => $article->id,
-                    'article_category_id' => $article->category_id,
-                    'article_category_title' => $article->category_title,
-                    'article_image_url' => $article->image_url,
-                    'article_views' => $article->views,
-                    'article_rating' => $article->rating,
-                    'article_created_at' => $article->created_at,
-                    'article_updated_at' => $article->updated_at,
-                    'article_title' => $article->title,
-                    'article_description' => $article->short_text,
+                    'article' => $article,
                 ])->render(),
                 message: Locale::get('article_saved')
             )
         );
-    }
-
-    public function confirmDeleteArticle(Request $request)
-    {
-        $this->checkAdmin();
-
-        $id = intval($request->route('id'));
-
-        $article = Article::find($id);
-
-        assert($article instanceof Article);
-
-        if (!$article->id) {
-            throw new Exception("Article ID:{$id} not found");
-        }
-
-        Response::send(View::make('admin/confirmation', [
-            'csrf' => $this->getCsrfInput(),
-            'back_url'  => '/admin/articles',
-            'message' => Locale::get('article_delete_confirm')
-                . " {$article->title}?",
-            'form_action' => "/article/delete/{$article->id}",
-            'form_method' => 'POST',
-            'app_title' => getenv('APP_TITLE') . " - "
-                . Locale::get('article_delete_title'),
-        ])->render());
     }
 
     public function deleteArticle(Request $request)

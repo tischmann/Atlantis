@@ -1,6 +1,6 @@
 <main class="container mx-auto">
     <div class="p-4 flex sticky-top bg-white">
-        {{breadcrumbs}}
+        <?php include __DIR__ . "/../breadcrumbs.php" ?>
     </div>
     <form method="post" class="mx-4">
         {{csrf}}

@@ -10,9 +10,7 @@ use Tischmann\Atlantis\{Migration, Model};
 
 class Article extends Model
 {
-    public string $category_title = '';
-
-    public string $category_slug = '';
+    public Category $category;
 
     public string $image_url = '';
 
@@ -30,31 +28,23 @@ class Article extends Model
     ) {
         parent::__construct();
 
-        $this->defineCategory();
+        $this->category = $this->getCategory();
 
-        $this->defineImage();
-
-        if (!$this->short_text) {
-            $this->short_text = $this->defineShortText();
-        }
+        $this->image_url = $this->getImageUrl();
     }
 
     public function __fill(object|array $traversable): self
     {
         parent::__fill($traversable);
 
-        $this->defineCategory();
+        $this->category = $this->getCategory();
 
-        $this->defineImage();
-
-        if (!$this->short_text) {
-            $this->short_text = $this->defineShortText();
-        }
+        $this->image_url = $this->getImageUrl();
 
         return $this;
     }
 
-    public function defineShortText(): string
+    public function getDescription(): string
     {
         if (!strlen($this->full_text)) return '';
 
@@ -71,32 +61,20 @@ class Article extends Model
         return $text;
     }
 
-    public function defineImage(): self
+    public function getImageUrl(): string
     {
-        $placeholder = "/images/placeholder.svg";
-
-        $this->image_url = "/images/articles/{$this->id}/{$this->image}";
+        $image_url = "/images/articles/{$this->id}/{$this->image}";
 
         if (!is_file(getenv('APP_ROOT') . "/public{$this->image_url}")) {
-            $this->image_url = $placeholder;
+            return "/images/placeholder.svg";
         }
 
-        return $this;
+        return $image_url;
     }
 
-    public function defineCategory(): self
+    public function getCategory(): Category
     {
-        if ($this->category_id) {
-            $category = Category::find($this->category_id);
-
-            assert($category instanceof Category);
-
-            $this->category_title = $category->title;
-
-            $this->category_slug = $category->slug;
-        }
-
-        return $this;
+        return Category::find($this->category_id);
     }
 
     public static function table(): Migration

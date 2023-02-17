@@ -14,16 +14,6 @@ class Controller
         throw new BadMethodCallException("Method {$name} not found", 404);
     }
 
-    protected function getCsrfInput(): string
-    {
-        list($key, $value) = CSRF::set();
-
-        return Template::make(
-            'csrf',
-            ['key' => $key, 'value' => $value]
-        )->render();
-    }
-
     protected function isAdmin(): bool
     {
         return User::current()->isAdmin();
@@ -47,28 +37,6 @@ class Controller
         return new Alert(status: -1, message: 'Everything is fine');
     }
 
-    public static function renderBreadcrumbs(array $breadcrumbs): string
-    {
-        $items = '';
-
-        foreach ($breadcrumbs as $breadcrumb) {
-
-            $view = $breadcrumb->url
-                ? 'breadcrumb-url'
-                : 'breadcrumb-span';
-
-            $items .= Template::make(
-                template: $view,
-                args: [
-                    'label' => $breadcrumb->label,
-                    'url' => $breadcrumb->url,
-                ]
-            )->render();
-        }
-
-        return Template::make('breadcrumbs', ['items' => $items])->render();
-    }
-
     protected function getAdminMenu(): string
     {
         return $this->isAdmin()
@@ -81,20 +49,20 @@ class Controller
             : '';
     }
 
-    protected function getLocalesOptions(string $locale): string
+    public static function getLocalesOptions(string $locale): string
     {
         $locales = '';
 
-        foreach (Locale::available() as $localeValue) {
-            $locales  .= Template::make(
+        foreach (Locale::available() as $value) {
+            $locales  .= Template::html(
                 'option',
                 [
-                    'value' => $localeValue,
-                    'label' => Locale::get('locale_' . $localeValue),
-                    'title' => Locale::get('locale_' . $localeValue),
-                    'selected' => $localeValue === $locale ? 'selected' : ''
+                    'value' => $value,
+                    'label' => Locale::get('locale_' . $value),
+                    'title' => Locale::get('locale_' . $value),
+                    'selected' => $value === $locale ? 'selected' : ''
                 ]
-            )->render();
+            );
         }
 
         return $locales;

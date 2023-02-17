@@ -75,7 +75,7 @@ final class CSRF
     {
         $verified = true;
 
-        if (in_array($request->method, ['POST', 'PUT'])) {
+        if (in_array($request->method, ['POST', 'PUT', 'DELETE'])) {
             $verified = array_intersect(
                 static::tokens(),
                 [$request->headers('X-Csrf-Token')]
@@ -96,7 +96,7 @@ final class CSRF
 
         if (!$verified) {
             CSRF::flush();
-            throw new Exception("CSRF token is required!", 403);
+            throw new Exception(Locale::get('csrf_token_required'));
         }
     }
 }

@@ -62,8 +62,10 @@ final class Response
      * @param string $url URL для перенаправления 
      * @return void
      */
-    public static function redirect(string $url = '/', ?Alert $alert = null): void
-    {
+    public static function redirect(
+        string $url = '/',
+        ?Alert $alert = null
+    ): void {
         if ($alert) Session::set('alert', $alert);
 
         header('Location: ' . $url);

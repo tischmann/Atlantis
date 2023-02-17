@@ -1,1 +1,0 @@
-<span class="bg-gray-200 text-gray-800 px-3 py-2 rounded-lg cursor-default">{{label}}</span>

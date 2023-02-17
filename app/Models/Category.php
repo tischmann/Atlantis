@@ -56,19 +56,6 @@ class Category extends Model
         return $children;
     }
 
-    public function insert(): bool
-    {
-        $category = Category::find($this->slug, 'slug');
-
-        assert($category instanceof Category);
-
-        if ($category->id) {
-            throw new Exception("Category with slug '{$category->slug}' already exists");
-        }
-
-        return parent::insert();
-    }
-
     public static function table(): Migration
     {
         return new Categories();

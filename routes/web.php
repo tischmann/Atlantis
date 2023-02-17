@@ -40,21 +40,21 @@ if (User::current()->isAdmin()) {
     // Категории
 
     Router::add(new Route(
-        controller: new CategoriesController(),
+        controller: new AdminController(),
         path: 'admin/categories',
-        action: 'index',
+        action: 'getCategories',
         method: 'GET'
     ));
 
     Router::add(new Route(
         controller: new CategoriesController(),
-        path: 'admin/categories/order',
-        action: 'orderCategories',
+        path: 'categories/order',
+        action: 'order',
         method: 'POST'
     ));
 
     Router::add(new Route(
-        controller: new CategoriesController(),
+        controller: new AdminController(),
         path: 'category/add',
         action: 'newCategory',
         method: 'GET'
@@ -63,19 +63,19 @@ if (User::current()->isAdmin()) {
     Router::add(new Route(
         controller: new CategoriesController(),
         path: 'category/add',
-        action: 'addCategory',
+        action: 'add',
         method: 'POST'
     ));
 
     Router::add(new Route(
         controller: new CategoriesController(),
         path: 'category/add',
-        action: 'addCategory',
+        action: 'add',
         method: 'PUT'
     ));
 
     Router::add(new Route(
-        controller: new CategoriesController(),
+        controller: new AdminController(),
         path: 'category/edit/{id}',
         action: 'getCategory',
         method: 'GET'
@@ -84,35 +84,21 @@ if (User::current()->isAdmin()) {
     Router::add(new Route(
         controller: new CategoriesController(),
         path: 'category/edit/{id}',
-        action: 'updateCategory',
+        action: 'update',
         method: 'POST'
     ));
 
     Router::add(new Route(
         controller: new CategoriesController(),
         path: 'category/delete/{id}',
-        action: 'confirmDeleteCategory',
-        method: 'GET'
-    ));
-
-    Router::add(new Route(
-        controller: new CategoriesController(),
-        path: 'category/delete/{id}',
-        action: 'deleteCategory',
-        method: 'POST'
-    ));
-
-    Router::add(new Route(
-        controller: new CategoriesController(),
-        path: 'category/delete/{id}',
-        action: 'deleteCategory',
+        action: 'delete',
         method: 'DELETE'
     ));
 
     // Статьи
 
     Router::add(new Route(
-        controller: new ArticlesController(),
+        controller: new AdminController(),
         path: 'admin/articles',
         action: 'getArticles',
         method: 'GET'
@@ -159,20 +145,6 @@ if (User::current()->isAdmin()) {
         path: 'add/article',
         action: 'addArticle',
         method: 'PUT'
-    ));
-
-    Router::add(new Route(
-        controller: new ArticlesController(),
-        path: 'delete/article/{id}',
-        action: 'confirmDeleteArticle',
-        method: 'GET'
-    ));
-
-    Router::add(new Route(
-        controller: new ArticlesController(),
-        path: 'delete/article/{id}',
-        action: 'deleteArticle',
-        method: 'POST'
     ));
 
     Router::add(new Route(

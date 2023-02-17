@@ -60,11 +60,6 @@ class Alert
 
         $accept = Request::accept();
 
-        $response = [
-            'message' => $exception->getMessage(),
-            'trace' => $trace
-        ];
-
         $response = match ($accept) {
             'html' => View::make(
                 'error',
@@ -76,6 +71,7 @@ class Alert
             'text' => $exception->getMessage()
                 . ". Trace: " . json_encode($trace, 32 | 256),
             default => [
+                'status' => 0,
                 'message' => $exception->getMessage(),
                 'trace' => $trace
             ]

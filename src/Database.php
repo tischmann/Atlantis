@@ -56,11 +56,17 @@ final class Database extends PDO
         ?string $password = null
     ): self {
         $type ??= strval(getenv('DB_TYPE'));
+
         $host ??= strval(getenv('DB_HOST'));
+
         $port ??= strval(getenv('DB_PORT') ?? 3306);
+
         $name ??= strval(getenv('DB_NAME'));
+
         $charset ??= strval(getenv('DB_CHARSET') ?? 'utf8');
+
         $username ??= strval(getenv('DB_USERNAME'));
+
         $password ??= strval(getenv('DB_PASSWORD'));
 
         return new self(
