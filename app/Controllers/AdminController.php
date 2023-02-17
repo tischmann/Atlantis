@@ -195,20 +195,7 @@ class AdminController extends Controller
     {
         $this->checkAdmin();
 
-        $items = [];
-
-        $query = Category::query()
-            ->where('id', '()', Article::query()->distinct('category_id'))
-            ->order('position', 'ASC');
-
-        foreach (Category::fill($query) as $category) {
-            assert($category instanceof Category);
-
-            $query = Article::query()->where('category_id', $category->id)
-                ->limit(Pagination::DEFAULT_LIMIT);
-
-            $items[] = Article::fill($query);
-        }
+        $query = Article::query()->limit(Pagination::DEFAULT_LIMIT);
 
         $app_title = getenv('APP_TITLE') . " - " . Locale::get('articles');
 
@@ -225,7 +212,7 @@ class AdminController extends Controller
                         label: Locale::get('articles')
                     ),
                 ],
-                'items' => $items,
+                'articles' => Article::fill($query),
 
             ]
         );

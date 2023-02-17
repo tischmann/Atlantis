@@ -1,12 +1,6 @@
+<?php include __DIR__ . "/header.php" ?>
 <main class="container mx-auto">
-    <div class="p-4 flex sticky-top bg-white">
-        <?php include __DIR__ . "/../breadcrumbs.php" ?>
-    </div>
-    <div class="mx-4 mb-4 text-gray-500 font-semibold flex items-center gap-4 uppercase">
-        <h1>{{lang=categories}}</h1>
-        <div class="h-0.5 w-full rounded-full bg-gray-500"></div>
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 font-medium mx-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 font-medium mx-4 mb-4">
         <?php
 
         use Tischmann\Atlantis\{Controller, Template};
@@ -22,7 +16,7 @@
         }
         ?>
     </div>
-    <a href="/{{env=APP_LOCALE}}/category/add" aria-label="{{lang=add}}" class="h-16 w-16 fixed flex 
+    <a href="/{{env=APP_LOCALE}}/category/add" aria-label="{{lang=add}}" class="h-12 w-12 fixed flex 
     items-center justify-center bottom-4 right-4 text-white text-xl
     rounded-full bg-pink-600 hover:bg-pink-700 hover:shadow-lg 
     active:bg-pink-700 focus:bg-pink-700 transition-all ease-in-out"><i class="fas fa-plus"></i></a>
