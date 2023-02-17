@@ -7,53 +7,44 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div class="flex flex-col">
                 <div class="mb-4">
-                    <label for="articleLocaleInput"
-                        class="form-label inline-block mb-1 text-gray-500">{{lang=article_locale}}</label>
+                    <label for="articleLocaleInput" class="form-label inline-block mb-1 text-gray-500">{{lang=article_locale}}</label>
                     <select class="form-select appearance-none block w-full px-3 py-1.5
                                           text-base font-normal text-gray-700 bg-white bg-clip-padding 
                                           bg-no-repeat border border-solid border-gray-300 rounded
                                           transition ease-in-out m-0 focus:text-gray-700 focus:bg-white 
-                                          focus:border-blue-600 focus:outline-none" name="locale"
-                        id="articleLocaleInput">
+                                          focus:border-blue-600 focus:outline-none" name="locale" id="articleLocaleInput">
                         {{locales_options}}
                     </select>
                 </div>
                 <div class="mb-4">
-                    <label for="articleCategoryInput"
-                        class="form-label inline-block mb-1 text-gray-500">{{lang=article_category}}</label>
+                    <label for="articleCategoryInput" class="form-label inline-block mb-1 text-gray-500">{{lang=article_category}}</label>
                     <select class="form-select appearance-none block w-full px-3 py-1.5
                                           text-base font-normal text-gray-700 bg-white bg-clip-padding 
                                           bg-no-repeat border border-solid border-gray-300 rounded
                                           transition ease-in-out m-0 focus:text-gray-700 focus:bg-white 
-                                          focus:border-blue-600 focus:outline-none" name="category_id"
-                        id="articleCategoryInput">
+                                          focus:border-blue-600 focus:outline-none" name="category_id" id="articleCategoryInput">
                         {{category_options}}
                     </select>
                 </div>
                 <div class="mb-4">
-                    <label for="articleTitleInput"
-                        class="form-label inline-block mb-1 text-gray-500">{{lang=article_title}}</label>
+                    <label for="articleTitleInput" class="form-label inline-block mb-1 text-gray-500">{{lang=article_title}}</label>
                     <input type="text" class="form-control block w-full px-3 py-1.5
                             text-base font-normal text-gray-700 bg-white bg-clip-padding
                             border border-solid border-gray-300 rounded transition
                             ease-in-out m-0 focus:text-gray-700 focus:bg-white
-                            focus:border-sky-600 focus:outline-none" id="articleTitleInput" value="{{article_title}}"
-                        name="title" required />
+                            focus:border-sky-600 focus:outline-none" id="articleTitleInput" value="{{article_title}}" name="title" required />
                 </div>
                 <div class="mb-4 flex-grow flex flex-col">
-                    <label for="articleShortTextInput"
-                        class="form-label inline-block mb-1 text-gray-500">{{lang=article_short_text}}</label>
+                    <label for="articleShortTextInput" class="form-label inline-block mb-1 text-gray-500">{{lang=article_short_text}}</label>
                     <textarea class="form-control block w-full px-3 py-1.5
                      text-base font-normal text-gray-700 bg-white 
                      bg-clip-padding border border-solid border-gray-300
                      rounded transition ease-in-out m-0 focus:text-gray-700
-                     focus:bg-white focus:border-sky-600 focus:outline-none flex-grow" id="articleShortTextInput"
-                        name="short_text">{{article_short_text}}</textarea>
+                     focus:bg-white focus:border-sky-600 focus:outline-none flex-grow" id="articleShortTextInput" name="short_text">{{article_short_text}}</textarea>
                 </div>
             </div>
             <div class="mb-4">
-                <label for="articleImageInput"
-                    class="form-label inline-block mb-1 text-gray-500">{{lang=article_image}}</label>
+                <label for="articleImageInput" class="form-label inline-block mb-1 text-gray-500">{{lang=article_image}}</label>
                 <select class="form-select appearance-none block w-full px-3 py-1.5
                         text-base font-normal text-gray-700 bg-white bg-clip-padding 
                         bg-no-repeat border border-solid border-gray-300 rounded
@@ -74,16 +65,14 @@
                 </select>
                 <input type="hidden" value="{{article_image}}" name="image" id="articleImageInput">
                 <input type='file' id="articleImageFile" class="hidden" aria-label="{{lang=article_image}}">
-                <img src="{{article_image_url}}" id="articleImage" width="800" height="600" alt="{{article_title}}"
-                    class="rounded w-full object-cover">
-                <div id="imageDeleteButton"
-                    class="w-full block mt-4 text-center px-6 py-2.5 bg-pink-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-pink-700 hover:shadow-lg focus:bg-pink-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-pink-800 active:shadow-lg transition duration-150 ease-in-out cursor-pointer">
-                    {{lang=delete_image}}</div>
+                <img src="{{article_image_url}}" id="articleImage" width="800" height="600" alt="{{article_title}}" class="rounded w-full object-cover">
+                <div id="imageDeleteButton" class="w-full block mt-4 text-center px-6 py-2.5 bg-pink-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-pink-700 hover:shadow-lg focus:bg-pink-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-pink-800 active:shadow-lg transition duration-150 ease-in-out cursor-pointer">
+                    {{lang=delete_image}}
+                </div>
             </div>
         </div>
         <div class="mb-4 w-full">
-            <label for="articleFullTextInput"
-                class="form-label inline-block mb-1 text-gray-500">{{lang=article_full_text}}</label>
+            <label for="articleFullTextInput" class="form-label inline-block mb-1 text-gray-500">{{lang=article_full_text}}</label>
             <textarea class="tinymce-editor form-control block w-full px-3 py-1.5
                      text-base font-normal text-gray-700 bg-white 
                      bg-clip-padding border border-solid border-gray-300
@@ -93,14 +82,11 @@
         </div>
         <div class="flex gap-4 justify-end mb-4">
             {{delete_button}}
-            <a href="/admin/articles" aria-label="{{lang=delete}}"
-                class="inline-block px-6 py-2.5 bg-gray-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg focus:bg-gray-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gray-800 active:shadow-lg transition duration-150 ease-in-out">{{lang=cancel}}</a>
-            <button type="submit"
-                class="inline-block px-6 py-2.5 bg-sky-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-sky-700 hover:shadow-lg focus:bg-sky-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-sky-800 active:shadow-lg transition duration-150 ease-in-out">{{lang=save}}</button>
+            <a href="/admin/articles" aria-label="{{lang=delete}}" class="inline-block px-6 py-2.5 bg-gray-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg focus:bg-gray-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gray-800 active:shadow-lg transition duration-150 ease-in-out">{{lang=cancel}}</a>
+            <button type="submit" class="inline-block px-6 py-2.5 bg-sky-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-sky-700 hover:shadow-lg focus:bg-sky-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-sky-800 active:shadow-lg transition duration-150 ease-in-out">{{lang=save}}</button>
         </div>
     </form>
     <script src="/tinymce/tinymce.min.js" nonce="{{nonce}}"></script>
-    <script src="/js/image.js" nonce="{{nonce}}"></script>
     <script nonce="{{nonce}}">
         let csrf = `{{csrf-token}}`
 
@@ -121,7 +107,10 @@
 
             xhr.onload = () => {
                 if (xhr.status === 403) {
-                    reject({ message: 'HTTP Error: ' + xhr.status, remove: true });
+                    reject({
+                        message: 'HTTP Error: ' + xhr.status,
+                        remove: true
+                    });
                     return;
                 }
 
@@ -199,13 +188,13 @@
             formData.append('file', file, file.name);
 
             fetch(`/upload/article/image/{{article_id}}`, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'X-Csrf-Token': csrf
-                },
-                body: formData
-            })
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Csrf-Token': csrf
+                    },
+                    body: formData
+                })
                 .then(response => response.json())
                 .then(data => {
                     input.value = data.image
@@ -217,17 +206,17 @@
                 })
         }
 
-        file.addEventListener('change', function (event) {
+        file.addEventListener('change', function(event) {
             loadImage(event.target.files[0],
                 img.getAttribute('width'),
                 img.getAttribute('height'))
         })
 
-        img.addEventListener('click', function (event) {
+        img.addEventListener('click', function(event) {
             file.dispatchEvent(new MouseEvent('click'));
         })
 
-        dimensions.addEventListener('change', function (event) {
+        dimensions.addEventListener('change', function(event) {
             const [width, height] = event.target.value.split('|')
             img.setAttribute('width', width)
             img.setAttribute('height', height)

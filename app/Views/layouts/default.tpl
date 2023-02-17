@@ -39,7 +39,7 @@
     {{alert}}
     <script src="/tailwind.js" nonce="{{nonce}}" async></script>
     <script src="/js/lazyfetch.js" nonce="{{nonce}}" async></script>
-    <script src="/js/lazyload.min.js" nonce="{{nonce}}" async></script>
+    <script src="/js/lazyload.js" nonce="{{nonce}}" async></script>
     <script src="/app.js" nonce="{{nonce}}" async></script>
     <script src="/pwa.js" nonce="{{nonce}}" async></script>
 </body>
