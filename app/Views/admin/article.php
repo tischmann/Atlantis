@@ -1,7 +1,5 @@
+<?php include __DIR__ . "/header.php" ?>
 <main class="container mx-auto">
-    <div class="p-4 flex sticky-top bg-white">
-        <?php include __DIR__ . "/../breadcrumbs.php" ?>
-    </div>
     <form method="post" class="mx-4">
         {{csrf}}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -13,7 +11,22 @@
                                           bg-no-repeat border border-solid border-gray-300 rounded
                                           transition ease-in-out m-0 focus:text-gray-700 focus:bg-white 
                                           focus:border-blue-600 focus:outline-none" name="locale" id="articleLocaleInput">
-                        {{locales_options}}
+                        <?php
+
+                        use App\Models\{Category};
+
+                        use Tischmann\Atlantis\{Locale};
+
+                        foreach (Locale::available() as $locale) {
+                            $selected = $locale === $article->locale ? 'selected' : '';
+
+                            $label = Locale::get('locale_' . $locale);
+
+                            echo <<<HTML
+                            <option value="{$locale}" {$selected} title="{$label}">{$label}</option>
+                            HTML;
+                        }
+                        ?>
                     </select>
                 </div>
                 <div class="mb-4">
@@ -23,7 +36,21 @@
                                           bg-no-repeat border border-solid border-gray-300 rounded
                                           transition ease-in-out m-0 focus:text-gray-700 focus:bg-white 
                                           focus:border-blue-600 focus:outline-none" name="category_id" id="articleCategoryInput">
-                        {{category_options}}
+                        <?php
+                        $categories = Category::fill(Category::query());
+
+                        foreach ([new Category(), ...$categories] as $category) {
+                            assert($category instanceof Category);
+
+                            $value = $category->id ? $category->id : '';
+
+                            $selected = $category->id === $article->category_id ? 'selected' : '';
+
+                            echo <<<HTML
+                    <option value="{$value}" {$selected} title="{$category->title}">{$category->title}</option>
+                    HTML;
+                        }
+                        ?>
                     </select>
                 </div>
                 <div class="mb-4">
@@ -32,7 +59,7 @@
                             text-base font-normal text-gray-700 bg-white bg-clip-padding
                             border border-solid border-gray-300 rounded transition
                             ease-in-out m-0 focus:text-gray-700 focus:bg-white
-                            focus:border-sky-600 focus:outline-none" id="articleTitleInput" value="{{article_title}}" name="title" required />
+                            focus:border-sky-600 focus:outline-none" id="articleTitleInput" value="<?= $article->title ?>" name="title" required />
                 </div>
                 <div class="mb-4 flex-grow flex flex-col">
                     <label for="articleShortTextInput" class="form-label inline-block mb-1 text-gray-500">{{lang=article_short_text}}</label>
@@ -40,7 +67,7 @@
                      text-base font-normal text-gray-700 bg-white 
                      bg-clip-padding border border-solid border-gray-300
                      rounded transition ease-in-out m-0 focus:text-gray-700
-                     focus:bg-white focus:border-sky-600 focus:outline-none flex-grow" id="articleShortTextInput" name="short_text">{{article_short_text}}</textarea>
+                     focus:bg-white focus:border-sky-600 focus:outline-none flex-grow" id="articleShortTextInput" name="short_text"><?= $article->short_text ?></textarea>
                 </div>
             </div>
             <div class="mb-4">
@@ -63,9 +90,9 @@
                     <option value="1024|1024">1024x1024 (1:1)</option>
                     <option value="800|800">800x800 (1:1)</option>
                 </select>
-                <input type="hidden" value="{{article_image}}" name="image" id="articleImageInput">
+                <input type="hidden" value="<?= $article->image ?>" name="image" id="articleImageInput">
                 <input type='file' id="articleImageFile" class="hidden" aria-label="{{lang=article_image}}">
-                <img src="{{article_image_url}}" id="articleImage" width="800" height="600" alt="{{article_title}}" class="rounded w-full object-cover">
+                <img src="<?= $article->image_url ?>" id="articleImage" width="800" height="600" alt="<?= $article->title ?>" class="rounded w-full object-cover">
                 <div id="imageDeleteButton" class="w-full block mt-4 text-center px-6 py-2.5 bg-pink-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-pink-700 hover:shadow-lg focus:bg-pink-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-pink-800 active:shadow-lg transition duration-150 ease-in-out cursor-pointer">
                     {{lang=delete_image}}
                 </div>
@@ -78,14 +105,72 @@
                      bg-clip-padding border border-solid border-gray-300
                      rounded transition ease-in-out m-0 focus:text-gray-700
                      focus:bg-white focus:border-sky-600 focus:outline-none
-                      " id="articleFullTextInput" name="full_text">{{article_full_text}}</textarea>
+                      " id="articleFullTextInput" name="full_text"><?= $article->full_text ?></textarea>
         </div>
         <div class="flex gap-4 justify-end mb-4">
-            {{delete_button}}
-            <a href="/admin/articles" aria-label="{{lang=delete}}" class="inline-block px-6 py-2.5 bg-gray-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg focus:bg-gray-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gray-800 active:shadow-lg transition duration-150 ease-in-out">{{lang=cancel}}</a>
-            <button type="submit" class="inline-block px-6 py-2.5 bg-sky-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-sky-700 hover:shadow-lg focus:bg-sky-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-sky-800 active:shadow-lg transition duration-150 ease-in-out">{{lang=save}}</button>
+            <?php
+            if ($article->id) {
+                echo <<<HTML
+                <button type="button" id="deleteArticleButton" aria-label="{{lang=delete}}" class="inline-block flex-grow md:flex-grow-0 px-6 py-2.5 bg-pink-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-pink-700 hover:shadow-lg focus:bg-pink-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-rpinked-800 active:shadow-lg transition duration-150 ease-in-out">{{lang=delete}}</button>
+                HTML;
+            }
+            ?>
+            <a href="/admin/articles" aria-label="{{lang=cancel}}" class="inline-block flex-grow md:flex-grow-0 px-6 py-2.5 bg-gray-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg focus:bg-gray-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gray-800 active:shadow-lg transition duration-150 ease-in-out text-center">{{lang=cancel}}</a>
+            <button type="submit" class="inline-block flex-grow md:flex-grow-0 px-6 py-2.5 bg-sky-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-sky-700 hover:shadow-lg focus:bg-sky-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-sky-800 active:shadow-lg transition duration-150 ease-in-out">{{lang=save}}</button>
         </div>
     </form>
+    <?php
+    if ($article->id) {
+        echo <<<HTML
+        <dialog id="deleteDialod" class="rounded shadow-xl relative w-96">
+            <form method="dialog">
+                <button value="cancel" class="absolute top-4 right-4 ring-0 focus:ring-0 outline-none text-gray-500"><i
+                        class="fas fa-times text-xl"></i></button>
+                <h5 class="block text-xl font-medium leading-normal text-gray-800 pr-12 mb-4 truncate" id="exampleModalLabel">{{lang=warning}}!</h5>
+                <div class="mb-4">{{lang=article_delete_confirm}}?</div>
+                <div class="flex items-center gap-4">
+                    <button value="cancel"
+                    class="inline-block w-full px-6 py-2.5 bg-gray-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg focus:bg-gray-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gray-800 active:shadow-lg transition duration-150 ease-in-out">{{lang=no}}</button>
+                    <button value="default"
+                    class="inline-block w-full px-6 py-2.5 bg-pink-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-pink-700 hover:shadow-lg focus:bg-pink-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-pink-800 active:shadow-lg transition duration-150 ease-in-out">{{lang=yes}}</button>
+                </div>                        
+            </form>
+        </dialog>
+        <script nonce="{{nonce}}">
+            const deleteDialog = document.getElementById('deleteDialod')
+
+            deleteDialog.addEventListener('close', () => {
+                if (deleteDialog.returnValue == `cancel`) return
+
+                fetch(`/article/delete/{$article->id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-Requested-With': `XMLHttpRequest`,
+                        'X-Csrf-Token': `{{csrf-token}}`,
+                        'Accept': 'application/json',                    
+                    },
+                }).then(response => response.json().then(data => {
+                    if (data?.status) {
+                        window.location.href = `/{{env=APP_LOCALE}}/admin/articles`
+                    } else {
+                        alert(data.message)
+                        console.error(data.message)
+                    }
+                }).catch(error => {
+                    alert(error)
+                    console.error(error)
+                })).catch(error => {
+                    alert(error)
+                    console.error(error)
+                })
+            })
+
+            document.getElementById('deleteArticleButton')
+                .addEventListener('click', () => deleteDialog.showModal())
+        </script>
+        HTML;
+    }
+    ?>
     <script src="/tinymce/tinymce.min.js" nonce="{{nonce}}"></script>
     <script nonce="{{nonce}}">
         let csrf = `{{csrf-token}}`
@@ -95,7 +180,7 @@
 
             xhr.withCredentials = true;
 
-            xhr.open('POST', `/upload/article/image/{{article_id}}`);
+            xhr.open('POST', `/upload/article/image/<?= $article->id ?>`);
 
             xhr.setRequestHeader('Accept', 'application/json');
 
@@ -187,7 +272,7 @@
 
             formData.append('file', file, file.name);
 
-            fetch(`/upload/article/image/{{article_id}}`, {
+            fetch(`/upload/article/image/<?= $article->id ?>`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',

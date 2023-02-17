@@ -121,23 +121,17 @@ class ArticlesController extends Controller
             );
         }
 
+        $app_title = getenv('APP_TITLE') . " - "
+            . ($article->id
+                ? $article->title
+                : Locale::get('article_new'));
+
         View::send(
             'admin/article',
             [
-                'article_id' => $article->id,
-                'article_title' => $article->title,
-                'article_image' => $article->image,
-                'article_image_url' => $article->image_url,
-                'article_short_text' => $article->short_text,
-                'article_full_text' => $article->full_text,
-                'delete_button' => $delete_button,
-                'locales_options' => $this->getLocalesOptions($article->locale),
-                'category_options' => $this->getCategoriesOptions($article),
+                'article' => $article,
                 'breadcrumbs' => $breadcrumbs,
-                'app_title' => getenv('APP_TITLE') . " - "
-                    . ($article->id
-                        ? $article->title
-                        : Locale::get('article_new')),
+                'app_title' => $app_title,
             ]
         );
     }

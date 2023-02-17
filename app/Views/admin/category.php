@@ -1,7 +1,5 @@
+<?php include __DIR__ . "/header.php" ?>
 <main class="container mx-auto">
-    <div class="p-4 flex sticky-top bg-white">
-        <?php include __DIR__ . "/../breadcrumbs.php" ?>
-    </div>
     <form method="post" class="mx-4">
         {{csrf}}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
