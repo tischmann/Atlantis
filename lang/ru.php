@@ -23,7 +23,7 @@ return [
     'signin_remember' => 'Запомнить меня',
     'signin_error' => 'Неверный логин или пароль',
     // Админпанель
-    'adminpanel' => 'Админпанель',
+    'dashboard' => 'Админпанель',
     'articles' => 'Статьи',
     'categories' => 'Категории',
     'category' => 'Категория',

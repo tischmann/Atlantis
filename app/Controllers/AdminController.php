@@ -31,27 +31,13 @@ class AdminController extends Controller
     {
         $this->checkAdmin();
 
-        $app_title = getenv('APP_TITLE') . " - " . Locale::get('adminpanel');
+        $app_title = getenv('APP_TITLE') . " - " . Locale::get('dashboard');
 
         View::send(
             'admin/index',
             [
                 'app_title' => $app_title,
-                'breadcrumbs' => [new Breadcrumb(Locale::get('adminpanel'))],
-                'items' => [
-                    'categories' => [
-                        'label' => Locale::get('categories'),
-                        'url' => '/admin/categories',
-                        'icon' => 'fas fa-sitemap',
-                        'title' => Locale::get('categories'),
-                    ],
-                    'articles' => [
-                        'label' => Locale::get('articles'),
-                        'url' => '/admin/articles',
-                        'icon' => 'fas fa-newspaper',
-                        'title' => Locale::get('articles'),
-                    ],
-                ],
+                'breadcrumbs' => [new Breadcrumb(Locale::get('dashboard'))],
             ]
         );
     }
@@ -88,7 +74,7 @@ class AdminController extends Controller
                 'breadcrumbs' => [
                     new Breadcrumb(
                         url: '/admin',
-                        label: Locale::get('adminpanel')
+                        label: Locale::get('dashboard')
                     ),
                     new Breadcrumb(
                         label: Locale::get('categories')
@@ -174,7 +160,7 @@ class AdminController extends Controller
         $breadcrumbs = [
             new Breadcrumb(
                 url: '/admin',
-                label: Locale::get('adminpanel')
+                label: Locale::get('dashboard')
             ),
             new Breadcrumb(
                 url: '/admin/categories',
@@ -235,7 +221,7 @@ class AdminController extends Controller
                 'breadcrumbs' => [
                     new Breadcrumb(
                         url: '/admin',
-                        label: Locale::get('adminpanel')
+                        label: Locale::get('dashboard')
                     ),
                     new Breadcrumb(
                         label: Locale::get('articles')

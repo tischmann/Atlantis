@@ -96,7 +96,7 @@ class ArticlesController extends Controller
         $breadcrumbs = [
             new Breadcrumb(
                 url: '/admin',
-                label: Locale::get('adminpanel')
+                label: Locale::get('dashboard')
             ),
             new Breadcrumb(
                 url: '/admin/articles',
