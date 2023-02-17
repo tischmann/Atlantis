@@ -91,6 +91,13 @@ final class CSRF
                         break;
                     }
                 }
+            } else {
+                $key = array_search(
+                    $request->headers('X-Csrf-Token'),
+                    static::tokens()
+                );
+
+                static::flush($key);
             }
         }
 

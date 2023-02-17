@@ -31,12 +31,10 @@ class AdminController extends Controller
     {
         $this->checkAdmin();
 
-        $app_title = getenv('APP_TITLE') . " - " . Locale::get('dashboard');
-
         View::send(
             'admin/index',
             [
-                'app_title' => $app_title,
+                'app_title' => getenv('APP_TITLE') . " - " . Locale::get('dashboard'),
                 'breadcrumbs' => [new Breadcrumb(Locale::get('dashboard'))],
             ]
         );

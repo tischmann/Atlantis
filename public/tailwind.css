@@ -4367,6 +4367,10 @@ textarea.form-control.is-invalid {
   gap: 0.5rem;
 }
 
+.gap-8 {
+  gap: 2rem;
+}
+
 .overflow-hidden {
   overflow: hidden;
 }
@@ -4964,6 +4968,11 @@ textarea.form-control.is-invalid {
   border-color: rgb(37 99 235 / var(--tw-border-opacity));
 }
 
+.focus\:border-pink-600:focus {
+  --tw-border-opacity: 1;
+  border-color: rgb(219 39 119 / var(--tw-border-opacity));
+}
+
 .focus\:bg-sky-700:focus {
   --tw-bg-opacity: 1;
   background-color: rgb(3 105 161 / var(--tw-bg-opacity));
@@ -5084,8 +5093,16 @@ textarea.form-control.is-invalid {
     margin-right: 2rem;
   }
 
+  .md\:w-auto {
+    width: auto;
+  }
+
   .md\:max-w-lg {
     max-width: 32rem;
+  }
+
+  .md\:flex-grow-0 {
+    flex-grow: 0;
   }
 
   .md\:grid-cols-2 {
@@ -5095,11 +5112,19 @@ textarea.form-control.is-invalid {
   .md\:grid-cols-4 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
+
+  .md\:justify-end {
+    justify-content: flex-end;
+  }
 }
 
 @media (min-width: 1024px) {
   .lg\:top-4 {
     top: 1rem;
+  }
+
+  .lg\:mb-4 {
+    margin-bottom: 1rem;
   }
 
   .lg\:grid-cols-2 {

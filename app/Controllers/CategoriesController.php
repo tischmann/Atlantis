@@ -96,19 +96,17 @@ class CategoriesController extends Controller
             $category->position = $position++;
 
             if (!$category->save()) {
-                Response::send(new Alert(
-                    status: 0,
-                    message: Locale::get('category_order_error')
-                ));
+                Response::send([
+                    'status' => 0,
+                    'message' => Locale::get('category_order_error')
+                ]);
             }
         }
 
-        Response::send(
-            new Alert(
-                status: 1,
-                message: Locale::get('category_ordered')
-            )
-        );
+        Response::send([
+            'status' => 1,
+            'csrf' => CSRF::set()[1],
+        ]);
     }
 
     /**
