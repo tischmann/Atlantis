@@ -15,7 +15,6 @@ use Tischmann\Atlantis\{
     Locale,
     Request,
     Response,
-    View
 };
 
 class CategoriesController extends Controller
