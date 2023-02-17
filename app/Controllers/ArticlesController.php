@@ -104,8 +104,6 @@ class ArticlesController extends Controller
             ),
         ];
 
-        $delete_button = '';
-
         if ($article->id) {
             $breadcrumbs[] = new Breadcrumb(
                 label: $article->title
