@@ -122,7 +122,7 @@
     <?php
     if ($article->id) {
         echo <<<HTML
-        <dialog id="deleteDialod" class="rounded shadow-xl relative w-96">
+        <dialog id="deleteDialod" class="rounded shadow-xl fixed w-96">
             <form method="dialog">
                 <button value="cancel" class="absolute top-4 right-4 ring-0 focus:ring-0 outline-none text-gray-500"><i
                         class="fas fa-times text-xl"></i></button>

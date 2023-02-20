@@ -122,7 +122,7 @@ if (User::current()->isAdmin()) {
     Router::add(new Route(
         controller: new ArticlesController(),
         path: 'edit/article/{id}',
-        action: 'updateArticle',
+        action: 'update',
         method: 'POST'
     ));
 
@@ -136,21 +136,21 @@ if (User::current()->isAdmin()) {
     Router::add(new Route(
         controller: new ArticlesController(),
         path: 'add/article',
-        action: 'addArticle',
+        action: 'add',
         method: 'POST'
     ));
 
     Router::add(new Route(
         controller: new ArticlesController(),
         path: 'add/article',
-        action: 'addArticle',
+        action: 'add',
         method: 'PUT'
     ));
 
     Router::add(new Route(
         controller: new ArticlesController(),
-        path: 'delete/article/{id}',
-        action: 'deleteArticle',
+        path: 'article/delete/{id}',
+        action: 'delete',
         method: 'DELETE'
     ));
 

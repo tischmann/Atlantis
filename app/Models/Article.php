@@ -63,6 +63,10 @@ class Article extends Model
 
     public function getImageUrl(): string
     {
+        if (!$this->image) {
+            return "/images/placeholder.svg";
+        }
+
         $image_url = "/images/articles/{$this->id}/{$this->image}";
 
         if (!is_file(getenv('APP_ROOT') . "/public{$this->image_url}")) {
