@@ -20,6 +20,7 @@ class Category extends Model
         public string $locale = '',
         public string $title = '',
         public string $slug = '',
+        public bool $visible = true,
     ) {
         parent::__construct();
 

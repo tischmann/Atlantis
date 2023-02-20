@@ -60,6 +60,8 @@ class CategoriesController extends Controller
 
         $category->parent_id = $parent_id ? intval($parent_id) : null;
 
+        $category->visible = boolval($request->request('visible'));
+
         $result = $category->save();
 
         Response::redirect(
@@ -170,6 +172,8 @@ class CategoriesController extends Controller
         $category->locale = $locale;
 
         $category->parent_id = $parent_id ? intval($parent_id) : null;
+
+        $category->visible = boolval($request->request('visible'));
 
         if (!$category->save()) {
             Response::redirect(

@@ -37,6 +37,7 @@ return [
     'category_edit' => 'Редактирование категории',
     'category_title' => 'Заголовок',
     'category_slug' => 'Семантический URL',
+    'category_visible' => 'Показывать',
     'category_position' => 'Позиция',
     'category_locale' => 'Язык',
     'category_parent' => 'Родительская категория',

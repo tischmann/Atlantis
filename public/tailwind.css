@@ -734,6 +734,10 @@ video {
   opacity: 0.5;
 }
 
+.form-switch {
+  padding-left: 2.5em;
+}
+
 .form-switch .form-check-input {
   margin-top: 0.1rem;
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
@@ -4070,6 +4074,10 @@ textarea.form-control.is-invalid {
   margin-right: 0.75rem;
 }
 
+.-ml-10 {
+  margin-left: -2.5rem;
+}
+
 .box-content {
   box-sizing: content-box;
 }
@@ -4134,6 +4142,10 @@ textarea.form-control.is-invalid {
   height: 0.75rem;
 }
 
+.h-5 {
+  height: 1.25rem;
+}
+
 .w-full {
   width: 100%;
 }
@@ -4168,6 +4180,10 @@ textarea.form-control.is-invalid {
 
 .w-3 {
   width: 0.75rem;
+}
+
+.w-9 {
+  width: 2.25rem;
 }
 
 .max-w-sm {
@@ -4426,6 +4442,11 @@ textarea.form-control.is-invalid {
 .bg-gray-50 {
   --tw-bg-opacity: 1;
   background-color: rgb(249 250 251 / var(--tw-bg-opacity));
+}
+
+.bg-gray-300 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(209 213 219 / var(--tw-bg-opacity));
 }
 
 .bg-contain {

@@ -71,13 +71,19 @@
                         ?>
                     </select>
                 </div>
-                <div>
+                <div class="mb-4">
                     <label for="categorySlug" class="form-label inline-block mb-1 text-gray-500">{{lang=category_slug}}</label>
                     <input type="text" class="form-control block w-full px-3 py-1.5
                         text-base font-normal text-gray-700 bg-white bg-clip-padding
                         border border-solid border-gray-300 rounded transition
                         ease-in-out m-0 focus:text-gray-700 focus:bg-white 
                         focus:border-blue-600 focus:outline-none" id="categorySlug" name="slug" placeholder="{{lang=category_slug}}" value="<?= $category->slug ?>" required />
+                </div>
+                <div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input appearance-none w-9 -ml-10 rounded-full float-left h-5 align-top bg-no-repeat bg-contain bg-gray-300 focus:outline-none cursor-pointer shadow-sm" type="checkbox" role="switch" name="visible" id="categoryVisible" <?= $category->visible ? 'checked' : '' ?>>
+                        <label class="form-check-label inline-block text-gray-800" for="categoryVisible">{{lang=category_visible}}</label>
+                    </div>
                 </div>
             </div>
             <?php
@@ -104,7 +110,6 @@
             }
             ?>
         </div>
-
         <div class="mb-4 flex gap-4 flex-wrap justify-evenly md:justify-end items-center">
             <?php
             if ($category->id) {

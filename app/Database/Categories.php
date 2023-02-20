@@ -54,6 +54,13 @@ class Categories extends Migration
                 default: null,
                 description: 'Заголовок',
             ),
+            new Column(
+                name: 'visible',
+                type: 'tinyint',
+                length: 1,
+                default: '1',
+                description: 'Видимость',
+            ),
         ]);
     }
 
