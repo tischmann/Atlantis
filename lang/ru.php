@@ -66,6 +66,7 @@ return [
     'article_image' => 'Изображение',
     'article_short_text' => 'Краткое описание',
     'article_full_text' => 'Полное описание',
+    'article_visible' => 'Показывать',
     'article_saved' => 'Статья сохранена',
     'article_not_found' => 'Статья не найдена',
     'article_title_required' => 'Заголовок обязателен',

@@ -5,6 +5,12 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div class="flex flex-col">
                 <div class="mb-4">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input appearance-none w-9 -ml-10 rounded-full float-left h-5 align-top bg-no-repeat bg-contain bg-gray-300 focus:outline-none cursor-pointer shadow-sm" type="checkbox" role="switch" name="visible" id="articleVisible" <?= $article->visible ? 'checked' : '' ?>>
+                        <label class="form-check-label inline-block text-gray-500" for="articleVisible">{{lang=article_visible}}</label>
+                    </div>
+                </div>
+                <div class="mb-4">
                     <label for="articleLocaleInput" class="form-label inline-block mb-1 text-gray-500">{{lang=article_locale}}</label>
                     <select class="form-select appearance-none block w-full px-3 py-1.5
                                           text-base font-normal text-gray-700 bg-white bg-clip-padding 

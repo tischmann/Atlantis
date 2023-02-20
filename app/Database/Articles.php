@@ -94,6 +94,13 @@ class Articles extends Migration
                 default: null,
                 description: 'Рейтинг',
             ),
+            new Column(
+                name: 'visible',
+                type: 'tinyint',
+                length: 1,
+                default: '1',
+                description: 'Видимость',
+            ),
         ]);
     }
 

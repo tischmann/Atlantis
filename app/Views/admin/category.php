@@ -82,7 +82,7 @@
                 <div>
                     <div class="form-check form-switch">
                         <input class="form-check-input appearance-none w-9 -ml-10 rounded-full float-left h-5 align-top bg-no-repeat bg-contain bg-gray-300 focus:outline-none cursor-pointer shadow-sm" type="checkbox" role="switch" name="visible" id="categoryVisible" <?= $category->visible ? 'checked' : '' ?>>
-                        <label class="form-check-label inline-block text-gray-800" for="categoryVisible">{{lang=category_visible}}</label>
+                        <label class="form-check-label inline-block text-gray-500" for="categoryVisible">{{lang=category_visible}}</label>
                     </div>
                 </div>
             </div>

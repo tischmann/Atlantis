@@ -65,6 +65,8 @@ class ArticlesController extends Controller
 
         $article->image = strval($request->request('image'));
 
+        $article->visible = boolval($request->request('visible'));
+
         if (!$article->save()) {
             throw new Exception(Locale::get('article_save_error'));
         }
@@ -147,6 +149,8 @@ class ArticlesController extends Controller
         $full_text = $request->request('full_text');
 
         $article->full_text = $full_text ?: null;
+
+        $article->visible = boolval($request->request('visible'));
 
         static::removeTempImages($article);
 

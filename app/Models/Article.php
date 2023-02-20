@@ -25,6 +25,7 @@ class Article extends Model
         public array $tags = [],
         public int $views = 0,
         public float $rating = 0,
+        public bool $visible = true,
     ) {
         parent::__construct();
 

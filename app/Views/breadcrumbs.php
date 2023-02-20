@@ -1,4 +1,4 @@
-<nav class="w-full flex flex-wrap gap-2 items-center m-4">
+<nav class="flex flex-wrap gap-2 items-center">
     <?php
 
     use App\Models\User;
