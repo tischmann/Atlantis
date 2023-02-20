@@ -15,18 +15,6 @@ use App\Models\User;
     <div class="offcanvas-body flex-grow overflow-y-auto relative">
         <!-- Dashboard menu -->
         <div class="w-full h-full bg-white absolute" id="sidenavSecExample">
-            <div class="pt-4 pb-2 px-6">
-                <a href="#!">
-                    <div class="flex items-center">
-                        <div class="shrink-0">
-                            <img src="/images/placeholder.webp" class="rounded-full w-10 h-10" alt="Avatar">
-                        </div>
-                        <div class="grow ml-3">
-                            <p class="text-sm font-semibold text-blue-600"><?= User::current()->login ?></p>
-                        </div>
-                    </div>
-                </a>
-            </div>
             <ul class="relative px-1">
                 <li class="relative">
                     <a class="flex items-center text-sm py-4 px-6 h-12 overflow-hidden text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-50 transition duration-300 ease-in-out" href="/{{env=APP_LOCALE}}/admin/categories" data-mdb-ripple="true" data-mdb-ripple-color="primary" title="{{lang=categories}}" aria-label="{{lang=categories}}">

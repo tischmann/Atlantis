@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Models\{Article, Category, User};
+use App\Models\{Article, Category};
 
 use Exception;
 
