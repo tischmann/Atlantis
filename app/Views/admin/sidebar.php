@@ -17,6 +17,12 @@ use App\Models\User;
         <div class="w-full h-full bg-white absolute" id="sidenavSecExample">
             <ul class="relative px-1">
                 <li class="relative">
+                    <a class="flex items-center text-sm py-4 px-6 h-12 overflow-hidden text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-50 transition duration-300 ease-in-out" href="/{{env=APP_LOCALE}}/admin/users" data-mdb-ripple="true" data-mdb-ripple-color="primary" title="{{lang=categories}}" aria-label="{{lang=users}}">
+                        <i class="fas fa-users w-3 h-3 mr-3"></i>
+                        <span>{{lang=users}}</span>
+                    </a>
+                </li>
+                <li class="relative">
                     <a class="flex items-center text-sm py-4 px-6 h-12 overflow-hidden text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-50 transition duration-300 ease-in-out" href="/{{env=APP_LOCALE}}/admin/categories" data-mdb-ripple="true" data-mdb-ripple-color="primary" title="{{lang=categories}}" aria-label="{{lang=categories}}">
                         <i class="fas fa-sitemap w-3 h-3 mr-3"></i>
                         <span>{{lang=categories}}</span>

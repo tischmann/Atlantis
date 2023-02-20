@@ -25,6 +25,10 @@ return [
     'signin_error' => 'Неверный логин или пароль',
     // Админпанель
     'dashboard' => 'Админпанель',
+    'dashboard_total_users' => 'Пользователей',
+    'dashboard_total_categories' => 'Категорий',
+    'dashboard_total_articles' => 'Статей',
+    'users' => 'Пользователи',
     'articles' => 'Статьи',
     'categories' => 'Категории',
     'category' => 'Категория',
