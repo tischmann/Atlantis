@@ -77,4 +77,13 @@ return [
     'article_deleted' => 'Статья удалена',
     'article_delete_error' => 'Ошибка удаления статьи',
     'delete_image' => 'Удалить изображение',
+    'sorting__' => 'По умолчанию',
+    'sorting_title_asc' => 'По заголовку (по возрастанию)',
+    'sorting_title_desc' => 'По заголовку (по убыванию)',
+    'sorting_created_at_asc' => 'По дате создания (по возрастанию)',
+    'sorting_created_at_desc' => 'По дате создания (по убыванию)',
+    'sorting_updated_at_asc' => 'По дате обновления (по возрастанию)',
+    'sorting_updated_at_desc' => 'По дате обновления (по убыванию)',
+    'sorting_visible_asc' => 'По видимости (сначала скрытые)',
+    'sorting_visible_desc' => 'По видимости (сначала видимые)',
 ];

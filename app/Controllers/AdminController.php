@@ -19,6 +19,7 @@ use Tischmann\Atlantis\{
     Pagination,
     Request,
     Response,
+    Sorting,
     Template,
     View
 };
@@ -219,11 +220,17 @@ class AdminController extends Controller
     /**
      * Вывод списка статей в админпанели
      */
-    public function getArticles(): void
+    public function getArticles(Request $request): void
     {
         $this->checkAdmin();
 
         $query = Article::query()->limit(Pagination::DEFAULT_LIMIT);
+
+        $sort = $request->request('sort') ?: 'id';
+
+        $order = $request->request('order') ?: 'desc';
+
+        $query->order($sort, $order);
 
         $app_title = getenv('APP_TITLE') . " - " . Locale::get('articles');
 
@@ -241,7 +248,17 @@ class AdminController extends Controller
                     ),
                 ],
                 'articles' => Article::fill($query),
-
+                'sortings' => [
+                    new Sorting(),
+                    new Sorting('title', 'asc'),
+                    new Sorting('title', 'desc'),
+                    new Sorting('created_at', 'asc'),
+                    new Sorting('created_at', 'desc'),
+                    new Sorting('updated_at', 'asc'),
+                    new Sorting('updated_at', 'desc'),
+                    new Sorting('visible', 'asc'),
+                    new Sorting('visible', 'desc'),
+                ]
             ]
         );
     }

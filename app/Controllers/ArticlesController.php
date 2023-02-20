@@ -512,8 +512,13 @@ class ArticlesController extends Controller
             $limit = intval($limit ?? Pagination::DEFAULT_LIMIT);
 
             $query = Article::query()
-                ->where('category_id', $category_id)
-                ->order('id', 'DESC');
+                ->where('category_id', $category_id);
+
+            $sort = $request->request('sort') ?: 'id';
+
+            $order = $request->request('order') ?: 'desc';
+
+            $query->order($sort, $order);
 
             $total = $query->count();
 

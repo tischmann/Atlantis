@@ -13,7 +13,8 @@
     </a>
     <div class="p-6">
         <h5 class="text-gray-900 text-xl font-medium mb-2 truncate"><?= $article->title ?></h5>
-        <p class="text-gray-700 text-base mb-4 truncate"><?= $article->short_text ?></p>
+        <p class="text-gray-700 text-base mb-2 truncate"><?= $article->short_text ?></p>
+        <span class="block text-gray-500 text-xs mb-4"><?= $article->updated_at->format('Y-m-d H:i') ?></span>
         <div class="flex items-center justify-between">
             <a href="/{{env=APP_LOCALE}}/edit/article/<?= $article->id ?>" aria-label="{{lang=edit}}" class="inline-block px-4 py-3 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded-lg shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out">{{lang=edit}}</a>
             <?= !$article->visible ? '<i class="fas fa-eye-slash text-xl text-gray-500"></i>' : '' ?>

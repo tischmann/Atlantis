@@ -17,4 +17,5 @@
     items-center justify-center bottom-4 right-4 text-white text-xl
     rounded-full bg-pink-600 hover:bg-pink-700 hover:shadow-lg 
     active:bg-pink-700 focus:bg-pink-700 transition-all ease-in-out"><i class="fas fa-plus"></i></a>
+    <?php include __DIR__ . "/sort.php" ?>
 </main>
