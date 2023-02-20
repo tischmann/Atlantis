@@ -223,57 +223,9 @@ class AdminController extends Controller
      */
     public function fetchArticles(Request $request): void
     {
-        $category_id = $request->route('category_id');
-
-        $pagination = new Pagination();
-
-        $html = '';
-
-        $page = 1;
-
-        $total = 0;
-
-        $limit = Pagination::DEFAULT_LIMIT;
-
-        if ($category_id) {
-            $limit = $request->request('limit');
-
-            $limit = intval($limit ?? Pagination::DEFAULT_LIMIT);
-
-            $query = Article::query()
-                ->where('category_id', $category_id)
-                ->order('id', 'DESC');
-
-            $total = $query->count();
-
-            if ($total > $limit) {
-                $page = intval($request->request('page') ?? 1);
-
-                $offset = ($page - 1) * $limit;
-
-                if ($limit) $query->limit($limit);
-
-                if ($offset) $query->offset($offset);
-
-                foreach (Article::fill($query) as $article) {
-                    $html .= Template::html('admin/articles-item', [
-                        'article' => $article,
-                    ]);
-                }
-            }
-        }
-
-        $pagination = new Pagination(
-            total: $total,
-            page: $page,
-            limit: $limit
+        ArticlesController::fetchArticles(
+            $request,
+            'admin/articles-item'
         );
-
-        Response::json([
-            'status' => 1,
-            'html' => $html,
-            'page' => $pagination->page,
-            'last' => $pagination->last,
-        ]);
     }
 }

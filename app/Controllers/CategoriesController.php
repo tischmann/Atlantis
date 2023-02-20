@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Models\{Category};
+use App\Models\{Article, Category};
 
 use Exception;
 
 use Tischmann\Atlantis\{
     Alert,
+    Breadcrumb,
     Controller,
     CSRF,
     Locale,
     Request,
     Response,
+    View,
 };
 
 class CategoriesController extends Controller
@@ -224,5 +226,28 @@ class CategoriesController extends Controller
                 ? Locale::get('category_deleted')
                 : Locale::get('category_delete_error')
         ));
+    }
+
+    public function getArticles(Request $request)
+    {
+        $category_id = $request->route('id');
+
+        $query = Article::query()
+            ->where('category_id', $category_id)
+            ->order('updated_at', 'DESC');
+
+        $category = Category::find($category_id);
+
+        assert($category instanceof Category);
+
+        View::send(
+            'articles',
+            [
+                'breadcrumbs' => [
+                    new Breadcrumb($category->title),
+                ],
+                'articles' => Article::fill($query),
+            ]
+        );
     }
 }

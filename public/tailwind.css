@@ -1914,6 +1914,11 @@ textarea.form-control.is-invalid {
   background-color: #000;
 }
 
+.spinner-grow {
+  vertical-align: -0.125em;
+  animation: 0.75s linear infinite _spinner-grow;
+}
+
 .offcanvas {
   z-index: 1045;
 }
@@ -1948,6 +1953,18 @@ textarea.form-control.is-invalid {
   position: sticky;
   top: 0;
   z-index: 1020;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
 }
 
 .vr {
@@ -4137,6 +4154,10 @@ textarea.form-control.is-invalid {
   height: 0.75rem;
 }
 
+.h-8 {
+  height: 2rem;
+}
+
 .w-full {
   width: 100%;
 }
@@ -4167,6 +4188,10 @@ textarea.form-control.is-invalid {
 
 .w-3 {
   width: 0.75rem;
+}
+
+.w-8 {
+  width: 2rem;
 }
 
 .max-w-sm {
@@ -4399,6 +4424,10 @@ textarea.form-control.is-invalid {
   background-color: rgb(56 189 248 / var(--tw-bg-opacity));
 }
 
+.bg-current {
+  background-color: currentColor;
+}
+
 .bg-contain {
   background-size: contain;
 }
@@ -4484,6 +4513,11 @@ textarea.form-control.is-invalid {
 .px-1 {
   padding-left: 0.25rem;
   padding-right: 0.25rem;
+}
+
+.px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
 }
 
 .pr-12 {
@@ -4644,6 +4678,10 @@ textarea.form-control.is-invalid {
   opacity: 0.5;
 }
 
+.opacity-0 {
+  opacity: 0;
+}
+
 .shadow-xl {
   --tw-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
   --tw-shadow-colored: 0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);
@@ -4790,6 +4828,11 @@ textarea.form-control.is-invalid {
 .hover\:text-blue-600:hover {
   --tw-text-opacity: 1;
   color: rgb(37 99 235 / var(--tw-text-opacity));
+}
+
+.hover\:text-gray-700:hover {
+  --tw-text-opacity: 1;
+  color: rgb(55 65 81 / var(--tw-text-opacity));
 }
 
 .hover\:no-underline:hover {

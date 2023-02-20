@@ -27,6 +27,20 @@ Router::add(new Route(
     method: 'GET',
 ));
 
+Router::add(new Route(
+    controller: new CategoriesController(),
+    path: 'category/{id}',
+    action: 'getArticles',
+    method: 'GET',
+));
+
+Router::add(new Route(
+    controller: new ArticlesController(),
+    path: 'fetch/articles/{category_id}',
+    action: 'fetchArticles',
+    method: 'POST'
+));
+
 // Админка
 
 if (User::current()->isAdmin()) {
@@ -107,10 +121,9 @@ if (User::current()->isAdmin()) {
     Router::add(new Route(
         controller: new ArticlesController(),
         path: 'upload/article/image/{id}',
-        action: 'uploadArticleImage',
+        action: 'uploadImage',
         method: 'POST'
     ));
-
 
     Router::add(new Route(
         controller: new ArticlesController(),

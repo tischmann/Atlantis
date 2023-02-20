@@ -16,6 +16,7 @@ return [
     'edit' => 'Редактировать',
     'warning' => 'Внимание',
     'csrf_token_required' => 'Токен CSRF не найден',
+    'more' => 'Подробнее',
     // Авторизация
     'signin_login' => 'Логин',
     'signin_password' => 'Пароль',

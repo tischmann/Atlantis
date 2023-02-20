@@ -1,4 +1,4 @@
-<?php include __DIR__ . "/header.php" ?>
+<?php include __DIR__ . "/../header.php" ?>
 <main class="container mx-auto">
     <form method="post" class="mx-4">
         {{csrf}}

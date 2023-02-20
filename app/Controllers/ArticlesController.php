@@ -15,6 +15,7 @@ use Tischmann\Atlantis\{
     CSRF,
     Image,
     Locale,
+    Pagination,
     Request,
     Response,
     Template,
@@ -69,15 +70,15 @@ class ArticlesController extends Controller
         }
 
         if (!is_dir(getenv('APP_ROOT') . "/public/images")) {
-            mkdir(getenv('APP_ROOT') . "/public/images", 0775);
+            mkdir(getenv('APP_ROOT') . "/public/images", 0775, true);
         }
 
         if (!is_dir(getenv('APP_ROOT') . "/public/images/articles")) {
-            mkdir(getenv('APP_ROOT') . "/public/images/articles", 0775);
+            mkdir(getenv('APP_ROOT') . "/public/images/articles", 0775, true);
         }
 
         if (!is_dir(getenv('APP_ROOT') . "/public/images/articles/{$article->id}")) {
-            mkdir(getenv('APP_ROOT') . "/public/images/articles/{$article->id}", 0775);
+            mkdir(getenv('APP_ROOT') . "/public/images/articles/{$article->id}", 0775, true);
         }
 
         preg_match_all('/(\w+\.webp)/i', $article->full_text, $matches, PREG_SET_ORDER);
@@ -205,11 +206,11 @@ class ArticlesController extends Controller
     }
 
     /**
-     * Загрузка излбражений для статьи
+     * Загрузка изображений для статьи
      * 
      * @param Request $request
      */
-    public function uploadArticleImage(Request $request)
+    public function uploadImage(Request $request)
     {
         $this->checkAdmin();
 
@@ -235,9 +236,11 @@ class ArticlesController extends Controller
 
         $temp = current($_FILES);
 
+        list($csrf_key, $csrf_token) = CSRF::set();
+
         if (!is_uploaded_file($temp['tmp_name'])) {
             Response::send([
-                'csrf' => CSRF::set()[1],
+                'csrf' => $csrf_token,
                 'error' => 'Error uploading file'
             ]);
 
@@ -246,7 +249,7 @@ class ArticlesController extends Controller
 
         if (preg_match("/([^\w\s\d\-_~,;:\[\]\(\).])|([\.]{2,})/", $temp['name'])) {
             Response::send([
-                'csrf' => CSRF::set()[1],
+                'csrf' => $csrf_token,
                 'error' => 'Invalid file name'
             ]);
 
@@ -264,7 +267,7 @@ class ArticlesController extends Controller
 
         if (!in_array($fileExtension, $extensions)) {
             Response::send([
-                'csrf' => CSRF::set()[1],
+                'csrf' => $csrf_token,
                 'error' => 'Invalid extension'
             ]);
 
@@ -296,6 +299,7 @@ class ArticlesController extends Controller
                 break;
             default:
                 Response::json([
+                    'csrf' => $csrf_token,
                     'error' => 'Unsupported image format'
                 ]);
 
@@ -308,7 +312,7 @@ class ArticlesController extends Controller
 
         if (!imagewebp($im, $filetowrite, $quality)) {
             Response::json([
-                'csrf' => CSRF::set()[1],
+                'csrf' => $csrf_token,
                 'error' => 'Error converting image to webp'
             ]);
 
@@ -324,13 +328,18 @@ class ArticlesController extends Controller
         $location = $baseurl . "/" . $filetowrite;
 
         Response::json([
-            'csrf' => CSRF::set()[1],
+            'csrf' => $csrf_token,
             'image' => basename($location),
             'location' => $location
         ]);
     }
 
-    public function getArticle(Request $request): void
+    /**
+     * Вывод статьи
+     * 
+     * @param Request $request
+     */
+    public function getArticle(Request $request)
     {
         $id = $request->route('id');
 
@@ -339,17 +348,8 @@ class ArticlesController extends Controller
         assert($article instanceof Article);
 
         if (!$article->id) {
-            throw new Exception("Article ID:{$id} not found");
+            throw new Exception(Locale::get('article_not_found'));
         }
-
-        $edit = User::current()->isAdmin()
-            ? Template::make(
-                'admin/article-edit-button',
-                [
-                    'href' => "/" . getenv('APP_LOCALE') . "/edit/article/$article->id"
-                ]
-            )->render()
-            : '';
 
         View::send(
             'article',
@@ -357,14 +357,11 @@ class ArticlesController extends Controller
                 'app_title' => getenv('APP_TITLE') . " - {$article->title}",
                 'breadcrumbs' => [
                     new Breadcrumb(
-                        label: $article->category->title,
-                        url: "/" . getenv('APP_LOCALE') . "/category/{$article->category_id}",
+                        $article->category->title,
+                        "/" . getenv('APP_LOCALE') . "/category/{$article->category_id}",
                     ),
-                    new Breadcrumb(
-                        label: $article->title
-                    ),
+                    new Breadcrumb($article->title),
                 ],
-                'edit' => $edit,
                 'article' => $article,
             ]
         );
@@ -484,5 +481,69 @@ class ArticlesController extends Controller
         foreach (glob($path) as $file) {
             if (!in_array(basename($file), $imagesInArticle)) unlink($file);
         }
+    }
+
+    /**
+     * Динамическая подгрузка статей
+     */
+    public static function fetchArticles(
+        Request $request,
+        string $template = 'articles-item'
+    ) {
+        $category_id = $request->route('category_id');
+
+        $pagination = new Pagination();
+
+        $html = '';
+
+        $page = 1;
+
+        $total = 0;
+
+        $limit = Pagination::DEFAULT_LIMIT;
+
+        if ($category_id) {
+            $limit = $request->request('limit');
+
+            $limit = intval($limit ?? Pagination::DEFAULT_LIMIT);
+
+            $query = Article::query()
+                ->where('category_id', $category_id)
+                ->order('id', 'DESC');
+
+            $total = $query->count();
+
+            if ($total > $limit) {
+                $page = intval($request->request('page') ?? 1);
+
+                $offset = ($page - 1) * $limit;
+
+                if ($limit) $query->limit($limit);
+
+                if ($offset) $query->offset($offset);
+
+                foreach (Article::fill($query) as $article) {
+                    $html .= Template::html(
+                        $template,
+                        [
+                            'article' => $article,
+                        ]
+                    );
+                }
+            }
+        }
+
+        $pagination = new Pagination(
+            total: $total,
+            page: $page,
+            limit: $limit
+        );
+
+        Response::json([
+            'status' => 1,
+            'html' => $html,
+            'page' => $pagination->page,
+            'last' => $pagination->last,
+        ]);
     }
 }
