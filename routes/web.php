@@ -173,6 +173,15 @@ if (User::current()->isAdmin()) {
         action: 'fetchArticles',
         method: 'POST'
     ));
+
+    // Пользователи
+
+    Router::add(new Route(
+        controller: new AdminController(),
+        path: 'admin/users',
+        action: 'getUsers',
+        method: 'GET'
+    ));
 }
 
 if (User::current()->exists()) {

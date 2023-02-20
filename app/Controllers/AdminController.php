@@ -6,7 +6,8 @@ namespace App\Controllers;
 
 use App\Models\{
     Article,
-    Category
+    Category,
+    User
 };
 
 use Exception;
@@ -36,6 +37,33 @@ class AdminController extends Controller
             [
                 'app_title' => getenv('APP_TITLE') . " - " . Locale::get('dashboard'),
                 'breadcrumbs' => [new Breadcrumb(Locale::get('dashboard'))],
+            ]
+        );
+    }
+
+    /**
+     * Вывод списка пользователь в админпанели
+     */
+    public function getUsers(Request $request): void
+    {
+        $this->checkAdmin();
+
+        $app_title = getenv('APP_TITLE') . " - " . Locale::get('users');
+
+        View::send(
+            'admin/users',
+            [
+                'app_title' => $app_title,
+                'breadcrumbs' => [
+                    new Breadcrumb(
+                        url: '/admin',
+                        label: Locale::get('dashboard')
+                    ),
+                    new Breadcrumb(
+                        label: Locale::get('users')
+                    ),
+                ],
+                'users' => User::fill(User::query()),
             ]
         );
     }
