@@ -112,6 +112,48 @@
             if ($article->id) {
                 echo <<<HTML
                 <button type="button" id="deleteArticleButton" aria-label="{{lang=delete}}" class="inline-block flex-grow md:flex-grow-0 px-6 py-2.5 bg-pink-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-pink-700 hover:shadow-lg focus:bg-pink-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-rpinked-800 active:shadow-lg transition duration-150 ease-in-out">{{lang=delete}}</button>
+                <script src="/js/dialog.js" nonce="{{nonce}}"></script>
+                <script nonce="{{nonce}}">
+                    const dialog = new Dialog({
+                        title: `{{lang=warning}}!`,
+                        message: `{{lang=article_delete_confirm}}?`,
+                        buttons: [
+                            {
+                                text: `{{lang=no}}`,
+                                callback: () => {}
+                            },
+                            {
+                                text: `{{lang=yes}}`,
+                                callback: () => {
+                                    fetch(`/article/delete/{$article->id}`, {
+                                        method: 'DELETE',
+                                        headers: {
+                                            'X-Requested-With': `XMLHttpRequest`,
+                                            'X-Csrf-Token': `{{csrf-token}}`,
+                                            'Accept': 'application/json',                    
+                                        },
+                                    }).then(response => response.json().then(data => {
+                                        if (data?.status) {
+                                            window.location.href = `/{{env=APP_LOCALE}}/admin/articles`
+                                        } else {
+                                            alert(data.message)
+                                            console.error(data.message)
+                                        }
+                                    }).catch(error => {
+                                        alert(error)
+                                        console.error(error)
+                                    })).catch(error => {
+                                        alert(error)
+                                        console.error(error)
+                                    })
+                                }
+                            },
+                        ]
+                    })
+
+                    document.getElementById('deleteArticleButton')
+                        .addEventListener('click', () => dialog.show())
+                </script>
                 HTML;
             }
             ?>
@@ -119,58 +161,6 @@
             <button type="submit" class="inline-block flex-grow md:flex-grow-0 px-6 py-2.5 bg-sky-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-sky-700 hover:shadow-lg focus:bg-sky-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-sky-800 active:shadow-lg transition duration-150 ease-in-out">{{lang=save}}</button>
         </div>
     </form>
-    <?php
-    if ($article->id) {
-        echo <<<HTML
-        <dialog id="deleteDialod" class="rounded shadow-xl fixed w-96">
-            <form method="dialog">
-                <button value="cancel" class="absolute top-4 right-4 ring-0 focus:ring-0 outline-none text-gray-500"><i
-                        class="fas fa-times text-xl"></i></button>
-                <h5 class="block text-xl font-medium leading-normal text-gray-800 pr-12 mb-4 truncate" id="exampleModalLabel">{{lang=warning}}!</h5>
-                <div class="mb-4">{{lang=article_delete_confirm}}?</div>
-                <div class="flex items-center gap-4">
-                    <button value="cancel"
-                    class="inline-block w-full px-6 py-2.5 bg-gray-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg focus:bg-gray-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gray-800 active:shadow-lg transition duration-150 ease-in-out">{{lang=no}}</button>
-                    <button value="default"
-                    class="inline-block w-full px-6 py-2.5 bg-pink-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-pink-700 hover:shadow-lg focus:bg-pink-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-pink-800 active:shadow-lg transition duration-150 ease-in-out">{{lang=yes}}</button>
-                </div>                        
-            </form>
-        </dialog>
-        <script nonce="{{nonce}}">
-            const deleteDialog = document.getElementById('deleteDialod')
-
-            deleteDialog.addEventListener('close', () => {
-                if (deleteDialog.returnValue == `cancel`) return
-
-                fetch(`/article/delete/{$article->id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-Requested-With': `XMLHttpRequest`,
-                        'X-Csrf-Token': `{{csrf-token}}`,
-                        'Accept': 'application/json',                    
-                    },
-                }).then(response => response.json().then(data => {
-                    if (data?.status) {
-                        window.location.href = `/{{env=APP_LOCALE}}/admin/articles`
-                    } else {
-                        alert(data.message)
-                        console.error(data.message)
-                    }
-                }).catch(error => {
-                    alert(error)
-                    console.error(error)
-                })).catch(error => {
-                    alert(error)
-                    console.error(error)
-                })
-            })
-
-            document.getElementById('deleteArticleButton')
-                .addEventListener('click', () => deleteDialog.showModal())
-        </script>
-        HTML;
-    }
-    ?>
     <script src="/tinymce/tinymce.min.js" nonce="{{nonce}}"></script>
     <script nonce="{{nonce}}">
         let csrf = `{{csrf-token}}`
