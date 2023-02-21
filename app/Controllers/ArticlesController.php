@@ -401,43 +401,28 @@ class ArticlesController extends Controller
     ) {
         static::removeTempImages($article);
 
-        $breadcrumbs = [
-            new Breadcrumb(
-                url: '/admin',
-                label: Locale::get('dashboard')
-            ),
-            new Breadcrumb(
-                url: '/admin/articles',
-                label: Locale::get('articles')
-            ),
-        ];
-
-        if ($article->id) {
-            $breadcrumbs[] = new Breadcrumb(
-                label: $article->title
-            );
-
-            $delete_button = Template::make(
-                template: 'admin/delete-button',
-                args: ['href' => "/delete/article/{$article->id}"]
-            )->render();
-        } else {
-            $breadcrumbs[] = new Breadcrumb(
-                label: Locale::get('article_new')
-            );
-        }
-
-        $app_title = getenv('APP_TITLE') . " - "
-            . ($article->id
-                ? $article->title
-                : Locale::get('article_new'));
+        $title = $article->id
+            ? $article->title
+            : Locale::get('article_new');
 
         View::send(
             'admin/article',
             [
+                'app_title' => getenv('APP_TITLE') . " - " . $title,
                 'article' => $article,
-                'breadcrumbs' => $breadcrumbs,
-                'app_title' => $app_title,
+                'breadcrumbs' => [
+                    new Breadcrumb(
+                        url: '/admin',
+                        label: Locale::get('dashboard')
+                    ),
+                    new Breadcrumb(
+                        url: '/admin/articles',
+                        label: Locale::get('articles')
+                    ),
+                    new Breadcrumb(
+                        label: $title
+                    )
+                ],
             ]
         );
     }
