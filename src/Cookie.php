@@ -26,7 +26,7 @@ final class Cookie
      */
     public static function get(string $name): ?string
     {
-        $cookie = array_map('static::sanitize', $_COOKIE);
+        $cookie = array_map(static::class . '::sanitize', $_COOKIE);
 
         return $cookie[$name] ?? null;
     }

@@ -95,7 +95,7 @@ class DateTimeUtilites
 
         $errors = $date::getLastErrors();
 
-        return $errors['warning_count'] + $errors['error_count'] == 0;
+        return ($errors['warning_count'] ?? 0) + ($errors['error_count'] ?? 0) == 0;
     }
 
     /**

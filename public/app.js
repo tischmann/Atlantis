@@ -9,4 +9,12 @@ window.onload = () => {
         .forEach((container) => new LazyFetch(container))
 
     new LazyLoad()
+
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 16) {
+            document.querySelector('header').classList.add('shadow-lg')
+        } else {
+            document.querySelector('header').classList.remove('shadow-lg')
+        }
+    })
 }

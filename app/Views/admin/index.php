@@ -5,16 +5,19 @@ use App\Models\{Article, Category, User};
 include __DIR__ . "/../header.php"
 
 ?>
-<main class="container mx-auto">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 m-4 text-xl font-bold text-gray-700">
-        <div class="bg-white shadow-md rounded-lg p-4 border-t-4 border-t-red-600 flex justify-between items-center uppercase">
-            <span>{{lang=dashboard_total_users}}</span><span><?= User::query()->count() ?></span>
-        </div>
-        <div class="bg-white shadow-md rounded-lg p-4 border-t-4 border-t-sky-600 flex justify-between items-center uppercase">
-            <span>{{lang=dashboard_total_categories}}</span><span><?= Category::query()->count() ?></span>
-        </div>
-        <div class="bg-white shadow-md rounded-lg p-4 border-t-4 border-t-green-600 flex justify-between items-center uppercase">
-            <span>{{lang=dashboard_total_articles}}</span><span><?= Article::query()->count() ?></span>
-        </div>
+<main class="container mx-auto px-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 my-4 text-xl font-bold text-gray-700">
+        <a href="/{{env=APP_LOCALE}}/admin/users" title="{{lang=categories}}" aria-label="{{lang=users}}" class="bg-gray-100 shadow-md rounded-lg p-4 flex justify-between items-center uppercase hover:shadow-xl hover:text-sky-600">
+            <span class="truncate"><i class="fas fa-users mr-2"></i>{{lang=users}}</span>
+            <span><?= User::query()->count() ?></span>
+        </a>
+        <a href="/{{env=APP_LOCALE}}/admin/categories" aria-label="{{lang=categories}}" title="{{lang=categories}}" class="bg-gray-100 shadow-md rounded-lg p-4 flex justify-between items-center uppercase hover:shadow-xl hover:text-sky-600">
+            <span class="truncate"><i class="fas fa-sitemap mr-2"></i>{{lang=categories}}</span>
+            <span><?= Category::query()->count() ?></span>
+        </a>
+        <a href="/{{env=APP_LOCALE}}/admin/articles" title="{{lang=articles}}" aria-label="{{lang=articles}}" class="bg-gray-100 shadow-md rounded-lg p-4 flex justify-between items-center uppercase hover:shadow-xl hover:text-sky-600">
+            <span class="truncate"><i class="fas fa-newspaper mr-2"></i>{{lang=articles}}</span>
+            <span><?= Article::query()->count() ?></span>
+        </a>
     </div>
 </main>

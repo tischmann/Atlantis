@@ -35,17 +35,17 @@ class Request
 
         $this->accept = self::accept();
 
-        $this->__get = array_map('static::sanitize', $_GET);
+        $this->__get = array_map(static::class . '::sanitize', $_GET);
 
-        $this->__post = array_map('static::sanitize', $_POST);
+        $this->__post = array_map(static::class . '::sanitize', $_POST);
 
         $this->__input = array_map(
-            'static::sanitize',
+            static::class . '::sanitize',
             json_decode(file_get_contents("php://input"), true) ?: []
         );
 
         $this->__headers = array_map(
-            'static::sanitize',
+            static::class . '::sanitize',
             apache_request_headers()
         );
 

@@ -48,7 +48,7 @@ final class Session
      */
     public static function has(string $key): bool
     {
-        return key_exists($key, $_SESSION);
+        return key_exists($key, $_SESSION ?? []);
     }
 
     /**

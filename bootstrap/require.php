@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-if (version_compare(phpversion(), '8.1', '<')) {
-    die("Требуется PHP версии 8.1 или выше");
+if (version_compare(phpversion(), '8.2', '<')) {
+    die("Требуется PHP версии 8.2 или выше. Установленная версия: " . phpversion());
 }
 
 $extensions = [

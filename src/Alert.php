@@ -42,7 +42,7 @@ class Alert
 
         $traceHtml = '';
 
-        if ($trace && boolval(getenv('APP_DEBUG'))) {
+        if ($trace) {
             $items = '';
 
             foreach ($exception->getTrace() as $key => $item) {
