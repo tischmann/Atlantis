@@ -18,6 +18,10 @@ class Article extends Model
 
     public float $rating = 0;
 
+    public static ?float $cached_rating = null;
+
+    public static ?int $cached_views = null;
+
     public function __construct(
         public ?int $author_id = null,
         public ?int $category_id = null,
@@ -36,6 +40,8 @@ class Article extends Model
         $this->image_url = $this->getImageUrl();
 
         $this->rating = $this->getRating();
+
+        $this->views = $this->getViews();
     }
 
     public function __fill(object|array $traversable): self
@@ -47,6 +53,8 @@ class Article extends Model
         $this->image_url = $this->getImageUrl();
 
         $this->rating = $this->getRating();
+
+        $this->views = $this->getViews();
 
         return $this;
     }
@@ -90,21 +98,38 @@ class Article extends Model
 
     public function getRating(): float
     {
-        $value = 0;
+        if (!$this->id) return 0;
 
-        if (!$this->id) return $value;
+        if (static::$cached_rating === null) {
+            $value = 0;
 
-        $query = Rating::query()->where('article_id', $this->id);
+            if (!$this->id) return $value;
 
-        $ratings = Rating::fill($query);
+            $query = Rating::query()->where('article_id', $this->id);
 
-        foreach ($ratings as $rating) {
-            $value += $rating->rating;
+            $ratings = Rating::fill($query);
+
+            foreach ($ratings as $rating) {
+                $value += $rating->rating;
+            }
+
+            $value = ceil($value / count($ratings));
+
+            static::$cached_rating = $value;
         }
 
-        $value = ceil($value / count($ratings));
+        return static::$cached_rating;
+    }
 
-        return $value;
+    public function getViews(): int
+    {
+        if (!$this->id) return 0;
+
+        if (static::$cached_views === null) {
+            static::$cached_views = View::query()->where('article_id', $this->id)->count();
+        }
+
+        return static::$cached_views;
     }
 
     public static function table(): Migration

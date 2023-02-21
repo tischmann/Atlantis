@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Models\{Article, Category, Rating};
+use App\Models\{Article, Category, Rating, View as ModelsView};
 
 use Exception;
 
@@ -12,6 +12,7 @@ use Tischmann\Atlantis\{
     Alert,
     Breadcrumb,
     Controller,
+    Cookie,
     CSRF,
     Image,
     Locale,
@@ -356,6 +357,21 @@ class ArticlesController extends Controller
         }
 
         static::setTitle($article->title);
+
+        // Просмотры
+
+        $uuid = Cookie::get('uuid');
+
+        if ($uuid) {
+            $view = ModelsView::find($uuid, 'uuid');
+
+            if (!$view->id) {
+                $view = new ModelsView();
+                $view->uuid = $uuid;
+                $view->article_id = $article->id;
+                $view->save();
+            }
+        }
 
         View::send(
             'article',
