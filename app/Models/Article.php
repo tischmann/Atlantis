@@ -18,10 +18,6 @@ class Article extends Model
 
     public float $rating = 0;
 
-    public static ?float $cached_rating = null;
-
-    public static ?int $cached_views = null;
-
     public function __construct(
         public ?int $author_id = null,
         public ?int $category_id = null,
@@ -100,36 +96,30 @@ class Article extends Model
     {
         if (!$this->id) return 0;
 
-        if (static::$cached_rating === null) {
-            $value = 0;
+        $value = 0;
 
-            if (!$this->id) return $value;
+        if (!$this->id) return $value;
 
-            $query = Rating::query()->where('article_id', $this->id);
+        $query = Rating::query()->where('article_id', $this->id);
 
-            $ratings = Rating::fill($query);
+        $ratings = Rating::fill($query);
 
-            foreach ($ratings as $rating) {
-                $value += $rating->rating;
-            }
-
-            $value = ceil($value / count($ratings));
-
-            static::$cached_rating = $value;
+        foreach ($ratings as $rating) {
+            $value += $rating->rating;
         }
 
-        return static::$cached_rating;
+        if (!count($ratings)) return 0;
+
+        $value = ceil($value / count($ratings));
+
+        return $value;
     }
 
     public function getViews(): int
     {
         if (!$this->id) return 0;
 
-        if (static::$cached_views === null) {
-            static::$cached_views = View::query()->where('article_id', $this->id)->count();
-        }
-
-        return static::$cached_views;
+        return View::query()->where('article_id', $this->id)->count();
     }
 
     public static function table(): Migration
