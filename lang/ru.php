@@ -17,6 +17,7 @@ return [
     'warning' => 'Внимание',
     'csrf_token_required' => 'Токен CSRF не найден',
     'more' => 'Подробнее',
+    'access_denied' => 'Доступ запрещен',
     // Авторизация
     'signin_login' => 'Логин',
     'signin_password' => 'Пароль',

@@ -6,6 +6,7 @@ namespace Tischmann\Atlantis;
 
 use App\Models\User;
 use BadMethodCallException;
+use Exception;
 
 class Controller
 {
@@ -27,7 +28,7 @@ class Controller
     protected function checkAdmin(): void
     {
         if (User::current()->role !== User::ROLE_ADMIN) {
-            throw new AccessDeniedException();
+            throw new Exception(Locale::get('access_denied'), 404);
         }
     }
 
