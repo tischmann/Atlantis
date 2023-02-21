@@ -195,6 +195,13 @@ if (User::current()->isAdmin()) {
         method: 'GET',
         title: Locale::get('users')
     ));
+
+    Router::add(new Route(
+        controller: new AdminController(),
+        path: 'edit/user/{id}',
+        action: 'editUser',
+        method: 'GET'
+    ));
 }
 
 if (User::current()->exists()) {

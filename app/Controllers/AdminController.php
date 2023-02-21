@@ -260,4 +260,63 @@ class AdminController extends Controller
             'admin/articles-item'
         );
     }
+
+    /**
+     * Вывод формы редактирования пользователя
+     *
+     * @param Request $request
+     * 
+     * @throws Exception
+     */
+    public function editUser(Request $request)
+    {
+        $this->checkAdmin();
+
+        $request->validate([
+            'id' => ['required'],
+        ]);
+
+        $id = intval($request->route('id'));
+
+        $user = User::find($id);
+
+        assert($user instanceof User);
+
+        if (!$user->id) {
+            throw new Exception(Locale::get('user_not_found'));
+        }
+
+        $this->getUserEditor($user);
+    }
+
+    /**
+     * Вывод формы добавления/редактирования пользователя
+     * 
+     * @param Category $category Категория
+     */
+    public function getUserEditor(User $user = new User())
+    {
+        $this->checkAdmin();
+
+        static::setTitle($user->id ? $user->login : Locale::get('user_new'));
+
+        View::send(
+            'admin/user',
+            [
+                'breadcrumbs' => [
+                    new Breadcrumb(
+                        url: '/admin',
+                        label: Locale::get('dashboard')
+                    ),
+                    new Breadcrumb(
+                        url: '/admin/users',
+                        label: Locale::get('users')
+                    ),
+                    new Breadcrumb($user->id ? $user->login : Locale::get('user_new'))
+                ],
+                'user' => $user,
+
+            ]
+        );
+    }
 }

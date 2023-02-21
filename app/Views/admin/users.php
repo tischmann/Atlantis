@@ -1,6 +1,6 @@
 <?php include __DIR__ . "/../header.php" ?>
-<main class="container mx-auto">
-    <div class="intersection-loader-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 mx-4 mb-4">
+<main class="md:container md:mx-auto px-4">
+    <div class="intersection-loader-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-4">
         <?php
 
         use Tischmann\Atlantis\Template;

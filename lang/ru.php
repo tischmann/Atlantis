@@ -91,4 +91,10 @@ return [
     'rating_invalid' => 'Неверный рейтинг',
     'rating_save_error' => 'Ошибка сохранения рейтинга',
     'uuid_is_required' => 'Отсутсвует UUID',
+    // Пользователи
+    'user_not_found' => 'Пользователь не найден',
+    'user_login' => 'Логин',
+    'user_password' => 'Пароль',
+    'user_delete_confirm' => 'Вы действительно хотите удалить пользователя',
+
 ];

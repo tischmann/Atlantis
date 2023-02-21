@@ -1,5 +1,5 @@
 <?php include __DIR__ . "/../header.php" ?>
-<main class="container mx-auto">
+<main class="md:container md:mx-auto">
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 font-medium mx-4 mb-4">
         <?php
 

@@ -1,5 +1,5 @@
 <?php include __DIR__ . "/../header.php" ?>
-<main class="container mx-auto">
+<main class="md:container md:mx-auto">
     <form method="post" class="mx-4">
         {{csrf}}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
