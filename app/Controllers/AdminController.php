@@ -36,7 +36,6 @@ class AdminController extends Controller
         View::send(
             'admin/index',
             [
-                'app_title' => getenv('APP_TITLE') . " - " . Locale::get('dashboard'),
                 'breadcrumbs' => [new Breadcrumb(Locale::get('dashboard'))],
             ]
         );
@@ -49,12 +48,9 @@ class AdminController extends Controller
     {
         $this->checkAdmin();
 
-        $app_title = getenv('APP_TITLE') . " - " . Locale::get('users');
-
         View::send(
             'admin/users',
             [
-                'app_title' => $app_title,
                 'breadcrumbs' => [
                     new Breadcrumb(
                         url: '/admin',
@@ -92,12 +88,9 @@ class AdminController extends Controller
             $items[$category->locale][] = $category;
         }
 
-        $app_title = getenv('APP_TITLE') . " - " . Locale::get('categories');
-
         View::send(
             'admin/categories',
             [
-                'app_title' => $app_title,
                 'breadcrumbs' => [
                     new Breadcrumb(
                         url: '/admin',
@@ -134,7 +127,7 @@ class AdminController extends Controller
         assert($category instanceof Category);
 
         if (!$category->id) {
-            throw new Exception("Category ID:{$id} not found");
+            throw new Exception(Locale::get('category_not_found'));
         }
 
         $this->getCategoryEditor($category);
@@ -198,18 +191,15 @@ class AdminController extends Controller
 
         if ($category->id) {
             $breadcrumbs[] = new Breadcrumb($category->title);
+
+            static::setTitle($category->title);
         } else {
             $breadcrumbs[] = new Breadcrumb(Locale::get('category_new'));
         }
 
-        $app_title = $category->id ? $category->title : Locale::get('category_new');
-
-        $app_title = getenv('APP_TITLE') . " - " . $app_title;
-
         View::send(
             'admin/category',
             [
-                'app_title' => $app_title,
                 'breadcrumbs' => $breadcrumbs,
                 'category' => $category,
 
@@ -232,12 +222,9 @@ class AdminController extends Controller
 
         $query->order($sort, $order);
 
-        $app_title = getenv('APP_TITLE') . " - " . Locale::get('articles');
-
         View::send(
             'admin/articles',
             [
-                'app_title' => $app_title,
                 'breadcrumbs' => [
                     new Breadcrumb(
                         url: '/admin',

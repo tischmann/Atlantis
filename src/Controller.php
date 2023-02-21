@@ -19,6 +19,11 @@ class Controller
         return User::current()->isAdmin();
     }
 
+    public static function setTitle(string $title): void
+    {
+        putenv('APP_TITLE=' . getenv('APP_TITLE') . " - " . $title);
+    }
+
     protected function checkAdmin(): void
     {
         if (User::current()->role !== User::ROLE_ADMIN) {

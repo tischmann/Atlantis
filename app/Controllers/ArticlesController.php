@@ -355,10 +355,11 @@ class ArticlesController extends Controller
             throw new Exception(Locale::get('article_not_found'));
         }
 
+        static::setTitle($article->title);
+
         View::send(
             'article',
             [
-                'app_title' => getenv('APP_TITLE') . " - {$article->title}",
                 'breadcrumbs' => [
                     new Breadcrumb(
                         $article->category->title,
@@ -405,10 +406,11 @@ class ArticlesController extends Controller
             ? $article->title
             : Locale::get('article_new');
 
+        static::setTitle($title);
+
         View::send(
             'admin/article',
             [
-                'app_title' => getenv('APP_TITLE') . " - " . $title,
                 'article' => $article,
                 'breadcrumbs' => [
                     new Breadcrumb(
@@ -419,9 +421,7 @@ class ArticlesController extends Controller
                         url: '/admin/articles',
                         label: Locale::get('articles')
                     ),
-                    new Breadcrumb(
-                        label: $title
-                    )
+                    new Breadcrumb($title)
                 ],
             ]
         );

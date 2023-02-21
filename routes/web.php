@@ -12,11 +12,12 @@ use App\Controllers\{
 
 use App\Models\User;
 
-use Tischmann\Atlantis\{Router, Route};
+use Tischmann\Atlantis\{Locale, Router, Route};
 
 // Главная
 Router::add(new Route(
     controller: new IndexController(),
+    title: Locale::get('home')
 ));
 
 // Статьи
@@ -48,7 +49,8 @@ if (User::current()->isAdmin()) {
         controller: new AdminController(),
         path: 'admin',
         action: 'index',
-        method: 'GET'
+        method: 'GET',
+        title: Locale::get('dashboard')
     ));
 
     // Категории
@@ -57,7 +59,8 @@ if (User::current()->isAdmin()) {
         controller: new AdminController(),
         path: 'admin/categories',
         action: 'getCategories',
-        method: 'GET'
+        method: 'GET',
+        title: Locale::get('categories')
     ));
 
     Router::add(new Route(
@@ -69,21 +72,22 @@ if (User::current()->isAdmin()) {
 
     Router::add(new Route(
         controller: new AdminController(),
-        path: 'category/add',
+        path: 'add/category',
         action: 'newCategory',
-        method: 'GET'
+        method: 'GET',
+        title: Locale::get('category_new')
     ));
 
     Router::add(new Route(
         controller: new CategoriesController(),
-        path: 'category/add',
+        path: 'add/category',
         action: 'add',
         method: 'POST'
     ));
 
     Router::add(new Route(
         controller: new CategoriesController(),
-        path: 'category/add',
+        path: 'add/category',
         action: 'add',
         method: 'PUT'
     ));
@@ -115,7 +119,8 @@ if (User::current()->isAdmin()) {
         controller: new AdminController(),
         path: 'admin/articles',
         action: 'getArticles',
-        method: 'GET'
+        method: 'GET',
+        title: Locale::get('articles')
     ));
 
     Router::add(new Route(
@@ -180,7 +185,8 @@ if (User::current()->isAdmin()) {
         controller: new AdminController(),
         path: 'admin/users',
         action: 'getUsers',
-        method: 'GET'
+        method: 'GET',
+        title: Locale::get('users')
     ));
 }
 

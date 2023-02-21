@@ -17,7 +17,7 @@
     <link rel="manifest" href="/webmanifest.json">
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#ffffff">
     <meta name="msapplication-TileColor" content="#ffffff">
-    <title>{{app_title}}</title>
+    <title>{{env=APP_TITLE}}</title>
     <link rel="stylesheet" href="/tailwind.css" media="all">
     <link rel="preload" as="style" href="/fontawesome.css" media="all">
     <link rel="preconnect" href="https://fonts.googleapis.com">

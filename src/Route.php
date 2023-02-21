@@ -95,7 +95,7 @@ final class Route
             $request->route($key, $value);
         }
 
-        if ($this->title) putenv("APP_TITLE={$this->title}");
+        if ($this->title) Controller::setTitle($this->title);
 
         $this->controller->{$this->action}($request);
     }
