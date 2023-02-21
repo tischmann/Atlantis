@@ -474,7 +474,7 @@ class ArticlesController extends Controller
 
         preg_match_all(
             '/([0-9a-zA-Z]+\.webp)/',
-            $article->full_text,
+            strval($article->full_text),
             $matches,
             PREG_SET_ORDER
         );

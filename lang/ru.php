@@ -65,6 +65,7 @@ return [
     'article_locale' => 'Язык',
     'article_category' => 'Категория',
     'article_image' => 'Изображение',
+    'article_image_dimensions' => 'Размеры изображения',
     'article_short_text' => 'Краткое описание',
     'article_full_text' => 'Полное описание',
     'article_tags' => 'Теги (через запятую)',

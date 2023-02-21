@@ -26,7 +26,7 @@ class Article extends Model
         public ?string $image = null,
         public ?string $short_text = null,
         public ?string $full_text = null,
-        public ?array $tags = null,
+        public ?array $tags = [],
         public bool $visible = true,
     ) {
         parent::__construct();

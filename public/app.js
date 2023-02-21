@@ -1,4 +1,8 @@
 window.onload = () => {
+    const useDarkMode = window.matchMedia(
+        '(prefers-color-scheme: dark)'
+    ).matches
+
     document.head.querySelectorAll('link[rel="preload"]').forEach((link) => {
         link.setAttribute('rel', 'stylesheet')
     })
@@ -11,10 +15,14 @@ window.onload = () => {
     new LazyLoad()
 
     window.addEventListener('scroll', () => {
+        const classes = useDarkMode
+            ? ['shadow-lg', 'border-b', 'border-b-gray-700']
+            : ['shadow-lg', 'border-b', 'border-b-gray-200']
+
         if (window.scrollY > 16) {
-            document.querySelector('header').classList.add('shadow-lg')
+            document.querySelector('header').classList.add(...classes)
         } else {
-            document.querySelector('header').classList.remove('shadow-lg')
+            document.querySelector('header').classList.remove(...classes)
         }
     })
 }

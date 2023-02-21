@@ -1,6 +1,6 @@
 <?php include __DIR__ . "/../header.php" ?>
 <main class="md:container md:mx-auto">
-    <div class="intersection-loader-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 mx-4 md:mx-0 my-4">
+    <div class="intersection-loader-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 p-4">
         <?php
 
         use Tischmann\Atlantis\Template;
@@ -13,9 +13,10 @@
             <div class="spinner-grow inline-block w-8 h-8 bg-sky-600 rounded-full opacity-0" role="status"></div>
         </div>
     </div>
-    <a href="/{{env=APP_LOCALE}}/add/article" aria-label="{{lang=add}}" class="h-12 w-12 fixed flex 
-    items-center justify-center bottom-4 right-4 text-white text-xl
-    rounded-full bg-pink-600 hover:bg-pink-700 hover:shadow-lg 
-    active:bg-pink-700 focus:bg-pink-700 transition-all ease-in-out"><i class="fas fa-plus"></i></a>
+    <div class="fixed bottom-4 right-4 ">
+        <a href="/{{env=APP_LOCALE}}/add/article" aria-label="{{lang=add}}" data-te-ripple-init data-te-ripple-color="light" class="flex items-center justify-center rounded-full text-lg bg-primary h-12 w-12 uppercase leading-normal text-white shadow-md transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]">
+            <i class="fas fa-plus"></i>
+        </a>
+    </div>
     <?php include __DIR__ . "/sort.php" ?>
 </main>
