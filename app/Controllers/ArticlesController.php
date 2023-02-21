@@ -67,6 +67,16 @@ class ArticlesController extends Controller
 
         $article->visible = boolval($request->request('visible'));
 
+        $tags = strval($request->request('tags'));
+
+        $tags = $tags ? explode(',', $tags) : [];
+
+        if (!$tags) $tags = $article->getKeywords();
+
+        $tags = array_map('trim', $tags);
+
+        $article->tags = $tags;
+
         if (!$article->save()) {
             throw new Exception(Locale::get('article_save_error'));
         }
@@ -151,6 +161,16 @@ class ArticlesController extends Controller
         $article->full_text = $full_text ?: null;
 
         $article->visible = boolval($request->request('visible'));
+
+        $tags = strval($request->request('tags'));
+
+        $tags = $tags ? explode(',', $tags) : [];
+
+        if (!$tags) $tags = $article->getKeywords();
+
+        $tags = array_map('trim', $tags);
+
+        $article->tags = $tags;
 
         static::removeTempImages($article);
 
