@@ -42,6 +42,13 @@ Router::add(new Route(
     method: 'POST'
 ));
 
+Router::add(new Route(
+    controller: new ArticlesController(),
+    path: 'rating/{id}/{rating}',
+    action: 'setRating',
+    method: 'POST'
+));
+
 // Админка
 
 if (User::current()->isAdmin()) {

@@ -86,4 +86,7 @@ return [
     'sorting_updated_at_desc' => 'По дате обновления (по убыванию)',
     'sorting_visible_asc' => 'Сначала скрытые',
     'sorting_visible_desc' => 'Сначала видимые',
+    'rating_invalid' => 'Неверный рейтинг',
+    'rating_save_error' => 'Ошибка сохранения рейтинга',
+    'uuid_is_required' => 'Отсутсвует UUID',
 ];

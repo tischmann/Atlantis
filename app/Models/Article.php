@@ -14,6 +14,10 @@ class Article extends Model
 
     public string $image_url = '';
 
+    public int $views = 0;
+
+    public float $rating = 0;
+
     public function __construct(
         public ?int $author_id = null,
         public ?int $category_id = null,
@@ -23,8 +27,6 @@ class Article extends Model
         public string $short_text = '',
         public string $full_text = '',
         public array $tags = [],
-        public int $views = 0,
-        public float $rating = 0,
         public bool $visible = true,
     ) {
         parent::__construct();
@@ -32,6 +34,8 @@ class Article extends Model
         $this->category = $this->getCategory();
 
         $this->image_url = $this->getImageUrl();
+
+        $this->rating = $this->getRating();
     }
 
     public function __fill(object|array $traversable): self
@@ -41,6 +45,8 @@ class Article extends Model
         $this->category = $this->getCategory();
 
         $this->image_url = $this->getImageUrl();
+
+        $this->rating = $this->getRating();
 
         return $this;
     }
@@ -80,6 +86,25 @@ class Article extends Model
     public function getCategory(): Category
     {
         return Category::find($this->category_id);
+    }
+
+    public function getRating(): float
+    {
+        $value = 0;
+
+        if (!$this->id) return $value;
+
+        $query = Rating::query()->where('article_id', $this->id);
+
+        $ratings = Rating::fill($query);
+
+        foreach ($ratings as $rating) {
+            $value += $rating->rating;
+        }
+
+        $value = ceil($value / count($ratings));
+
+        return $value;
     }
 
     public static function table(): Migration

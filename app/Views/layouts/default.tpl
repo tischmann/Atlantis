@@ -25,6 +25,7 @@
     <link rel="preload" as="style"
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" />
     <link rel="preload" as="style" href="/app.css" media="all">
+    <script src="/js/uuid.js" nonce="{{nonce}}"></script>
     <style>
         body {
             /* font-family: 'Inter'; */

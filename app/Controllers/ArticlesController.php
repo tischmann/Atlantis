@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Models\{Article, Category};
+use App\Models\{Article, Category, Rating};
 
 use Exception;
 
@@ -538,6 +538,61 @@ class ArticlesController extends Controller
             'html' => $html,
             'page' => $pagination->page,
             'last' => $pagination->last,
+        ]);
+    }
+
+    /**
+     * Установка рейтинга статьи
+     *
+     * @param Request $request
+     */
+    public function setRating(Request $request)
+    {
+        $id = $request->route('id');
+
+        $uuid = $request->request('uuid');
+
+        if (!$uuid) {
+            throw new Exception(Locale::get('uuid_is_required'));
+        }
+
+        $value = intval($request->request('rating'));
+
+        $article = Article::find($id);
+
+        assert($article instanceof Article);
+
+        if (!$article->id) {
+            throw new Exception(Locale::get('article_not_found'));
+        }
+
+        if ($value < 1 || $value > 5) {
+            throw new Exception(Locale::get('rating_invalid'));
+        }
+
+        $query = Rating::query()->where('uuid', $uuid)
+            ->where('article_id', $article->id);
+
+        $rating = Rating::make($query->first());
+
+        assert($rating instanceof Rating);
+
+        if (!$rating->id) {
+            $rating = new Rating();
+            $rating->article_id = $article->id;
+            $rating->uuid = $uuid;
+        }
+
+        $rating->rating = ceil(($rating->rating + $value) / 2);
+
+        $result = $rating->save();
+
+        list($csrf_key, $csrf_token) = CSRF::set();
+
+        Response::json([
+            'status' => $result ? 1 : 0,
+            'csrf' => $csrf_token,
+            'message' => $result ? 'OK' : Locale::get('rating_save_error'),
         ]);
     }
 }
