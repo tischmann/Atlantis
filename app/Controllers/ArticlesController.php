@@ -599,7 +599,7 @@ class ArticlesController extends Controller
             $rating->uuid = $uuid;
         }
 
-        $rating->rating = ceil(($rating->rating + $value) / 2);
+        $rating->rating = ceil($value);
 
         $result = $rating->save();
 

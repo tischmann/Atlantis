@@ -1,6 +1,6 @@
 <?php include __DIR__ . "/header.php" ?>
 <main class="container mx-auto">
-    <div class="m-4">
+    <article class="m-4 article">
         <div class="text-3xl font-bold flex items-center gap-4 mb-2"><?= $article->title ?>
             <?php
 
@@ -26,7 +26,7 @@
             <img class="lazy w-full md:max-w-lg md:float-left mb-4 md:mr-8 rounded-xl shadow-md" data-src="<?= $article->image_url ?>" src="/images/placeholder.svg" width="400" height="300" alt="<?= $article->title ?>">
             <?= html_entity_decode($article->full_text) ?>
         </div>
-    </div>
+    </article>
     <script src="/js/rating.js" nonce="{{nonce}}"></script>
     <script nonce="{{nonce}}">
         new Rating(document.querySelector(`.rating`), new UUID().get())

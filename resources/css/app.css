@@ -1,3 +1,8 @@
+.article p {
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+}
+
 .rating,
 .rating label {
     margin: 0;
