@@ -140,48 +140,6 @@ class Article extends Model
         return View::query()->where('article_id', $this->id)->count();
     }
 
-    public function getKeywords(
-        int $min_word_length = 5,
-        int $min_word_occurrence = 2,
-        int $max_words = 10
-    ): array {
-        $keyword_count_sort = fn ($first, $sec) => $sec[1] - $first[1];
-
-        $string = preg_replace(
-            '/[^\p{L}0-9 ]/',
-            ' ',
-            $this->full_text ?: $this->short_text
-        );
-
-        $string = trim(preg_replace('/\s+/', ' ', $string));
-
-        $words = explode(' ', $string);
-
-        $keywords = array();
-
-        while (($c_word = array_shift($words)) !== null) {
-
-            if (strlen($c_word) < $min_word_length) continue;
-            $c_word = strtolower($c_word);
-
-            if (array_key_exists($c_word, $keywords)) $keywords[$c_word][1]++;
-            else $keywords[$c_word] = array($c_word, 1);
-        }
-
-        usort($keywords, $keyword_count_sort);
-
-        $final_keywords = array();
-
-        foreach ($keywords as $keyword_det) {
-            if ($keyword_det[1] < $min_word_occurrence) break;
-            array_push($final_keywords, $keyword_det[0]);
-        }
-
-        $final_keywords = array_slice($final_keywords, 0, $max_words);
-
-        return $final_keywords;
-    }
-
     public static function table(): Migration
     {
         return new Articles();

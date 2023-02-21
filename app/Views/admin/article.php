@@ -119,7 +119,7 @@
                      text-base font-normal text-gray-700 bg-white 
                      bg-clip-padding border border-solid border-gray-300
                      rounded transition ease-in-out m-0 focus:text-gray-700
-                     focus:bg-white focus:border-sky-600 focus:outline-none flex-grow" id="articleTagsInput" name="short_text"><?= implode(", ", $article->tags) ?></textarea>
+                     focus:bg-white focus:border-sky-600 focus:outline-none flex-grow" id="articleTagsInput" name="tags"><?= implode(", ", $article->tags) ?></textarea>
         </div>
         <div class="flex gap-4 justify-end mb-4">
             <?php

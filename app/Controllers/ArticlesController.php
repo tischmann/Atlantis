@@ -71,8 +71,6 @@ class ArticlesController extends Controller
 
         $tags = $tags ? explode(',', $tags) : [];
 
-        if (!$tags) $tags = $article->getKeywords();
-
         $tags = array_map('trim', $tags);
 
         $article->tags = $tags;
@@ -165,8 +163,6 @@ class ArticlesController extends Controller
         $tags = strval($request->request('tags'));
 
         $tags = $tags ? explode(',', $tags) : [];
-
-        if (!$tags) $tags = $article->getKeywords();
 
         $tags = array_map('trim', $tags);
 
