@@ -84,6 +84,6 @@ return [
     'sorting_created_at_desc' => 'По дате создания (по убыванию)',
     'sorting_updated_at_asc' => 'По дате обновления (по возрастанию)',
     'sorting_updated_at_desc' => 'По дате обновления (по убыванию)',
-    'sorting_visible_asc' => 'По видимости (сначала скрытые)',
-    'sorting_visible_desc' => 'По видимости (сначала видимые)',
+    'sorting_visible_asc' => 'Сначала скрытые',
+    'sorting_visible_desc' => 'Сначала видимые',
 ];

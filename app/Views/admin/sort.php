@@ -1,7 +1,7 @@
     <div class="fixed bottom-4 left-4">
         <div class="dropdown relative">
             <button class=" dropdown-toggle h-12 w-12 flex items-center justify-center bg-purple-600 text-white  font-medium text-xs rounded-full shadow-md hover:bg-purple-700 hover:shadow-lg focus:bg-purple-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-purple-800 active:shadow-lg active:text-white  transition duration-150 ease-in-out" type="button" id="sortButton" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-sort"></i>
+                <i class="fas fa-sort text-lg"></i>
             </button>
             <ul class="dropdown-menu min-w-max absolute bg-white text-base z-50 float-left py-2 list-none text-left rounded-lg shadow-lg mt-1 hidden m-0 bg-clip-padding border-none" aria-labelledby="sortButton">
                 <?php
