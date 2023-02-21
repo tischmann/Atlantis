@@ -4025,18 +4025,22 @@ textarea.form-control.is-invalid {
   margin-right: 1rem;
 }
 
-.-my-5 {
-  margin-top: -1.25rem;
-  margin-bottom: -1.25rem;
-}
-
 .my-4 {
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
 
+.-my-5 {
+  margin-top: -1.25rem;
+  margin-bottom: -1.25rem;
+}
+
 .mb-4 {
   margin-bottom: 1rem;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
 }
 
 .mr-2 {
@@ -4045,10 +4049,6 @@ textarea.form-control.is-invalid {
 
 .mt-4 {
   margin-top: 1rem;
-}
-
-.mb-2 {
-  margin-bottom: 0.5rem;
 }
 
 .mb-6 {
@@ -4065,6 +4065,10 @@ textarea.form-control.is-invalid {
 
 .mb-1 {
   margin-bottom: 0.25rem;
+}
+
+.mb-3 {
+  margin-bottom: 0.75rem;
 }
 
 .mr-4 {
@@ -4085,14 +4089,6 @@ textarea.form-control.is-invalid {
 
 .mr-3 {
   margin-right: 0.75rem;
-}
-
-.mb-3 {
-  margin-bottom: 0.75rem;
-}
-
-.mr-1 {
-  margin-right: 0.25rem;
 }
 
 .box-content {
@@ -4220,10 +4216,6 @@ textarea.form-control.is-invalid {
   flex-grow: 1;
 }
 
-.flex-grow-0 {
-  flex-grow: 0;
-}
-
 .transform {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
@@ -4278,10 +4270,6 @@ textarea.form-control.is-invalid {
 
 .items-center {
   align-items: center;
-}
-
-.justify-start {
-  justify-content: flex-start;
 }
 
 .justify-end {
@@ -4461,11 +4449,6 @@ textarea.form-control.is-invalid {
   background-color: transparent;
 }
 
-.bg-gray-100 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(243 244 246 / var(--tw-bg-opacity));
-}
-
 .bg-contain {
   background-size: contain;
 }
@@ -4493,10 +4476,6 @@ textarea.form-control.is-invalid {
 
 .p-6 {
   padding: 1.5rem;
-}
-
-.p-8 {
-  padding: 2rem;
 }
 
 .p-2 {
@@ -4533,11 +4512,6 @@ textarea.form-control.is-invalid {
   padding-bottom: 0.75rem;
 }
 
-.px-2 {
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-}
-
 .py-1\.5 {
   padding-top: 0.375rem;
   padding-bottom: 0.375rem;
@@ -4548,14 +4522,14 @@ textarea.form-control.is-invalid {
   padding-bottom: 0.25rem;
 }
 
-.py-4 {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-}
-
 .px-1 {
   padding-left: 0.25rem;
   padding-right: 0.25rem;
+}
+
+.py-4 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 .pr-12 {
@@ -4703,11 +4677,6 @@ textarea.form-control.is-invalid {
   color: rgb(7 89 133 / var(--tw-text-opacity));
 }
 
-.text-pink-600 {
-  --tw-text-opacity: 1;
-  color: rgb(219 39 119 / var(--tw-text-opacity));
-}
-
 .text-green-500 {
   --tw-text-opacity: 1;
   color: rgb(34 197 94 / var(--tw-text-opacity));
@@ -4747,17 +4716,6 @@ textarea.form-control.is-invalid {
   --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-}
-
-.shadow {
-  --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-  --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-}
-
-.shadow-white {
-  --tw-shadow-color: #fff;
-  --tw-shadow: var(--tw-shadow-colored);
 }
 
 .outline-none {
@@ -4831,18 +4789,6 @@ textarea.form-control.is-invalid {
 
 .hover\:rotate-180:hover {
   --tw-rotate: 180deg;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-.hover\:scale-110:hover {
-  --tw-scale-x: 1.1;
-  --tw-scale-y: 1.1;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-.hover\:scale-105:hover {
-  --tw-scale-x: 1.05;
-  --tw-scale-y: 1.05;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
@@ -5041,11 +4987,6 @@ textarea.form-control.is-invalid {
 @media (min-width: 768px) {
   .md\:float-left {
     float: left;
-  }
-
-  .md\:mx-4 {
-    margin-left: 1rem;
-    margin-right: 1rem;
   }
 
   .md\:mx-0 {

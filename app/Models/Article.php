@@ -6,7 +6,7 @@ namespace App\Models;
 
 use App\Database\Articles;
 
-use Tischmann\Atlantis\{Migration, Model};
+use Tischmann\Atlantis\{Cookie, Migration, Model};
 
 class Article extends Model
 {
@@ -118,6 +118,24 @@ class Article extends Model
     public function getViews(): int
     {
         if (!$this->id) return 0;
+
+        $uuid = Cookie::get('uuid');
+
+        if ($uuid !== null) {
+            $query = View::query()->where('uuid', $uuid)
+                ->where('article_id', $this->id);
+
+            $view = View::make($query->first());
+
+            assert($view instanceof View);
+
+            if (!$view->id) {
+                $view = new View();
+                $view->uuid = $uuid;
+                $view->article_id = $this->id;
+                $view->save();
+            }
+        }
 
         return View::query()->where('article_id', $this->id)->count();
     }
