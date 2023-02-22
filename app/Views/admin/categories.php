@@ -1,24 +1,38 @@
 <?php include __DIR__ . "/../header.php" ?>
 <main class="md:container md:mx-auto">
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 font-medium mx-4 mb-4">
+    <div class="flex flex-wrap gap-4 my-4 px-4">
         <?php
 
-        use Tischmann\Atlantis\{Controller, Template};
+        use App\Models\{Category};
+
+        use Tischmann\Atlantis\{Template};
 
         foreach ($items as $locale => $categories) {
-            Template::echo(
-                'admin/category-locale',
+            $category = new Category();
+
+            $category->children = $categories;
+
+            $children = Template::html(
+                'admin/category-children',
                 [
-                    'locale' => $locale,
-                    'categories' => $categories,
+                    'category' => $category
                 ]
             );
+
+            echo <<<HTML
+            <div class="flex flex-wrap rounded-xl gap-4 bg-sky-800 p-4 shadow-lg">
+                <div class="flex-grow w-full bg-sky-700 rounded-lg text-white px-4 py-2 
+                whitespace-nowrap uppercase text-center font-bold">
+                    {{lang=locale_{$locale}}}
+                </div>
+                <ul class="flex gap-4 flex-wrap">
+                    {$children}
+                </ul>
+            </div>
+            HTML;
         }
         ?>
     </div>
-    <a href="/{{env=APP_LOCALE}}/add/category" aria-label="{{lang=add}}" class="h-12 w-12 fixed flex 
-    items-center justify-center bottom-4 right-4 text-white text-xl
-    rounded-full bg-pink-600 hover:bg-pink-700 hover:shadow-lg 
-    active:bg-pink-700 focus:bg-pink-700 transition-all ease-in-out"><i class="fas fa-plus"></i></a>
+    <?= Template::html('admin/add-button', ['href' => '/{{env=APP_LOCALE}}/add/category']) ?>
     <?php include __DIR__ . "/sortable-categories-script.php" ?>
 </main>
