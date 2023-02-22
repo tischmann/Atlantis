@@ -23,25 +23,26 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" as="style"
-        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" />
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" />
     <link rel="preload" as="style" href="/app.css" media="all">
     <script src="/js/uuid.js" nonce="{{nonce}}"></script>
     <script src="/js/fslightbox.js" nonce="{{nonce}}" async></script>
     <style>
         body {
+            font-family: 'Montserrat', sans-serif;
             margin: 0;
             padding: 0;
         }
     </style>
 </head>
 
-<body class="bg-white dark:bg-gray-800 text-gray-800 dark:text-white">
+<body class="bg-white dark:bg-gray-800 text-gray-800 dark:text-white antialiased">
     {{body}}
     {{alert}}
     <script src="/tailwind.js" nonce="{{nonce}}" async></script>
     <script src="/js/lazyfetch.js" nonce="{{nonce}}" async></script>
     <script src="/js/lazyload.js" nonce="{{nonce}}" async></script>
-    <script src="/app.js" nonce="{{nonce}}" async></script>
+    <script src="/app.js" nonce="{{nonce}}" type="module" async></script>
     <script src="/pwa.js" nonce="{{nonce}}" async></script>
 </body>
 

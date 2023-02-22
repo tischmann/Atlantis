@@ -8,7 +8,7 @@
 
             if (User::current()->isAdmin()) {
                 echo <<<HTML
-                <a href="/{{env=APP_LOCALE}}/edit/article/{$article->id}" aria-label="{{lang=edit}}" class="text-lg text-sky-600 hover:text-pink-600">
+                <a href="/{{env=APP_LOCALE}}/edit/article/{$article->id}" aria-label="{{lang=edit}}" class="text-lg text-sky-500 hover:text-pink-600">
                     <i class="fas fa-pencil"></i>
                 </a>
                 HTML;

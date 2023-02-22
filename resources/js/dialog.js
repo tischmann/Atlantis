@@ -81,7 +81,7 @@ class Dialog {
                 'w-full',
                 'px-6',
                 'py-2.5',
-                'bg-sky-600',
+                'bg-sky-500',
                 'text-white',
                 'font-medium',
                 'text-xs',

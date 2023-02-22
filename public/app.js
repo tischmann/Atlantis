@@ -1,3 +1,5 @@
+import { CountUp } from '/js/countUp.min.js'
+
 window.onload = () => {
     const useDarkMode = window.matchMedia(
         '(prefers-color-scheme: dark)'
@@ -24,5 +26,9 @@ window.onload = () => {
         } else {
             document.querySelector('header').classList.remove(...classes)
         }
+    })
+
+    document.querySelectorAll(`.countup`).forEach((el) => {
+        new CountUp(el, el.textContent).start()
     })
 }

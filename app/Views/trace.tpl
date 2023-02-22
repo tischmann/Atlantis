@@ -2,7 +2,7 @@
     <div class="col">
         <table class="border border-gray-300">
             <thead>
-                <tr class="bg-sky-600 text-white">
+                <tr class="bg-sky-500 text-white">
                     <th scope="col" class="border-r border-gray-300 px-3 py-2">#</th>
                     <th scope="col" class="border-r border-gray-300 px-3 py-2">File</th>
                     <th scope="col" class="border-r border-gray-300 px-3 py-2">Line</th>

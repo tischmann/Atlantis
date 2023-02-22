@@ -2,7 +2,7 @@
     <a href="/{{env=APP_LOCALE}}/article/<?= $article->id ?>" aria-label="<?= $article->title ?>">
         <div class="relative">
             <img class="rounded-t-lg" src="<?= $article->image_url ?>" alt="<?= $article->title ?>" />
-            <div class="absolute flex bottom-0 inset-x-0 gap-4 p-4 justify-end text-xs text-sky-600">
+            <div class="absolute flex bottom-0 inset-x-0 gap-4 p-4 justify-end text-xs text-sky-500">
                 <span class="px-3 py-2 rounded-lg bg-white shadow-md font-semibold"><i class="fas fa-eye mr-2"></i><?= $article->views ?></span>
                 <span class="px-3 py-2 rounded-lg bg-white shadow-md font-semibold"><i class="fas fa-star mr-2"></i><?= $article->rating ?></span>
             </div>
