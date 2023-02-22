@@ -14,7 +14,7 @@
         </div>
     </div>
     <a href="/{{env=APP_LOCALE}}/add/user" aria-label="{{lang=add}}" class="h-12 w-12 fixed flex 
-    items-center justify-center bottom-4 right-4 text-white text-xl
-    rounded-full bg-pink-600 hover:bg-pink-700 hover:shadow-lg 
+    items-center justify-center bottom-8 right-8 text-white text-xl
+    rounded-lg bg-pink-600 hover:bg-pink-700 shadow 
     active:bg-pink-700 focus:bg-pink-700 transition-all ease-in-out"><i class="fas fa-plus"></i></a>
 </main>

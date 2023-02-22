@@ -10,6 +10,7 @@ use Exception;
 
 use Tischmann\Atlantis\{
     Alert,
+    Breadcrumb,
     Controller,
     Cookie,
     CSRF,
@@ -214,6 +215,92 @@ class UsersController extends Controller
     }
 
     /**
+     * Добавление пользователя
+     *
+     * @param Request $request
+     * 
+     * @return void
+     */
+    public function add(Request $request): void
+    {
+        $this->checkAdmin();
+
+        CSRF::verify($request);
+
+        $request->validate([
+            'login' => ['required'],
+        ]);
+
+        $user = new User();
+
+        $user->login = strval($request->request('login'));
+
+        $password = strval($request->request('password'));
+
+        $url = "/" . getenv('APP_LOCALE') . '/admin/users';
+
+        if (!$password) {
+            Response::redirect(
+                url: $url,
+                alert: new Alert(
+                    status: 0,
+                    message: Locale::get('user_add_error_empty_password')
+                )
+            );
+        }
+
+        $user->password = password_hash($password, PASSWORD_DEFAULT);
+
+        $user->role = match (strval($request->request('role'))) {
+            User::ROLE_ADMIN => User::ROLE_ADMIN,
+            User::ROLE_USER => User::ROLE_USER,
+            User::ROLE_GUEST => User::ROLE_GUEST,
+            default => null
+        };
+
+        $user->status = boolval($request->request('status'));
+
+        $remarks = strval($request->request('remarks'));
+
+        $user->remarks = $remarks ?: null;
+
+        $avatar = strval($request->request('avatar'));
+
+        $root = getenv('APP_ROOT');
+
+        if ($avatar) {
+            if (!is_dir("{$root}/public/images/avatars")) {
+                mkdir("{$root}/public/images/avatars", 0775, true);
+            }
+
+            if (!is_dir("{$root}/public/images/avatars/temp")) {
+                mkdir("{$root}/public/images/avatars/temp", 0775, true);
+            }
+
+            rename(
+                "{$root}/public/images/avatars/temp/{$avatar}",
+                "{$root}/public/images/avatars/{$avatar}"
+            );
+
+            $user->avatar = $avatar;
+        }
+
+        if (!$user->save()) {
+            Response::redirect(
+                url: $url,
+                alert: new Alert(
+                    status: 0,
+                    message: Locale::get('user_add_error')
+                )
+            );
+        }
+
+        static::removeTempAvatars();
+
+        Response::redirect($url);
+    }
+
+    /**
      * Обновление пользователя
      *
      * @param Request $request
@@ -362,5 +449,41 @@ class UsersController extends Controller
                 unlink($file);
             }
         }
+    }
+
+    public function newUser(Request $request)
+    {
+        $this->checkAdmin();
+
+        $this->getUserEditor($request, new User());
+    }
+
+    protected function getUserEditor(
+        Request $request,
+        User $user
+    ) {
+        $title = $user->id
+            ? $user->login
+            : Locale::get('user_new');
+
+        static::setTitle($title);
+
+        View::send(
+            'admin/user',
+            [
+                'user' => $user,
+                'breadcrumbs' => [
+                    new Breadcrumb(
+                        url: '/admin',
+                        label: Locale::get('dashboard')
+                    ),
+                    new Breadcrumb(
+                        url: '/admin/users',
+                        label: Locale::get('users')
+                    ),
+                    new Breadcrumb($title)
+                ],
+            ]
+        );
     }
 }

@@ -115,7 +115,6 @@
             if ($category->id) {
                 echo <<<HTML
                 <button type="button" id="deleteCategoryButton" aria-label="{{lang=delete}}" class="inline-block flex-grow md:flex-grow-0 px-6 py-2.5 bg-pink-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-pink-700 hover:shadow-lg focus:bg-pink-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-rpinked-800 active:shadow-lg transition duration-150 ease-in-out">{{lang=delete}}</button>
-                <script src="/js/dialog.js" nonce="{{nonce}}"></script>
                 <script nonce="{{nonce}}">
                     const dialog = new Dialog({
                         title: `{{lang=warning}}!`,

@@ -1,6 +1,8 @@
 <?php
 
-use App\Models\User;
+use App\Models\{User};
+
+use Tischmann\Atlantis\{Locale, Template};
 
 include __DIR__ . "/../header.php"
 
@@ -42,71 +44,31 @@ include __DIR__ . "/../header.php"
             <div>
                 <input type="hidden" value="<?= $user->avatar ?>" name="avatar" id="userAvatarInput">
                 <input type='file' id="userAvatarFile" class="hidden" aria-label="{{lang=article_image}}">
-                <img src="/images/avatars/<?= $user->avatar ?>" id="userAvatar" width="400" height="400" alt="{{lang=user_avatar}}" class="rounded w-full object-cover border border-gray-300 cursor-pointer">
+                <img src="<?= $user->avatar_src ?>" id="userAvatar" width="400" height="400" alt="{{lang=user_avatar}}" class="rounded w-full object-cover border border-gray-300 cursor-pointer">
                 <button type="button" data-te-ripple-init data-te-ripple-color="light" id="imageDeleteButton" class="mt-4 w-full hidden flex-grow md:flex-grow-0 px-6 py-2.5 bg-pink-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-pink-700 hover:shadow-lg focus:bg-pink-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-rpinked-800 active:shadow-lg transition duration-150 ease-in-out">
                     {{lang=delete_image}}
                 </button>
-                <script nonce="{{nonce}}">
-                    document.getElementById(`userAvatar`).addEventListener('error', function(e) {
-                        e.target.src = '/images/placeholder.svg';
-                    }, true)
-                </script>
             </div>
         </div>
         <div class="mb-4 flex gap-4 flex-wrap justify-evenly md:justify-end items-center">
             <?php
             if ($user->id) {
-                echo <<<HTML
-                <button type="button" id="deleteUserButton" aria-label="{{lang=delete}}" class="inline-block flex-grow md:flex-grow-0 px-6 py-2.5 bg-pink-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-pink-500 hover:shadow-lg focus:bg-pink-500 active:bg-pink-500 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-rpinked-800 active:shadow-lg transition duration-150 ease-in-out">{{lang=delete}}</button>
-                <script src="/js/dialog.js" nonce="{{nonce}}"></script>
-                <script nonce="{{nonce}}">
-                    const dialog = new Dialog({
-                        title: `{{lang=warning}}!`,
-                        message: `{{lang=user_delete_confirm}}?`,
-                        buttons: [
-                            {
-                                text: `{{lang=no}}`,
-                                class: `bg-sky-600 text-white hover:bg-sky-500 focus:bg-sky-500 active:bg-sky-500`,
-                                callback: () => {}
-                            },
-                            {
-                                text: `{{lang=yes}}`,
-                                class: `bg-pink-600 text-white hover:bg-pink-500 focus:bg-pink-500 active:bg-pink-500`,
-                                callback: () => {
-                                    fetch(`/user/delete/{$user->id}`, {
-                                        method: 'DELETE',
-                                        headers: {
-                                            'X-Requested-With': `XMLHttpRequest`,
-                                            'X-Csrf-Token': `{{csrf-token}}`,
-                                            'Accept': 'application/json',                    
-                                        },
-                                    }).then(response => response.json().then(data => {
-                                        if (data?.status) {
-                                            window.location.href = `/{{env=APP_LOCALE}}/admin/users`
-                                        } else {
-                                            alert(data.message)
-                                            console.error(data.message)
-                                        }
-                                    }).catch(error => {
-                                        alert(error)
-                                        console.error(error)
-                                    })).catch(error => {
-                                        alert(error)
-                                        console.error(error)
-                                    })
-                                }
-                            },
-                        ]
-                    })
+                $locale = getenv('APP_LOCALE');
 
-                    document.getElementById('deleteUserButton')
-                        .addEventListener('click', () => dialog.show())
-                </script>
-                HTML;
+                Template::echo(
+                    'admin/delete-button',
+                    [
+                        'id' => "delete-user-{$user->id}",
+                        'title' => Locale::get('warning'),
+                        'message' => Locale::get('user_delete_confirm') . "?",
+                        'url' => "/{$locale}/user/delete/{$user->id}",
+                        'redirect' => "/{$locale}/admin/users",
+                    ]
+                );
             }
             ?>
-            <a href="/{{env=APP_LOCALE}}/admin/users" aria-label="{{lang=cancel}}" class="inline-block flex-grow md:flex-grow-0 px-6 py-2.5 bg-gray-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-gray-700 hover:shadow-lg focus:bg-gray-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gray-800 active:shadow-lg transition duration-150 ease-in-out text-center">{{lang=cancel}}</a>
-            <button type="submit" class="inline-block flex-grow md:flex-grow-0 px-6 py-2.5 bg-sky-800 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-sky-700 hover:shadow-lg focus:bg-sky-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-sky-700 active:shadow-lg transition duration-150 ease-in-out">{{lang=save}}</button>
+            <?= Template::html('admin/cancel-button', ['href' => '/{{env=APP_LOCALE}}/admin/users']) ?>
+            <?= Template::html('admin/save-button') ?>
         </div>
     </form>
     <script nonce="{{nonce}}">

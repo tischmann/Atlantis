@@ -39,6 +39,8 @@ class User extends Model
 
     private string $token = '';
 
+    public string $avatar_src = '';
+
     private static User $user;
 
     public function __construct(
@@ -52,8 +54,6 @@ class User extends Model
     ) {
         parent::__construct();
 
-        $this->role = $this->role ?: self::ROLE_GUEST;
-
         $privatekey = file_get_contents(__DIR__ . "/../../private.pem");
 
         if (!$privatekey) throw new Exception('Private key not found');
@@ -65,6 +65,28 @@ class User extends Model
         if (!$publicKey) throw new Exception('Public key not found');
 
         $this->publicKey = $publicKey;
+
+        $this->avatar_src = $this->getAvatarSource();
+    }
+
+    public function getAvatarSource(): string
+    {
+        $root = getenv('APP_ROOT');
+
+        if (!is_file("{$root}/public/images/avatars/{$this->avatar}")) {
+            return "/images/placeholder.svg";
+        }
+
+        return "/images/avatars/{$this->avatar}";
+    }
+
+    public function __fill(object|array $traversable): Facade
+    {
+        parent::__fill($traversable);
+
+        $this->avatar_src = $this->getAvatarSource();
+
+        return $this;
     }
 
     public static function table(): Migration

@@ -94,6 +94,7 @@ return [
     'uuid_is_required' => 'Отсутсвует UUID',
     // Пользователи
     'user_not_found' => 'Пользователь не найден',
+    'user_new' => 'Новый пользователь',
     'user_login' => 'Логин',
     'user_password' => 'Пароль',
     'user_delete_confirm' => 'Вы действительно хотите удалить пользователя',
@@ -117,6 +118,7 @@ return [
     'user_delete_title' => 'Удаление пользователя',
     'user_deleted' => 'Пользователь удален',
     'user_delete_error' => 'Ошибка удаления пользователя',
+    'user_add_error_empty_password' => 'Пароль не может быть пустым',
 
 
 ];
