@@ -96,25 +96,37 @@ class LazyFetch {
             },
             body: data
         })
-            .then((response) => response.json())
-            .then((response) => {
-                if (response?.status) {
-                    if (response?.html) {
-                        target.insertAdjacentHTML(`beforebegin`, response.html)
+            .then((response) =>
+                response
+                    .json()
+                    .then((json) => {
+                        if (json?.status) {
+                            if (json?.html) {
+                                target.insertAdjacentHTML(
+                                    `beforebegin`,
+                                    json.html
+                                )
 
-                        this.page = response.data.page
+                                this.page = json.page
 
-                        this.container.appendChild(target)
-                    }
+                                this.container.appendChild(target)
+                            }
 
-                    if (response?.last) target.remove()
+                            if (json.last == json.next) target.remove()
 
-                    this.callback()
-                } else {
-                    console.error('LazyFetch:', response?.message)
-                }
-            })
+                            this.callback()
+                        } else {
+                            alert(error)
+                            console.error('LazyFetch:', json?.message)
+                        }
+                    })
+                    .catch((error) => {
+                        alert(error)
+                        console.error('LazyFetch:', error)
+                    })
+            )
             .catch((error) => {
+                alert(error)
                 console.error('LazyFetch:', error)
             })
     }

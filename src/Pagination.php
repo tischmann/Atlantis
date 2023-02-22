@@ -11,7 +11,7 @@ namespace Tischmann\Atlantis;
  */
 class Pagination
 {
-    public const DEFAULT_LIMIT = 12;
+    public const DEFAULT_LIMIT = 10;
 
     public int $pages_limit = 3; // Количество страниц слева и справа от текущей
 

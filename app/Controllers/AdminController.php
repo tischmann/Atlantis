@@ -48,6 +48,8 @@ class AdminController extends Controller
     {
         $this->checkAdmin();
 
+        $query = User::query()->limit(Pagination::DEFAULT_LIMIT);
+
         View::send(
             'admin/users',
             [
@@ -60,7 +62,7 @@ class AdminController extends Controller
                         label: Locale::get('users')
                     ),
                 ],
-                'users' => User::fill(User::query()),
+                'users' => User::fill($query),
             ]
         );
     }
@@ -259,6 +261,63 @@ class AdminController extends Controller
             $request,
             'admin/articles-item'
         );
+    }
+
+    /**
+     * Динамическая подгрузка статей в админпанели
+     */
+    public function fetchUsers(Request $request): void
+    {
+        $pagination = new Pagination();
+
+        $html = '';
+
+        $page = 1;
+
+        $total = 0;
+
+        $limit = intval($request->request('limit') ?? Pagination::DEFAULT_LIMIT);
+
+        $query = User::query();
+
+        $sort = $request->request('sort') ?: 'id';
+
+        $order = $request->request('order') ?: 'desc';
+
+        $query->order($sort, $order);
+
+        $total = $query->count();
+
+        if ($total > $limit) {
+            $page = intval($request->request('page') ?? 1);
+
+            $offset = ($page - 1) * $limit;
+
+            if ($limit) $query->limit($limit);
+
+            if ($offset) $query->offset($offset);
+
+            foreach (User::fill($query) as $user) {
+                $html .= Template::html(
+                    'admin/user-item',
+                    [
+                        'user' => $user,
+                    ]
+                );
+            }
+        }
+
+        $pagination = new Pagination(
+            total: $total,
+            page: $page,
+            limit: $limit
+        );
+
+        Response::json([
+            'status' => 1,
+            'html' => $html,
+            ...get_object_vars($pagination)
+        ]);
     }
 
     /**

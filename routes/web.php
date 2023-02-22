@@ -237,6 +237,13 @@ if (User::current()->isAdmin()) {
         action: 'add',
         method: 'PUT'
     ));
+
+    Router::add(new Route(
+        controller: new AdminController(),
+        path: 'fetch/admin/users',
+        action: 'fetchUsers',
+        method: 'POST'
+    ));
 }
 
 if (User::current()->exists()) {

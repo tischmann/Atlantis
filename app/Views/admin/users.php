@@ -8,13 +8,14 @@
         foreach ($users as $user) {
             Template::echo('admin/user-item', ['user' => $user]);
         }
+
+        Template::echo(
+            'admin/intersection-loader-target',
+            [
+                'url' => "/fetch/admin/users"
+            ]
+        );
         ?>
-        <div class="intersection-loader-target flex justify-center items-center" data-url="/fetch/admin/articles/{$category->id}" data-page="{{pagination_page}}" data-limit="{{pagination_limit}}" data-search="{{search_value}}" data-sort="{{sort_type}}" data-order="{{sort_order}}">
-            <div class="spinner-grow inline-block w-8 h-8 bg-sky-500 rounded-full opacity-0" role="status"></div>
-        </div>
     </div>
-    <a href="/{{env=APP_LOCALE}}/add/user" aria-label="{{lang=add}}" class="h-12 w-12 fixed flex 
-    items-center justify-center bottom-8 right-8 text-white text-xl
-    rounded-lg bg-pink-600 hover:bg-pink-700 shadow 
-    active:bg-pink-700 focus:bg-pink-700 transition-all ease-in-out"><i class="fas fa-plus"></i></a>
+    <?= Template::html('admin/add-button', ['href' => '/{{env=APP_LOCALE}}/add/user']) ?>
 </main>
