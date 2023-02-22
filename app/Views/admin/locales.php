@@ -9,7 +9,7 @@
             $count = count(Locale::getLocale($locale));
 
             echo <<<HTML
-            <a href="{{env=APP_LOCALE}}/edit/locale/{$locale}" title="{{lang=locale_{$locale}}}" aria-label="{{lang=locale_{$locale}}}" class="bg-sky-800 text-white shadow rounded-lg px-4 py-3 flex justify-between items-center gap-4 hover:bg-sky-700 text-xl font-medium transition-all ease-in-out">
+            <a href="/{{env=APP_LOCALE}}/locale/edit/{$locale}" title="{{lang=locale_{$locale}}}" aria-label="{{lang=locale_{$locale}}}" class="bg-sky-800 text-white shadow rounded-lg px-4 py-3 flex justify-between items-center gap-4 hover:bg-sky-700 text-xl font-medium transition-all ease-in-out">
                 <span class="truncate drop-shadow">{{lang=locale_{$locale}}}</span>
                 <span class="font-bold countup bg-sky-900 rounded-lg px-2">{$count}</span>
             </a>

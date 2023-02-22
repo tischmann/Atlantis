@@ -55,7 +55,7 @@ class AdminController extends Controller
             [
                 'breadcrumbs' => [
                     new Breadcrumb(
-                        url: '/admin',
+                        url: "/" . getenv('APP_LOCALE') . '/admin',
                         label: Locale::get('dashboard')
                     ),
                     new Breadcrumb(
@@ -90,15 +90,15 @@ class AdminController extends Controller
     {
         $this->checkAdmin();
 
-        $title = Locale::get("locale_" . $locale ? $locale : 'new');
+        $title = Locale::get("locale_" . ($locale ? $locale : 'new'));
 
         $breadcrumbs = [
             new Breadcrumb(
-                url: '/admin',
+                url: "/" . getenv('APP_LOCALE') . '/admin',
                 label: Locale::get('dashboard')
             ),
             new Breadcrumb(
-                url: '/admin/locales',
+                url: "/" . getenv('APP_LOCALE') .  '/admin/locales',
                 label: Locale::get('locales')
             ),
             new Breadcrumb($title)
@@ -111,6 +111,8 @@ class AdminController extends Controller
             [
                 'breadcrumbs' => $breadcrumbs,
                 'locale' => $locale,
+                'title' => $locale ? $title : '',
+                'strings' => $locale ? Locale::getLocale($locale) : ['' => ''],
 
             ]
         );
@@ -127,14 +129,14 @@ class AdminController extends Controller
     {
         $this->checkAdmin();
 
+        CSRF::verify($request);
+
         $request->validate([
             'title' => ['required', 'string'],
             'code' => ['required', 'string'],
             'keys' => ['required', 'array'],
             'values' => ['required', 'array'],
         ]);
-
-        CSRF::verify($request);
 
         $code = $request->request('code');
 
@@ -154,7 +156,7 @@ class AdminController extends Controller
         $file .= PHP_EOL;
 
         foreach ($keys as $key => $value) {
-            if (empty($key)) continue;
+            if (empty($value)) continue;
 
             $file .= <<<EOL
                 '{$value}' => '{$values[$key]}',
@@ -179,10 +181,133 @@ class AdminController extends Controller
         Response::redirect(
             '/' . getenv('APP_LOCALE') . '/admin/locales',
             new Alert(
-                status: $result ? 1 : 0,
+                status: $result ? -1 : 0,
                 message: Locale::get($result ? 'locale_saved' : 'locale_save_error')
             )
         );
+    }
+
+    /**
+     * Вывод формы редактирования локали
+     *
+     * @param Request $request
+     * 
+     * @throws Exception
+     */
+    public function getLocale(Request $request)
+    {
+        $this->checkAdmin();
+
+        $request->validate([
+            'code' => ['required', 'string'],
+        ]);
+
+        $code = $request->route('code');
+
+        if (!Locale::exists($code)) {
+            throw new Exception(Locale::get('locale_not_found'));
+        }
+
+        $this->getLocalesEditor($code);
+    }
+
+    /**
+     * Редактирование локали
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function updateLocale(Request $request)
+    {
+        $this->checkAdmin();
+
+        CSRF::verify($request);
+
+        $request->validate([
+            'keys' => ['required', 'array'],
+            'values' => ['required', 'array'],
+        ]);
+
+        $code = $request->route('code');
+
+        if (!Locale::exists($code)) {
+            throw new Exception(Locale::get('locale_not_found'));
+        }
+
+        $keys = $request->request('keys');
+
+        $values = $request->request('values');
+
+        $file = <<<EOL
+        <?php
+
+        return [
+        EOL;
+
+        $file .= PHP_EOL;
+
+        foreach ($keys as $key => $value) {
+            if (empty($value)) continue;
+
+            $file .= <<<EOL
+                '{$value}' => '{$values[$key]}',
+            EOL;
+
+            $file .= PHP_EOL;
+        }
+
+        $file .= <<<EOL
+        ];
+        EOL;
+
+        if (!is_dir(getenv('APP_ROOT') . '/lang')) {
+            mkdir(getenv('APP_ROOT') . '/lang', 0755, true);
+        }
+
+        $result = file_put_contents(
+            getenv('APP_ROOT') . '/lang/' . $code . '.php',
+            $file
+        );
+
+        Response::redirect(
+            '/' . getenv('APP_LOCALE') . '/admin/locales',
+            new Alert(
+                status: $result ? -1 : 0,
+                message: Locale::get($result ? 'locale_saved' : 'locale_save_error')
+            )
+        );
+    }
+
+    /**
+     * Удаление локали
+     *
+     * @param Request $request
+     *
+     */
+    public function deleteLocale(Request $request)
+    {
+        $this->checkAdmin();
+
+        CSRF::verify($request);
+
+        $request->validate([
+            'code' => ['required', 'string'],
+        ]);
+
+        $code = $request->route('code');
+
+        if (!Locale::exists($code)) {
+            throw new Exception(Locale::get('locale_not_found'));
+        }
+
+        $result = unlink(getenv('APP_ROOT') . '/lang/' . $code . '.php');
+
+        Response::send(new Alert(
+            status: intval($result),
+            message: $result
+                ? Locale::get('locale_deleted')
+                : Locale::get('locale_delete_error')
+        ));
     }
 
     /**

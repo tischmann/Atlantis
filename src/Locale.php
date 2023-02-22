@@ -85,6 +85,8 @@ final class Locale
             if (is_array($array)) $strings = array_merge($array, $strings);
         }
 
+        ksort($strings, SORT_STRING);
+
         return $strings;
     }
 

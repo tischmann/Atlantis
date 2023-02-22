@@ -94,21 +94,21 @@ if (User::current()->isAdmin()) {
 
     Router::add(new Route(
         controller: new AdminController(),
-        path: 'locale/edit/{id}',
+        path: 'locale/edit/{code}',
         action: 'getLocale',
         method: 'GET'
     ));
 
     Router::add(new Route(
         controller: new AdminController(),
-        path: 'locale/edit/{id}',
+        path: 'locale/edit/{code}',
         action: 'updateLocale',
         method: 'POST'
     ));
 
     Router::add(new Route(
         controller: new AdminController(),
-        path: 'locale/delete/{id}',
+        path: 'locale/delete/{code}',
         action: 'deleteLocale',
         method: 'DELETE'
     ));

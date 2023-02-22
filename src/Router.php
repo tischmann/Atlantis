@@ -85,6 +85,6 @@ final class Router
             }
         }
 
-        throw new Exception("Route not found", 404);
+        throw new Exception("Route not found " . implode("/", $this->request->uri), 404);
     }
 }

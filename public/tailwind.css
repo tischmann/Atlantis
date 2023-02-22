@@ -2662,6 +2662,11 @@ video {
   color: rgb(34 197 94 / var(--tw-text-opacity));
 }
 
+.text-pink-600 {
+  --tw-text-opacity: 1;
+  color: rgb(219 39 119 / var(--tw-text-opacity));
+}
+
 .underline {
   text-decoration-line: underline;
 }
@@ -3363,6 +3368,11 @@ video {
 .hover\:text-sky-600:hover {
   --tw-text-opacity: 1;
   color: rgb(2 132 199 / var(--tw-text-opacity));
+}
+
+.hover\:text-pink-500:hover {
+  --tw-text-opacity: 1;
+  color: rgb(236 72 153 / var(--tw-text-opacity));
 }
 
 .hover\:opacity-100:hover {
@@ -4462,6 +4472,16 @@ video {
   .peer:focus ~ .dark\:peer-focus\:text-neutral-200 {
     --tw-text-opacity: 1;
     color: rgb(229 229 229 / var(--tw-text-opacity));
+  }
+
+  .peer:focus ~ .dark\:peer-focus\:text-sky-500 {
+    --tw-text-opacity: 1;
+    color: rgb(14 165 233 / var(--tw-text-opacity));
+  }
+
+  .peer:focus ~ .dark\:peer-focus\:text-primary {
+    --tw-text-opacity: 1;
+    color: rgb(59 113 202 / var(--tw-text-opacity));
   }
 
   .dark\:data-\[te-input-disabled\]\:bg-zinc-600[data-te-input-disabled] {
