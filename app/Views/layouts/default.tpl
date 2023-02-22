@@ -36,7 +36,7 @@
     </style>
 </head>
 
-<body class="bg-white dark:bg-gray-800">
+<body class="bg-white dark:bg-gray-800 text-gray-800 dark:text-white">
     {{body}}
     {{alert}}
     <script src="/tailwind.js" nonce="{{nonce}}" async></script>

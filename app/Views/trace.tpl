@@ -1,4 +1,4 @@
-<div class="m-4 text-gray-800">
+<div class="m-4 text-gray-800 dark:text-white">
     <div class="col">
         <table class="border border-gray-300">
             <thead>
