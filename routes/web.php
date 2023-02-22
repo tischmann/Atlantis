@@ -60,6 +60,59 @@ if (User::current()->isAdmin()) {
         title: Locale::get('dashboard')
     ));
 
+    // Локали
+
+    Router::add(new Route(
+        controller: new AdminController(),
+        path: 'admin/locales',
+        action: 'getLocales',
+        method: 'GET',
+        title: Locale::get('locales')
+    ));
+
+    Router::add(new Route(
+        controller: new AdminController(),
+        path: 'add/locale',
+        action: 'newLocale',
+        method: 'GET',
+        title: Locale::get('locale_new')
+    ));
+
+    Router::add(new Route(
+        controller: new AdminController(),
+        path: 'add/locale',
+        action: 'addLocale',
+        method: 'POST'
+    ));
+
+    Router::add(new Route(
+        controller: new CategoriesController(),
+        path: 'add/locale',
+        action: 'addLocale',
+        method: 'PUT'
+    ));
+
+    Router::add(new Route(
+        controller: new AdminController(),
+        path: 'locale/edit/{id}',
+        action: 'getLocale',
+        method: 'GET'
+    ));
+
+    Router::add(new Route(
+        controller: new AdminController(),
+        path: 'locale/edit/{id}',
+        action: 'updateLocale',
+        method: 'POST'
+    ));
+
+    Router::add(new Route(
+        controller: new AdminController(),
+        path: 'locale/delete/{id}',
+        action: 'deleteLocale',
+        method: 'DELETE'
+    ));
+
     // Категории
 
     Router::add(new Route(

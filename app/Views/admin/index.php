@@ -2,6 +2,8 @@
 
 use App\Models\{Article, Category, User};
 
+use Tischmann\Atlantis\{Locale};
+
 include __DIR__ . "/../header.php"
 
 ?>
@@ -15,6 +17,12 @@ include __DIR__ . "/../header.php"
                 'label' => '{{lang=users}}',
                 'count' => User::query()->count(),
                 'href' => '/{{env=APP_LOCALE}}/admin/users'
+            ],
+            [
+                'icon' => 'fas fa-earth-americas',
+                'label' => '{{lang=locales}}',
+                'count' => count(Locale::available()),
+                'href' => '/{{env=APP_LOCALE}}/admin/locales'
             ],
             [
                 'icon' => 'fas fa-sitemap',

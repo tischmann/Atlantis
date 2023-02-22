@@ -13,8 +13,10 @@ use App\Models\{
 use Exception;
 
 use Tischmann\Atlantis\{
+    Alert,
     Breadcrumb,
     Controller,
+    CSRF,
     Locale,
     Pagination,
     Request,
@@ -38,6 +40,148 @@ class AdminController extends Controller
             [
                 'breadcrumbs' => [new Breadcrumb(Locale::get('dashboard'))],
             ]
+        );
+    }
+
+    /**
+     * Вывод списка локалей в админпанели
+     */
+    public function getLocales(Request $request): void
+    {
+        $this->checkAdmin();
+
+        View::send(
+            'admin/locales',
+            [
+                'breadcrumbs' => [
+                    new Breadcrumb(
+                        url: '/admin',
+                        label: Locale::get('dashboard')
+                    ),
+                    new Breadcrumb(
+                        label: Locale::get('locales')
+                    ),
+                ],
+                'locales' => Locale::available(),
+            ]
+        );
+    }
+
+    /**
+     * Форма добавления локали
+     *
+     * @param Request $request
+     * 
+     * @return void
+     */
+    public function newLocale(Request $request)
+    {
+        $this->checkAdmin();
+
+        $this->getLocalesEditor();
+    }
+
+    /**
+     * Вывод формы добавления/редактирования локали
+     * 
+     * @param Category $category Категория
+     */
+    public function getLocalesEditor(string $locale = '')
+    {
+        $this->checkAdmin();
+
+        $title = Locale::get("locale_" . $locale ? $locale : 'new');
+
+        $breadcrumbs = [
+            new Breadcrumb(
+                url: '/admin',
+                label: Locale::get('dashboard')
+            ),
+            new Breadcrumb(
+                url: '/admin/locales',
+                label: Locale::get('locales')
+            ),
+            new Breadcrumb($title)
+        ];
+
+        static::setTitle($title);
+
+        View::send(
+            'admin/locale',
+            [
+                'breadcrumbs' => $breadcrumbs,
+                'locale' => $locale,
+
+            ]
+        );
+    }
+
+    /**
+     * Добавление локали
+     * 
+     * @param Request $request Запрос
+     * 
+     * @throws Exception
+     */
+    public function addLocale(Request $request)
+    {
+        $this->checkAdmin();
+
+        $request->validate([
+            'title' => ['required', 'string'],
+            'code' => ['required', 'string'],
+            'keys' => ['required', 'array'],
+            'values' => ['required', 'array'],
+        ]);
+
+        CSRF::verify($request);
+
+        $code = $request->request('code');
+
+        $title = $request->request('title');
+
+        $keys = $request->request('keys');
+
+        $values = $request->request('values');
+
+        $file = <<<EOL
+        <?php
+
+        return [
+            'locale_{$code}' => '$title',
+        EOL;
+
+        $file .= PHP_EOL;
+
+        foreach ($keys as $key => $value) {
+            if (empty($key)) continue;
+
+            $file .= <<<EOL
+                '{$value}' => '{$values[$key]}',
+            EOL;
+
+            $file .= PHP_EOL;
+        }
+
+        $file .= <<<EOL
+        ];
+        EOL;
+
+        if (!is_dir(getenv('APP_ROOT') . '/lang')) {
+            mkdir(getenv('APP_ROOT') . '/lang', 0755, true);
+        }
+
+        $result = file_put_contents(
+            getenv('APP_ROOT') . '/lang/' . $code . '.php',
+            $file
+        );
+
+        Response::redirect(
+            '/' . getenv('APP_LOCALE') . '/admin/locales',
+            new Alert(
+                status: $result ? 1 : 0,
+                message: Locale::get($result ? 'locale_saved' : 'locale_save_error')
+            )
         );
     }
 

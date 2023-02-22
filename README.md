@@ -247,4 +247,6 @@ new Template(
 ```bash
 sudo chown -R www-data:www-data /path/to/public
 sudo chmod -R g+rw /path/to/public
+sudo chown -R www-data:www-data /path/to/lang
+sudo chmod -R g+rw /path/to/lang
 ```

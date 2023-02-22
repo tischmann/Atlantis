@@ -3,6 +3,7 @@
 return [
     // Локализации
     'locale_ru' => 'Русский',
+    'locale_en' => 'Английский',
     // Общие
     'home' => 'Главная',
     'add' => 'Добавить',
@@ -33,6 +34,18 @@ return [
     'articles' => 'Статьи',
     'categories' => 'Категории',
     'category' => 'Категория',
+    // Локали
+    'locales' => 'Языки',
+    'locale_code' => 'Код',
+    'locale_title' => 'Название',
+    'locale_strings' => 'Строки',
+    'locale_key' => 'Ключ',
+    'locale_value' => 'Значение',
+    'locale_new' => 'Новый язык',
+    'locale_edit' => 'Редактирование языка',
+    'locale_delete_confirm' => 'Вы действительно хотите удалить язык',
+    'locale_saved' => 'Язык сохранен',
+    'locale_save_error' => 'Ошибка сохранения языка',
     // Категории
     'category_new' => 'Новая категория',
     'category_edit' => 'Редактирование категории',
