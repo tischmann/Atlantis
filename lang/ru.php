@@ -97,5 +97,18 @@ return [
     'user_login' => 'Логин',
     'user_password' => 'Пароль',
     'user_delete_confirm' => 'Вы действительно хотите удалить пользователя',
+    'user_avatar' => 'Аватар',
+    'user_role_admin' => 'Администратор',
+    'user_role_user' => 'Пользователь',
+    'user_role_guest' => 'Гость',
+    'user_role' => 'Роль',
+    'user_saved' => 'Пользователь сохранен',
+    'user_save_error' => 'Ошибка сохранения пользователя',
+    'user_added' => 'Пользователь добавлен',
+    'user_add_error' => 'Ошибка добавления пользователя',
+    'user_delete_title' => 'Удаление пользователя',
+    'user_deleted' => 'Пользователь удален',
+    'user_delete_error' => 'Ошибка удаления пользователя',
+
 
 ];

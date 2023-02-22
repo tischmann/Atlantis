@@ -11,6 +11,7 @@ use Exception;
 use Tischmann\Atlantis\{
     BeforeValidException,
     Cookie,
+    Facade,
     JWT,
     Migration,
     Model,
@@ -43,8 +44,9 @@ class User extends Model
     public function __construct(
         public string $login = '',
         public string $password = '',
-        public string $role = '',
-        public string $refresh_token = '',
+        public ?string $role = null,
+        public ?string $avatar = null,
+        public ?string $refresh_token = null,
     ) {
         parent::__construct();
 

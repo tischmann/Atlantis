@@ -38,6 +38,12 @@ class Users extends Migration
                 index: true,
                 description: 'Роль',
             ),
+            new Column(
+                name: 'avatar',
+                type: 'varchar',
+                default: null,
+                description: 'Аватар',
+            ),
         ]);
     }
 
