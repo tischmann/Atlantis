@@ -553,8 +553,7 @@ class ArticlesController extends Controller
         Response::json([
             'status' => 1,
             'html' => $html,
-            'page' => $pagination->page,
-            'last' => $pagination->last,
+            ...get_object_vars($pagination)
         ]);
     }
 
