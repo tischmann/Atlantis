@@ -44,6 +44,18 @@ class Users extends Migration
                 default: null,
                 description: 'Аватар',
             ),
+            new Column(
+                name: 'remarks',
+                type: 'longtext',
+                default: null,
+                description: 'Примечания',
+            ),
+            new Column(
+                name: 'status',
+                type: 'tinyint',
+                default: '0',
+                description: 'Статус',
+            ),
         ]);
     }
 

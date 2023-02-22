@@ -46,6 +46,8 @@ class User extends Model
         public string $password = '',
         public ?string $role = null,
         public ?string $avatar = null,
+        public ?string $remarks = null,
+        public bool $status = false,
         public ?string $refresh_token = null,
     ) {
         parent::__construct();

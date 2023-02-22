@@ -7,7 +7,7 @@
         <div class="mb-4">{{message}}</div>
         <div class="mb-4">{{html}}</div>
         <button value="default"
-            class="inline-block w-full px-6 py-2.5 bg-sky-500 text-white font-medium text-xs leading-tight uppercase rounded-lg shadow-md hover:bg-sky-700 hover:shadow-lg focus:bg-sky-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-sky-800 active:shadow-lg transition duration-150 ease-in-out">OK</button>
+            class="inline-block w-full px-6 py-2.5 bg-sky-800 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-sky-700 hover:shadow-lg focus:bg-sky-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-sky-700 active:shadow-lg transition duration-150 ease-in-out">OK</button>
     </form>
 </dialog>
 <script nonce="{{nonce}}">

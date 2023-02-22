@@ -202,6 +202,20 @@ if (User::current()->isAdmin()) {
         action: 'editUser',
         method: 'GET'
     ));
+
+    Router::add(new Route(
+        controller: new UsersController(),
+        path: 'edit/user/{id}',
+        action: 'update',
+        method: 'POST'
+    ));
+
+    Router::add(new Route(
+        controller: new UsersController(),
+        path: 'upload/user/avatar/{id}',
+        action: 'uploadAvatar',
+        method: 'POST'
+    ));
 }
 
 if (User::current()->exists()) {

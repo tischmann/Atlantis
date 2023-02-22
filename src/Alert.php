@@ -27,7 +27,7 @@ class Alert
         $template = new Template(
             template: 'alert',
             args: [
-                'title' => getenv('APP_TITLE'),
+                'title' => Locale::get('warning'),
                 'message' => $this->message,
                 'html' => $this->html
             ]

@@ -76,12 +76,17 @@ class Dialog {
         this.buttons.forEach((button) => {
             const buttonElement = document.createElement('button')
 
+            buttonElement.type = 'button'
+
+            buttonElement.className =
+                button?.class ||
+                'bg-sky-600 text-white hover:bg-sky-500 focus:bg-sky-500 active:bg-sky-500'
+
             buttonElement.classList.add(
                 'inline-block',
                 'w-full',
                 'px-6',
                 'py-2.5',
-                'bg-sky-500',
                 'text-white',
                 'font-medium',
                 'text-xs',
@@ -89,13 +94,10 @@ class Dialog {
                 'uppercase',
                 'rounded',
                 'shadow-md',
-                'hover:bg-pink-700',
                 'hover:shadow-lg',
-                'focus:bg-pink-700',
                 'focus:shadow-lg',
                 'focus:outline-none',
                 'focus:ring-0',
-                'active:bg-pink-800',
                 'active:shadow-lg',
                 'transition',
                 'duration-150',

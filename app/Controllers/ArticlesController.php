@@ -348,6 +348,7 @@ class ArticlesController extends Controller
         $location = $baseurl . "/" . $filetowrite;
 
         Response::json([
+            'status' => 1,
             'csrf' => $csrf_token,
             'image' => basename($location),
             'location' => $location
