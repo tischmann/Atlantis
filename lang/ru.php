@@ -79,6 +79,7 @@ return [
     'locale_title' => 'Название',
     'locale_value' => 'Значение',
     'locales' => 'Языки',
+    'method_not_found' => 'Метод не найден',
     'more' => 'Подробнее',
     'no' => 'Нет',
     'rating_invalid' => 'Неверный рейтинг',
@@ -126,5 +127,5 @@ return [
     'uuid_is_required' => 'Отсутсвует UUID',
     'warning' => 'Внимание',
     'yes' => 'Да',
-    'method_not_found' => 'Метод не найден',
+    'image_resize_error' => 'Ошибка обработки изображения',
 ];

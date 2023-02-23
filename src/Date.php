@@ -15,7 +15,7 @@ use IntlDateFormatter;
  * 
  * @author Yuriy Stolov <yuriystolov@gmail.com>
  */
-class DateTimeUtilites
+class Date
 {
     /**
      * Возвращает год в виде числа

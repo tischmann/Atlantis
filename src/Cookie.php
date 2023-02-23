@@ -101,7 +101,7 @@ final class Cookie
      * @param string $value Переменная
      * @return mixed Отфильтрованная переменная
      */
-    private static function sanitize(mixed $value): mixed
+    public static function sanitize(mixed $value): mixed
     {
         return match (gettype($value)) {
             'integer' => intval(filter_var($value, 519)),
