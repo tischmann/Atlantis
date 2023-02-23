@@ -215,7 +215,8 @@ if (User::current()->isAdmin()) {
         path: 'categories/order',
         action: 'order',
         method: 'POST',
-        type: 'form',
+        type: 'json',
+        accept: 'json'
     ));
 
     Router::add(new Route(

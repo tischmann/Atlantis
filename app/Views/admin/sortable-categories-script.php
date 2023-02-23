@@ -16,10 +16,10 @@
 
                     const href = `/{{env=APP_LOCALE}}/admin/categories`
 
-                    fetch(`/categories/order`, {
+                    fetch(`/{{env=APP_LOCALE}}/categories/order`, {
                         method: 'POST',
                         headers: {
-                            'X-Requested-With': `XMLHttpRequest`,
+                            'Content-Type': 'application/json',
                             'X-Csrf-Token': csrf,
                             'Accept': 'application/json',
                         },

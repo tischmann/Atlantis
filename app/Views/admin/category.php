@@ -130,7 +130,6 @@
                                     fetch(`/category/delete/{$category->id}`, {
                                         method: 'DELETE',
                                         headers: {
-                                            'X-Requested-With': `XMLHttpRequest`,
                                             'X-Csrf-Token': `{{csrf-token}}`,
                                             'Accept': 'application/json',                    
                                         },
