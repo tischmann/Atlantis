@@ -1103,6 +1103,10 @@ video {
   height: 3rem;
 }
 
+.h-16 {
+  height: 4rem;
+}
+
 .max-h-\[calc\(100\%-64px\)\] {
   max-height: calc(100% - 64px);
 }
@@ -1237,6 +1241,10 @@ video {
 
 .w-12 {
   width: 3rem;
+}
+
+.w-16 {
+  width: 4rem;
 }
 
 .min-w-\[310px\] {
@@ -2358,6 +2366,10 @@ video {
   font-size: 64px;
 }
 
+.text-\[32px\] {
+  font-size: 32px;
+}
+
 .font-normal {
   font-weight: 400;
 }
@@ -2652,6 +2664,11 @@ video {
   color: rgb(7 89 133 / var(--tw-text-opacity));
 }
 
+.text-pink-600 {
+  --tw-text-opacity: 1;
+  color: rgb(219 39 119 / var(--tw-text-opacity));
+}
+
 .text-neutral-700 {
   --tw-text-opacity: 1;
   color: rgb(64 64 64 / var(--tw-text-opacity));
@@ -2660,11 +2677,6 @@ video {
 .text-green-500 {
   --tw-text-opacity: 1;
   color: rgb(34 197 94 / var(--tw-text-opacity));
-}
-
-.text-pink-600 {
-  --tw-text-opacity: 1;
-  color: rgb(219 39 119 / var(--tw-text-opacity));
 }
 
 .underline {
@@ -3365,14 +3377,14 @@ video {
   color: rgb(29 78 216 / var(--tw-text-opacity));
 }
 
-.hover\:text-sky-600:hover {
-  --tw-text-opacity: 1;
-  color: rgb(2 132 199 / var(--tw-text-opacity));
-}
-
 .hover\:text-pink-500:hover {
   --tw-text-opacity: 1;
   color: rgb(236 72 153 / var(--tw-text-opacity));
+}
+
+.hover\:text-sky-600:hover {
+  --tw-text-opacity: 1;
+  color: rgb(2 132 199 / var(--tw-text-opacity));
 }
 
 .hover\:opacity-100:hover {
@@ -4474,16 +4486,6 @@ video {
     color: rgb(229 229 229 / var(--tw-text-opacity));
   }
 
-  .peer:focus ~ .dark\:peer-focus\:text-sky-500 {
-    --tw-text-opacity: 1;
-    color: rgb(14 165 233 / var(--tw-text-opacity));
-  }
-
-  .peer:focus ~ .dark\:peer-focus\:text-primary {
-    --tw-text-opacity: 1;
-    color: rgb(59 113 202 / var(--tw-text-opacity));
-  }
-
   .dark\:data-\[te-input-disabled\]\:bg-zinc-600[data-te-input-disabled] {
     --tw-bg-opacity: 1;
     background-color: rgb(82 82 91 / var(--tw-bg-opacity));
@@ -4668,16 +4670,8 @@ video {
     margin-right: 2rem;
   }
 
-  .md\:h-24 {
-    height: 6rem;
-  }
-
   .md\:w-auto {
     width: auto;
-  }
-
-  .md\:w-24 {
-    width: 6rem;
   }
 
   .md\:max-w-lg {
@@ -4696,21 +4690,16 @@ video {
     flex-direction: row;
   }
 
+  .md\:flex-wrap {
+    flex-wrap: wrap;
+  }
+
   .md\:justify-end {
     justify-content: flex-end;
   }
 
   .md\:gap-4 {
     gap: 1rem;
-  }
-
-  .md\:rounded-none {
-    border-radius: 0px;
-  }
-
-  .md\:rounded-l-lg {
-    border-top-left-radius: 0.5rem;
-    border-bottom-left-radius: 0.5rem;
   }
 }
 

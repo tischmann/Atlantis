@@ -40,6 +40,11 @@ final class Locale
         return self::$locales[$locale];
     }
 
+    public static function clearCache(): void
+    {
+        self::$locales = [];
+    }
+
     /**
      * Возвращает массив доступных локалей
      *

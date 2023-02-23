@@ -269,6 +269,8 @@ class AdminController extends Controller
             $file
         );
 
+        if ($result) Locale::clearCache();
+
         Response::redirect(
             '/' . getenv('APP_LOCALE') . '/admin/locales',
             new Alert(
