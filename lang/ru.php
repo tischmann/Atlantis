@@ -59,7 +59,7 @@ return [
     'dashboard_total_users' => 'Пользователей',
     'delete' => 'Удалить',
     'delete_image' => 'Удалить изображение',
-    'edit' => 'Редактировать',
+    'edit' => 'Изменить',
     'error' => 'Ошибка',
     'home' => 'Главная',
     'image_resize_error' => 'Ошибка обработки изображения',
@@ -88,6 +88,7 @@ return [
     'route_not_found' => 'Маршрут не найден',
     'save' => 'Сохранить',
     'search' => 'Поиск',
+    'show' => 'Просмотр',
     'signin_error' => 'Неверный логин или пароль',
     'signin_login' => 'Логин',
     'signin_password' => 'Пароль',
@@ -132,5 +133,4 @@ return [
     'uuid_is_required' => 'Отсутсвует UUID',
     'warning' => 'Внимание',
     'yes' => 'Да',
-    'show' => 'Просмотр',
 ];

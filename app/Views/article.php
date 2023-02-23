@@ -5,6 +5,7 @@
             <?php
 
             use App\Models\User;
+            use Tischmann\Atlantis\Date;
 
             if (User::current()->isAdmin()) {
                 echo <<<HTML
@@ -16,7 +17,7 @@
             ?>
         </div>
         <div class="text-gray-500 flex items-center gap-4 text-sm">
-            <span><?= $article->updated_at->format('Y-m-d H:i') ?></span>
+            <span><?= Date::localeFormat($article->updated_at, getenv('APP_LOCALE'), 'd MMMM y, kk:mm')  ?></span>
             <div><i class="fas fa-eye mr-2"></i><?= $article->views ?></div>
             <div>
                 <form class="rating" data-id="<?= $article->id ?>" data-rating="<?= $article->rating ?>"></form>
