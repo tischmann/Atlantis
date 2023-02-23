@@ -23,7 +23,9 @@ class AdminController extends Controller
         View::send(
             'admin/index',
             [
-                'breadcrumbs' => [new Breadcrumb(Locale::get('dashboard'))],
+                'breadcrumbs' => [
+                    new Breadcrumb(Locale::get('dashboard'))
+                ],
             ]
         );
     }
