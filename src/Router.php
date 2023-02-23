@@ -37,8 +37,11 @@ final class Router
     public static function add(Route $route): void
     {
         static::$routes[$route->method] ??= [];
+
         static::$routes[$route->method][$route->accept] ??= [];
+
         static::$routes[$route->method][$route->accept][$route->type] ??= [];
+
         static::$routes[$route->method][$route->accept][$route->type][] = $route;
     }
 
@@ -50,7 +53,11 @@ final class Router
      */
     public function resolve(): mixed
     {
-        $routes = static::$routes[$this->request->method][$this->request->accept][$this->request->type] ?? [];
+        $routes = static::$routes[$this->request->method] ?? [];
+
+        $routes = $routes[$this->request->accept] ?? [];
+
+        $routes = $routes[$this->request->type] ?? [];
 
         foreach ($routes as $route) {
             assert($route instanceof Route);
@@ -66,9 +73,8 @@ final class Router
             }
         }
 
-        throw new Exception(
-            Locale::get('route_not_found') . ": " . implode("/", $this->request->uri),
-            404
-        );
+        $route = '"' . implode("/", $this->request->uri) . '"';
+
+        throw new Exception(Locale::get('route_not_found') . ": {$route}", 404);
     }
 }
