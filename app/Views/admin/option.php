@@ -1,0 +1,1 @@
+<option value="{{value}}" <?= $selected ? 'selected' : '' ?> title="{{title}}">{{label}}</option>
