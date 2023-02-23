@@ -7,6 +7,7 @@ use App\Controllers\{
     ArticlesController,
     CategoriesController,
     IndexController,
+    LocalesController,
     UsersController
 };
 
@@ -63,53 +64,53 @@ if (User::current()->isAdmin()) {
     // Локали
 
     Router::add(new Route(
-        controller: new AdminController(),
+        controller: new LocalesController(),
         path: 'admin/locales',
-        action: 'getLocales',
+        action: 'index',
         method: 'GET',
         title: Locale::get('locales')
     ));
 
     Router::add(new Route(
-        controller: new AdminController(),
+        controller: new LocalesController(),
         path: 'add/locale',
-        action: 'newLocale',
+        action: 'new',
         method: 'GET',
         title: Locale::get('locale_new')
     ));
 
     Router::add(new Route(
-        controller: new AdminController(),
+        controller: new LocalesController(),
         path: 'add/locale',
-        action: 'addLocale',
+        action: 'add',
         method: 'POST'
     ));
 
     Router::add(new Route(
-        controller: new CategoriesController(),
+        controller: new LocalesController(),
         path: 'add/locale',
-        action: 'addLocale',
+        action: 'add',
         method: 'PUT'
     ));
 
     Router::add(new Route(
-        controller: new AdminController(),
+        controller: new LocalesController(),
         path: 'locale/edit/{code}',
-        action: 'getLocale',
+        action: 'get',
         method: 'GET'
     ));
 
     Router::add(new Route(
-        controller: new AdminController(),
+        controller: new LocalesController(),
         path: 'locale/edit/{code}',
-        action: 'updateLocale',
+        action: 'update',
         method: 'POST'
     ));
 
     Router::add(new Route(
-        controller: new AdminController(),
+        controller: new LocalesController(),
         path: 'locale/delete/{code}',
-        action: 'deleteLocale',
+        action: 'delete',
         method: 'DELETE'
     ));
 
