@@ -11,13 +11,13 @@ namespace Tischmann\Atlantis;
  */
 class Pagination
 {
-    public const DEFAULT_LIMIT = 10;
+    public const DEFAULT_LIMIT = 10; // Количество элементов на странице по умолчанию
 
-    public int $pages_limit = 3; // Количество страниц слева и справа от текущей
+    public const PAGES_LIMIT = 3; // Количество страниц слева и справа от текущей
 
-    public array $prev_pages = []; // Массив предыдущих страниц
+    public array $prev_pages = []; // Массив предыдущих от текущей страниц
 
-    public array $next_pages = []; // Массив следующих страниц
+    public array $next_pages = []; // Массив следующих от текущей страниц
     /**
      * Конструктор
      * 
@@ -206,7 +206,7 @@ class Pagination
         while (true) {
             if ($page < 1) break;
 
-            if (count($this->prev_pages) == $this->pages_limit) break;
+            if (count($this->prev_pages) === static::PAGES_LIMIT) break;
 
             $this->prev_pages[] = $page--;
         }
@@ -218,7 +218,7 @@ class Pagination
         while (true) {
             if ($page > $this->last) break;
 
-            if (count($this->next_pages) == $this->pages_limit) break;
+            if (count($this->next_pages) === static::PAGES_LIMIT) break;
 
             $this->next_pages[] = $page++;
         }
