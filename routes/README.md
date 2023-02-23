@@ -9,11 +9,11 @@
 ```php
 
 Router::add(new Route(
-    method: 'GET', // Метод запроса (GET, POST, PUT, DELETE, ANY) - по умолчанию 'ANY'
+    method: 'GET', // Метод запроса (GET, POST, PUT, DELETE)
     controller: new IndexController(), // Контроллер - по умолчанию Controller()
     action: 'index', // Метод контроллера - по умолчанию 'index'
-    accept: 'html', // Тип ответа (html, json, text, any) - по умолчанию 'any'
-    type: 'any', // Тип данных (html, json, text, form, any) - по умолчанию 'any'
+    accept: 'html', // Тип ответа (html, json, text) - по умолчанию 'html'
+    type: 'html', // Тип данных (html, json, text, form) - по умолчанию 'html'
     path: '', // Путь - по умолчанию ''
     title: 'Главная страница', // Название страницы (для тега <title>) - по умолчанию APP_TITLE
     args: [], // Аргументы запроса - по умолчанию []

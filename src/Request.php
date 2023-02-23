@@ -368,7 +368,7 @@ class Request
     /**
      * Возвращает тип данных для ответа
      * 
-     * @return string Тип данных для ответа (json, html, xml, text, any)
+     * @return string Тип данных для ответа (json, html, xml, text)
      */
     public static function accept(): string
     {
@@ -381,14 +381,14 @@ class Request
             str_contains($headers, 'text/html') => 'html',
             str_contains($headers, 'text/xml') => 'xml',
             str_contains($headers, 'text/plain') => 'text',
-            default => 'any',
+            default => 'html',
         };
     }
 
     /**
      * Возвращает тип данных запроса
      * 
-     * @return string Тип данных запроса (json, html, xml, text, form, any)
+     * @return string Тип данных запроса (json, html, xml, text, form)
      */
     public static function type(): string
     {
@@ -403,7 +403,7 @@ class Request
             str_contains($headers, 'text/plain') => 'text',
             str_contains($headers, 'application/x-www-form-urlencoded') => 'form',
             str_contains($headers, 'multipart/form-data') => 'form',
-            default => 'any',
+            default => 'html',
         };
     }
 }

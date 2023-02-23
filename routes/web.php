@@ -15,6 +15,8 @@ use App\Models\User;
 
 use Tischmann\Atlantis\{Locale, Router, Route};
 
+use function PHPSTORM_META\type;
+
 // Главная
 Router::add(new Route(
     controller: new IndexController(),
@@ -40,14 +42,18 @@ Router::add(new Route(
     controller: new ArticlesController(),
     path: 'fetch/articles/{category_id}',
     action: 'fetch',
-    method: 'POST'
+    method: 'POST',
+    type: 'json',
+    accept: 'json'
 ));
 
 Router::add(new Route(
     controller: new ArticlesController(),
     path: 'rating/{id}/{rating}',
     action: 'setRating',
-    method: 'POST'
+    method: 'POST',
+    type: 'json',
+    accept: 'json'
 ));
 
 // Админка
@@ -84,14 +90,17 @@ if (User::current()->isAdmin()) {
         controller: new UsersController(),
         path: 'edit/user/{id}',
         action: 'update',
-        method: 'POST'
+        method: 'POST',
+        type: 'form',
     ));
 
     Router::add(new Route(
         controller: new UsersController(),
         path: 'upload/user/avatar/{id}',
         action: 'uploadAvatar',
-        method: 'POST'
+        method: 'POST',
+        type: 'form',
+        accept: 'json'
     ));
 
     Router::add(new Route(
@@ -105,21 +114,33 @@ if (User::current()->isAdmin()) {
         controller: new UsersController(),
         path: 'add/user',
         action: 'add',
-        method: 'POST'
+        method: 'POST',
+        type: 'form',
     ));
 
     Router::add(new Route(
         controller: new UsersController(),
         path: 'add/user',
         action: 'add',
-        method: 'PUT'
+        method: 'PUT',
+        type: 'form',
+    ));
+
+    Router::add(new Route(
+        controller: new UsersController(),
+        path: 'user/delete/{id}',
+        action: 'delete',
+        method: 'DELETE',
+        accept: 'json'
     ));
 
     Router::add(new Route(
         controller: new UsersController(),
         path: 'fetch/admin/users',
         action: 'fetch',
-        method: 'POST'
+        method: 'POST',
+        type: 'json',
+        accept: 'json'
     ));
 
     // Локали
@@ -144,14 +165,16 @@ if (User::current()->isAdmin()) {
         controller: new LocalesController(),
         path: 'add/locale',
         action: 'add',
-        method: 'POST'
+        method: 'POST',
+        type: 'form',
     ));
 
     Router::add(new Route(
         controller: new LocalesController(),
         path: 'add/locale',
         action: 'add',
-        method: 'PUT'
+        method: 'PUT',
+        type: 'form',
     ));
 
     Router::add(new Route(
@@ -165,14 +188,16 @@ if (User::current()->isAdmin()) {
         controller: new LocalesController(),
         path: 'locale/edit/{code}',
         action: 'update',
-        method: 'POST'
+        method: 'POST',
+        type: 'form',
     ));
 
     Router::add(new Route(
         controller: new LocalesController(),
         path: 'locale/delete/{code}',
         action: 'delete',
-        method: 'DELETE'
+        method: 'DELETE',
+        accept: 'json'
     ));
 
     // Категории
@@ -189,7 +214,8 @@ if (User::current()->isAdmin()) {
         controller: new CategoriesController(),
         path: 'categories/order',
         action: 'order',
-        method: 'POST'
+        method: 'POST',
+        type: 'form',
     ));
 
     Router::add(new Route(
@@ -204,14 +230,16 @@ if (User::current()->isAdmin()) {
         controller: new CategoriesController(),
         path: 'add/category',
         action: 'add',
-        method: 'POST'
+        method: 'POST',
+        type: 'form',
     ));
 
     Router::add(new Route(
         controller: new CategoriesController(),
         path: 'add/category',
         action: 'add',
-        method: 'PUT'
+        method: 'PUT',
+        type: 'form',
     ));
 
     Router::add(new Route(
@@ -225,14 +253,16 @@ if (User::current()->isAdmin()) {
         controller: new CategoriesController(),
         path: 'category/edit/{id}',
         action: 'update',
-        method: 'POST'
+        method: 'POST',
+        type: 'form',
     ));
 
     Router::add(new Route(
         controller: new CategoriesController(),
         path: 'category/delete/{id}',
         action: 'delete',
-        method: 'DELETE'
+        method: 'DELETE',
+        accept: 'json'
     ));
 
     // Статьи
@@ -249,7 +279,9 @@ if (User::current()->isAdmin()) {
         controller: new ArticlesController(),
         path: 'upload/article/image/{id}',
         action: 'uploadImage',
-        method: 'POST'
+        method: 'POST',
+        type: 'form',
+        accept: 'json'
     ));
 
     Router::add(new Route(
@@ -263,7 +295,8 @@ if (User::current()->isAdmin()) {
         controller: new ArticlesController(),
         path: 'edit/article/{id}',
         action: 'update',
-        method: 'POST'
+        method: 'POST',
+        type: 'form',
     ));
 
     Router::add(new Route(
@@ -277,28 +310,33 @@ if (User::current()->isAdmin()) {
         controller: new ArticlesController(),
         path: 'add/article',
         action: 'add',
-        method: 'POST'
+        method: 'POST',
+        type: 'form',
     ));
 
     Router::add(new Route(
         controller: new ArticlesController(),
         path: 'add/article',
         action: 'add',
-        method: 'PUT'
+        method: 'PUT',
+        type: 'form',
     ));
 
     Router::add(new Route(
         controller: new ArticlesController(),
         path: 'article/delete/{id}',
         action: 'delete',
-        method: 'DELETE'
+        method: 'DELETE',
+        accept: 'json'
     ));
 
     Router::add(new Route(
         controller: new ArticlesController(),
         path: 'fetch/admin/articles/{category_id}',
         action: 'fetchAdmin',
-        method: 'POST'
+        method: 'POST',
+        type: 'json',
+        accept: 'json'
     ));
 }
 

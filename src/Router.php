@@ -46,30 +46,11 @@ final class Router
      * Разрешение маршрута
      *
      * @return mixed
-     * @throws \Exception
+     * @throws Exception
      */
     public function resolve(): mixed
     {
-        $routes = static::$routes[$this->request->method][$this->request->accept][$this->request->type] ?? null;
-
-        $routes ??= static::$routes[$this->request->method]['any'][$this->request->type] ?? null;
-
-        $routes ??= static::$routes[$this->request->method][$this->request->accept]['any'] ?? null;
-
-        $routes ??= static::$routes[$this->request->method]['any']['any'] ?? null;
-
-        $routes ??= static::$routes['ANY'][$this->request->accept][$this->request->type] ?? null;
-
-        $routes ??= static::$routes['ANY']['any'][$this->request->type] ?? null;
-
-        $routes ??= static::$routes['ANY'][$this->request->accept]['any'] ?? null;
-
-        $routes ??= [];
-
-        $routes = array_merge(
-            $routes,
-            static::$routes['ANY']['any']['any'] ?? []
-        );
+        $routes = static::$routes[$this->request->method][$this->request->accept][$this->request->type] ?? [];
 
         foreach ($routes as $route) {
             assert($route instanceof Route);
@@ -85,6 +66,9 @@ final class Router
             }
         }
 
-        throw new Exception("Route not found " . implode("/", $this->request->uri), 404);
+        throw new Exception(
+            Locale::get('route_not_found') . ": " . implode("/", $this->request->uri),
+            404
+        );
     }
 }

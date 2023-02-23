@@ -1267,13 +1267,13 @@ video {
   min-width: 0px;
 }
 
+.min-w-\[60px\] {
+  min-width: 60px;
+}
+
 .min-w-max {
   min-width: -moz-max-content;
   min-width: max-content;
-}
-
-.min-w-\[60px\] {
-  min-width: 60px;
 }
 
 .max-w-\[200px\] {
@@ -1584,10 +1584,6 @@ video {
 
 .items-center {
   align-items: center;
-}
-
-.justify-start {
-  justify-content: flex-start;
 }
 
 .justify-end {

@@ -405,6 +405,42 @@ class UsersController extends Controller
     }
 
     /**
+     * Удаление пользователя
+     *
+     * @param Request $request
+     *
+     */
+    public function delete(Request $request)
+    {
+        $this->checkAdmin();
+
+        CSRF::verify($request);
+
+        $id = intval($request->route('id'));
+
+        $user = User::find($id);
+
+        assert($user instanceof User);
+
+        if (!$user->id) {
+            throw new Exception(Locale::get('user_not_found') . ": {$id}");
+        }
+
+        $file = getenv('APP_ROOT') . "/images/avatars/{$user->avatar}";
+
+        if (is_file($file)) unlink($file);
+
+        $result = $user->delete();
+
+        Response::send(new Alert(
+            status: intval($result),
+            message: $result
+                ? Locale::get('user_deleted')
+                : Locale::get('user_delete_error')
+        ));
+    }
+
+    /**
      * Загрузка аватара
      * 
      * @param Request $request

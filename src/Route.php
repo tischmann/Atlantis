@@ -27,10 +27,10 @@ final class Route
     public function __construct(
         public ?Controller $controller = new Controller(),
         public string $action = 'index',
-        public string $method = 'ANY',
+        public string $method = 'GET',
         public string $path = '',
-        public string $accept = 'any',
-        public string $type = 'any',
+        public string $accept = 'html',
+        public string $type = 'html',
         public string $title = '',
         public array $args = [],
     ) {

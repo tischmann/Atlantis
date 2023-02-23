@@ -66,6 +66,7 @@ return [
     'last_admin_delete_error' => 'Нельзя удалить последнего администратора',
     'last_admin_disable_error' => 'Нельзя отключить последнего администратора',
     'locale_code' => 'Код',
+    'locale_current' => 'Активен',
     'locale_delete_confirm' => 'Вы действительно хотите удалить язык',
     'locale_edit' => 'Редактирование языка',
     'locale_en' => 'Английский',
@@ -124,5 +125,5 @@ return [
     'uuid_is_required' => 'Отсутсвует UUID',
     'warning' => 'Внимание',
     'yes' => 'Да',
-    'locale_current' => 'Активен',
+    'route_not_found' => 'Маршрут не найден',
 ];
