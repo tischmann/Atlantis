@@ -10,7 +10,10 @@ if (isset($breadcrumbs) && is_array($breadcrumbs)) {
     HTML;
 
     foreach ($breadcrumbs as $breadcrumb) {
-        assert($breadcrumb instanceof Breadcrumb);
+        if (!assert($breadcrumb instanceof Breadcrumb)) {
+            $message = 'Invalid breadcrumb type: ' . gettype($breadcrumb);
+            throw new Exception($message);
+        };
 
         if ($breadcrumb->url) {
             echo <<<HTML
