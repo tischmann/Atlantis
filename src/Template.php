@@ -156,9 +156,8 @@ final class Template
             'breadcrumbs' => '',
             'admin' => '',
             'pagination' => $pagination,
-            'search_value' => '',
-            'sort_type' => $sorting->type,
-            'sort_order' => $sorting->order,
+            'search' => '',
+            'sorting' => $sorting,
         ];
 
         return static::$cached_args;
