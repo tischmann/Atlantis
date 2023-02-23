@@ -58,4 +58,54 @@ class Controller
 
         return $query;
     }
+
+    /**
+     * Динамическая подгрузка
+     */
+    public function fetch(
+        Request $request,
+        Query $query,
+        callable $callback,
+        int $limit
+    ): void {
+        $html = '';
+
+        $page = intval($request->request('page') ?? 1);
+
+        $next = intval($request->request('next') ?? 1);
+
+        $last = intval($request->request('last') ?? 1);
+
+        $total = 0;
+
+        $limit = intval($request->request('limit') ?? $limit);
+
+        $this->sort($query, $request);
+
+        $this->search($query, $request, ['login']);
+
+        $total = $query->count();
+
+        $pagination = new Pagination(
+            total: $total,
+            page: $next,
+            limit: $limit
+        );
+
+        if ($page < $last) {
+            $offset = $pagination->offset;
+
+            if ($limit) $query->limit($limit);
+
+            if ($offset) $query->offset($offset);
+
+            $html .= $callback($query);
+        }
+
+        Response::json([
+            'status' => 1,
+            'html' => $html,
+            ...get_object_vars($pagination)
+        ]);
+    }
 }

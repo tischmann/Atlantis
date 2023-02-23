@@ -41,7 +41,7 @@ Router::add(new Route(
 Router::add(new Route(
     controller: new ArticlesController(),
     path: 'fetch/articles/{category_id}',
-    action: 'fetch',
+    action: 'fetchArticles',
     method: 'POST',
     type: 'json',
     accept: 'json'
@@ -137,7 +137,7 @@ if (User::current()->isAdmin()) {
     Router::add(new Route(
         controller: new UsersController(),
         path: 'fetch/admin/users',
-        action: 'fetch',
+        action: 'fetchUsers',
         method: 'POST',
         type: 'json',
         accept: 'json'

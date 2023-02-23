@@ -612,55 +612,28 @@ class UsersController extends Controller
     /**
      * Динамическая подгрузка пользователей в админпанели
      */
-    public function fetch(Request $request): void
+    public function fetchUsers(Request $request): void
     {
-        $html = '';
+        $this->checkAdmin();
 
-        $page = intval($request->request('page') ?? 1);
+        $this->fetch(
+            $request,
+            User::query(),
+            function ($query) {
+                $html = '';
 
-        $next = intval($request->request('next') ?? 1);
+                foreach (User::fill($query) as $user) {
+                    $html .= Template::html(
+                        'admin/user-item',
+                        [
+                            'user' => $user,
+                        ]
+                    );
+                }
 
-        $last = intval($request->request('last') ?? 1);
-
-        $total = 0;
-
-        $limit = intval($request->request('limit') ?? static::ADMIN_FETCH_LIMIT);
-
-        $query = User::query();
-
-        $this->sort($query, $request);
-
-        $this->search($query, $request, ['login']);
-
-        $total = $query->count();
-
-        $pagination = new Pagination(
-            total: $total,
-            page: $next,
-            limit: $limit
+                return $html;
+            },
+            static::ADMIN_FETCH_LIMIT
         );
-
-        if ($page < $last) {
-            $offset = $pagination->offset;
-
-            if ($limit) $query->limit($limit);
-
-            if ($offset) $query->offset($offset);
-
-            foreach (User::fill($query) as $user) {
-                $html .= Template::html(
-                    'admin/user-item',
-                    [
-                        'user' => $user,
-                    ]
-                );
-            }
-        }
-
-        Response::json([
-            'status' => 1,
-            'html' => $html,
-            ...get_object_vars($pagination)
-        ]);
     }
 }

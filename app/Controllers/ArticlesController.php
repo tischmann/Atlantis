@@ -25,7 +25,7 @@ use Tischmann\Atlantis\{
 
 class ArticlesController extends Controller
 {
-    public const ADMIN_FETCH_LIMIT = 2;
+    public const ADMIN_FETCH_LIMIT = 10;
 
     public const FETCH_LIMIT = 10;
     /**
@@ -78,7 +78,29 @@ class ArticlesController extends Controller
      */
     public function fetchAdmin(Request $request): void
     {
-        $this->fetch($request, 'admin/articles-item');
+        $this->checkAdmin();
+
+        $query = Article::query();
+
+        $this->fetch(
+            $request,
+            $query,
+            function ($query) {
+                $html = '';
+
+                foreach (Article::fill($query) as $article) {
+                    $html .= Template::html(
+                        'admin/articles-item',
+                        [
+                            'article' => $article,
+                        ]
+                    );
+                }
+
+                return $html;
+            },
+            static::ADMIN_FETCH_LIMIT
+        );
     }
 
     /**
@@ -553,64 +575,35 @@ class ArticlesController extends Controller
     /**
      * Динамическая подгрузка статей
      */
-    public function fetch(
-        Request $request,
-        string $template = 'articles-item'
-    ) {
-        $category_id = $request->route('category_id');
-
-        $html = '';
-
-        $page = intval($request->request('page') ?? 1);
-
-        $next = intval($request->request('next') ?? 1);
-
-        $last = intval($request->request('last') ?? 1);
-
-        $total = 0;
-
-        $limit = intval($request->request('limit') ?? static::ADMIN_FETCH_LIMIT);
+    public function fetchArticles(Request $request)
+    {
+        $this->checkAdmin();
 
         $query = Article::query();
 
-        if ($category_id) {
-            $query->where('category_id', $category_id);
-        }
+        $category_id = $request->route('category_id');
 
-        $this->sort($query, $request);
+        if ($category_id) $query->where('category_id', $category_id);
 
-        $this->search($query, $request, ['title']);
+        $this->fetch(
+            $request,
+            $query,
+            function ($query) {
+                $html = '';
 
-        $total = $query->count();
+                foreach (Article::fill($query) as $article) {
+                    $html .= Template::html(
+                        'articles-item',
+                        [
+                            'article' => $article,
+                        ]
+                    );
+                }
 
-        $pagination = new Pagination(
-            total: $total,
-            page: $next,
-            limit: $limit
+                return $html;
+            },
+            static::ADMIN_FETCH_LIMIT
         );
-
-        if ($page < $last) {
-            $offset = $pagination->offset;
-
-            if ($limit) $query->limit($limit);
-
-            if ($offset) $query->offset($offset);
-
-            foreach (Article::fill($query) as $article) {
-                $html .= Template::html(
-                    $template,
-                    [
-                        'article' => $article,
-                    ]
-                );
-            }
-        }
-
-        Response::json([
-            'status' => 1,
-            'html' => $html,
-            ...get_object_vars($pagination)
-        ]);
     }
 
     /**
