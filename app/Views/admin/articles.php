@@ -22,9 +22,5 @@
 
         ?>
     </div>
-    <div class="fixed bottom-4 right-4 ">
-        <a href="/{{env=APP_LOCALE}}/add/article" aria-label="{{lang=add}}" data-te-ripple-init data-te-ripple-color="light" class="flex items-center justify-center rounded-full text-lg bg-primary h-12 w-12 uppercase leading-normal text-white shadow-md transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]">
-            <i class="fas fa-plus"></i>
-        </a>
-    </div>
+    <?= Template::html('admin/add-button', ['href' => '/{{env=APP_LOCALE}}/add/article']) ?>
 </main>
