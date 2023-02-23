@@ -83,6 +83,7 @@ return [
     'no' => 'Нет',
     'rating_invalid' => 'Неверный рейтинг',
     'rating_save_error' => 'Ошибка сохранения рейтинга',
+    'route_not_found' => 'Маршрут не найден',
     'save' => 'Сохранить',
     'signin_error' => 'Неверный логин или пароль',
     'signin_login' => 'Логин',
@@ -125,5 +126,5 @@ return [
     'uuid_is_required' => 'Отсутсвует UUID',
     'warning' => 'Внимание',
     'yes' => 'Да',
-    'route_not_found' => 'Маршрут не найден',
+    'method_not_found' => 'Метод не найден',
 ];
