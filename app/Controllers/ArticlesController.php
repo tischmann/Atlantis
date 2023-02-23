@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Models\{Article, Category, Rating, User, View as ModelsView};
+use App\Models\{Article, Category, Rating, User};
 
 use Exception;
 
@@ -18,12 +18,64 @@ use Tischmann\Atlantis\{
     Pagination,
     Request,
     Response,
+    Sorting,
     Template,
     View
 };
 
 class ArticlesController extends Controller
 {
+    /**
+     * Вывод списка статей в админпанели
+     */
+    public function index(Request $request): void
+    {
+        $this->checkAdmin();
+
+        $query = Article::query()->limit(Pagination::DEFAULT_LIMIT);
+
+        $sort = $request->request('sort') ?: 'id';
+
+        $order = $request->request('order') ?: 'desc';
+
+        $query->order($sort, $order);
+
+        View::send(
+            'admin/articles',
+            [
+                'breadcrumbs' => [
+                    new Breadcrumb(
+                        url: '/admin',
+                        label: Locale::get('dashboard')
+                    ),
+                    new Breadcrumb(
+                        label: Locale::get('articles')
+                    ),
+                ],
+                'articles' => Article::fill($query),
+                'sortings' => [
+                    new Sorting(),
+                    new Sorting('title', 'asc'),
+                    new Sorting('title', 'desc'),
+                    new Sorting('created_at', 'asc'),
+                    new Sorting('created_at', 'desc'),
+                    new Sorting('updated_at', 'asc'),
+                    new Sorting('updated_at', 'desc'),
+                    new Sorting('visible', 'asc'),
+                    new Sorting('visible', 'desc'),
+                ]
+            ]
+        );
+    }
+
+    /**
+     * Динамическая подгрузка статей в админпанели
+     */
+    public function fetchAdmin(Request $request): void
+    {
+        $this->fetch($request, 'admin/articles-item');
+    }
+
     /**
      * Добавление статьи
      *
@@ -496,7 +548,7 @@ class ArticlesController extends Controller
     /**
      * Динамическая подгрузка статей
      */
-    public static function fetchArticles(
+    public function fetch(
         Request $request,
         string $template = 'articles-item'
     ) {

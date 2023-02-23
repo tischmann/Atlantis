@@ -22,6 +22,148 @@ use Tischmann\Atlantis\{
 class CategoriesController extends Controller
 {
     /**
+     * Вывод списка категорий в админпанели
+     */
+    public function index(Request $request): void
+    {
+        $this->checkAdmin();
+
+        $items = [];
+
+        $query = Category::query()
+            ->where('parent_id', null)
+            ->order('position', 'ASC');
+
+        foreach (Category::fill($query) as $category) {
+            assert($category instanceof Category);
+
+            if (!array_key_exists($category->locale, $items)) {
+                $items[$category->locale] = [];
+            }
+
+            $items[$category->locale][] = $category;
+        }
+
+        View::send(
+            'admin/categories',
+            [
+                'breadcrumbs' => [
+                    new Breadcrumb(
+                        url: '/admin',
+                        label: Locale::get('dashboard')
+                    ),
+                    new Breadcrumb(
+                        label: Locale::get('categories')
+                    ),
+                ],
+                'items' => $items,
+            ]
+        );
+    }
+
+    /**
+     * Вывод формы редактирования категории
+     *
+     * @param Request $request
+     * 
+     * @throws Exception
+     */
+    public function get(Request $request)
+    {
+        $this->checkAdmin();
+
+        $request->validate([
+            'id' => ['required'],
+        ]);
+
+        $id = intval($request->route('id'));
+
+        $category = Category::find($id);
+
+        assert($category instanceof Category);
+
+        if (!$category->id) {
+            throw new Exception(Locale::get('category_not_found'));
+        }
+
+        $this->editor($category);
+    }
+
+    /**
+     * Форма добавления категории
+     *
+     * @param Request $request
+     * 
+     * @return void
+     */
+    public function new(Request $request)
+    {
+        $this->checkAdmin();
+
+        $this->editor();
+    }
+
+    /**
+     * Вывод формы добавления/редактирования категории
+     * 
+     * @param Category $category Категория
+     */
+    public function editor(Category $category = new Category())
+    {
+        $this->checkAdmin();
+
+        $parentBreadcrumbs = [];
+
+        if ($category->parent_id) {
+            $parent = Category::find($category->parent_id);
+
+            assert($parent instanceof Category);
+
+            while (true) {
+                $parentBreadcrumbs[] = new Breadcrumb(
+                    $parent->title,
+                    '/category/edit/' . $parent->id
+                );
+
+                $parent = Category::find($parent->parent_id);
+
+                if (!$parent->id) break;
+            }
+        }
+
+        $parentBreadcrumbs = array_reverse($parentBreadcrumbs);
+
+        $breadcrumbs = [
+            new Breadcrumb(
+                url: '/admin',
+                label: Locale::get('dashboard')
+            ),
+            new Breadcrumb(
+                url: '/admin/categories',
+                label: Locale::get('categories')
+            ),
+            ...$parentBreadcrumbs
+        ];
+
+        if ($category->id) {
+            $breadcrumbs[] = new Breadcrumb($category->title);
+
+            static::setTitle($category->title);
+        } else {
+            $breadcrumbs[] = new Breadcrumb(Locale::get('category_new'));
+        }
+
+        View::send(
+            'admin/category',
+            [
+                'breadcrumbs' => $breadcrumbs,
+                'category' => $category,
+
+            ]
+        );
+    }
+
+    /**
      * Добавление категории
      * 
      * @param Request $request Запрос

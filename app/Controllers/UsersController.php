@@ -16,19 +16,47 @@ use Tischmann\Atlantis\{
     CSRF,
     Image,
     Locale,
+    Pagination,
     Request,
     Response,
+    Template,
     View
 };
 
 class UsersController extends Controller
 {
+    /**
+     * Вывод списка пользователь в админпанели
+     */
+    public function index(Request $request): void
+    {
+        $this->checkAdmin();
+
+        $query = User::query()->limit(Pagination::DEFAULT_LIMIT);
+
+        View::send(
+            'admin/users',
+            [
+                'breadcrumbs' => [
+                    new Breadcrumb(
+                        url: '/admin',
+                        label: Locale::get('dashboard')
+                    ),
+                    new Breadcrumb(
+                        label: Locale::get('users')
+                    ),
+                ],
+                'users' => User::fill($query),
+            ]
+        );
+    }
+
     public function signinForm(): void
     {
         View::send('signin');
     }
 
-    public function signin(Request $request)
+    public function signIn(Request $request)
     {
         try {
             CSRF::verify($request);
@@ -85,133 +113,75 @@ class UsersController extends Controller
     }
 
     /**
-     * Загрузка аватара
-     * 
+     * Вывод формы редактирования пользователя
+     *
      * @param Request $request
+     * 
+     * @throws Exception
      */
-    public function uploadAvatar(Request $request)
+    public function get(Request $request)
     {
         $this->checkAdmin();
 
-        CSRF::verify($request);
-
-        $id = $request->route('id');
-
-        $width = intval($request->request('width'));
-
-        $height = intval($request->request('height'));
-
-        if (!is_dir("images/avatars")) {
-            mkdir("images/avatars", 0775, true);
-        }
-
-        $imageFolder = $id ? "images/avatars" : "images/avatars/temp";
-
-        if (!is_dir($imageFolder)) {
-            mkdir($imageFolder, 0775, true);
-        }
-
-        reset($_FILES);
-
-        $temp = current($_FILES);
-
-        list($csrf_key, $csrf_token) = CSRF::set();
-
-        if (!is_uploaded_file($temp['tmp_name'])) {
-            Response::send([
-                'csrf' => $csrf_token,
-                'error' => 'Error uploading file'
-            ]);
-
-            exit;
-        }
-
-        if (preg_match("/([^\w\s\d\-_~,;:\[\]\(\).])|([\.]{2,})/", $temp['name'])) {
-            Response::send([
-                'csrf' => $csrf_token,
-                'error' => 'Invalid file name'
-            ]);
-
-            exit;
-        }
-
-        $extensions = ["gif", "jpg", "png", "webp", "jpeg", "bmp"];
-
-        $fileExtension = strtolower(
-            pathinfo(
-                $temp['name'],
-                PATHINFO_EXTENSION
-            )
-        );
-
-        if (!in_array($fileExtension, $extensions)) {
-            Response::send([
-                'csrf' => $csrf_token,
-                'error' => 'Invalid extension'
-            ]);
-
-            exit;
-        }
-
-        $filename = md5(bin2hex(random_bytes(128))) . '.webp';
-
-        $filetowrite = $imageFolder . "/" . $filename;
-
-        $quality = 80;
-
-        switch ($fileExtension) {
-            case 'gif':
-                $im = imagecreatefromgif($temp['tmp_name']);
-                break;
-            case 'jpg':
-            case 'jpeg':
-                $im = imagecreatefromjpeg($temp['tmp_name']);
-                break;
-            case 'png':
-                $im = imagecreatefrompng($temp['tmp_name']);
-                break;
-            case 'bmp':
-                $im = imagecreatefrombmp($temp['tmp_name']);
-                break;
-            case 'webp':
-                $im = imagecreatefromwebp($temp['tmp_name']);
-                break;
-            default:
-                Response::json([
-                    'csrf' => $csrf_token,
-                    'error' => 'Unsupported image format'
-                ]);
-
-                exit;
-        }
-
-        if ($width && $height) {
-            $im = Image::resize($im, $width, $height);
-        }
-
-        if (!imagewebp($im, $filetowrite, $quality)) {
-            Response::json([
-                'csrf' => $csrf_token,
-                'error' => 'Error converting image to webp'
-            ]);
-
-            exit;
-        }
-
-        $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on'
-            ? "https://"
-            : "http://";
-
-        $baseurl = $protocol . $_SERVER["HTTP_HOST"];
-
-        $location = $baseurl . "/" . $filetowrite;
-
-        Response::json([
-            'status' => 1,
-            'csrf' => $csrf_token,
-            'image' => basename($location),
-            'location' => $location
+        $request->validate([
+            'id' => ['required'],
         ]);
+
+        $id = intval($request->route('id'));
+
+        $user = User::find($id);
+
+        assert($user instanceof User);
+
+        if (!$user->id) {
+            throw new Exception(Locale::get('user_not_found'));
+        }
+
+        $this->editor($user);
+    }
+
+    /**
+     * Вывод формы добавления пользователя
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function new(Request $request)
+    {
+        $this->checkAdmin();
+
+        $this->editor(new User());
+    }
+
+    /**
+     * Вывод формы добавления/редактирования пользователя
+     * 
+     * @param Category $category Категория
+     */
+    protected function editor(User $user = new User())
+    {
+        $this->checkAdmin();
+
+        static::setTitle($user->id ? $user->login : Locale::get('user_new'));
+
+        View::send(
+            'admin/user',
+            [
+                'breadcrumbs' => [
+                    new Breadcrumb(
+                        url: '/admin',
+                        label: Locale::get('dashboard')
+                    ),
+                    new Breadcrumb(
+                        url: '/admin/users',
+                        label: Locale::get('users')
+                    ),
+                    new Breadcrumb($user->id ? $user->login : Locale::get('user_new'))
+                ],
+                'user' => $user,
+
+            ]
+        );
     }
 
     /**
@@ -434,6 +404,136 @@ class UsersController extends Controller
         Response::redirect("/" . getenv('APP_LOCALE') . '/admin/users');
     }
 
+    /**
+     * Загрузка аватара
+     * 
+     * @param Request $request
+     */
+    public function uploadAvatar(Request $request)
+    {
+        $this->checkAdmin();
+
+        CSRF::verify($request);
+
+        $id = $request->route('id');
+
+        $width = intval($request->request('width'));
+
+        $height = intval($request->request('height'));
+
+        if (!is_dir("images/avatars")) {
+            mkdir("images/avatars", 0775, true);
+        }
+
+        $imageFolder = $id ? "images/avatars" : "images/avatars/temp";
+
+        if (!is_dir($imageFolder)) {
+            mkdir($imageFolder, 0775, true);
+        }
+
+        reset($_FILES);
+
+        $temp = current($_FILES);
+
+        list($csrf_key, $csrf_token) = CSRF::set();
+
+        if (!is_uploaded_file($temp['tmp_name'])) {
+            Response::send([
+                'csrf' => $csrf_token,
+                'error' => 'Error uploading file'
+            ]);
+
+            exit;
+        }
+
+        if (preg_match("/([^\w\s\d\-_~,;:\[\]\(\).])|([\.]{2,})/", $temp['name'])) {
+            Response::send([
+                'csrf' => $csrf_token,
+                'error' => 'Invalid file name'
+            ]);
+
+            exit;
+        }
+
+        $extensions = ["gif", "jpg", "png", "webp", "jpeg", "bmp"];
+
+        $fileExtension = strtolower(
+            pathinfo(
+                $temp['name'],
+                PATHINFO_EXTENSION
+            )
+        );
+
+        if (!in_array($fileExtension, $extensions)) {
+            Response::send([
+                'csrf' => $csrf_token,
+                'error' => 'Invalid extension'
+            ]);
+
+            exit;
+        }
+
+        $filename = md5(bin2hex(random_bytes(128))) . '.webp';
+
+        $filetowrite = $imageFolder . "/" . $filename;
+
+        $quality = 80;
+
+        switch ($fileExtension) {
+            case 'gif':
+                $im = imagecreatefromgif($temp['tmp_name']);
+                break;
+            case 'jpg':
+            case 'jpeg':
+                $im = imagecreatefromjpeg($temp['tmp_name']);
+                break;
+            case 'png':
+                $im = imagecreatefrompng($temp['tmp_name']);
+                break;
+            case 'bmp':
+                $im = imagecreatefrombmp($temp['tmp_name']);
+                break;
+            case 'webp':
+                $im = imagecreatefromwebp($temp['tmp_name']);
+                break;
+            default:
+                Response::json([
+                    'csrf' => $csrf_token,
+                    'error' => 'Unsupported image format'
+                ]);
+
+                exit;
+        }
+
+        if ($width && $height) {
+            $im = Image::resize($im, $width, $height);
+        }
+
+        if (!imagewebp($im, $filetowrite, $quality)) {
+            Response::json([
+                'csrf' => $csrf_token,
+                'error' => 'Error converting image to webp'
+            ]);
+
+            exit;
+        }
+
+        $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on'
+            ? "https://"
+            : "http://";
+
+        $baseurl = $protocol . $_SERVER["HTTP_HOST"];
+
+        $location = $baseurl . "/" . $filetowrite;
+
+        Response::json([
+            'status' => 1,
+            'csrf' => $csrf_token,
+            'image' => basename($location),
+            'location' => $location
+        ]);
+    }
+
     protected static function removeTempAvatars()
     {
         $root = getenv('APP_ROOT');
@@ -451,39 +551,60 @@ class UsersController extends Controller
         }
     }
 
-    public function newUser(Request $request)
+    /**
+     * Динамическая подгрузка пользователей в админпанели
+     */
+    public function fetch(Request $request): void
     {
-        $this->checkAdmin();
+        $pagination = new Pagination();
 
-        $this->getUserEditor($request, new User());
-    }
+        $html = '';
 
-    protected function getUserEditor(
-        Request $request,
-        User $user
-    ) {
-        $title = $user->id
-            ? $user->login
-            : Locale::get('user_new');
+        $page = 1;
 
-        static::setTitle($title);
+        $total = 0;
 
-        View::send(
-            'admin/user',
-            [
-                'user' => $user,
-                'breadcrumbs' => [
-                    new Breadcrumb(
-                        url: '/admin',
-                        label: Locale::get('dashboard')
-                    ),
-                    new Breadcrumb(
-                        url: '/admin/users',
-                        label: Locale::get('users')
-                    ),
-                    new Breadcrumb($title)
-                ],
-            ]
+        $limit = intval($request->request('limit') ?? Pagination::DEFAULT_LIMIT);
+
+        $query = User::query();
+
+        $sort = $request->request('sort') ?: 'id';
+
+        $order = $request->request('order') ?: 'desc';
+
+        $query->order($sort, $order);
+
+        $total = $query->count();
+
+        if ($total > $limit) {
+            $page = intval($request->request('page') ?? 1);
+
+            $offset = ($page - 1) * $limit;
+
+            if ($limit) $query->limit($limit);
+
+            if ($offset) $query->offset($offset);
+
+            foreach (User::fill($query) as $user) {
+                $html .= Template::html(
+                    'admin/user-item',
+                    [
+                        'user' => $user,
+                    ]
+                );
+            }
+        }
+
+        $pagination = new Pagination(
+            total: $total,
+            page: $page,
+            limit: $limit
         );
+
+        Response::json([
+            'status' => 1,
+            'html' => $html,
+            ...get_object_vars($pagination)
+        ]);
     }
 }

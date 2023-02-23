@@ -39,7 +39,7 @@ Router::add(new Route(
 Router::add(new Route(
     controller: new ArticlesController(),
     path: 'fetch/articles/{category_id}',
-    action: 'fetchArticles',
+    action: 'fetch',
     method: 'POST'
 ));
 
@@ -53,12 +53,73 @@ Router::add(new Route(
 // Админка
 
 if (User::current()->isAdmin()) {
+    // Главная
+
     Router::add(new Route(
         controller: new AdminController(),
         path: 'admin',
         action: 'index',
         method: 'GET',
         title: Locale::get('dashboard')
+    ));
+
+    // Пользователи
+
+    Router::add(new Route(
+        controller: new UsersController(),
+        path: 'admin/users',
+        action: 'index',
+        method: 'GET',
+        title: Locale::get('users')
+    ));
+
+    Router::add(new Route(
+        controller: new UsersController(),
+        path: 'edit/user/{id}',
+        action: 'get',
+        method: 'GET'
+    ));
+
+    Router::add(new Route(
+        controller: new UsersController(),
+        path: 'edit/user/{id}',
+        action: 'update',
+        method: 'POST'
+    ));
+
+    Router::add(new Route(
+        controller: new UsersController(),
+        path: 'upload/user/avatar/{id}',
+        action: 'uploadAvatar',
+        method: 'POST'
+    ));
+
+    Router::add(new Route(
+        controller: new UsersController(),
+        path: 'add/user',
+        action: 'new',
+        method: 'GET'
+    ));
+
+    Router::add(new Route(
+        controller: new UsersController(),
+        path: 'add/user',
+        action: 'add',
+        method: 'POST'
+    ));
+
+    Router::add(new Route(
+        controller: new UsersController(),
+        path: 'add/user',
+        action: 'add',
+        method: 'PUT'
+    ));
+
+    Router::add(new Route(
+        controller: new UsersController(),
+        path: 'fetch/admin/users',
+        action: 'fetch',
+        method: 'POST'
     ));
 
     // Локали
@@ -117,9 +178,9 @@ if (User::current()->isAdmin()) {
     // Категории
 
     Router::add(new Route(
-        controller: new AdminController(),
+        controller: new CategoriesController(),
         path: 'admin/categories',
-        action: 'getCategories',
+        action: 'index',
         method: 'GET',
         title: Locale::get('categories')
     ));
@@ -132,9 +193,9 @@ if (User::current()->isAdmin()) {
     ));
 
     Router::add(new Route(
-        controller: new AdminController(),
+        controller: new CategoriesController(),
         path: 'add/category',
-        action: 'newCategory',
+        action: 'new',
         method: 'GET',
         title: Locale::get('category_new')
     ));
@@ -154,9 +215,9 @@ if (User::current()->isAdmin()) {
     ));
 
     Router::add(new Route(
-        controller: new AdminController(),
+        controller: new CategoriesController(),
         path: 'category/edit/{id}',
-        action: 'getCategory',
+        action: 'get',
         method: 'GET'
     ));
 
@@ -177,9 +238,9 @@ if (User::current()->isAdmin()) {
     // Статьи
 
     Router::add(new Route(
-        controller: new AdminController(),
+        controller: new ArticlesController(),
         path: 'admin/articles',
-        action: 'getArticles',
+        action: 'index',
         method: 'GET',
         title: Locale::get('articles')
     ));
@@ -234,68 +295,9 @@ if (User::current()->isAdmin()) {
     ));
 
     Router::add(new Route(
-        controller: new AdminController(),
+        controller: new ArticlesController(),
         path: 'fetch/admin/articles/{category_id}',
-        action: 'fetchArticles',
-        method: 'POST'
-    ));
-
-    // Пользователи
-
-    Router::add(new Route(
-        controller: new AdminController(),
-        path: 'admin/users',
-        action: 'getUsers',
-        method: 'GET',
-        title: Locale::get('users')
-    ));
-
-    Router::add(new Route(
-        controller: new AdminController(),
-        path: 'edit/user/{id}',
-        action: 'editUser',
-        method: 'GET'
-    ));
-
-    Router::add(new Route(
-        controller: new UsersController(),
-        path: 'edit/user/{id}',
-        action: 'update',
-        method: 'POST'
-    ));
-
-    Router::add(new Route(
-        controller: new UsersController(),
-        path: 'upload/user/avatar/{id}',
-        action: 'uploadAvatar',
-        method: 'POST'
-    ));
-
-    Router::add(new Route(
-        controller: new UsersController(),
-        path: 'add/user',
-        action: 'newUser',
-        method: 'GET'
-    ));
-
-    Router::add(new Route(
-        controller: new UsersController(),
-        path: 'add/user',
-        action: 'add',
-        method: 'POST'
-    ));
-
-    Router::add(new Route(
-        controller: new UsersController(),
-        path: 'add/user',
-        action: 'add',
-        method: 'PUT'
-    ));
-
-    Router::add(new Route(
-        controller: new AdminController(),
-        path: 'fetch/admin/users',
-        action: 'fetchUsers',
+        action: 'fetchAdmin',
         method: 'POST'
     ));
 }
@@ -317,7 +319,7 @@ if (User::current()->exists()) {
     Router::add(new Route(
         controller: new UsersController(),
         path: 'signin',
-        action: 'signin',
+        action: 'signIn',
         method: 'POST'
     ));
 }
