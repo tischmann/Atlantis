@@ -16,6 +16,7 @@ use Tischmann\Atlantis\{
     Image,
     Locale,
     Pagination,
+    Query,
     Request,
     Response,
     Sorting,
@@ -71,6 +72,15 @@ class ArticlesController extends Controller
                 ]
             ]
         );
+    }
+
+    protected function sort(Query &$query, Request $request): Query
+    {
+        $sort = $request->request('sort') ?: 'updated_at';
+
+        $order = $request->request('order') ?: 'desc';
+
+        return $query->order($sort, $order);
     }
 
     /**
