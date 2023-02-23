@@ -16,6 +16,7 @@ use Tischmann\Atlantis\{
     Locale,
     Request,
     Response,
+    Template,
     View,
 };
 
@@ -395,5 +396,39 @@ class CategoriesController extends Controller
                 'articles' => Article::fill($query),
             ]
         );
+    }
+
+    public function fetchParentCategories(Request $request)
+    {
+        $this->checkAdmin();
+
+        $request->validate([
+            'locale' => ['required', 'string'],
+        ]);
+
+        CSRF::verify($request);
+
+        $locale = $request->request('locale');
+
+        $id = $request->request('id');
+
+        $html = '';
+
+        $query = Category::query()->where('locale', $locale);
+
+        if ($id) $query->where('id', $id);
+
+        foreach (Category::fill($query) as $category) {
+            $html = Template::html('admin/parent-category-options', [
+                'category' => $category,
+            ]);
+        }
+
+        Response::send([
+            'status' => 1,
+            'html' => $html,
+            'message' => 'OK',
+            'csrf' => CSRF::set()[1],
+        ]);
     }
 }

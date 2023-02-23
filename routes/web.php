@@ -266,6 +266,15 @@ if (User::current()->isAdmin()) {
         accept: 'json'
     ));
 
+    Router::add(new Route(
+        controller: new CategoriesController(),
+        path: 'admin/fetch/parent/categories',
+        action: 'fetchParentCategories',
+        method: 'POST',
+        type: 'json',
+        accept: 'json'
+    ));
+
     // Статьи
 
     Router::add(new Route(

@@ -17,7 +17,6 @@
                             fetch(`{{url}}`, {
                                 method: 'DELETE',
                                 headers: {
-                                    'X-Requested-With': `XMLHttpRequest`,
                                     'X-Csrf-Token': `{{csrf-token}}`,
                                     'Accept': 'application/json',
                                 },

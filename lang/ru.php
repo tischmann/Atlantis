@@ -32,7 +32,7 @@ return [
     'category_added' => 'Категория добавлена',
     'category_child_delete_error' => 'Ошибка удаления дочерней категории',
     'category_children' => 'Дочерние категории',
-    'category_children_will_be_deleted' => 'Также будут удалены все дочерние категории',
+    'category_delete_confirm_children' => 'Также будут удалены все дочерние категории',
     'category_delete_confirm' => 'Вы действительно хотите удалить категорию',
     'category_delete_error' => 'Ошибка удаления категории',
     'category_delete_title' => 'Удаление категории',

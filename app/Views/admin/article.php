@@ -112,7 +112,6 @@
                                     fetch(`/article/delete/{$article->id}`, {
                                         method: 'DELETE',
                                         headers: {
-                                            'X-Requested-With': `XMLHttpRequest`,
                                             'X-Csrf-Token': `{{csrf-token}}`,
                                             'Accept': 'application/json',                    
                                         },
