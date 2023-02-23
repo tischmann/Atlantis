@@ -147,7 +147,12 @@ final class Template
 
         $pagination = new Pagination(limit: Pagination::DEFAULT_LIMIT);
 
-        $sorting = new Sorting();
+        $request = new Request();
+
+        $sorting = new Sorting(
+            type: strval($request->request('sort')),
+            order: strval($request->request('order'))
+        );
 
         static::$cached_args = [
             ...$env,
@@ -156,7 +161,7 @@ final class Template
             'breadcrumbs' => '',
             'admin' => '',
             'pagination' => $pagination,
-            'search' => '',
+            'search' => strval($request->request('search')),
             'sorting' => $sorting,
         ];
 

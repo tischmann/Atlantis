@@ -31,4 +31,31 @@ class Controller
             throw new Exception(Locale::get('access_denied'), 404);
         }
     }
+
+    protected function sort(Query &$query, Request $request): Query
+    {
+        $sort = $request->request('sort') ?: 'id';
+
+        $order = $request->request('order') ?: 'desc';
+
+        return $query->order($sort, $order);
+    }
+
+    protected function search(
+        Query &$query,
+        Request $request,
+        array $columns
+    ): Query {
+        $search = strip_tags(strval($request->request('search')));
+
+        if ($search) {
+            $query->where(function (&$nested) use ($columns, $search) {
+                foreach ($columns as $column) {
+                    $nested->orWhere($column, 'LIKE', "%{$search}%");
+                }
+            });
+        }
+
+        return $query;
+    }
 }

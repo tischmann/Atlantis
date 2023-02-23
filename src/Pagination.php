@@ -11,7 +11,7 @@ namespace Tischmann\Atlantis;
  */
 class Pagination
 {
-    public const DEFAULT_LIMIT = 10; // Количество элементов на странице по умолчанию
+    public const DEFAULT_LIMIT = 2; // Количество элементов на странице по умолчанию
 
     public const PAGES_LIMIT = 3; // Количество страниц слева и справа от текущей
 
@@ -33,7 +33,7 @@ class Pagination
      */
     public function __construct(
         public int $total = 0,
-        public int $page = 0,
+        public int $page = 1,
         public int $limit = 0,
         public int $first = 1,
         public int $prev = 1,
@@ -41,9 +41,9 @@ class Pagination
         public int $last = 1,
         public int $offset = 0,
     ) {
-        $this->setTotal($this->total)
-            ->setPage($this->page)
-            ->setLimit($this->limit ?: static::DEFAULT_LIMIT)
+        $this->setTotal($this->total <= 0 ? 0 : $this->total)
+            ->setPage($this->page <= 1 ? 1 : $this->page)
+            ->setLimit($this->limit <= 0 ? static::DEFAULT_LIMIT : $this->limit)
             ->compute();
     }
 

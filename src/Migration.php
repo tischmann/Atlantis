@@ -42,7 +42,7 @@ abstract class Migration
             new Column(
                 name: 'updated_at',
                 type: 'datetime',
-                default: null,
+                default: 'CURRENT_TIMESTAMP',
                 update: 'CURRENT_TIMESTAMP',
             )
         ];

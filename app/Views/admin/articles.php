@@ -1,5 +1,8 @@
 <?php include __DIR__ . "/../header.php" ?>
 <main class="md:container md:mx-auto">
+    <div class="flex items-center gap-4 px-4 justify-end">
+        <?php include __DIR__ . "/../sort.php" ?>
+    </div>
     <div class="intersection-loader-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 p-4">
         <?php
 
@@ -12,6 +15,7 @@
         Template::echo(
             'intersection-loader-target',
             [
+                'pagination' => $pagination,
                 'url' => "/fetch/admin/articles"
             ]
         );
@@ -23,5 +27,4 @@
             <i class="fas fa-plus"></i>
         </a>
     </div>
-    <?php include __DIR__ . "/sort.php" ?>
 </main>

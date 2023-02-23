@@ -19,12 +19,15 @@ use Tischmann\Atlantis\{
     Pagination,
     Request,
     Response,
+    Sorting,
     Template,
     View
 };
 
 class UsersController extends Controller
 {
+    public const ADMIN_FETCH_LIMIT = 5;
+
     /**
      * Вывод списка пользователь в админпанели
      */
@@ -32,11 +35,21 @@ class UsersController extends Controller
     {
         $this->checkAdmin();
 
-        $query = User::query()->limit(Pagination::DEFAULT_LIMIT);
+        $query = User::query()->limit(self::ADMIN_FETCH_LIMIT);
+
+        $this->sort($query, $request);
+
+        $this->search($query, $request, ['login']);
+
+        $pagination = new Pagination(
+            total: $query->count(),
+            limit: self::ADMIN_FETCH_LIMIT,
+        );
 
         View::send(
             'admin/users',
             [
+                'pagination' => $pagination,
                 'breadcrumbs' => [
                     new Breadcrumb(
                         url: '/admin',
@@ -47,6 +60,15 @@ class UsersController extends Controller
                     ),
                 ],
                 'users' => User::fill($query),
+                'sortings' => [
+                    new Sorting(),
+                    new Sorting('login', 'asc'),
+                    new Sorting('login', 'desc'),
+                    new Sorting('updated_at', 'asc'),
+                    new Sorting('updated_at', 'desc'),
+                    new Sorting('status', 'asc'),
+                    new Sorting('status', 'desc'),
+                ]
             ]
         );
     }
@@ -592,30 +614,34 @@ class UsersController extends Controller
      */
     public function fetch(Request $request): void
     {
-        $pagination = new Pagination();
-
         $html = '';
 
-        $page = 1;
+        $page = intval($request->request('page') ?? 1);
+
+        $next = intval($request->request('next') ?? 1);
+
+        $last = intval($request->request('last') ?? 1);
 
         $total = 0;
 
-        $limit = intval($request->request('limit') ?? Pagination::DEFAULT_LIMIT);
+        $limit = intval($request->request('limit') ?? static::ADMIN_FETCH_LIMIT);
 
         $query = User::query();
 
-        $sort = $request->request('sort') ?: 'id';
+        $this->sort($query, $request);
 
-        $order = $request->request('order') ?: 'desc';
-
-        $query->order($sort, $order);
+        $this->search($query, $request, ['login']);
 
         $total = $query->count();
 
-        if ($total > $limit) {
-            $page = intval($request->request('page') ?? 1);
+        $pagination = new Pagination(
+            total: $total,
+            page: $next,
+            limit: $limit
+        );
 
-            $offset = ($page - 1) * $limit;
+        if ($page < $last) {
+            $offset = $pagination->offset;
 
             if ($limit) $query->limit($limit);
 
@@ -630,12 +656,6 @@ class UsersController extends Controller
                 );
             }
         }
-
-        $pagination = new Pagination(
-            total: $total,
-            page: $page,
-            limit: $limit
-        );
 
         Response::json([
             'status' => 1,

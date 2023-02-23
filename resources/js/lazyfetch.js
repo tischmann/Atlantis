@@ -33,6 +33,16 @@ class LazyFetch {
             return false
         }
 
+        if (!this.target.dataset.hasOwnProperty('next')) {
+            console.warn('LazyFetch: data-next not found in target')
+            return false
+        }
+
+        if (!this.target.dataset.hasOwnProperty('last')) {
+            console.warn('LazyFetch: data-last not found in target')
+            return false
+        }
+
         if (!this.target.dataset.hasOwnProperty('limit')) {
             console.warn('LazyFetch: data-limit not found in target')
             return false
@@ -53,6 +63,10 @@ class LazyFetch {
         this.search = this.target.dataset.search
 
         this.page = this.target.dataset.page
+
+        this.next = this.target.dataset.next
+
+        this.last = this.target.dataset.last
 
         this.limit = this.target.dataset.limit
 
@@ -79,9 +93,13 @@ class LazyFetch {
     }
 
     fetch(target) {
+        if (this.page == this.last) return target.remove()
+
         const data = JSON.stringify({
             search: this.search,
             page: this.page,
+            next: this.next,
+            last: this.last,
             limit: this.limit,
             sort: this.sort,
             order: this.order
@@ -107,12 +125,14 @@ class LazyFetch {
                                     json.html
                                 )
 
-                                this.page = json.page
+                                this.page = target.dataset.page = json.page
+
+                                this.next = target.dataset.next = json.next
+
+                                this.last = target.dataset.last = json.last
 
                                 this.container.appendChild(target)
                             }
-
-                            if (json.last == json.next) target.remove()
 
                             this.callback()
                         } else {

@@ -12,7 +12,7 @@
         </div>
     </a>
     <div class="p-6">
-        <h5 class="mb-3 text-xl font-medium leading-tight text-neutral-800 dark:text-neutral-50 truncate"><?= $article->category->title ?></h5>
+        <h5 class="mb-3 text-xl font-medium leading-tight text-neutral-800 dark:text-neutral-50 truncate"><?= $article->title ?></h5>
         <span class="flex items-center gap-2 text-neutral-400 text-xs mb-2">
             <i class="fas fa-circle-plus"></i><?= $article->created_at->format('Y-m-d H:i') ?></span>
         <span class="flex items-center gap-2 text-neutral-400 text-xs mb-4">

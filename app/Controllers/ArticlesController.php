@@ -25,6 +25,9 @@ use Tischmann\Atlantis\{
 
 class ArticlesController extends Controller
 {
+    public const ADMIN_FETCH_LIMIT = 2;
+
+    public const FETCH_LIMIT = 10;
     /**
      * Вывод списка статей в админпанели
      */
@@ -32,17 +35,21 @@ class ArticlesController extends Controller
     {
         $this->checkAdmin();
 
-        $query = Article::query()->limit(Pagination::DEFAULT_LIMIT);
+        $query = Article::query()->limit(static::ADMIN_FETCH_LIMIT);
 
-        $sort = $request->request('sort') ?: 'id';
+        $this->sort($query, $request);
 
-        $order = $request->request('order') ?: 'desc';
+        $this->search($query, $request, ['title']);
 
-        $query->order($sort, $order);
+        $pagination = new Pagination(
+            total: $query->count(),
+            limit: static::ADMIN_FETCH_LIMIT,
+        );
 
         View::send(
             'admin/articles',
             [
+                'pagination' => $pagination,
                 'breadcrumbs' => [
                     new Breadcrumb(
                         url: '/admin',
@@ -57,8 +64,6 @@ class ArticlesController extends Controller
                     new Sorting(),
                     new Sorting('title', 'asc'),
                     new Sorting('title', 'desc'),
-                    new Sorting('created_at', 'asc'),
-                    new Sorting('created_at', 'desc'),
                     new Sorting('updated_at', 'asc'),
                     new Sorting('updated_at', 'desc'),
                     new Sorting('visible', 'asc'),
@@ -416,7 +421,7 @@ class ArticlesController extends Controller
      * 
      * @param Request $request
      */
-    public function getArticle(Request $request)
+    public function show(Request $request)
     {
         $id = $request->route('id');
 
@@ -554,15 +559,17 @@ class ArticlesController extends Controller
     ) {
         $category_id = $request->route('category_id');
 
-        $pagination = new Pagination();
-
         $html = '';
 
-        $page = 1;
+        $page = intval($request->request('page') ?? 1);
+
+        $next = intval($request->request('next') ?? 1);
+
+        $last = intval($request->request('last') ?? 1);
 
         $total = 0;
 
-        $limit = intval($request->request('limit') ?? Pagination::DEFAULT_LIMIT);
+        $limit = intval($request->request('limit') ?? static::ADMIN_FETCH_LIMIT);
 
         $query = Article::query();
 
@@ -570,18 +577,20 @@ class ArticlesController extends Controller
             $query->where('category_id', $category_id);
         }
 
-        $sort = $request->request('sort') ?: 'id';
+        $this->sort($query, $request);
 
-        $order = $request->request('order') ?: 'desc';
-
-        $query->order($sort, $order);
+        $this->search($query, $request, ['title']);
 
         $total = $query->count();
 
-        if ($total > $limit) {
-            $page = intval($request->request('page') ?? 1);
+        $pagination = new Pagination(
+            total: $total,
+            page: $next,
+            limit: $limit
+        );
 
-            $offset = ($page - 1) * $limit;
+        if ($page < $last) {
+            $offset = $pagination->offset;
 
             if ($limit) $query->limit($limit);
 
@@ -596,13 +605,6 @@ class ArticlesController extends Controller
                 );
             }
         }
-
-
-        $pagination = new Pagination(
-            total: $total,
-            page: $page,
-            limit: $limit
-        );
 
         Response::json([
             'status' => 1,

@@ -12,6 +12,7 @@
         Template::echo(
             'intersection-loader-target',
             [
+                'pagination' => $pagination,
                 'url' => "/fetch/articles/{$category->id}"
             ]
         );
