@@ -123,4 +123,65 @@ class Date
 
         return $formatter->format($date);
     }
+
+    public static function getElapsed(DateTime $date): string
+    {
+        $now = new DateTime();
+
+        $diff = $now->diff($date);
+
+        $elapsed = '';
+
+        if ($diff->y > 0) {
+            $elapsed .= $diff->y . ' ';
+
+            $elapsed .= match ($diff->y) {
+                1 => Locale::get('year_ago'),
+                2, 3, 4 => Locale::get('years_ago_2_4'),
+                default => Locale::get('years_ago'),
+            };
+        } else if ($diff->m > 0) {
+            $elapsed .= $diff->m . ' ';
+
+            $elapsed .= match ($diff->m) {
+                1 => Locale::get('month_ago'),
+                2, 3, 4 => Locale::get('months_ago_2_4'),
+                default => Locale::get('months_ago'),
+            };
+        } else if ($diff->d > 0) {
+            $elapsed .= $diff->d . ' ';
+
+            $elapsed .= match ($diff->d) {
+                1 => Locale::get('day_ago'),
+                2, 3, 4 => Locale::get('days_ago_2_4'),
+                default => Locale::get('days_ago'),
+            };
+        } else if ($diff->h > 0) {
+            $elapsed .= $diff->h . ' ';
+
+            $elapsed .= match ($diff->h) {
+                1 => Locale::get('hour_ago'),
+                2, 3, 4 => Locale::get('hours_ago_2_4'),
+                default => Locale::get('hours_ago'),
+            };
+        } else if ($diff->i > 0) {
+            $elapsed .= $diff->i . ' ';
+
+            $elapsed .= match ($diff->i) {
+                1 => Locale::get('minute_ago'),
+                2, 3, 4 => Locale::get('minutes_ago_2_4'),
+                default => Locale::get('minutes_ago'),
+            };
+        } else if ($diff->s > 0) {
+            $elapsed .= $diff->s . ' ';
+
+            $elapsed .= match ($diff->s) {
+                1 => Locale::get('second_ago'),
+                2, 3, 4 => Locale::get('seconds_ago_2_4'),
+                default => Locale::get('seconds_ago'),
+            };
+        }
+
+        return $elapsed;
+    }
 }
