@@ -24,6 +24,7 @@ final class Column
      * @param bool $index Флаг индекса
      * @param bool $unique Флаг уникального значения
      * @param bool $null Флаг нулевого значения
+     * @param ?string $update Значение при обновлении (CASCADE, SET NULL, RESTRICT, CURRENT_TIMESTAMP, etc.)
      * @param mixed $default Значение по умолчанию
      * @param ?object $foreign Список внешних ключей
      */
@@ -118,43 +119,6 @@ final class Column
 
         $this->null = true;
 
-        return $this;
-    }
-
-
-    public function onUpdateRestrict(): self
-    {
-        $this->update = 'RESTRICT';
-        return $this;
-    }
-
-    public function onUpdateCascade(): self
-    {
-        $this->update = 'CASCADE';
-        return $this;
-    }
-
-    public function onUpdateSetNull(): self
-    {
-        $this->update = 'SET NULL';
-        return $this;
-    }
-
-    public function onDeleteCascade(): self
-    {
-        $this->delete = 'CASCADE';
-        return $this;
-    }
-
-    public function onDeleteSetNull(): self
-    {
-        $this->delete = 'SET NULL';
-        return $this;
-    }
-
-    public function onDeleteRestrict(): self
-    {
-        $this->delete = 'RESTRICT';
         return $this;
     }
 
