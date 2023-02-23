@@ -30,6 +30,19 @@ class Articles extends Migration
                 ),
             ),
             new Column(
+                name: 'last_author_id',
+                type: 'bigint',
+                default: null,
+                index: true,
+                description: 'Последний редактор',
+                foreign: new Foreign(
+                    table: 'users',
+                    column: 'id',
+                    delete: 'SET NULL',
+                    update: 'CASCADE'
+                ),
+            ),
+            new Column(
                 name: 'category_id',
                 type: 'bigint',
                 default: null,

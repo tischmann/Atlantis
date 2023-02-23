@@ -20,6 +20,7 @@ class Article extends Model
 
     public function __construct(
         public ?int $author_id = null,
+        public ?int $last_author_id = null,
         public ?int $category_id = null,
         public string $locale = '',
         public string $title = '',

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Models\{Article, Category, Rating, View as ModelsView};
+use App\Models\{Article, Category, Rating, User, View as ModelsView};
 
 use Exception;
 
@@ -74,6 +74,8 @@ class ArticlesController extends Controller
         $tags = array_map('trim', $tags);
 
         $article->tags = $tags;
+
+        $article->author_id = User::current()->id;
 
         if (!$article->save()) {
             throw new Exception(Locale::get('article_save_error'));
@@ -167,6 +169,8 @@ class ArticlesController extends Controller
         $tags = array_map('trim', $tags);
 
         $article->tags = $tags;
+
+        $article->last_author_id = User::current()->id;
 
         static::removeTempImages($article);
 
