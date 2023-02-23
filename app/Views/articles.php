@@ -8,9 +8,13 @@
         foreach ($articles as $article) {
             Template::echo('articles-item', ['article' => $article]);
         }
+
+        Template::echo(
+            'intersection-loader-target',
+            [
+                'url' => "/fetch/articles/{$category->id}"
+            ]
+        );
         ?>
-        <div class="intersection-loader-target flex justify-center items-center" data-url="/fetch/articles/{$category->id}" data-page="{{pagination_page}}" data-limit="{{pagination_limit}}" data-search="{{search_value}}" data-sort="{{sort_type}}" data-order="{{sort_order}}">
-            <div class="spinner-grow inline-block w-8 h-8 bg-sky-500 rounded-full opacity-0" role="status"></div>
-        </div>
     </div>
 </main>

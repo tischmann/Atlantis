@@ -54,7 +54,7 @@ final class Template
                 ob_start();
             }
 
-            extract($this->args);
+            extract([...static::getCachedArgs(), ...$this->args]);
 
             require $file;
 
@@ -155,14 +155,7 @@ final class Template
             'nonce' => getenv('APP_NONCE'),
             'breadcrumbs' => '',
             'admin' => '',
-            'pagination_page' => $pagination->page,
-            'pagination_prev' => $pagination->prev,
-            'pagination_next' => $pagination->next,
-            'pagination_limit' => $pagination->limit,
-            'pagination_first' => $pagination->first,
-            'pagination_last' => $pagination->last,
-            'pagination_total' => $pagination->total,
-            'pagination_offset' => $pagination->offset,
+            'pagination' => $pagination,
             'search_value' => '',
             'sort_type' => $sorting->type,
             'sort_order' => $sorting->order,

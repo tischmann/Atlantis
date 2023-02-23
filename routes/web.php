@@ -332,7 +332,7 @@ if (User::current()->isAdmin()) {
 
     Router::add(new Route(
         controller: new ArticlesController(),
-        path: 'fetch/admin/articles/{category_id}',
+        path: 'fetch/admin/articles',
         action: 'fetchAdmin',
         method: 'POST',
         type: 'json',

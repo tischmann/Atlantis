@@ -10,7 +10,7 @@
         }
 
         Template::echo(
-            'admin/intersection-loader-target',
+            'intersection-loader-target',
             [
                 'url' => "/fetch/admin/users"
             ]

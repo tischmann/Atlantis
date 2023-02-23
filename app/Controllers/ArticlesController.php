@@ -562,43 +562,41 @@ class ArticlesController extends Controller
 
         $total = 0;
 
-        $limit = Pagination::DEFAULT_LIMIT;
+        $limit = intval($request->request('limit') ?? Pagination::DEFAULT_LIMIT);
+
+        $query = Article::query();
 
         if ($category_id) {
-            $limit = $request->request('limit');
+            $query->where('category_id', $category_id);
+        }
 
-            $limit = intval($limit ?? Pagination::DEFAULT_LIMIT);
+        $sort = $request->request('sort') ?: 'id';
 
-            $query = Article::query()
-                ->where('category_id', $category_id);
+        $order = $request->request('order') ?: 'desc';
 
-            $sort = $request->request('sort') ?: 'id';
+        $query->order($sort, $order);
 
-            $order = $request->request('order') ?: 'desc';
+        $total = $query->count();
 
-            $query->order($sort, $order);
+        if ($total > $limit) {
+            $page = intval($request->request('page') ?? 1);
 
-            $total = $query->count();
+            $offset = ($page - 1) * $limit;
 
-            if ($total > $limit) {
-                $page = intval($request->request('page') ?? 1);
+            if ($limit) $query->limit($limit);
 
-                $offset = ($page - 1) * $limit;
+            if ($offset) $query->offset($offset);
 
-                if ($limit) $query->limit($limit);
-
-                if ($offset) $query->offset($offset);
-
-                foreach (Article::fill($query) as $article) {
-                    $html .= Template::html(
-                        $template,
-                        [
-                            'article' => $article,
-                        ]
-                    );
-                }
+            foreach (Article::fill($query) as $article) {
+                $html .= Template::html(
+                    $template,
+                    [
+                        'article' => $article,
+                    ]
+                );
             }
         }
+
 
         $pagination = new Pagination(
             total: $total,

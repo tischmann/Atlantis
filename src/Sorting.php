@@ -14,8 +14,8 @@ class Sorting
     /**
      * Конструктор
      * 
-     * @param string $type Тип сортировки
-     * @param string $order Порядок сортировки
+     * @param string $type Тип сортировки (имя столбца в таблице)
+     * @param string $order Порядок сортировки (ASC, DESC)
      * 
      */
     public function __construct(
