@@ -1,1 +1,1 @@
-<option value="{{value}}" <?= $selected ? 'selected' : '' ?> title="{{title}}">{{label}}</option>
+<option value="{{value}}" <?= ($selected ?? false) ? 'selected' : '' ?> title="{{title}}">{{label}}</option>
