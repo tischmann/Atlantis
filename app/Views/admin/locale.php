@@ -11,16 +11,31 @@ include __DIR__ . "/../header.php"
         <?php
 
         if (empty($locale)) {
-            echo <<<HTML
-            <div class="relative mb-4" data-te-input-wrapper-init>
-                <input type="text" class="peer block min-h-[auto] w-full rounded border-0 bg-transparent py-[0.32rem] px-3 leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0" id="localeCode" placeholder="{{lang=locale_code}}" name="code" value="" autocomplete="off" required />
-                <label for="localeCode" class="pointer-events-none absolute top-0 left-3 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6] text-neutral-500 transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-neutral-200">{{lang=locale_code}}</label>
-            </div>
-            <div class="relative mb-4" data-te-input-wrapper-init>
-                <input type="text" class="peer block min-h-[auto] w-full rounded border-0 bg-transparent py-[0.32rem] px-3 leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0" id="localeTitle" placeholder="{{lang=locale_title}}" name="title" value="" autocomplete="off" />
-                <label for="localeTitle" class="pointer-events-none absolute top-0 left-3 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6] text-neutral-500 transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-neutral-200">{{lang=locale_title}}</label>
-            </div>
-            HTML;
+            Template::echo(
+                'admin/input-field',
+                [
+                    'type' => 'text',
+                    'label' => Locale::get('locale_code'),
+                    'name' => 'code',
+                    'value' => '',
+                    'required' => true,
+                    'autocomplete' => false,
+                    'id' => 'localeCode',
+                ]
+            );
+
+            Template::echo(
+                'admin/input-field',
+                [
+                    'type' => 'text',
+                    'label' => Locale::get('locale_title'),
+                    'name' => 'title',
+                    'value' => '',
+                    'required' => true,
+                    'autocomplete' => false,
+                    'id' => 'localeTitle',
+                ]
+            );
         }
 
         ?>
@@ -28,26 +43,39 @@ include __DIR__ . "/../header.php"
         <div class="mb-4">
             <?php
 
-            if (empty($locale)) {
-                echo <<<HTML
-                <label class="mb-4 block text-neutral-500 dark:text-neutral-200">{{lang=locale_strings}}</label>
-                HTML;
-            }
-
             $i = 0;
 
             foreach ($strings as $key => $value) {
                 echo <<<HTML
-                <div class="w-full flex items-center gap-4 mb-4 strings-template">
-                    <div class="relative flex-grow" data-te-input-wrapper-init>
-                        <input type="text" class="peer block min-h-[auto] w-full rounded border-0 bg-transparent py-[0.32rem] px-3 leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0" id="localeStringInput-{$i}-0" placeholder="{{lang=locale_key}}" name="keys[]" value="{$key}" autocomplete="off" />
-                        <label for="localeStringInput-{$i}-0" class="pointer-events-none absolute top-0 left-3 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6] text-neutral-500 transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-neutral-200">{{lang=locale_key}}</label>
-                    </div>
-                    <div class="relative flex-grow" data-te-input-wrapper-init>
-                        <input type="text" class="peer block min-h-[auto] w-full rounded border-0 bg-transparent py-[0.32rem] px-3 leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0" id="localeStringInput-{$i}-1" placeholder="{{lang=locale_value}}" name="values[]" value="{$value}" autocomplete="off" />
-                        <label for="localeStringInput-{$i}-1" class="pointer-events-none absolute top-0 left-3 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6] text-neutral-500 transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-neutral-200">{{lang=locale_value}}</label>
-                    </div>
-                    <i class="delete-string fas fa-times text-pink-600 hover:text-pink-500 text-xl cursor-pointer"></i>
+                <div class="w-full flex items-center gap-4 strings-template">
+                HTML;
+
+                Template::echo(
+                    'admin/input-field',
+                    [
+                        'type' => 'text',
+                        'label' => Locale::get('locale_key'),
+                        'name' => 'keys[]',
+                        'value' => $key,
+                        'id' => "localeString-{$i}-0",
+                        'flex' => true,
+                    ]
+                );
+
+                Template::echo(
+                    'admin/input-field',
+                    [
+                        'type' => 'text',
+                        'label' => Locale::get('locale_value'),
+                        'name' => 'values[]',
+                        'value' => $key,
+                        'id' => "localeString-{$i}-1",
+                        'flex' => true,
+                    ]
+                );
+
+                echo <<<HTML
+                    <i class="mb-4 delete-string fas fa-times text-pink-600 hover:text-pink-500 text-xl cursor-pointer"></i>                    
                 </div>
                 HTML;
 
@@ -95,13 +123,13 @@ include __DIR__ . "/../header.php"
 
             clone.querySelectorAll('input').forEach(element => {
                 element.value = ''
-                element.id = `localeStringInput-${i}-${j++}`
+                element.id = `localeString-${i}-${j++}`
             })
 
             j = 0
 
             clone.querySelectorAll('label').forEach(element => {
-                element.setAttribute('for', `localeStringInput-${i}-${j++}`)
+                element.setAttribute('for', `localeString-${i}-${j++}`)
             })
 
             clone.querySelectorAll('.delete-string').forEach(element => {
