@@ -68,7 +68,7 @@ include __DIR__ . "/../header.php"
                         'type' => 'text',
                         'label' => Locale::get('locale_value'),
                         'name' => 'values[]',
-                        'value' => $key,
+                        'value' => $value,
                         'id' => "localeString-{$i}-1",
                         'flex' => true,
                     ]
