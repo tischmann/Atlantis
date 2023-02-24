@@ -244,7 +244,7 @@ new Template(
 
 Изображения для статей хранятся в папке: /public/images/articles/id, где id - id статьи.
 
-необходимо предоставить права на запись в папку: /public.
+необходимо предоставить права на запись в папки: public, lang
 
 ```bash
 sudo chown -R www-data:www-data /path/to/public
