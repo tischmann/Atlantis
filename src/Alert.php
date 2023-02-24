@@ -42,20 +42,19 @@ class Alert
 
         $traceHtml = '';
 
-        if ($trace) {
+        if ($trace && boolval(getenv('ADD_DEBUG'))) {
             $items = '';
 
             foreach ($exception->getTrace() as $key => $item) {
-                $items .= Template::make('trace-item', [
+                $items .= Template::html('trace-item', [
                     'id' => $key,
                     'file' => $item['file'],
                     'line' => $item['line'],
                     'function' => $item['function'],
-                ])->render();
+                ]);
             }
 
-            $traceHtml .= Template::make('trace', ['items' => $items])
-                ->render();
+            $traceHtml .= Template::html('trace', ['items' => $items]);
         }
 
         $accept = Request::accept();

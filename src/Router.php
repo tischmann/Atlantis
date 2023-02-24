@@ -51,7 +51,7 @@ final class Router
      * @return mixed
      * @throws Exception
      */
-    public function resolve(): mixed
+    public function resolve()
     {
         $routes = static::$routes[$this->request->method] ?? [];
 
@@ -73,8 +73,8 @@ final class Router
             }
         }
 
-        $route = '"' . implode("/", $this->request->uri) . '"';
+        $path = '"' . implode("/", $this->request->uri) . '"';
 
-        throw new Exception(Locale::get('route_not_found') . ": {$route}", 404);
+        throw new Exception(Locale::get('route_not_found') . ": {$path}", 404);
     }
 }
