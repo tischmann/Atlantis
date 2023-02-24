@@ -51,6 +51,12 @@ class Users extends Migration
                 description: 'Примечания',
             ),
             new Column(
+                name: 'refresh_token',
+                type: 'varchar',
+                default: null,
+                description: 'Токен обновления',
+            ),
+            new Column(
                 name: 'status',
                 type: 'tinyint',
                 default: '0',
