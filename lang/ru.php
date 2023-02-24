@@ -109,6 +109,7 @@ return [
     'signin_password' => 'Пароль',
     'signin_remember' => 'Запомнить меня',
     'signin_submit' => 'Войти',
+    'signin_error_user_disabled' => 'Пользователь отключен',
     'sorting' => 'Сортировка',
     'sorting__' => 'По умолчанию',
     'sorting_login_asc' => 'От А до Я',

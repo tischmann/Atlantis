@@ -111,6 +111,13 @@ class UsersController extends Controller
             ));
         }
 
+        if (!$user->status) {
+            Response::redirect('/signin', new Alert(
+                status: 0,
+                message: Locale::get('signin_error_user_disabled')
+            ));
+        }
+
         if (!password_verify($password, $user->password)) {
             Response::redirect('/signin', new Alert(
                 status: 0,
