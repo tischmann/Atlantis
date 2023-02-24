@@ -107,9 +107,9 @@ include __DIR__ . "/../header.php"
             <div>
                 <div class="mb-4">
                     <input type="hidden" value="<?= $user->avatar ?>" name="avatar" id="userAvatarInput">
-                    <input type='file' id="userAvatarFile" class="hidden" aria-label="{{lang=article_image}}">
+                    <input type='file' id="userAvatarFile" class="hidden" aria-label="{{lang=article_image}}" accept=".jpg, .png, .jpeg, .gif, .bmp, .webp">
                     <img src="<?= $user->avatar_src ?>" id="userAvatar" width="400" height="400" alt="{{lang=user_avatar}}" class="rounded w-full object-cover border border-gray-300 cursor-pointer">
-                    <button type="button" data-te-ripple-init data-te-ripple-color="light" id="imageDeleteButton" class="mt-4 w-full hidden flex-grow md:flex-grow-0 px-6 py-2.5 bg-pink-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-pink-700 hover:shadow-lg focus:bg-pink-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-rpinked-800 active:shadow-lg transition duration-150 ease-in-out">
+                    <button type="button" data-te-ripple-init data-te-ripple-color="light" id="imageDeleteButton" class="mt-4 w-full inline-block flex-grow md:flex-grow-0 px-6 py-2.5 bg-pink-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-pink-700 hover:shadow-lg focus:bg-pink-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-rpinked-800 active:shadow-lg transition duration-150 ease-in-out">
                         {{lang=delete_image}}
                     </button>
                 </div>
@@ -147,6 +147,18 @@ include __DIR__ . "/../header.php"
 
         const imageDeleteButton = document.getElementById('imageDeleteButton')
 
+        const errorHandler = (message) => {
+            new Dialog({
+                title: `{{lang=warning}}`,
+                message: message,
+                buttons: [{
+                    text: `{{lang=yes}}`,
+                    class: `bg-pink-600 text-white hover:bg-pink-500 focus:bg-pink-500 active:bg-pink-500`,
+                }, ],
+                onclose: () => window.location.reload()
+            }).show()
+        }
+
         const loadImage = (file, width, height) => {
             if (!file || !width || !height) return
 
@@ -166,30 +178,30 @@ include __DIR__ . "/../header.php"
                     },
                     body: formData
                 })
-                .then(response => response.json()
-                    .then(json => {
-                        if (!json?.status) {
-                            console.error(json)
-                            return alert(json?.message || 'Error')
-                        }
+                .then(response => {
+                    if (response.status !== 200) {
+                        response.text().then(text => {
+                            return errorHandler(text)
+                        })
+                    }
 
-                        input.value = json.image
+                    response.json()
+                        .then(json => {
+                            if (!json?.status) {
+                                return errorHandler(json?.message || 'Error')
+                            }
 
-                        img.src = json.location
+                            input.value = json.image
 
-                        csrf = json.csrf
+                            img.src = json.location
 
-                        imageDeleteButton.classList.remove('hidden')
-
-                        imageDeleteButton.classList.add('inline-block')
-                    })
-                    .catch(error => {
-                        alert(error)
-                        console.error('Error:', error)
-                    })
-                ).catch(error => {
-                    alert(error)
-                    console.error('Error:', error)
+                            csrf = json.csrf
+                        })
+                        .catch(error => {
+                            errorHandler(error)
+                        })
+                }).catch(error => {
+                    errorHandler(error)
                 })
 
         }
@@ -207,8 +219,6 @@ include __DIR__ . "/../header.php"
         imageDeleteButton.addEventListener('click', () => {
             img.setAttribute('src', '/images/placeholder.svg')
             input.value = ''
-            imageDeleteButton.classList.add('hidden')
-            imageDeleteButton.classList.remove('inline-block')
         })
     </script>
 </main>

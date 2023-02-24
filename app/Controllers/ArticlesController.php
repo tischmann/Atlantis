@@ -374,15 +374,6 @@ class ArticlesController extends Controller
             exit;
         }
 
-        if (preg_match("/([^\w\s\d\-_~,;:\[\]\(\).])|([\.]{2,})/", $temp['name'])) {
-            Response::send([
-                'csrf' => $csrf_token,
-                'error' => 'Invalid file name'
-            ]);
-
-            exit;
-        }
-
         $extensions = ["gif", "jpg", "png", "webp", "jpeg", "bmp"];
 
         $fileExtension = strtolower(
@@ -445,10 +436,10 @@ class ArticlesController extends Controller
 
         if ($src_width > Article::MAX_WIDTH) {
             $width = Article::MAX_WIDTH;
-            $height = ceil($width / $src_ratio);
+            $height = intval($width / $src_ratio);
         } else if ($src_height > Article::MAX_HEIGHT) {
             $height = Article::MAX_HEIGHT;
-            $width = ceil($height * $src_ratio);
+            $width = intval($height * $src_ratio);
         }
 
         $image = ($width && $height) ? Image::resize($im, $width, $height) : $im;
