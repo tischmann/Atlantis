@@ -381,7 +381,7 @@ class CategoriesController extends Controller
 
         $query = Article::query()
             ->where('category_id', $category_id)
-            ->order('updated_at', 'DESC');
+            ->order('created_at', 'DESC');
 
         $category = Category::find($category_id);
 

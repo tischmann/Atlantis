@@ -65,8 +65,8 @@ class ArticlesController extends Controller
                     new Sorting(),
                     new Sorting('title', 'asc'),
                     new Sorting('title', 'desc'),
-                    new Sorting('updated_at', 'asc'),
-                    new Sorting('updated_at', 'desc'),
+                    new Sorting('created_at', 'asc'),
+                    new Sorting('created_at', 'desc'),
                     new Sorting('visible', 'asc'),
                     new Sorting('visible', 'desc'),
                 ]
@@ -76,7 +76,7 @@ class ArticlesController extends Controller
 
     protected function sort(Query &$query, Request $request): Query
     {
-        $sort = $request->request('sort') ?: 'updated_at';
+        $sort = $request->request('sort') ?: 'created_at';
 
         $order = $request->request('order') ?: 'desc';
 
