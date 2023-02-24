@@ -13,6 +13,7 @@ use Tischmann\Atlantis\{
     Cookie,
     Facade,
     JWT,
+    Locale,
     Migration,
     Model,
     Request,
@@ -204,7 +205,7 @@ class User extends Model
 
         if ($user->refresh_token !== $refresh_token || !$refresh_token) {
             $this->signOut();
-            throw new TokenExpiredException();
+            throw new TokenExpiredException(Locale::get('jwr_token_expired'));
         }
 
         return $this->getJWToken($payload);
@@ -315,12 +316,14 @@ class User extends Model
      */
     public function signOut(): self
     {
+
+        Cookie::delete('jwt');
+
+        Cookie::delete('jwr');
+
+        Cookie::delete('remember');
+
         if ($this->exists()) {
-            Cookie::delete('jwt');
-
-            Cookie::delete('jwr');
-
-            Cookie::delete('remember');
 
             $this->token = '';
 

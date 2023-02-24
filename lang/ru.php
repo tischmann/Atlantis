@@ -110,6 +110,7 @@ return [
     'signin_remember' => 'Запомнить меня',
     'signin_submit' => 'Войти',
     'signin_error_user_disabled' => 'Пользователь отключен',
+    'jwr_token_expired' => 'Время жизни токена истекло',
     'sorting' => 'Сортировка',
     'sorting__' => 'По умолчанию',
     'sorting_login_asc' => 'От А до Я',
