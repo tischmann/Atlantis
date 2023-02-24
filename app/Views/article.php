@@ -27,6 +27,7 @@
             <img class="lazy w-full md:max-w-lg md:float-left mb-4 md:mr-8 rounded-xl shadow-md" data-src="<?= $article->image_url ?>" src="/images/placeholder.svg" width="400" height="300" alt="<?= $article->title ?>">
             <?= html_entity_decode($article->full_text) ?>
         </div>
+        <?php require __DIR__ . "/tags.php" ?>
     </article>
     <script src="/js/rating.js" nonce="{{nonce}}"></script>
     <script nonce="{{nonce}}">
