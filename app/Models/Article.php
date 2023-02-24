@@ -14,6 +14,8 @@ class Article extends Model
 
     public string $image_url = '';
 
+    public array $images = [];
+
     public int $views = 0;
 
     public float $rating = 0;
@@ -47,6 +49,8 @@ class Article extends Model
         $this->rating = $this->getRating();
 
         $this->views = $this->getViews();
+
+        $this->images = $this->getImages();
     }
 
     public function __fill(object|array $traversable): self
@@ -151,6 +155,31 @@ class Article extends Model
         }
 
         return View::query()->where('article_id', $this->id)->count();
+    }
+
+    public function getImages(): array
+    {
+        $images = [];
+
+        preg_match_all(
+            '/<img[^>]+>/i',
+            strval($this->full_text),
+            $matches,
+            PREG_SET_ORDER
+        );
+
+        foreach ($matches as $match) {
+            preg_match('/src="([^"]+)/i', $match[0], $image);
+
+            if ($image) {
+                $images[] = [
+                    'name' => $image[1],
+                    'url' => "/images/articles/{$this->id}/{$image[1]}",
+                ];
+            }
+        }
+
+        return $images;
     }
 
     public static function table(): Migration
