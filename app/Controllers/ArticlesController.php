@@ -724,7 +724,7 @@ class ArticlesController extends Controller
             [
                 'pagination' => $pagination,
                 'breadcrumbs' => [
-                    new Breadcrumb($category->slug),
+                    new Breadcrumb($category->title),
                 ],
                 'category' => $category,
                 'articles' => Article::fill($query),
