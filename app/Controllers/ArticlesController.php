@@ -341,6 +341,14 @@ class ArticlesController extends Controller
             ? "images/articles/{$article->id}"
             : 'images/articles/temp';
 
+        if (!is_dir("images/articles")) {
+            mkdir("images/articles", 0775, true);
+        }
+
+        if (!is_dir("images/articles/temp")) {
+            mkdir("images/articles/temp", 0775, true);
+        }
+
         if (!is_dir($imageFolder)) {
             mkdir($imageFolder, 0775, true);
         }
@@ -387,9 +395,13 @@ class ArticlesController extends Controller
             exit;
         }
 
-        $filename = md5(bin2hex(random_bytes(128))) . '.webp';
+        $extension = 'webp';
 
-        $filetowrite = $imageFolder . "/" . $filename;
+        $filename = md5(bin2hex(random_bytes(128)));
+
+        $filetowrite =  "{$imageFolder}/{$filename}.{$extension}";
+
+        $thumbtowrite = "{$imageFolder}/thumb_{$filename}.{$extension}";
 
         $quality = 80;
 
@@ -421,9 +433,11 @@ class ArticlesController extends Controller
 
         if ($width && $height) {
             $im = Image::resize($im, $width, $height);
+
+            $thumb = Image::resize($im, 200, 150);
         }
 
-        if (!imagewebp($im, $filetowrite, $quality)) {
+        if (!imagewebp($im, $filetowrite, $quality) || !imagewebp($thumb, $thumbtowrite, $quality)) {
             Response::json([
                 'csrf' => $csrf_token,
                 'error' => 'Error converting image to webp'
@@ -573,7 +587,10 @@ class ArticlesController extends Controller
             PREG_SET_ORDER
         );
 
-        foreach ($matches as $match) $imagesInArticle[] = $match[1];
+        foreach ($matches as $match) {
+            $imagesInArticle[] = $match[1];
+            $imagesInArticle[] = "thumb_{$match[1]}";
+        }
 
         $path = "{$root}/public/images/articles/{$article->id}/*.webp";
 
