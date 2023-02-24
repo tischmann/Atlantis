@@ -103,7 +103,7 @@ include __DIR__ . "/../header.php";
             <div class="mb-4">
                 <input type="hidden" value="<?= $article->image ?>" name="image" id="articleImageInput">
                 <input type='file' id="articleImageFile" class="hidden" aria-label="{{lang=article_image}}" accept=".jpg, .png, .jpeg, .gif, .bmp, .webp">
-                <img src="/images/articles/<?= $article->id ?>/<?= $article->image ?>" id="articleImage" width="" height="" alt="<?= $article->title ?>" class="rounded w-full object-cover">
+                <img src="<?= $article->id ? "/images/articles/{$article->id}/{$article->image}" : "/images/placeholder.svg" ?>" id="articleImage" width="" height="" alt="<?= $article->title ?>" class="rounded w-full object-cover">
                 <button type="button" data-te-ripple-init data-te-ripple-color="light" id="imageDeleteButton" class="mt-4 w-full block text-center flex-grow md:flex-grow-0 px-6 py-2.5 bg-pink-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-pink-700 hover:shadow-lg focus:bg-pink-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-rpinked-800 active:shadow-lg transition duration-150 ease-in-out">
                     {{lang=delete_image}}
                 </button>
