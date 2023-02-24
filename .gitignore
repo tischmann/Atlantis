@@ -10,3 +10,5 @@ composer.lock
 *.pem
 tailwind.config.js
 minify.sh
+/public/images/articles
+/public/images/avatars
