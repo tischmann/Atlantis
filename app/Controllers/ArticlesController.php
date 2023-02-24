@@ -245,7 +245,7 @@ class ArticlesController extends Controller
 
         $image = $request->request('image');
 
-        $article->image = $image ?: null;
+        $article->image = $image ? preg_replace('/thumb_/', '', $image) : null;
 
         $short_text =  $request->request('short_text');
 
@@ -437,18 +437,32 @@ class ArticlesController extends Controller
                 exit;
         }
 
-        $image = $width && $height ? Image::resize($im, $width, $height) : $im;
+        $src_width = imagesx($im);
+
+        $src_height = imagesy($im);
+
+        $src_ratio = $src_width / $src_height;
+
+        if ($src_width > Article::MAX_WIDTH) {
+            $width = Article::MAX_WIDTH;
+            $height = ceil($width / $src_ratio);
+        } else if ($src_height > Article::MAX_HEIGHT) {
+            $height = Article::MAX_HEIGHT;
+            $width = ceil($height * $src_ratio);
+        }
+
+        $image = ($width && $height) ? Image::resize($im, $width, $height) : $im;
 
         $thumb = Image::resize(
-            $image,
+            $im,
             Article::THUMB_WIDTH,
             Article::THUMB_HEIGHT
         );
 
-        if (
-            !imagewebp($image, $filetowrite, $quality) ||
-            !imagewebp($thumb, $thumbtowrite, $quality)
-        ) {
+        $success = imagewebp($image, $filetowrite, $quality) &&
+            imagewebp($thumb, $thumbtowrite, $quality);
+
+        if (!$success) {
             Response::json([
                 'csrf' => $csrf_token,
                 'error' => 'Error converting image to webp'
@@ -463,13 +477,17 @@ class ArticlesController extends Controller
 
         $baseurl = $protocol . $_SERVER["HTTP_HOST"];
 
-        $location = $baseurl . "/" . $thumbtowrite;
+        $location = $baseurl . "/" . $filetowrite;
+
+        $thumb_location = $baseurl . "/" . $thumbtowrite;
 
         Response::json([
             'status' => 1,
             'csrf' => $csrf_token,
             'image' => basename($location),
-            'location' => $location
+            'thumb' => basename($thumb_location),
+            'location' => $location,
+            'thumb_location' => $thumb_location,
         ]);
     }
 

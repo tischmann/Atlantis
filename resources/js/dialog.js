@@ -1,5 +1,10 @@
 class Dialog {
-    constructor({ title, message, buttons = [] } = {}) {
+    constructor({
+        title,
+        message,
+        buttons = [],
+        onclose = function () {}
+    } = {}) {
         this.title = title
 
         this.message = message
@@ -9,6 +14,8 @@ class Dialog {
         this.id = 'dialog-' + (Math.random() + 1).toString(36).substring(16)
 
         this.dialog = this.create()
+
+        this.dialog.onclose = onclose
 
         document.body.appendChild(this.dialog)
     }
@@ -47,7 +54,7 @@ class Dialog {
 
         message.classList.add('mb-4')
 
-        message.innerText = this.message
+        message.innerHTML = this.message
 
         const buttons = document.createElement('div')
 
@@ -107,7 +114,10 @@ class Dialog {
             buttonElement.innerText = button?.text || 'Button'
 
             buttonElement.addEventListener('click', () => {
-                button?.callback()
+                if (typeof button?.callback === 'function') {
+                    button?.callback()
+                }
+
                 this.dialog.close()
             })
 

@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\{Category};
+use App\Models\{Article, Category};
 
 use Tischmann\Atlantis\{Locale, Template};
 
@@ -101,83 +101,10 @@ include __DIR__ . "/../header.php";
                 ?>
             </div>
             <div class="mb-4">
-                <?php
-
-                Template::echo(
-                    'admin/select-field',
-                    [
-                        'label' => Locale::get('article_image_dimensions'),
-                        'name' => 'dimensions',
-                        'id' => 'articleImageSelect',
-                        'options' => Template::html('admin/option', [
-                            'value' => '1920|1080',
-                            'label' => '1920x1080 (16:9)',
-                            'title' => '1920x1080 (16:9)',
-                            'selected' => false
-                        ]) . Template::html('admin/option', [
-                            'value' => '1280|720',
-                            'label' => '1280x720 (16:9)',
-                            'title' => '1280x720 (16:9)',
-                            'selected' => false
-                        ]) . Template::html('admin/option', [
-                            'value' => '1024|576',
-                            'label' => '1024x576 (16:9)',
-                            'title' => '1024x576 (16:9)',
-                            'selected' => false
-                        ]) . Template::html('admin/option', [
-                            'value' => '800|450',
-                            'label' => '800x450 (16:9)',
-                            'title' => '800x450 (16:9)',
-                            'selected' => false
-                        ]) . Template::html('admin/option', [
-                            'value' => '1920|1440',
-                            'label' => '1920x1440 (4:3)',
-                            'title' => '1920x1440 (4:3)',
-                            'selected' => false
-                        ]) . Template::html('admin/option', [
-                            'value' => '1280|960',
-                            'label' => '1280x960 (4:3)',
-                            'title' => '1280x960 (4:3)',
-                            'selected' => false
-                        ]) . Template::html('admin/option', [
-                            'value' => '1024|768',
-                            'label' => '1024x768 (4:3)',
-                            'title' => '1024x768 (4:3)',
-                            'selected' => false
-                        ]) . Template::html('admin/option', [
-                            'value' => '800|600',
-                            'label' => '800x600 (4:3)',
-                            'title' => '800x600 (4:3)',
-                            'selected' => true
-                        ]) . Template::html('admin/option', [
-                            'value' => '1920|1920',
-                            'label' => '1920x1920 (1:1)',
-                            'title' => '1920x1920 (1:1)',
-                            'selected' => false
-                        ]) . Template::html('admin/option', [
-                            'value' => '1280|1280',
-                            'label' => '1280x1280 (1:1)',
-                            'title' => '1280x1280 (1:1)',
-                            'selected' => false
-                        ]) . Template::html('admin/option', [
-                            'value' => '1024|1024',
-                            'label' => '1024x1024 (1:1)',
-                            'title' => '1024x1024 (1:1)',
-                            'selected' => false
-                        ]) . Template::html('admin/option', [
-                            'value' => '800|800',
-                            'label' => '800x800 (1:1)',
-                            'title' => '800x800 (1:1)',
-                            'selected' => false
-                        ])
-                    ]
-                );
-
-                ?>
                 <input type="hidden" value="<?= $article->image ?>" name="image" id="articleImageInput">
                 <input type='file' id="articleImageFile" class="hidden" aria-label="{{lang=article_image}}">
-                <img src="<?= $article->image_url ?>" id="articleImage" width="800" height="600" alt="<?= $article->title ?>" class="rounded w-full object-cover">
-                <button type="button" data-te-ripple-init data-te-ripple-color="light" id="imageDeleteButton" class="mt-4 w-full hidden flex-grow md:flex-grow-0 px-6 py-2.5 bg-pink-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-pink-700 hover:shadow-lg focus:bg-pink-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-rpinked-800 active:shadow-lg transition duration-150 ease-in-out">
+                <img src="/images/articles/<?= $article->id ?>/<?= $article->image ?>" id="articleImage" width="" height="" alt="<?= $article->title ?>" class="rounded w-full object-cover">
+                <button type="button" data-te-ripple-init data-te-ripple-color="light" id="imageDeleteButton" class="mt-4 w-full block text-center flex-grow md:flex-grow-0 px-6 py-2.5 bg-pink-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-pink-700 hover:shadow-lg focus:bg-pink-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-rpinked-800 active:shadow-lg transition duration-150 ease-in-out">
                     {{lang=delete_image}}
                 </button>
             </div>
@@ -259,14 +186,14 @@ include __DIR__ . "/../header.php";
 
                 const json = JSON.parse(xhr.responseText);
 
-                if (!json || typeof json.location != 'string') {
+                if (!json || typeof json.thumb_location != 'string') {
                     reject('Invalid JSON: ' + xhr.responseText);
                     return;
                 }
 
                 csrf = json.csrf
 
-                resolve(json.location);
+                resolve(json.thumb_location);
             };
 
             xhr.onerror = () => {
@@ -309,12 +236,22 @@ include __DIR__ . "/../header.php";
 
         const input = document.getElementById('articleImageInput')
 
-        const dimensions = document.getElementById('articleImageSelect')
-
         const imageDeleteButton = document.getElementById('imageDeleteButton')
 
+        const errorHandler = (message) => {
+            new Dialog({
+                title: `{{lang=warning}}`,
+                message: message,
+                buttons: [{
+                    text: `{{lang=yes}}`,
+                    class: `bg-pink-600 text-white hover:bg-pink-500 focus:bg-pink-500 active:bg-pink-500`,
+                }, ],
+                onclose: () => window.location.reload()
+            }).show()
+        }
+
         const loadImage = (file, width, height) => {
-            if (!file || !width || !height) return
+            if (!file) return
 
             const formData = new FormData();
 
@@ -332,15 +269,24 @@ include __DIR__ . "/../header.php";
                     },
                     body: formData
                 })
-                .then(response => response.json())
-                .then(data => {
-                    input.value = data.image
-                    img.src = data.location
-                    csrf = data.csrf
-                    imageDeleteButton.classList.remove('hidden')
-                })
-                .catch(error => {
-                    console.error('Error:', error)
+                .then(response => {
+                    if (response.status !== 200) {
+                        response.text().then(text => {
+                            return errorHandler(text)
+                        })
+                    }
+
+                    response.json()
+                        .then(json => {
+                            input.value = json.image
+                            img.src = json.location
+                            csrf = json.csrf
+                        })
+                        .catch(error => {
+                            errorHandler(error)
+                        })
+                }).catch(error => {
+                    errorHandler(error)
                 })
         }
 
@@ -354,17 +300,9 @@ include __DIR__ . "/../header.php";
             file.dispatchEvent(new MouseEvent('click'));
         })
 
-        dimensions.addEventListener('change', function(event) {
-            const [width, height] = event.target.value.split('|')
-            img.setAttribute('width', width)
-            img.setAttribute('height', height)
-        })
-
-
         imageDeleteButton.addEventListener('click', () => {
             img.setAttribute('src', '/images/placeholder.svg')
             input.value = ''
-            imageDeleteButton.classList.add('hidden')
         })
     </script>
 </main>
