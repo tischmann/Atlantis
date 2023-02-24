@@ -67,6 +67,7 @@ class Users extends Migration
             'login' => 'administrator',
             'password' => password_hash('Flvbybcnhfn0h', PASSWORD_DEFAULT),
             'role' => User::ROLE_ADMIN,
+            'status' => 1
         ]);
     }
 }
