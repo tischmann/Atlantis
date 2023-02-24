@@ -90,7 +90,14 @@ final class Template
                     $replace = CSRF::set()[1];
                     break;
                 default:
-                    if (!array_key_exists($key, $args)) continue 2;
+                    if (!array_key_exists($key, $args)) {
+                        if (substr($key, 0, 5) === 'lang=') {
+                            $replace = substr($key, 5);
+                            break;
+                        } else {
+                            continue 2;
+                        }
+                    }
 
                     $replace = $this->stringify($args[$key]);
                     break;

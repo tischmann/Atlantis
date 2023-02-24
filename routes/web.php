@@ -15,8 +15,6 @@ use App\Models\User;
 
 use Tischmann\Atlantis\{Locale, Router, Route};
 
-use function PHPSTORM_META\type;
-
 // Главная
 Router::add(new Route(
     controller: new IndexController(),
