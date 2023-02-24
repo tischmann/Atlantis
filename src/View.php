@@ -6,10 +6,10 @@ namespace Tischmann\Atlantis;
 
 final class View
 {
-    protected Template $template;
+    protected Template $templateInstance;
 
     public function __construct(
-        public string $view,
+        public string $template,
         public array $args = [],
         string $layout = 'default'
     ) {
@@ -17,15 +17,12 @@ final class View
 
         Session::delete('alert');
 
-        $this->template = new Template(
+        $this->templateInstance = new Template(
             "layouts/{$layout}",
             [
-                ...$args,
+                ...$this->args,
                 'alert' => $alert->toHtml(),
-                'body' => Template::make(
-                    template: $view,
-                    args: $args
-                )->render(),
+                'body' => Template::html($this->template, $this->args),
             ]
         );
     }
@@ -52,6 +49,6 @@ final class View
 
     public function render(): string
     {
-        return $this->template->render();
+        return $this->templateInstance->render();
     }
 }

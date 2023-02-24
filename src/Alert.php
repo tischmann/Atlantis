@@ -88,8 +88,8 @@ class Alert
     ) {
         Response::send(
             View::make(
-                view: 'error',
-                args: [
+                'error',
+                [
                     'message' => "[{$errno}]: {$errstr} in {$errfile} at line {$errline}",
                     'trace' => ''
                 ]
