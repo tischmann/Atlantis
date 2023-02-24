@@ -616,6 +616,10 @@ class UsersController extends Controller
     {
         $this->checkAdmin();
 
+        $this->sort($query, $request);
+
+        $this->search($query, $request, ['login']);
+
         $this->fetch(
             $request,
             User::query(),

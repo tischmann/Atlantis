@@ -30,16 +30,16 @@ Router::add(new Route(
 ));
 
 Router::add(new Route(
-    controller: new CategoriesController(),
-    path: 'category/{id}',
-    action: 'getArticles',
+    controller: new ArticlesController(),
+    path: 'category/{slug}',
+    action: 'showArticlesInCategory',
     method: 'GET',
 ));
 
 Router::add(new Route(
     controller: new ArticlesController(),
-    path: 'fetch/articles/{category_id}',
-    action: 'fetchArticles',
+    path: 'fetch/category/{slug}',
+    action: 'fetchArticlesInCategory',
     method: 'POST',
     type: 'json',
     accept: 'json'

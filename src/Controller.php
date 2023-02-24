@@ -46,7 +46,11 @@ class Controller
         Request $request,
         array $columns
     ): Query {
-        $search = strip_tags(strval($request->request('search')));
+        $search = strval($request->request('search'));
+
+        $search = strip_tags($search);
+
+        if (mb_strlen($search) == 0) return $query;
 
         if ($search) {
             $query->where(function (&$nested) use ($columns, $search) {
@@ -79,10 +83,6 @@ class Controller
         $total = 0;
 
         $limit = intval($request->request('limit') ?? $limit);
-
-        $this->sort($query, $request);
-
-        $this->search($query, $request, ['login']);
 
         $total = $query->count();
 

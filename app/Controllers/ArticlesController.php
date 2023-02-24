@@ -92,6 +92,10 @@ class ArticlesController extends Controller
 
         $query = Article::query();
 
+        $this->sort($query, $request);
+
+        $this->search($query, $request, ['title']);
+
         $this->fetch(
             $request,
             $query,
@@ -507,7 +511,7 @@ class ArticlesController extends Controller
                 'breadcrumbs' => [
                     new Breadcrumb(
                         $article->category->title,
-                        "/" . getenv('APP_LOCALE') . "/category/{$article->category_id}",
+                        "/" . getenv('APP_LOCALE') . "/category/{$article->category->slug}",
                     ),
                     new Breadcrumb($article->title),
                 ],
@@ -623,40 +627,6 @@ class ArticlesController extends Controller
     }
 
     /**
-     * Динамическая подгрузка статей
-     */
-    public function fetchArticles(Request $request)
-    {
-        $this->checkAdmin();
-
-        $query = Article::query();
-
-        $category_id = $request->route('category_id');
-
-        if ($category_id) $query->where('category_id', $category_id);
-
-        $this->fetch(
-            $request,
-            $query,
-            function ($query) {
-                $html = '';
-
-                foreach (Article::fill($query) as $article) {
-                    $html .= Template::html(
-                        'articles-item',
-                        [
-                            'article' => $article,
-                        ]
-                    );
-                }
-
-                return $html;
-            },
-            static::ADMIN_FETCH_LIMIT
-        );
-    }
-
-    /**
      * Установка рейтинга статьи
      *
      * @param Request $request
@@ -709,5 +679,117 @@ class ArticlesController extends Controller
             'csrf' => $csrf_token,
             'message' => $result ? 'OK' : Locale::get('rating_save_error'),
         ]);
+    }
+
+    public function showArticlesInCategory(Request $request)
+    {
+        $slug = $request->route('slug');
+
+        $category = Category::find($slug, 'slug');
+
+        assert($category instanceof Category);
+
+        if (!$category->id) {
+            throw new Exception(Locale::get('category_not_found'));
+        }
+
+        $id_list = [];
+
+        if ($category->visible) $id_list = [$category->id];
+
+        foreach ($category->getAllChildren() as $child) {
+            assert($child instanceof Category);
+
+            if (!$child->visible) continue;
+
+            $id_list[] = $child->id;
+        }
+
+        $query = Article::query()
+            ->where('category_id', '()', $id_list)
+            ->where('visible', 1)
+            ->limit(Pagination::DEFAULT_LIMIT);
+
+        $this->sort($query, $request);
+
+        $this->search($query, $request, ['title', 'short_text', 'full_text']);
+
+        $pagination = new Pagination(
+            total: $query->count(),
+            limit: Pagination::DEFAULT_LIMIT,
+        );
+
+        View::send(
+            'articles',
+            [
+                'pagination' => $pagination,
+                'breadcrumbs' => [
+                    new Breadcrumb($category->slug),
+                ],
+                'category' => $category,
+                'articles' => Article::fill($query),
+                'sortings' => [
+                    new Sorting(),
+                    new Sorting('title', 'asc'),
+                    new Sorting('title', 'desc'),
+                    new Sorting('created_at', 'asc'),
+                    new Sorting('created_at', 'desc'),
+                ]
+            ]
+        );
+    }
+
+    /**
+     * Динамическая подгрузка статей
+     */
+    public function fetchArticlesInCategory(Request $request)
+    {
+        $this->checkAdmin();
+
+        $query = Article::query()->where('visible', 1);
+
+        $slug = $request->route('slug');
+
+        $category = Category::find($slug, 'slug');
+
+        assert($category instanceof Category);
+
+        $id_list = [];
+
+        if ($category->visible) $id_list = [$category->id];
+
+        foreach ($category->getAllChildren() as $child) {
+            assert($child instanceof Category);
+
+            if (!$child->visible) continue;
+
+            $id_list[] = $child->id;
+        }
+
+        $query->where('category_id', '()', $id_list);
+
+        $this->sort($query, $request);
+
+        $this->search($query, $request, ['title', 'short_text', 'full_text']);
+
+        $this->fetch(
+            $request,
+            $query,
+            function ($query) {
+                $html = '';
+
+                foreach (Article::fill($query) as $article) {
+                    $html .= Template::html(
+                        'articles-item',
+                        [
+                            'article' => $article,
+                        ]
+                    );
+                }
+
+                return $html;
+            },
+            Pagination::DEFAULT_LIMIT
+        );
     }
 }

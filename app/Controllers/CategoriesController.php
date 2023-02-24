@@ -375,29 +375,6 @@ class CategoriesController extends Controller
         ));
     }
 
-    public function getArticles(Request $request)
-    {
-        $category_id = $request->route('id');
-
-        $query = Article::query()
-            ->where('category_id', $category_id)
-            ->order('created_at', 'DESC');
-
-        $category = Category::find($category_id);
-
-        assert($category instanceof Category);
-
-        View::send(
-            'articles',
-            [
-                'breadcrumbs' => [
-                    new Breadcrumb($category->title),
-                ],
-                'articles' => Article::fill($query),
-            ]
-        );
-    }
-
     public function fetchParentCategories(Request $request)
     {
         $this->checkAdmin();

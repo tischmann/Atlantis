@@ -1,6 +1,8 @@
 class LazyFetch {
-    constructor(container, callback = function () {}) {
+    constructor(container, { lazyload, callback = function () {} } = {}) {
         this.container = container
+
+        this.lazyload = lazyload
 
         this.callback = callback
 
@@ -132,6 +134,8 @@ class LazyFetch {
                                 this.last = target.dataset.last = json.last
 
                                 this.container.appendChild(target)
+
+                                this.lazyload.update()
                             }
 
                             this.callback()

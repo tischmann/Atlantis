@@ -9,12 +9,12 @@ window.onload = () => {
         link.setAttribute('rel', 'stylesheet')
     })
 
+    const lazyload = new LazyLoad()
+
     // Lazy fetch
     document.body
         .querySelectorAll('.intersection-loader-container')
-        .forEach((container) => new LazyFetch(container))
-
-    new LazyLoad()
+        .forEach((container) => new LazyFetch(container, { lazyload }))
 
     window.addEventListener('scroll', () => {
         const classes = useDarkMode
