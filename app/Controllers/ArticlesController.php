@@ -437,15 +437,13 @@ class ArticlesController extends Controller
                 exit;
         }
 
-        if ($width && $height) {
-            $image = Image::resize($im, $width, $height);
+        $image = $width && $height ? Image::resize($im, $width, $height) : $im;
 
-            $thumb = Image::resize(
-                $im,
-                Article::THUMB_WIDTH,
-                Article::THUMB_HEIGHT
-            );
-        }
+        $thumb = Image::resize(
+            $image,
+            Article::THUMB_WIDTH,
+            Article::THUMB_HEIGHT
+        );
 
         if (
             !imagewebp($image, $filetowrite, $quality) ||
@@ -465,7 +463,7 @@ class ArticlesController extends Controller
 
         $baseurl = $protocol . $_SERVER["HTTP_HOST"];
 
-        $location = $baseurl . "/" . $filetowrite;
+        $location = $baseurl . "/" . $thumbtowrite;
 
         Response::json([
             'status' => 1,

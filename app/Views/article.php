@@ -4,6 +4,7 @@
         <div class="text-3xl font-bold flex items-center gap-4 mb-2"><?= $article->title ?>
             <?php
 
+            use App\Models\Article;
             use App\Models\User;
             use Tischmann\Atlantis\Date;
 
@@ -23,8 +24,8 @@
                 <form class="rating" data-id="<?= $article->id ?>" data-rating="<?= $article->rating ?>"></form>
             </div>
         </div>
-        <div class="mt-4">
-            <img class="lazy w-full md:max-w-lg md:float-left mb-4 md:mr-8 rounded-xl shadow-md" data-src="<?= $article->image_url ?>" src="/images/placeholder.svg" width="400" height="300" alt="<?= $article->title ?>">
+        <div class="mt-4 fslightbox-gallery">
+            <img class="lazy w-full md:max-w-lg md:float-left mb-4 md:mr-8 rounded-xl shadow-md" data-src="<?= $article->image_url ?>" src="/images/placeholder.svg" width="<?= Article::THUMB_WIDTH ?>" height="<?= Article::THUMB_HEIGHT ?>" alt="<?= $article->title ?>">
             <?= html_entity_decode($article->full_text) ?>
         </div>
         <?php require __DIR__ . "/tags.php" ?>
@@ -32,5 +33,17 @@
     <script src="/js/rating.js" nonce="{{nonce}}"></script>
     <script nonce="{{nonce}}">
         new Rating(document.querySelector(`.rating`), new UUID().get())
+
+        document.querySelector(`.fslightbox-gallery`).querySelectorAll(`img`).forEach(img => {
+            const a = document.createElement("a")
+            a.setAttribute("data-fslightbox", "gallery")
+            let src = img.dataset?.src || img.getAttribute("src")
+            src = src.replace(/thumb_/g, '')
+            a.setAttribute("href", src)
+            img.before(a)
+            a.append(img)
+        })
+
+        refreshFsLightbox()
     </script>
 </main>
