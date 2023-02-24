@@ -12,3 +12,4 @@ tailwind.config.js
 minify.sh
 /public/images/articles
 /public/images/avatars
+/public/images/flags
