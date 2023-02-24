@@ -3,17 +3,30 @@
 
 declare(strict_types=1);
 
+use App\Database\Articles;
+use App\Database\Categories;
+use App\Database\Ratings;
+use App\Database\Users;
+use App\Database\Views;
 use Tischmann\Atlantis\{Console, Migration};
 
 require_once __DIR__ . "/bootstrap/require.php";
 
 require_once __DIR__ . "/bootstrap/config.php";
 
-require_once __DIR__ . "/bootstrap/autoloader.php";
+require_once __DIR__ . "/vendor/autoload.php";
 
 $namespace = "App\\Database\\";
 
 $dir = __DIR__ . "/app/Database";
+
+$migrations = [
+    new Users(),
+    new Categories(),
+    new Views(),
+    new Ratings(),
+    new Articles(),
+];
 
 foreach (Console::parse($argv) as $command => $value) {
     switch ($command) {
@@ -22,13 +35,7 @@ foreach (Console::parse($argv) as $command => $value) {
             Console::print("Очистка БД", "");
             Console::separator();
 
-            foreach (glob("{$dir}/*.php") as $path) {
-                $migration = $namespace . basename($path, ".php");
-
-                $migration = new $migration();
-
-                assert($migration instanceof Migration);
-
+            foreach ($migrations as $migration) {
                 if (!$migration->drop()) {
                     Console::print(
                         "Ошибка при удалении таблицы",
@@ -48,13 +55,15 @@ foreach (Console::parse($argv) as $command => $value) {
             Console::print("Создание БД", "");
             Console::separator();
 
-            foreach (glob("{$dir}/*.php") as $path) {
-                $migration = $namespace . basename($path, ".php");
+            $migrations = [
+                new Users(),
+                new Categories(),
+                new Views(),
+                new Ratings(),
+                new Articles(),
+            ];
 
-                $migration = new $migration();
-
-                assert($migration instanceof Migration);
-
+            foreach ($migrations as $migration) {
                 if (!$migration->create()) {
                     Console::print(
                         "Ошибка при создании таблицы",
@@ -74,33 +83,13 @@ foreach (Console::parse($argv) as $command => $value) {
             Console::print("Заполнение БД", "");
             Console::separator();
 
-            foreach (glob("{$dir}/*.php") as $path) {
-                $migration = $namespace . basename($path, ".php");
+            foreach ($migrations as $migration) {
+                $inserted = $migration->seed();
 
-                $migration = new $migration();
-
-                assert($migration instanceof Migration);
-
-                if (!$migration->truncate()) {
-                    Console::print(
-                        "Ошибка при очистке таблицы",
-                        $migration::name()
-                    );
-                } else {
-                    Console::print("Таблица очищена", $migration::name());
-
-                    if (!($inserted = $migration->seed())) {
-                        Console::print(
-                            "Ошибка при заполнении таблицы",
-                            $migration::name()
-                        );
-                    } else {
-                        Console::print(
-                            "Записей добавлено: {$inserted}",
-                            $migration::name()
-                        );
-                    }
-                }
+                Console::print(
+                    "Записей добавлено: {$inserted}",
+                    $migration::name()
+                );
             }
 
             Console::separator();

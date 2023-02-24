@@ -19,7 +19,6 @@ class Articles extends Migration
             new Column(
                 name: 'author_id',
                 type: 'bigint',
-                default: null,
                 index: true,
                 description: 'Автор',
                 foreign: new Foreign(
@@ -32,7 +31,6 @@ class Articles extends Migration
             new Column(
                 name: 'last_author_id',
                 type: 'bigint',
-                default: null,
                 index: true,
                 description: 'Последний редактор',
                 foreign: new Foreign(
@@ -45,7 +43,6 @@ class Articles extends Migration
             new Column(
                 name: 'category_id',
                 type: 'bigint',
-                default: null,
                 index: true,
                 description: 'Категория',
                 foreign: new Foreign(
@@ -115,20 +112,5 @@ class Articles extends Migration
                 description: 'Видимость',
             ),
         ]);
-    }
-
-    public function seed(): int
-    {
-        $query = static::query();
-
-        $query->insert([
-            'locale' => 'ru',
-            'title' => "Lorem ipsum dolor sit amet",
-            'short_text' => "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut sit amet tempor mauris.",
-            'full_text' => "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut sit amet tempor mauris. Aliquam convallis dui vitae ullamcorper iaculis. Proin tortor dui, rhoncus et tortor eu, suscipit imperdiet sapien. Cras volutpat viverra ligula, quis condimentum lectus commodo non. In eleifend id augue vel blandit. Cras vehicula arcu vitae mauris feugiat, vitae blandit ligula facilisis. Ut laoreet ante quis leo dictum, a bibendum nibh lobortis. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Integer et lacinia lectus, vitae sodales tellus. Pellentesque vitae dui eget leo varius vestibulum. Pellentesque fermentum libero sit amet neque feugiat, et ultricies ante pretium.",
-            'tags' => json_encode(['lorem', 'ipsum']),
-        ]);
-
-        return 1;
     }
 }

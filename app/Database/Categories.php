@@ -63,17 +63,4 @@ class Categories extends Migration
             ),
         ]);
     }
-
-    public function seed(): int
-    {
-        $query = static::query();
-
-        $query->insert([
-            'locale' => 'ru',
-            'slug' => 'news',
-            'title' => "Новости",
-        ]);
-
-        return 1;
-    }
 }

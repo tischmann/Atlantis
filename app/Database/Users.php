@@ -63,12 +63,10 @@ class Users extends Migration
     {
         $query = static::query();
 
-        $query->insert([
+        return $query->insert([
             'login' => 'administrator',
             'password' => password_hash('Flvbybcnhfn0h', PASSWORD_DEFAULT),
             'role' => User::ROLE_ADMIN,
         ]);
-
-        return 1;
     }
 }

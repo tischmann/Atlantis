@@ -26,7 +26,7 @@ final class Column
      * @param bool $null Флаг нулевого значения
      * @param ?string $update Значение при обновлении (CASCADE, SET NULL, RESTRICT, CURRENT_TIMESTAMP, etc.)
      * @param mixed $default Значение по умолчанию
-     * @param ?object $foreign Список внешних ключей
+     * @param ?Foreign $foreign Список внешних ключей
      */
     public function __construct(
         public string $name,

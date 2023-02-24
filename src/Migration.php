@@ -33,6 +33,7 @@ abstract class Migration
                 type: 'bigint',
                 autoincrement: true,
                 primary: true,
+                null: false,
             ),
             new Column(
                 name: 'created_at',
@@ -112,8 +113,8 @@ abstract class Migration
 
             if ($column->unique) $uniques[] = $column;
 
-            if ($column->foreign) {
-                static::$foreigns[$this::name()][$column->name] = $column->foreign;
+            if ($column->foreign instanceof Foreign) {
+                static::$foreigns[$this::name()][$column->name] = $column;
             }
 
             $sql .= "`{$column}` {$this->getColumnTypeSQL($column)} ";
@@ -235,12 +236,10 @@ abstract class Migration
         foreach (static::$foreigns as $table => $columns) {
             $foreigns = [];
 
-            foreach ($columns as $key => $column) {
-                assert($column instanceof Column);
+            foreach ($columns as $name => $column) {
+                if (!assert($column instanceof Column)) continue;
 
-                if (!$column->foreign) continue;
-
-                assert($column->foreign instanceof Foreign);
+                if (!assert($column->foreign instanceof Foreign)) continue;
 
                 $foreigns[] = "ADD FOREIGN KEY ({$column->name}) "
                     . "REFERENCES {$column->foreign->table}({$column->foreign->column}) "
