@@ -186,9 +186,15 @@ class ArticlesController extends Controller
 
         $images = [];
 
-        if ($article->image) $images[] = $article->image;
+        if ($article->image) {
+            $images[] = $article->image;
+            $images[] = "thumb_{$article->image}";
+        }
 
-        foreach ($matches as $set) $images[] = $set[1];
+        foreach ($matches as $set) {
+            $images[] = $set[1];
+            $images[] = "thumb_$set[1]";
+        }
 
         foreach ($images as $image) {
             $temp_path = getenv('APP_ROOT') . "/public/images/articles/temp/{$image}";
@@ -432,12 +438,19 @@ class ArticlesController extends Controller
         }
 
         if ($width && $height) {
-            $im = Image::resize($im, $width, $height);
+            $image = Image::resize($im, $width, $height);
 
-            $thumb = Image::resize($im, 200, 150);
+            $thumb = Image::resize(
+                $im,
+                Article::THUMB_WIDTH,
+                Article::THUMB_HEIGHT
+            );
         }
 
-        if (!imagewebp($im, $filetowrite, $quality) || !imagewebp($thumb, $thumbtowrite, $quality)) {
+        if (
+            !imagewebp($image, $filetowrite, $quality) ||
+            !imagewebp($thumb, $thumbtowrite, $quality)
+        ) {
             Response::json([
                 'csrf' => $csrf_token,
                 'error' => 'Error converting image to webp'
@@ -578,7 +591,10 @@ class ArticlesController extends Controller
     {
         $root = getenv('APP_ROOT');
 
-        $imagesInArticle = [$article->image];
+        $imagesInArticle = [
+            $article->image,
+            "thumb_{$article->image}",
+        ];
 
         preg_match_all(
             '/([0-9a-zA-Z]+\.webp)/',

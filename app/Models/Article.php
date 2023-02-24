@@ -18,6 +18,10 @@ class Article extends Model
 
     public float $rating = 0;
 
+    public const THUMB_WIDTH = 400;
+
+    public const THUMB_HEIGHT = 300;
+
     public function __construct(
         public ?int $author_id = null,
         public ?int $last_author_id = null,
@@ -79,10 +83,14 @@ class Article extends Model
             return "/images/placeholder.svg";
         }
 
-        $image_url = "/images/articles/{$this->id}/{$this->image}";
+        $image_url = "/images/articles/{$this->id}/thumb_{$this->image}";
 
-        if (!is_file(getenv('APP_ROOT') . "/public{$this->image_url}")) {
-            return "/images/placeholder.svg";
+        if (!is_file(getenv('APP_ROOT') . "/public{$image_url}")) {
+            $image_url = "/images/articles/{$this->id}/{$this->image}";
+
+            if (!is_file(getenv('APP_ROOT') . "/public{$image_url}")) {
+                return "/images/placeholder.svg";
+            }
         }
 
         return $image_url;

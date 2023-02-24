@@ -4,7 +4,7 @@ use Tischmann\Atlantis\Date;
 ?>
 <div class="block w-full rounded-lg <?= $article->visible ? 'bg-sky-800' : 'bg-gray-600' ?> text-white shadow-lg">
     <div class="relative text-sky-800 text-xs">
-        <img class="rounded-t-lg <?= !$article->visible ? 'grayscale' : '' ?>" src="<?= $article->image_url ?>" alt="<?= $article->title ?>" />
+        <img class="rounded-t-lg <?= !$article->visible ? 'grayscale' : '' ?> w-full" src="<?= $article->image_url ?>" width="200" hright="150" alt="<?= $article->title ?>" />
         <div class="absolute flex top-0 inset-x-0 gap-4 p-4 flex-wrap">
             <span class="block px-3 py-2 bg-white uppercase rounded-md shadow-md outline-none ring-0 transition duration-150 ease-in-out font-semibold"><?= $article->category->title ?></span>
             <span class="block px-3 py-2 bg-white uppercase rounded-md shadow-md outline-none ring-0 transition duration-150 ease-in-out font-semibold"><?= Date::localeFormat($article->updated_at, getenv('APP_LOCALE'), 'd MMMM y, kk:mm')  ?></span>
