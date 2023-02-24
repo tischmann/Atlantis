@@ -84,17 +84,10 @@ final class Template
 
             switch ($key) {
                 case 'csrf':
-                    list($key, $value) = CSRF::set();
-
-                    $replace = Template::html(
-                        'csrf',
-                        ['key' => $key, 'value' => $value]
-                    );
+                    $replace = Template::html('csrf');
                     break;
                 case 'csrf-token':
-                    list($key, $value) = CSRF::set();
-
-                    $replace = $value;
+                    $replace = CSRF::set()[1];
                     break;
                 default:
                     if (!array_key_exists($key, $args)) continue 2;
