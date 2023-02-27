@@ -672,13 +672,10 @@ class ArticlesController extends Controller
 
         $result = $rating->save();
 
-        list($csrf_key, $csrf_token) = CSRF::set();
-
         Response::json([
-            'status' => $result ? 1 : 0,
-            'csrf' => $csrf_token,
+            'csrf' => CSRF::generateToken(),
             'message' => $result ? 'OK' : Locale::get('rating_save_error'),
-        ]);
+        ], $result ? 200 : 500);
     }
 
     public function showArticlesInCategory(Request $request)

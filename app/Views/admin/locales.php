@@ -25,7 +25,7 @@
             echo <<<HTML
                     </div>   
                 </div>             
-                <span class="text-[32px] font-bold countup bg-sky-900 rounded-lg p-4 min-w-[60px] text-center">{$count}</span>
+                <span class="text-[32px] font-bold bg-sky-900 rounded-lg p-4 min-w-[60px] text-center">{$count}</span>
             </a>
             HTML;
         }

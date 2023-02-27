@@ -66,6 +66,11 @@ final class CSRF
         return [$key, $token];
     }
 
+    public static function generateToken(): string
+    {
+        return static::set()[1];
+    }
+
     /**
      * Производит проверку токенов
      * 

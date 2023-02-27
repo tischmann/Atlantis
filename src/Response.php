@@ -82,17 +82,20 @@ final class Response
      */
     public static function send(mixed $response, int $code = 200)
     {
-        static::headers($code);
+        switch (Request::accept()) {
+            case 'html':
+                return static::html($response, $code);
+            case 'json':
+                return static::json($response, $code);
+            case 'text':
+                return static::text($response, $code);
+            case 'xml':
+                return static::xml($response, $code);
+            default:
+                static::headers($code);
 
-        $accept = Request::accept();
-
-        match ($accept) {
-            'html' => static::html($response),
-            'json' => static::json($response),
-            'text' => static::text($response),
-            'xml' => static::xml($response),
-            default => var_dump($response)
-        };
+                var_dump($response);
+        }
     }
 
     /**
@@ -101,8 +104,10 @@ final class Response
      * @param string $response Данные для отправки 
      * @return void
      */
-    public static function html(mixed $response): void
+    public static function html(mixed $response, int $code = 200): void
     {
+        static::headers($code);
+
         header('Content-Type: text/html; charset=UTF-8');
 
         if (is_string($response)) {
@@ -118,8 +123,10 @@ final class Response
      * @param string $response Данные для отправки 
      * @return void
      */
-    public static function json(mixed $response): void
+    public static function json(mixed $response, int $code = 200): void
     {
+        static::headers($code);
+
         header('Content-Type: application/json; charset=UTF-8');
 
         if (is_string($response)) {
@@ -135,8 +142,10 @@ final class Response
      * @param string $response Данные для отправки 
      * @return void
      */
-    public static function xml(mixed $response): void
+    public static function xml(mixed $response, int $code = 200): void
     {
+        static::headers($code);
+
         header('Content-Type: application/xml; charset=UTF-8');
 
         $xml = simplexml_load_string(
@@ -164,8 +173,10 @@ final class Response
      * @param string $response Данные для отправки 
      * @return void
      */
-    public static function text(mixed $response): void
+    public static function text(mixed $response, int $code = 200): void
     {
+        static::headers($code);
+
         header('Content-Type: text/plain; charset=UTF-8');
 
         if (is_object($response) || is_array($response)) {

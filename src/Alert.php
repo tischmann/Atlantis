@@ -76,7 +76,7 @@ class Alert
             ]
         };
 
-        Response::send($response);
+        Response::send($response, 500);
     }
 
     public static function errorHandler(
@@ -86,13 +86,14 @@ class Alert
         int $errline = 0
     ) {
         Response::send(
-            View::make(
+            View::html(
                 'error',
                 [
                     'message' => "[{$errno}]: {$errstr} in {$errfile} at line {$errline}",
                     'trace' => ''
                 ]
-            )->render()
+            ),
+            500
         );
     }
 }

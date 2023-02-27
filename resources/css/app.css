@@ -3,21 +3,21 @@
     margin-bottom: 1.5rem;
 }
 
-.rating,
-.rating label {
+.atlantis-rating,
+.atlantis-rating label {
     margin: 0;
     padding: 0;
 }
 
-.rating {
+.atlantis-rating {
     border: none;
 }
 
-.rating input {
+.atlantis-rating input {
     display: none;
 }
 
-.rating label:before {
+.atlantis-rating label:before {
     margin-right: 6px;
     font-size: 1rem;
     font-family: FontAwesome;
@@ -25,26 +25,26 @@
     content: '\f005';
 }
 
-.rating label {
+.atlantis-rating label {
     color: #ddd;
     float: right;
 }
 
-.rating input:checked~label {
+.atlantis-rating input:checked~label {
     color: rgb(230, 187, 0);
 }
 
-.rating:not(:checked)>label:hover,
-.rating:not(:checked)>label:hover~label,
-.rating input:checked+label:hover,
-.rating input:checked~label:hover,
-.rating label:hover~input:checked~label,
-.rating input:checked~label:hover~label {
+.atlantis-rating:not(:checked)>label:hover,
+.atlantis-rating:not(:checked)>label:hover~label,
+.atlantis-rating input:checked+label:hover,
+.atlantis-rating input:checked~label:hover,
+.atlantis-rating label:hover~input:checked~label,
+.atlantis-rating input:checked~label:hover~label {
     color: rgb(230, 187, 0);
 }
 
 @media (max-width: 991.98px) {
-    .rating label:before {
+    .atlantis-rating label:before {
         margin-right: 10px;
         font-size: 1.5rem;
     }
