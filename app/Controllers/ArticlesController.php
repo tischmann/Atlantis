@@ -633,6 +633,8 @@ class ArticlesController extends Controller
      */
     public function setRating(Request $request)
     {
+        CSRF::verify($request);
+
         $id = $request->route('id');
 
         $uuid = $request->request('uuid');

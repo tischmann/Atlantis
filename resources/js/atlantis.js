@@ -1,7 +1,15 @@
 export default class Atlantis {
-    csrf_token = 'undefined'
-
     #handlers = new Map() // event handlers
+
+    constructor({ log = false } = {}) {
+        this.log = log
+
+        this.uuid = this.getUUID() || this.setUUID()
+
+        new MutationObserver((mutations) => {
+            this.#removeEventListeners(mutations[0]?.removedNodes)
+        }).observe(document, { childList: true, subtree: true })
+    }
 
     #removeEventListeners(nodeList) {
         if (nodeList instanceof NodeList) {
@@ -15,18 +23,6 @@ export default class Atlantis {
         }
 
         return this
-    }
-
-    constructor({ log = false, csrf_token } = {}) {
-        this.log = log
-
-        this.uuid = this.getUUID() || this.setUUID()
-
-        this.setCsrfToken(csrf_token)
-
-        new MutationObserver((mutations) => {
-            this.#removeEventListeners(mutations[0]?.removedNodes)
-        }).observe(document, { childList: true, subtree: true })
     }
 
     // Add event listener
@@ -139,14 +135,6 @@ export default class Atlantis {
         }
     }
 
-    getCsrfToken() {
-        return this.csrf_token
-    }
-
-    setCsrfToken(value) {
-        this.csrf_token = value
-    }
-
     // Send request to server
     fetch(
         url,
@@ -164,26 +152,19 @@ export default class Atlantis {
         if (typeof body !== 'string') body = JSON.stringify(body)
 
         headers = {
-            ...headers,
-            'Content-Length': body.length.toString()
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            ...headers
         }
 
-        if (['POST', 'PUT', 'DELETE'].includes(method.toUpperCase())) {
+        if (body) {
             headers = {
                 ...headers,
-                'X-Csrf-Token': this.getCsrfToken()
+                'Content-Length': body.length.toString()
             }
         }
 
-        fetch(url, {
-            method,
-            headers: {
-                ...headers,
-                'X-Csrf-Token': this.getCsrfToken(),
-                'Content-Length': body.length.toString()
-            },
-            body
-        })
+        fetch(url, { method, headers, body })
             .then((response) => {
                 if (!response.ok) {
                     failure(response.statusText)
@@ -199,10 +180,9 @@ export default class Atlantis {
                         response
                             .json()
                             .then((json) => {
-                                if (this.log)
+                                if (this.log) {
                                     console.log('Atlantis.fetch():', json)
-
-                                this.setCsrfToken(json?.csrf)
+                                }
 
                                 success(json)
                             })
