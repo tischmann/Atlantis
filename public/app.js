@@ -14,20 +14,26 @@ atlantis.on(window, 'load', () => {
     // Image lazy load
 
     const observerSrc = atlantis.enter((target) => {
+        if (target.dataset?.loaded) return
+
         const image = new Image()
 
         image.onload = function () {
             target.src = this.src
+            target.dataset.loaded = true
         }
 
         image.src = target.dataset.src
     })
 
     const observerBg = atlantis.enter((target) => {
+        if (target.dataset?.loaded) return
+
         const image = new Image()
 
         image.onload = function () {
             atlantis.css(target, { 'background-image': `url(${this.src})` })
+            target.dataset.loaded = true
         }
 
         image.src = target.dataset.bg

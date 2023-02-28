@@ -51,6 +51,8 @@ class Article extends Model
         $this->views = $this->getViews();
 
         $this->images = $this->getImages();
+
+        $this->full_text = static::lazyImage($this->full_text);
     }
 
     public function __fill(object|array $traversable): self
@@ -64,6 +66,8 @@ class Article extends Model
         $this->rating = $this->getRating();
 
         $this->views = $this->getViews();
+
+        $this->full_text = static::lazyImage($this->full_text);
 
         return $this;
     }
@@ -185,5 +189,18 @@ class Article extends Model
     public static function table(): Migration
     {
         return new Articles();
+    }
+
+    public static function lazyImage(?string $content): ?string
+    {
+        if ($content === null) return null;
+
+        $content = preg_replace(
+            '/<img([^>]+)src="([^"]+)"([^>]+)>/i',
+            '<img$1src="/images/placeholder.svg" data-atlantis-lazy-image data-src="$2"$3>',
+            htmlspecialchars_decode(strval($content))
+        );
+
+        return $content;
     }
 }
