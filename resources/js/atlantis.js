@@ -1,6 +1,28 @@
 export default class Atlantis {
     #handlers = new Map() // event handlers
 
+    #lazyimageObserver = this.enter((target) => {
+        if (target.dataset?.loaded) return
+
+        const image = new Image()
+
+        image.onload = function () {
+            if (target.dataset.hasOwnProperty('src')) {
+                target.src = this.src
+            } else if (target.dataset.hasOwnProperty('bg')) {
+                this.css(target, { 'background-image': `url(${this.src})` })
+            }
+
+            target.dataset.loaded = true
+        }
+
+        if (target.dataset.hasOwnProperty('src')) {
+            image.src = target.dataset.src
+        } else if (target.dataset.hasOwnProperty('bg')) {
+            image.src = target.dataset.bg
+        }
+    })
+
     constructor({ log = false } = {}) {
         this.log = log
 
@@ -391,6 +413,25 @@ export default class Atlantis {
         )
     }
 
+    lazyimage() {
+        const selectors = [
+            `[data-atlantis-lazy-image][data-src]`,
+            `[data-atlantis-lazy-image][data-bg]`
+        ]
+
+        this.#lazyimageObserver.takeRecords().forEach((record) => {
+            this.#lazyimageObserver.unobserve(record.target)
+        })
+
+        selectors.forEach((selector) => {
+            document.querySelectorAll(selector).forEach((element) => {
+                if (!element.dataset?.loaded) {
+                    this.#lazyimageObserver.observe(element)
+                }
+            })
+        })
+    }
+
     lazyload(
         container,
         {
@@ -466,8 +507,6 @@ export default class Atlantis {
                     token = json.token
 
                     container.appendChild(target)
-
-                    //this.lazyload.update()
 
                     callback()
                 }

@@ -13,43 +13,7 @@ atlantis.on(window, 'load', () => {
 
     // Image lazy load
 
-    const observerSrc = atlantis.enter((target) => {
-        if (target.dataset?.loaded) return
-
-        const image = new Image()
-
-        image.onload = function () {
-            target.src = this.src
-            target.dataset.loaded = true
-        }
-
-        image.src = target.dataset.src
-    })
-
-    const observerBg = atlantis.enter((target) => {
-        if (target.dataset?.loaded) return
-
-        const image = new Image()
-
-        image.onload = function () {
-            atlantis.css(target, { 'background-image': `url(${this.src})` })
-            target.dataset.loaded = true
-        }
-
-        image.src = target.dataset.bg
-    })
-
-    document
-        .querySelectorAll(`[data-atlantis-lazy-image][data-src]`)
-        .forEach((img) => {
-            observerSrc.observe(img)
-        })
-
-    document
-        .querySelectorAll(`[data-atlantis-lazy-image][data-bg]`)
-        .forEach((img) => {
-            observerBg.observe(img)
-        })
+    atlantis.lazyimage()
 
     // Lazy load content
     document.body
@@ -64,7 +28,10 @@ atlantis.on(window, 'load', () => {
                 limit: container.dataset.limit,
                 sort: container.dataset.sort,
                 order: container.dataset.order,
-                search: container.dataset.search
+                search: container.dataset.search,
+                container: () => {
+                    atlantis.lazyimage()
+                }
             })
         )
 
