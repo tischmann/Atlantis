@@ -1,4 +1,8 @@
-window.onload = () => {
+import Atlantis from '/js/atlantis.js'
+
+const atlantis = new Atlantis()
+
+atlantis.on(window, 'load', () => {
     const useDarkMode = window.matchMedia(
         '(prefers-color-scheme: dark)'
     ).matches
@@ -7,14 +11,12 @@ window.onload = () => {
         link.setAttribute('rel', 'stylesheet')
     })
 
-    const lazyload = new LazyLoad()
-
     // Lazy fetch
-    document.body
-        .querySelectorAll('.intersection-loader-container')
-        .forEach((container) => new LazyFetch(container, { lazyload }))
+    // document.body
+    //     .querySelectorAll('.intersection-loader-container')
+    //     .forEach((container) => new LazyFetch(container))
 
-    window.addEventListener('scroll', () => {
+    atlantis.on(window, 'scroll', () => {
         const classes = useDarkMode
             ? ['shadow-lg', 'border-b', 'border-b-gray-700']
             : ['shadow-lg', 'border-b', 'border-b-gray-200']
@@ -25,4 +27,4 @@ window.onload = () => {
             document.querySelector('header').classList.remove(...classes)
         }
     })
-}
+})

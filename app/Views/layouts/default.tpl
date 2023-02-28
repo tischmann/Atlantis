@@ -26,8 +26,6 @@
         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" />
     <link rel="preload" as="style" href="/app.css" media="all">
     <script src="/js/sortable.js" nonce="{{nonce}}" async></script>
-    <script src="/js/lazyfetch.js" nonce="{{nonce}}" async></script>
-    <script src="/js/lazyload.js" nonce="{{nonce}}" async></script>
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
