@@ -17,6 +17,7 @@ document
                     uuid: atlantis.getUUID()
                 },
                 headers: {
+                    'Content-Type': 'application/json',
                     'X-Csrf-Token': form.dataset?.csrf
                 },
                 success: (json) => {

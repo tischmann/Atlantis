@@ -20,6 +20,7 @@ document.querySelectorAll(`.atlantis-delete-button`).forEach((element) => {
                     atlantis.fetch(data.url, {
                         method: 'DELETE',
                         headers: {
+                            'Content-Type': 'application/json',
                             'X-Csrf-Token': data.csrf
                         },
                         success: () => {

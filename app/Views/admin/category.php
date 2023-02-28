@@ -149,5 +149,5 @@ include __DIR__ . "/../header.php"
                 })
             })
     </script>
-    <?php include __DIR__ . "/sortable-categories-script.php" ?>
+    <script src="/js/orderCategories.js" nonce="{{nonce}}" type="module"></script>
 </main>

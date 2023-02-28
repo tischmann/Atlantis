@@ -98,6 +98,7 @@ if (User::current()->exists()) {
             path: 'user/delete/{id}',
             action: 'delete',
             method: 'DELETE',
+            type: 'json',
             accept: 'json'
         ));
 
@@ -164,6 +165,7 @@ if (User::current()->exists()) {
             path: 'locale/delete/{code}',
             action: 'delete',
             method: 'DELETE',
+            type: 'json',
             accept: 'json'
         ));
 
@@ -230,6 +232,7 @@ if (User::current()->exists()) {
             path: 'category/delete/{id}',
             action: 'delete',
             method: 'DELETE',
+            type: 'json',
             accept: 'json'
         ));
 
@@ -304,6 +307,7 @@ if (User::current()->exists()) {
             path: 'article/delete/{id}',
             action: 'delete',
             method: 'DELETE',
+            type: 'json',
             accept: 'json'
         ));
 

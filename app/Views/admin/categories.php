@@ -26,8 +26,9 @@
             </div>
             HTML;
         }
+
         ?>
     </div>
     <?= Template::html('admin/add-button', ['href' => '/{{env=APP_LOCALE}}/add/category']) ?>
-    <?php include __DIR__ . "/sortable-categories-script.php" ?>
+    <script src="/js/orderCategories.js" nonce="{{nonce}}" type="module"></script>
 </main>

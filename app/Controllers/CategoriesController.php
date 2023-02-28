@@ -243,16 +243,14 @@ class CategoriesController extends Controller
             $category->position = $position++;
 
             if (!$category->save()) {
-                Response::send([
-                    'status' => 0,
+                Response::json([
                     'message' => Locale::get('category_order_error')
-                ]);
+                ], 500);
             }
         }
 
-        Response::send([
-            'status' => 1,
-            'csrf' => CSRF::set()[1],
+        Response::json([
+            'token' => CSRF::set()[1],
         ]);
     }
 
