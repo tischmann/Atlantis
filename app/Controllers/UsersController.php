@@ -127,7 +127,7 @@ class UsersController extends Controller
 
         $month = time() + 60 * 60 * 24 * 30;
 
-        Cookie::set('remember', $remember ? $month : 0, ['expires' => $month]);
+        Cookie::set('atlantis_remember', $remember ? $month : 0, ['expires' => $month]);
 
         $user->signIn();
 

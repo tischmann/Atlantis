@@ -133,11 +133,11 @@ class User extends Model
             Session::start();
         }
 
-        $jwt = Request::authorization() ?: Cookie::get('jwt');
+        $jwt = Request::authorization() ?: Cookie::get('atlantis_jwt');
 
-        $jwr = Cookie::get('jwr');
+        $jwr = Cookie::get('atlantis_jwr');
 
-        if (!$jwt || !$jwr) return $this->signOut();
+        if (!$jwt || !$jwr) return $this;
 
         try {
             $decoded = $this->decodeJWT($jwt);
@@ -150,12 +150,14 @@ class User extends Model
 
             $this->refresh_token = $jwr;
 
-            $expires = intval(Cookie::get('remember'));
+            $expires = intval(Cookie::get('atlantis_remember'));
 
-            Cookie::set('jwt', $jwt, ['expires' => $expires]);
+            Cookie::set('atlantis_jwt', $jwt, ['expires' => $expires]);
         } catch (SignatureInvalidException $e) {
             throw new Exception($e->getMessage());
         } catch (BeforeValidException $e) {
+            throw new Exception($e->getMessage());
+        } catch (TokenExpiredException $e) {
             throw new Exception($e->getMessage());
         }
 
@@ -291,11 +293,11 @@ class User extends Model
 
             $this->token = $this->getJWToken($this->getJWTData());
 
-            $expires = intval(Cookie::get('remember'));
+            $expires = intval(Cookie::get('atlantis_remember'));
 
-            Cookie::set('jwr', $this->refresh_token, ['expires' => $expires]);
+            Cookie::set('atlantis_jwr', $this->refresh_token, ['expires' => $expires]);
 
-            Cookie::set('jwt', $this->token, ['expires' => $expires]);
+            Cookie::set('atlantis_jwt', $this->token, ['expires' => $expires]);
 
             Session::set('LAST_ACCESS', time());
 
@@ -317,11 +319,11 @@ class User extends Model
     public function signOut(): self
     {
 
-        Cookie::delete('jwt');
+        Cookie::delete('atlantis_jwt');
 
-        Cookie::delete('jwr');
+        Cookie::delete('atlantis_jwr');
 
-        Cookie::delete('remember');
+        Cookie::delete('atlantis_remember');
 
         if ($this->exists()) {
 

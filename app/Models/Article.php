@@ -136,7 +136,7 @@ class Article extends Model
     {
         if (!$this->id) return 0;
 
-        $uuid = Cookie::get('uuid');
+        $uuid = Cookie::get('atlantis_uuid');
 
         if ($uuid !== null) {
             $query = View::query()->where('uuid', $uuid)
