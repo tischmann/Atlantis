@@ -1,6 +1,6 @@
 <?php
 
-use Tischmann\Atlantis\{Locale, Template};
+use Tischmann\Atlantis\{CSRF, Locale, Template};
 
 include __DIR__ . "/../header.php"
 
@@ -19,7 +19,11 @@ include __DIR__ . "/../header.php"
                 'options' => Template::html(
                     'admin/locales-options',
                     ['locale' => $category->locale]
-                )
+                ),
+                'attr' => [
+                    'data-token' => CSRF::generateToken(),
+                    'data-id' => $category->id,
+                ]
             ]
         );
 
@@ -27,7 +31,7 @@ include __DIR__ . "/../header.php"
             'admin/select-field',
             [
                 'label' => Locale::get('category_parent'),
-                'name' => 'category_id',
+                'name' => 'parent_id',
                 'id' => 'categoryParent',
                 'options' => Template::html(
                     'admin/parent-category-options',
@@ -116,38 +120,6 @@ include __DIR__ . "/../header.php"
             <?= Template::html('admin/save-button') ?>
         </div>
     </form>
-    <script nonce="{{nonce}}">
-        let csrf = `{{csrf-token}}`
-
-        document.getElementById('categoryLocale')
-            .addEventListener('change', function(event) {
-                fetch(`/admin/fetch/parent/categories`, {
-                    method: 'POST',
-                    headers: {
-                        'X-Csrf-Token': csrf,
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        locale: event.target.value,
-                        id: parseInt(`<?= $category->id ?>`, 10)
-                    })
-                }).then(response => response.json().then(json => {
-                    if (json?.status) {
-                        csrf = json.csrf
-                        document.getElementById(`categoryParent`).innerHTML = json.html
-                    } else {
-                        alert(json?.message)
-                        console.error(json?.message)
-                    }
-                }).catch(error => {
-                    alert(error)
-                    console.error(error)
-                })).catch(error => {
-                    alert(error)
-                    console.error(error)
-                })
-            })
-    </script>
-    <script src="/js/orderCategories.js" nonce="{{nonce}}" type="module"></script>
+    <script src="/js/category.js" nonce="{{nonce}}" type="module" async></script>
+    <script src="/js/orderCategories.js" nonce="{{nonce}}" type="module" async></script>
 </main>

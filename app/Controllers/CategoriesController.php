@@ -398,11 +398,9 @@ class CategoriesController extends Controller
             ]);
         }
 
-        Response::send([
-            'status' => 1,
+        Response::json([
             'html' => $html,
-            'message' => 'OK',
-            'csrf' => CSRF::set()[1],
+            'token' => CSRF::generateToken(),
         ]);
     }
 }
