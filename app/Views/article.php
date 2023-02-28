@@ -23,7 +23,7 @@
             <span><?= Date::getElapsed($article->created_at)  ?></span>
             <div><i class="fas fa-eye mr-2"></i><?= $article->views ?></div>
             <div>
-                <form class="atlantis-rating" data-id="<?= $article->id ?>" data-rating="<?= $article->rating ?>" data-csrf="{{csrf-token}}"></form>
+                <form class="atlantis-rating" data-id="<?= $article->id ?>" data-rating="<?= $article->rating ?>" data-token="{{csrf-token}}" data-atlantis-article-rating></form>
             </div>
         </div>
         <div class="mt-4">
@@ -32,5 +32,5 @@
         </div>
         <?php require __DIR__ . "/tags.php" ?>
     </article>
-    <script src="/js/article.js" nonce="{{nonce}}" type="module"></script>
+    <script src="/js/articleRating.js" nonce="{{nonce}}" type="module" async></script>
 </main>

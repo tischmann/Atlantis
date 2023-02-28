@@ -366,15 +366,8 @@ class ArticlesController extends Controller
 
         $temp = current($_FILES);
 
-        list($csrf_key, $csrf_token) = CSRF::set();
-
         if (!is_uploaded_file($temp['tmp_name'])) {
-            Response::send([
-                'csrf' => $csrf_token,
-                'error' => 'Error uploading file'
-            ]);
-
-            exit;
+            throw new Exception(Locale::get('error_upload_file'));
         }
 
         $extensions = ["gif", "jpg", "png", "webp", "jpeg", "bmp"];
@@ -387,12 +380,7 @@ class ArticlesController extends Controller
         );
 
         if (!in_array($fileExtension, $extensions)) {
-            Response::send([
-                'csrf' => $csrf_token,
-                'error' => 'Invalid extension'
-            ]);
-
-            exit;
+            throw new Exception(Locale::get('error_unsupported_image_type'));
         }
 
         $extension = 'webp';
@@ -422,13 +410,6 @@ class ArticlesController extends Controller
             case 'webp':
                 $im = imagecreatefromwebp($temp['tmp_name']);
                 break;
-            default:
-                Response::json([
-                    'csrf' => $csrf_token,
-                    'error' => 'Unsupported image format'
-                ]);
-
-                exit;
         }
 
         $src_width = imagesx($im);
@@ -457,12 +438,7 @@ class ArticlesController extends Controller
             imagewebp($thumb, $thumbtowrite, $quality);
 
         if (!$success) {
-            Response::json([
-                'csrf' => $csrf_token,
-                'error' => 'Error converting image to webp'
-            ]);
-
-            exit;
+            throw new Exception(Locale::get('error_image_to_webp'));
         }
 
         $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on'
@@ -476,8 +452,7 @@ class ArticlesController extends Controller
         $thumb_location = $baseurl . "/" . $thumbtowrite;
 
         Response::json([
-            'status' => 1,
-            'csrf' => $csrf_token,
+            'token' => CSRF::generateToken(),
             'image' => basename($location),
             'thumb' => basename($thumb_location),
             'location' => $location,
@@ -671,12 +646,13 @@ class ArticlesController extends Controller
 
         $rating->rating = ceil($value);
 
-        $result = $rating->save();
+        if (!$rating->save()) {
+            throw new Exception(Locale::get('rating_save_error'));
+        }
 
         Response::json([
-            'csrf' => CSRF::generateToken(),
-            'message' => $result ? 'OK' : Locale::get('rating_save_error'),
-        ], $result ? 200 : 500);
+            'token' => CSRF::generateToken(),
+        ]);
     }
 
     public function showArticlesInCategory(Request $request)

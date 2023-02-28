@@ -22,17 +22,13 @@ document
         atlantis.on(fileElement, 'change', (event) => {
             const file = event.target.files[0]
 
-            const width = imgElement.getAttribute('width')
-
-            const height = imgElement.getAttribute('height')
-
-            if (!file || !width || !height) return
+            if (!file) return
 
             const formData = new FormData()
 
-            formData.append('width', width)
+            formData.append('width', imgElement.getAttribute('width'))
 
-            formData.append('height', height)
+            formData.append('height', imgElement.getAttribute('height'))
 
             formData.append('file', file, file.name)
 

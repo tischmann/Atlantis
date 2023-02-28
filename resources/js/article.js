@@ -2,56 +2,93 @@ import Atlantis from '/js/atlantis.js'
 
 const atlantis = new Atlantis()
 
-document
-    .querySelectorAll(`form.atlantis-rating[data-id][data-rating]`)
-    .forEach((form) => {
-        const article_id = form.dataset?.id
-        const rating = atlantis.toInt(form.dataset?.rating)
-        const uniqueid = atlantis.uniqueid()
+atlantis.on(window, 'load', () => {
+    const textareaElement = document.querySelector(`[data-tinymce-textarea]`)
 
-        const onchange = function (event) {
-            const url = `/rating/${article_id}/${event.target.value}`
+    let token = textareaElement.dataset.token
 
-            atlantis.fetch(url, {
-                body: {
-                    uuid: atlantis.getUUID()
-                },
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Csrf-Token': form.dataset?.csrf
-                },
-                success: (json) => {
-                    form.dataset.csrf = json.csrf
+    const useDarkMode = window.matchMedia(
+        '(prefers-color-scheme: dark)'
+    ).matches
+
+    tinymce.init({
+        language: textareaElement.dataset.locale,
+        target: textareaElement,
+        plugins:
+            'preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons',
+        editimage_cors_hosts: ['picsum.photos'],
+        menubar: 'file edit view insert format tools table help',
+        toolbar:
+            'undo redo | bold italic underline strikethrough | fontfamily fontsize blocks | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl',
+        height: 600,
+        quickbars_selection_toolbar:
+            'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
+        noneditable_class: 'mceNonEditable',
+        toolbar_mode: 'floating',
+        contextmenu: 'link image table',
+        image_caption: true,
+        skin: useDarkMode ? 'oxide-dark' : 'oxide',
+        content_css: useDarkMode ? 'dark' : 'default',
+        image_advtab: true,
+        images_upload_handler: (blobInfo, progress) =>
+            new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest()
+
+                xhr.withCredentials = true
+
+                xhr.open(
+                    'POST',
+                    `/upload/article/image/${textareaElement.dataset.id}`
+                )
+
+                xhr.setRequestHeader('Accept', 'application/json')
+
+                xhr.setRequestHeader('X-Csrf-Token', token)
+
+                xhr.upload.onprogress = (e) => {
+                    progress((e.loaded / e.total) * 100)
                 }
-            })
-        }
 
-        for (let i = 5; i >= 1; i--) {
-            const id = `atlantis-rating-${i}-${uniqueid}`
+                xhr.onload = () => {
+                    if (xhr.status === 403) {
+                        reject({
+                            message: 'HTTP Error: ' + xhr.status,
+                            remove: true
+                        })
+                        return
+                    }
 
-            const label = atlantis.tag('label', {
-                attr: {
-                    for: id
+                    if (xhr.status < 200 || xhr.status >= 300) {
+                        reject('HTTP Error: ' + xhr.status)
+                        return
+                    }
+
+                    console.log(xhr.responseText)
+
+                    const json = JSON.parse(xhr.responseText)
+
+                    if (!json || typeof json.thumb_location != 'string') {
+                        reject('Invalid JSON: ' + xhr.responseText)
+                        return
+                    }
+
+                    token = json.token
+
+                    resolve(json.thumb_location)
                 }
-            })
 
-            const input = atlantis.tag('input', {
-                attr: {
-                    name: `rating`,
-                    type: `radio`,
-                    value: i,
-                    id
-                },
-                data: {
-                    id: article_id
-                },
-                on: {
-                    change: onchange
+                xhr.onerror = () => {
+                    reject(
+                        'Image upload failed due to a XHR Transport error. Code: ' +
+                            xhr.status
+                    )
                 }
+
+                const formData = new FormData()
+
+                formData.append('file', blobInfo.blob(), blobInfo.filename())
+
+                xhr.send(formData)
             })
-
-            if (rating == i) input.checked = true
-
-            form.append(input, label)
-        }
     })
+})
