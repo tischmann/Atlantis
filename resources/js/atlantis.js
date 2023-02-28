@@ -373,4 +373,21 @@ export default class Atlantis {
 
         return dialogElement
     }
+
+    enter(callback) {
+        return new IntersectionObserver(
+            (entries, observer) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        callback(entry.target)
+                    }
+                })
+            },
+            {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            }
+        )
+    }
 }

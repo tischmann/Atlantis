@@ -11,6 +11,41 @@ atlantis.on(window, 'load', () => {
         link.setAttribute('rel', 'stylesheet')
     })
 
+    // Image lazy load
+
+    const observerSrc = atlantis.enter((target) => {
+        const image = new Image()
+
+        image.onload = function () {
+            target.src = this.src
+        }
+
+        image.src = target.dataset.src
+    })
+
+    const observerBg = atlantis.enter((target) => {
+        const image = new Image()
+
+        image.onload = function () {
+            console.log(this.src)
+            atlantis.css(target, { 'background-image': `url(${this.src})` })
+        }
+
+        image.src = target.dataset.bg
+    })
+
+    document
+        .querySelectorAll(`[data-atlantis-lazy-image][data-src]`)
+        .forEach((img) => {
+            observerSrc.observe(img)
+        })
+
+    document
+        .querySelectorAll(`[data-atlantis-lazy-image][data-bg]`)
+        .forEach((img) => {
+            observerBg.observe(img)
+        })
+
     // Lazy fetch
     // document.body
     //     .querySelectorAll('.intersection-loader-container')

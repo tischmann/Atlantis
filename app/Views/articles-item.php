@@ -1,11 +1,12 @@
 <?php
 
-use App\Models\Article;
 use App\Models\User;
+
 use Tischmann\Atlantis\Date;
+
 ?>
 <div class="rounded-lg shadow-lg bg-white dark:bg-sky-800 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-    <div class="lazy text-sky-800 text-xs h-56 md:h-full w-full rounded-t-lg md:rounded-none md:rounded-l-lg bg-cover bg-center bg-[url('/images/placeholder.svg')] min-h-[180px]" data-bg="<?= $article->image_url ?>">
+    <div class="text-sky-800 text-xs h-56 md:h-full w-full rounded-t-lg md:rounded-none md:rounded-l-lg bg-cover bg-center bg-[url('/images/placeholder.svg')] min-h-[180px]" data-bg="<?= $article->image_url ?>" data-atlantis-lazy-image>
         <!-- <div class="absolute flex top-0 inset-x-0 gap-4 p-4 flex-wrap">
             <span class="block px-3 py-2 bg-white uppercase rounded-md shadow-md outline-none ring-0 transition duration-150 ease-in-out font-semibold"><?= $article->category->title ?></span>
             <span class="block px-3 py-2 bg-white uppercase rounded-md shadow-md outline-none ring-0 transition duration-150 ease-in-out font-semibold"><?= Date::getElapsed($article->created_at)  ?></span>
