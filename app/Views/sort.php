@@ -23,9 +23,7 @@
 
                     $href = "?sort={$sorting->type}&order={$sorting->order}";
 
-                    if ($search) {
-                        $href .= "&search={$search}";
-                    }
+                    if ($search) $href .= "&query={$search}";
 
                     $selected = $sorting->type == $sort_type && $sorting->order == $sort_order;
 

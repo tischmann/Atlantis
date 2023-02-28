@@ -39,8 +39,6 @@ class UsersController extends Controller
 
         $this->sort($query, $request);
 
-        $this->search($query, $request, ['login']);
-
         $pagination = new Pagination(
             total: $query->count(),
             limit: self::ADMIN_FETCH_LIMIT,
@@ -609,8 +607,6 @@ class UsersController extends Controller
         $this->checkAdmin();
 
         $this->sort($query, $request);
-
-        $this->search($query, $request, ['login']);
 
         $this->fetch(
             $request,

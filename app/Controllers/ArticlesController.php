@@ -40,8 +40,6 @@ class ArticlesController extends Controller
 
         $this->sort($query, $request);
 
-        $this->search($query, $request, ['title']);
-
         $pagination = new Pagination(
             total: $query->count(),
             limit: static::ADMIN_FETCH_LIMIT,
@@ -93,8 +91,6 @@ class ArticlesController extends Controller
         $query = Article::query();
 
         $this->sort($query, $request);
-
-        $this->search($query, $request, ['title']);
 
         $this->fetch(
             $request,
@@ -686,8 +682,6 @@ class ArticlesController extends Controller
 
         $this->sort($query, $request);
 
-        $this->search($query, $request, ['title', 'short_text', 'full_text']);
-
         $pagination = new Pagination(
             total: $query->count(),
             limit: Pagination::DEFAULT_LIMIT,
@@ -743,8 +737,6 @@ class ArticlesController extends Controller
         $query->where('category_id', '()', $id_list);
 
         $this->sort($query, $request);
-
-        $this->search($query, $request, ['title', 'short_text', 'full_text']);
 
         $this->fetch(
             $request,

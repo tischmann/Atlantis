@@ -161,7 +161,7 @@ final class Template
             'breadcrumbs' => '',
             'admin' => '',
             'pagination' => $pagination,
-            'search' => strval($request->request('search')),
+            'search' => strval($request->request('query')),
             'sorting' => $sorting,
         ];
 

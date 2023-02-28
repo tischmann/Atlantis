@@ -27,4 +27,22 @@ atlantis.on(window, 'load', () => {
             document.querySelector('header').classList.remove(...classes)
         }
     })
+
+    const searchElement = document.querySelector(
+        'input[type="search"][name="query"]'
+    )
+
+    atlantis.on(searchElement, 'search', (event) => {
+        if (event.target.value == '') {
+            let search = window.location.search.split('?')[1]?.split('&')
+
+            search = search.filter(function (value, index, arr) {
+                return value.split('=')[0] != 'query'
+            })
+
+            search = search.length > 0 ? '?' + search.join('&') : ''
+
+            window.location.assign(`${window.location.origin}/search${search}`)
+        }
+    })
 })

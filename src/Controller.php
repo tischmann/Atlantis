@@ -46,7 +46,7 @@ class Controller
         Request $request,
         array $columns
     ): Query {
-        $search = strval($request->request('search'));
+        $search = strval($request->request('query'));
 
         $search = strip_tags($search);
 
