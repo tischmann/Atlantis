@@ -54,15 +54,3 @@ document
             form.append(input, label)
         }
     })
-
-document.querySelectorAll(`.fslightbox-gallery img`).forEach((img) => {
-    const a = document.createElement('a')
-    a.setAttribute('data-fslightbox', 'gallery')
-    let src = img.dataset?.src || img.getAttribute('src')
-    src = src.replace(/thumb_/g, '')
-    a.setAttribute('href', src)
-    img.before(a)
-    a.append(img)
-})
-
-refreshFsLightbox()
