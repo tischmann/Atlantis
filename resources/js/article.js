@@ -32,6 +32,10 @@ atlantis.on(window, 'load', () => {
         image_advtab: true,
         images_upload_handler: (blobInfo, progress) =>
             new Promise((resolve, reject) => {
+                const formData = new FormData()
+
+                formData.append('file', blobInfo.blob(), blobInfo.filename())
+
                 const xhr = new XMLHttpRequest()
 
                 xhr.withCredentials = true
@@ -83,10 +87,6 @@ atlantis.on(window, 'load', () => {
                             xhr.status
                     )
                 }
-
-                const formData = new FormData()
-
-                formData.append('file', blobInfo.blob(), blobInfo.filename())
 
                 xhr.send(formData)
             })
