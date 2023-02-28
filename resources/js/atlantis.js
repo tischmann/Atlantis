@@ -390,4 +390,90 @@ export default class Atlantis {
             }
         )
     }
+
+    lazyload(
+        container,
+        {
+            url = '',
+            token = '',
+            page = 1,
+            next = 1,
+            last = 1,
+            limit = 1,
+            sort = '',
+            order = '',
+            search = '',
+            callback = function () {}
+        } = {}
+    ) {
+        const target = this.tag('div', {
+            classList: ['flex', 'justify-center', 'items-center'],
+            attr: {
+                'data-atlantis-lazyload-target': true
+            },
+            append: [
+                this.tag('div', {
+                    classList: [
+                        'spinner-grow',
+                        'inline-block',
+                        'w-8',
+                        'h-8',
+                        'bg-sky-500',
+                        'rounded-full',
+                        'opacity-0'
+                    ],
+                    attr: { role: 'status' }
+                })
+            ]
+        })
+
+        container.appendChild(target)
+
+        const observer = this.enter((element) => {
+            if (page == last) {
+                if (this.log) {
+                    console.log('Atlantis.lazyload(): No more pages to load')
+                }
+
+                observer.disconnect()
+
+                return target.remove()
+            }
+
+            this.fetch(url, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Csrf-Token': token
+                },
+                body: {
+                    page,
+                    next,
+                    last,
+                    limit,
+                    sort,
+                    order,
+                    search
+                },
+                success: (json) => {
+                    target.insertAdjacentHTML(`beforebegin`, json.html)
+
+                    page = json.page
+
+                    next = json.next
+
+                    last = json.last
+
+                    token = json.token
+
+                    container.appendChild(target)
+
+                    //this.lazyload.update()
+
+                    callback()
+                }
+            })
+        })
+
+        observer.observe(target)
+    }
 }

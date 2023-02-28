@@ -51,10 +51,22 @@ atlantis.on(window, 'load', () => {
             observerBg.observe(img)
         })
 
-    // Lazy fetch
-    // document.body
-    //     .querySelectorAll('.intersection-loader-container')
-    //     .forEach((container) => new LazyFetch(container))
+    // Lazy load content
+    document.body
+        .querySelectorAll('[data-atlantis-lazyload]')
+        .forEach((container) =>
+            atlantis.lazyload(container, {
+                url: container.dataset.url,
+                token: container.dataset.token,
+                page: container.dataset.page,
+                next: container.dataset.next,
+                last: container.dataset.last,
+                limit: container.dataset.limit,
+                sort: container.dataset.sort,
+                order: container.dataset.order,
+                search: container.dataset.search
+            })
+        )
 
     atlantis.on(window, 'scroll', () => {
         const classes = useDarkMode

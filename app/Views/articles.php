@@ -1,4 +1,10 @@
-<?php include __DIR__ . "/header.php" ?>
+<?php
+
+use Tischmann\Atlantis\Template;
+
+include __DIR__ . "/header.php";
+
+?>
 <main class="md:container md:mx-auto">
     <div class="m-4">
         <?php include __DIR__ . "/breadcrumbs.php" ?>
@@ -6,22 +12,24 @@
     <div class="flex items-center gap-4 m-4 justify-end">
         <?php include __DIR__ . "/sort.php" ?>
     </div>
-    <div class="intersection-loader-container flex flex-col gap-4 m-4">
-        <?php
+    <?php
 
-        use Tischmann\Atlantis\Template;
+    $lazyload = Template::html(
+        'lazyload',
+        [
+            'pagination' => $pagination,
+            'url' => "/fetch/category/{$category->slug}"
+        ]
+    );
+
+    ?>
+    <div class="flex flex-col gap-4 m-4" <?= $lazyload ?>>
+        <?php
 
         foreach ($articles as $article) {
             Template::echo('articles-item', ['article' => $article]);
         }
 
-        Template::echo(
-            'intersection-loader-target',
-            [
-                'pagination' => $pagination,
-                'url' => "/fetch/category/{$category->slug}"
-            ]
-        );
         ?>
     </div>
 </main>
