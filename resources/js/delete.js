@@ -21,7 +21,7 @@ document.querySelectorAll(`.atlantis-delete-button`).forEach((element) => {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-Csrf-Token': data.csrf
+                            'X-Csrf-Token': data.token
                         },
                         success: () => {
                             window.location.assign(data.redirect)
