@@ -33,5 +33,6 @@
         ?>
     </div>
     <?= Template::html('admin/add-button', ['href' => '/{{env=APP_LOCALE}}/add/category']) ?>
+    <script src="/js/sortable.js" nonce="{{nonce}}" async></script>
     <script src="/js/orderCategories.js" nonce="{{nonce}}" type="module" async></script>
 </main>

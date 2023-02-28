@@ -22,7 +22,7 @@
             }
             ?>
         </div>
-        <div class="text-gray-500 flex items-center gap-4 text-sm">
+        <div class="flex items-center gap-4 text-sm">
             <span><?= Date::getElapsed($article->created_at)  ?></span>
             <div><i class="fas fa-eye mr-2"></i><?= $article->views ?></div>
             <div>
