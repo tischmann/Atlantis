@@ -27,7 +27,6 @@ atlantis.on(window, 'load', () => {
         const image = new Image()
 
         image.onload = function () {
-            console.log(this.src)
             atlantis.css(target, { 'background-image': `url(${this.src})` })
         }
 
