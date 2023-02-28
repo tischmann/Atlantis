@@ -7,8 +7,11 @@ use Tischmann\Atlantis\{Locale, Template};
 include __DIR__ . "/../header.php";
 
 ?>
-<main class="md:container md:mx-auto text-black dark:text-white">
-    <form method="post" class="p-4">
+<main class="md:container md:mx-auto">
+    <div class="m-4 mb-8">
+        <?php include __DIR__ . "/../breadcrumbs.php" ?>
+    </div>
+    <form method="post" class="m-4">
         {{csrf}}
         <div class="grid grid-cols-1 lg:grid-cols-2 md:gap-4">
             <div class="flex flex-col">

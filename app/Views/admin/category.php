@@ -6,7 +6,10 @@ include __DIR__ . "/../header.php"
 
 ?>
 <main class="md:container md:mx-auto">
-    <form method="post" class="my-4 px-4">
+    <div class="m-4 mb-8">
+        <?php include __DIR__ . "/../breadcrumbs.php" ?>
+    </div>
+    <form method="post" class="m-4">
         {{csrf}}
         <?php
 

@@ -902,6 +902,14 @@ video {
   margin-left: 1rem;
 }
 
+.mb-8 {
+  margin-bottom: 2rem;
+}
+
+.mt-8 {
+  margin-top: 2rem;
+}
+
 .box-border {
   box-sizing: border-box;
 }
@@ -3132,6 +3140,11 @@ video {
 .checked\:bg-primary:checked {
   --tw-bg-opacity: 1;
   background-color: rgb(59 113 202 / var(--tw-bg-opacity));
+}
+
+.checked\:bg-sky-500:checked {
+  --tw-bg-opacity: 1;
+  background-color: rgb(14 165 233 / var(--tw-bg-opacity));
 }
 
 .checked\:after\:absolute:checked::after {

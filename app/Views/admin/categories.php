@@ -1,6 +1,9 @@
 <?php include __DIR__ . "/../header.php" ?>
 <main class="md:container md:mx-auto">
-    <div class="flex flex-wrap gap-4 my-4 px-4">
+    <div class="m-4">
+        <?php include __DIR__ . "/../breadcrumbs.php" ?>
+    </div>
+    <div class="flex flex-wrap gap-4 m-4">
         <?php
 
         use App\Models\{Category};

@@ -1,9 +1,12 @@
 <?php include __DIR__ . "/header.php" ?>
 <main class="md:container md:mx-auto">
-    <div class="flex items-center gap-4 px-4 justify-end">
+    <div class="m-4">
+        <?php include __DIR__ . "/breadcrumbs.php" ?>
+    </div>
+    <div class="flex items-center gap-4 m-4 justify-end">
         <?php include __DIR__ . "/sort.php" ?>
     </div>
-    <div class="intersection-loader-container flex flex-col gap-4 px-4 my-4">
+    <div class="intersection-loader-container flex flex-col gap-4 m-4">
         <?php
 
         use Tischmann\Atlantis\Template;

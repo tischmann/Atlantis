@@ -7,8 +7,11 @@ use Tischmann\Atlantis\{Locale};
 include __DIR__ . "/../header.php"
 
 ?>
-<main class="md:container md:mx-auto px-4">
-    <div class="flex flex-col md:flex-row md:flex-wrap items-center gap-4 my-4">
+<main class="md:container md:mx-auto">
+    <div class="m-4">
+        <?php include __DIR__ . "/../breadcrumbs.php" ?>
+    </div>
+    <div class="flex flex-col md:flex-row md:flex-wrap items-center gap-4 m-4">
         <?php
 
         $buttons = [
