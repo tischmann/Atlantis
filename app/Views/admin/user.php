@@ -105,14 +105,20 @@ include __DIR__ . "/../header.php"
                 ?>
             </div>
             <div>
-                <div class="mb-4">
-                    <input type="hidden" value="<?= $user->avatar ?>" name="avatar" id="userAvatarInput">
-                    <input type='file' id="userAvatarFile" class="hidden" aria-label="{{lang=article_image}}" accept=".jpg, .png, .jpeg, .gif, .bmp, .webp">
-                    <img src="<?= $user->avatar_src ?>" id="userAvatar" width="400" height="400" alt="{{lang=user_avatar}}" class="rounded w-full object-cover border border-gray-300 cursor-pointer">
-                    <button type="button" data-te-ripple-init data-te-ripple-color="light" id="imageDeleteButton" class="mt-4 w-full inline-block flex-grow md:flex-grow-0 px-6 py-2.5 bg-pink-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-pink-700 hover:shadow-lg focus:bg-pink-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-rpinked-800 active:shadow-lg transition duration-150 ease-in-out">
-                        {{lang=delete_image}}
-                    </button>
-                </div>
+                <?php
+                Template::echo(
+                    'admin/load-image',
+                    [
+                        'value' => $user->avatar,
+                        'name' => 'avatar',
+                        'label' => Locale::get('user_avatar'),
+                        'src' => $user->avatar_src,
+                        'width' => 400,
+                        'height' => 400,
+                        'url' => "/upload/user/avatar/{$user->id}"
+                    ]
+                );
+                ?>
             </div>
         </div>
         <div class="mb-4 flex gap-4 flex-wrap justify-evenly md:justify-end items-center">
@@ -136,89 +142,5 @@ include __DIR__ . "/../header.php"
             <?= Template::html('admin/save-button') ?>
         </div>
     </form>
-    <script nonce="{{nonce}}">
-        let csrf = `{{csrf-token}}`
-
-        const img = document.getElementById('userAvatar')
-
-        const file = document.getElementById('userAvatarFile')
-
-        const input = document.getElementById('userAvatarInput')
-
-        const imageDeleteButton = document.getElementById('imageDeleteButton')
-
-        const errorHandler = (message) => {
-            new Dialog({
-                title: `{{lang=warning}}`,
-                message: message,
-                buttons: [{
-                    text: `{{lang=yes}}`,
-                    class: `bg-pink-600 text-white hover:bg-pink-500 focus:bg-pink-500 active:bg-pink-500`,
-                }, ],
-                onclose: () => window.location.reload()
-            }).show()
-        }
-
-        const loadImage = (file, width, height) => {
-            if (!file || !width || !height) return
-
-            const formData = new FormData();
-
-            formData.append('width', width);
-
-            formData.append('height', height);
-
-            formData.append('file', file, file.name);
-
-            fetch(`/upload/user/avatar/<?= $user->id ?>`, {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-Csrf-Token': csrf
-                    },
-                    body: formData
-                })
-                .then(response => {
-                    if (response.status !== 200) {
-                        response.text().then(text => {
-                            return errorHandler(text)
-                        })
-                    }
-
-                    response.json()
-                        .then(json => {
-                            if (!json?.status) {
-                                return errorHandler(json?.message || 'Error')
-                            }
-
-                            input.value = json.image
-
-                            img.src = json.location
-
-                            csrf = json.csrf
-                        })
-                        .catch(error => {
-                            errorHandler(error)
-                        })
-                }).catch(error => {
-                    errorHandler(error)
-                })
-
-        }
-
-        file.addEventListener('change', function(event) {
-            loadImage(event.target.files[0],
-                img.getAttribute('width'),
-                img.getAttribute('height'))
-        })
-
-        img.addEventListener('click', function(event) {
-            file.dispatchEvent(new MouseEvent('click'));
-        })
-
-        imageDeleteButton.addEventListener('click', () => {
-            img.setAttribute('src', '/images/placeholder.svg')
-            input.value = ''
-        })
-    </script>
+    <script src="/js/imageUpload.js" nonce="{{nonce}}" type="module"></script>
 </main>

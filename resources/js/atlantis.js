@@ -141,7 +141,6 @@ export default class Atlantis {
         {
             method = `POST`,
             headers = {
-                'Content-Type': 'application/json',
                 Accept: 'application/json'
             },
             body = undefined,
@@ -149,15 +148,16 @@ export default class Atlantis {
             failure = function () {}
         } = {}
     ) {
-        if (typeof body !== 'string') body = JSON.stringify(body)
+        if (typeof body !== 'string' && body instanceof FormData === false) {
+            body = JSON.stringify(body)
+        }
 
         headers = {
-            'Content-Type': 'application/json',
             Accept: 'application/json',
             ...headers
         }
 
-        if (body) {
+        if (typeof body === 'string') {
             headers = {
                 ...headers,
                 'Content-Length': body.length.toString()
@@ -169,13 +169,10 @@ export default class Atlantis {
                 if (!response.ok) {
                     failure(response.statusText)
 
-                    return console.error(
-                        'Atlantis.fetch():',
-                        response.statusText
-                    )
+                    return console.error('Atlantis.fetch():', response.status)
                 }
 
-                switch (response.headers.get('Content-Type')) {
+                switch (headers.Accept) {
                     case 'application/json':
                         response
                             .json()
@@ -191,7 +188,7 @@ export default class Atlantis {
                                 console.error('Atlantis.fetch():', error)
                             })
                         break
-                    case 'text/html':
+                    default:
                         response
                             .text()
                             .then((html) => {
@@ -259,5 +256,121 @@ export default class Atlantis {
 
     setUUID(name = 'atlantis_uuid') {
         this.setCookie(name, self.crypto.randomUUID())
+    }
+
+    dialog({ title, message, buttons = [], onclose = function () {} } = {}) {
+        const id = `atlantis-dialog-${this.uniqueid()}`
+
+        const dialogElement = this.tag('dialog', {
+            classList: [
+                'm-0',
+                'rounded',
+                'shadow-xl',
+                'fixed',
+                'md:w-96',
+                'w-full',
+                'top-1/2',
+                'left-1/2',
+                'transform',
+                '-translate-x-1/2',
+                '-translate-y-1/2'
+            ],
+            attr: {
+                id
+            },
+            on: {
+                close: onclose
+            }
+        })
+
+        const buttonsContainer = this.tag('div', {
+            classList: ['flex', 'items-center', 'gap-4']
+        })
+
+        buttons.forEach((button) => {
+            const buttonElement = this.tag('button', {
+                attr: { type: 'button' },
+                className:
+                    button?.class ||
+                    'bg-sky-600 text-white hover:bg-sky-500 focus:bg-sky-500 active:bg-sky-500',
+                classList: [
+                    'inline-block',
+                    'w-full',
+                    'px-6',
+                    'py-2.5',
+                    'text-white',
+                    'font-medium',
+                    'text-xs',
+                    'leading-tight',
+                    'uppercase',
+                    'rounded',
+                    'shadow-md',
+                    'hover:shadow-lg',
+                    'focus:shadow-lg',
+                    'focus:outline-none',
+                    'focus:ring-0',
+                    'active:shadow-lg',
+                    'transition',
+                    'duration-150',
+                    'ease-in-out'
+                ],
+                html: button?.text || 'Button',
+                on: {
+                    click: () => {
+                        if (typeof button?.callback === 'function') {
+                            button?.callback()
+                        }
+
+                        dialogElement.close()
+                    }
+                }
+            })
+
+            buttonsContainer.append(buttonElement)
+        })
+
+        dialogElement.append(
+            this.tag('form', {
+                attr: { method: 'dialog' },
+                append: [
+                    this.tag('button', {
+                        classList: [
+                            'absolute',
+                            'top-4',
+                            'right-4',
+                            'ring-0',
+                            'focus:ring-0',
+                            'outline-none',
+                            'text-gray-500'
+                        ],
+                        append: [
+                            this.tag('i', {
+                                classList: ['fas', 'fa-times', 'text-xl'],
+                                attr: { value: 'cancel' }
+                            })
+                        ]
+                    }),
+                    this.tag('span', {
+                        classList: [
+                            'block',
+                            'text-xl',
+                            'font-medium',
+                            'leading-normal',
+                            'text-gray-800',
+                            'pr-12',
+                            'mb-4',
+                            'truncate'
+                        ],
+                        text: title
+                    }),
+                    this.tag('div', { classList: ['mb-4'], html: message }),
+                    buttonsContainer
+                ]
+            })
+        )
+
+        document.body.append(dialogElement)
+
+        return dialogElement
     }
 }

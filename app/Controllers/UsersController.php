@@ -461,12 +461,11 @@ class UsersController extends Controller
 
         $result = $user->delete();
 
-        Response::send(new Alert(
-            status: intval($result),
-            message: $result
+        Response::send([
+            'message' => $result
                 ? Locale::get('user_deleted')
                 : Locale::get('user_delete_error')
-        ));
+        ], $result ? 200 : 500);
     }
 
     /**
@@ -500,22 +499,18 @@ class UsersController extends Controller
 
         $temp = current($_FILES);
 
-        list($csrf_key, $csrf_token) = CSRF::set();
-
         if (!is_uploaded_file($temp['tmp_name'])) {
             Response::send([
-                'csrf' => $csrf_token,
-                'error' => 'Error uploading file'
-            ]);
+                'message' => Locale::get('error_upload_file')
+            ], 500);
 
             exit;
         }
 
         if (preg_match("/([^\w\s\d\-_~,;:\[\]\(\).])|([\.]{2,})/", $temp['name'])) {
             Response::send([
-                'csrf' => $csrf_token,
-                'error' => 'Invalid file name'
-            ]);
+                'message' => Locale::get('error_invalid_filename')
+            ], 500);
 
             exit;
         }
@@ -531,9 +526,8 @@ class UsersController extends Controller
 
         if (!in_array($fileExtension, $extensions)) {
             Response::send([
-                'csrf' => $csrf_token,
-                'error' => 'Invalid extension'
-            ]);
+                'message' => Locale::get('error_unsupported_image_type')
+            ], 500);
 
             exit;
         }
@@ -561,13 +555,6 @@ class UsersController extends Controller
             case 'webp':
                 $im = imagecreatefromwebp($temp['tmp_name']);
                 break;
-            default:
-                Response::json([
-                    'csrf' => $csrf_token,
-                    'error' => 'Unsupported image format'
-                ]);
-
-                exit;
         }
 
         if ($width && $height) {
@@ -576,9 +563,8 @@ class UsersController extends Controller
 
         if (!imagewebp($im, $filetowrite, $quality)) {
             Response::json([
-                'csrf' => $csrf_token,
-                'error' => 'Error converting image to webp'
-            ]);
+                'message' => Locale::get('error_image_to_webp')
+            ], 500);
 
             exit;
         }
@@ -592,8 +578,7 @@ class UsersController extends Controller
         $location = $baseurl . "/" . $filetowrite;
 
         Response::json([
-            'status' => 1,
-            'csrf' => $csrf_token,
+            'token' => CSRF::generateToken(),
             'image' => basename($location),
             'location' => $location
         ]);

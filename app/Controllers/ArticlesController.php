@@ -320,12 +320,11 @@ class ArticlesController extends Controller
             }
         }
 
-        Response::send(new Alert(
-            status: intval($result),
-            message: $result
+        Response::send([
+            'message' => $result
                 ? Locale::get('article_deleted')
                 : Locale::get('article_delete_error')
-        ));
+        ], $result ? 200 : 500);
     }
 
     /**

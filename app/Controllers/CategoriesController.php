@@ -367,12 +367,11 @@ class CategoriesController extends Controller
 
         $result = $category->delete();
 
-        Response::send(new Alert(
-            status: intval($result),
-            message: $result
+        Response::send([
+            'message' => $result
                 ? Locale::get('category_deleted')
                 : Locale::get('category_delete_error')
-        ));
+        ], $result ? 200 : 500);
     }
 
     public function fetchParentCategories(Request $request)

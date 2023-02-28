@@ -284,11 +284,10 @@ class LocalesController extends Controller
 
         $result = unlink(getenv('APP_ROOT') . '/lang/' . $code . '.php');
 
-        Response::send(new Alert(
-            status: intval($result),
-            message: $result
+        Response::send([
+            'message' => $result
                 ? Locale::get('locale_deleted')
                 : Locale::get('locale_delete_error')
-        ));
+        ], $result ? 200 : 500);
     }
 }
