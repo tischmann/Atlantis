@@ -475,6 +475,8 @@ class ArticlesController extends Controller
 
         static::setTitle($article->title);
 
+        $article->full_text = static::lazyfyImages($article->full_text);
+
         View::send(
             'article',
             [
@@ -757,5 +759,20 @@ class ArticlesController extends Controller
             },
             Pagination::DEFAULT_LIMIT
         );
+    }
+
+    protected static function lazyfyImages(?string $html): string
+    {
+        if (!$html) return '';
+
+        $html = htmlspecialchars_decode($html);
+
+        $html = preg_replace(
+            '/<(img.*(?=src="))src="([^"]+)"([^>]+)>/i',
+            '<$1src="/images/placeholder.svg" data-atlantis-lazy-image data-src="$2" $3>',
+            $html
+        );
+
+        return $html;
     }
 }
