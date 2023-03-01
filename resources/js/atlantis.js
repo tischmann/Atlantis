@@ -2,7 +2,7 @@ export default class Atlantis {
     #handlers = new Map() // event handlers
 
     #lazyimageObserver = this.enter((target) => {
-        if (target.dataset?.loaded) return
+        if (target.dataset?.atlantisLazyImage == 'loaded') return
 
         const image = new Image()
 
@@ -13,7 +13,7 @@ export default class Atlantis {
                 this.css(target, { 'background-image': `url(${this.src})` })
             }
 
-            target.dataset.loaded = true
+            target.dataset.atlantisLazyImage = 'loaded'
         }
 
         if (target.dataset.hasOwnProperty('src')) {
@@ -425,7 +425,7 @@ export default class Atlantis {
 
         selectors.forEach((selector) => {
             document.querySelectorAll(selector).forEach((element) => {
-                if (!element.dataset?.loaded) {
+                if (!element.dataset?.atlantisLazyImage == 'loaded') {
                     this.#lazyimageObserver.observe(element)
                 }
             })

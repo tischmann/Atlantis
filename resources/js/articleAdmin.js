@@ -30,6 +30,10 @@ atlantis.on(window, 'load', () => {
         skin: useDarkMode ? 'oxide-dark' : 'oxide',
         content_css: useDarkMode ? 'dark' : 'default',
         image_advtab: true,
+        image_class_list: [
+            { title: 'None', value: 'm-4' },
+            { title: 'Rounded', value: 'rounded-lg m-4' }
+        ],
         images_upload_handler: (blobInfo, progress) =>
             new Promise((resolve, reject) => {
                 const formData = new FormData()
