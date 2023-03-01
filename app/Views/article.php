@@ -29,7 +29,7 @@
                 <form class="atlantis-rating" data-id="<?= $article->id ?>" data-rating="<?= $article->rating ?>" data-token="{{csrf-token}}" data-atlantis-article-rating></form>
             </div>
         </div>
-        <div class="mt-4" data-atlantis-lightbox>
+        <div class="mt-4" data-atlantis-lightbox data-atlantis-lazy-image-container>
             <img class="w-full md:max-w-lg md:float-left mb-4 md:mr-8 rounded-xl shadow-md" data-src="<?= $article->image_url ?>" src="/images/placeholder.svg" width="<?= Article::THUMB_WIDTH ?>" height="<?= Article::THUMB_HEIGHT ?>" alt="<?= $article->title ?>" data-atlantis-lazy-image>
             <?= html_entity_decode($article->full_text) ?>
         </div>

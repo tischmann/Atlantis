@@ -18,13 +18,13 @@
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#ffffff">
     <meta name="msapplication-TileColor" content="#ffffff">
     <title>{{env=APP_TITLE}}</title>
-    <link rel="stylesheet" href="/tailwind.css" media="all">
-    <link rel="preload" as="style" href="/fontawesome.css" media="all">
+    <link rel="preload" as="style" href="/fontawesome.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" as="style"
         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" />
-    <link rel="preload" as="style" href="/app.css" media="all">
+    <link rel="stylesheet" href="/tailwind.css">
+    <link rel="preload" as="style" href="/app.css">
     <style>
         body {
             font-family: 'Montserrat', sans-serif;

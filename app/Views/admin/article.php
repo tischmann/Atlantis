@@ -159,6 +159,6 @@ include __DIR__ . "/../header.php";
         </div>
     </form>
     <script src="/tinymce/tinymce.min.js" nonce="{{nonce}}" async></script>
-    <script src="/js/article.js" nonce="{{nonce}}" type="module" async></script>
+    <script src="/js/articleAdmin.js" nonce="{{nonce}}" type="module" async></script>
     <script src="/js/imageUpload.js" nonce="{{nonce}}" type="module" async></script>
 </main>
