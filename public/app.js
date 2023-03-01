@@ -15,6 +15,14 @@ atlantis.on(window, 'load', () => {
 
     atlantis.lazyimage()
 
+    // lightbox
+
+    document
+        .querySelectorAll(`[data-atlantis-lightbox]`)
+        .forEach((container) => {
+            atlantis.lightbox(container)
+        })
+
     // Lazy load content
     document.body
         .querySelectorAll('[data-atlantis-lazyload]')
