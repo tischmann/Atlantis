@@ -516,7 +516,7 @@ export default class Atlantis {
         observer.observe(target)
     }
 
-    lightbox(container) {
+    lightbox(container, thumbPrefix = 'thumb_') {
         const close = this.tag('button', {
             classList: [
                 'absolute',
@@ -678,12 +678,10 @@ export default class Atlantis {
         }
 
         const refreshCarousel = () => {
-            const currentSrc = frame
-                .querySelector('img')
-                .src.replace(/thumb_/, '')
+            const currentSrc = sanitizeSrc(frame.querySelector('img').src)
 
             carousel.querySelectorAll('img').forEach((el) => {
-                if (el.src.replace(/thumb_/, '') == currentSrc) {
+                if (sanitizeSrc(el.src) == currentSrc) {
                     makeActive(el)
                 } else {
                     makeInactive(el)
@@ -709,7 +707,7 @@ export default class Atlantis {
                         click: function () {
                             const img = frame.querySelector('img')
 
-                            img.src = this.src.replace(/thumb_/, '')
+                            img.src = sanitizeSrc(this.src)
 
                             img.width = this.width
 
@@ -722,6 +720,10 @@ export default class Atlantis {
 
                 carousel.append(image)
             })
+        }
+
+        function sanitizeSrc(src) {
+            return src.replace('/' + thumbPrefix + '/', '')
         }
 
         function show(event) {
@@ -752,7 +754,7 @@ export default class Atlantis {
                 attr: {
                     width: element.width,
                     height: element.height,
-                    src: element.src.replace(/thumb_/, '')
+                    src: sanitizeSrc(element.src)
                 }
             })
 
