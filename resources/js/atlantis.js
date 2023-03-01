@@ -10,7 +10,7 @@ export default class Atlantis {
             if (target.dataset.hasOwnProperty('src')) {
                 target.src = this.src
             } else if (target.dataset.hasOwnProperty('bg')) {
-                this.css(target, { 'background-image': `url(${this.src})` })
+                target.style.backgroundImage = `url(${this.src})`
             }
 
             target.dataset.atlantisLazyImage = 1
@@ -425,7 +425,7 @@ export default class Atlantis {
 
         selectors.forEach((selector) => {
             document.querySelectorAll(selector).forEach((element) => {
-                if (!element.dataset?.atlantisLazyImage == 1) {
+                if (element.dataset?.atlantisLazyImage != 1) {
                     this.#lazyimageObserver.observe(element)
                 }
             })
@@ -509,6 +509,8 @@ export default class Atlantis {
                     container.appendChild(target)
 
                     callback()
+
+                    this.lazyimage()
                 }
             })
         })

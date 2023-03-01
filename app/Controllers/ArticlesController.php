@@ -492,6 +492,75 @@ class ArticlesController extends Controller
         );
     }
 
+
+    /**
+     * Поиск статей
+     * 
+     * @param Request $request
+     */
+    public function searchArticles(Request $request)
+    {
+        if (!$request->request('query')) Response::redirect('/');
+
+        $limit = Pagination::DEFAULT_LIMIT;
+
+        $query = Article::query()->where('visible', 1)->limit($limit);
+
+        $this->sort($query, $request);
+
+        $this->search($query, $request, ['title', 'short_text', 'full_text']);
+
+        $pagination = new Pagination(
+            total: $query->count(),
+            limit: $limit,
+        );
+
+        static::setTitle(Locale::get('search'));
+
+        View::send(
+            'search',
+            [
+                'breadcrumbs' => [
+                    new Breadcrumb(Locale::get('search')),
+                ],
+                'pagination' => $pagination,
+                'articles' => Article::fill($query),
+                'sortings' => [
+                    new Sorting(),
+                    new Sorting('created_at', 'asc'),
+                    new Sorting('created_at', 'desc'),
+                ]
+            ]
+        );
+    }
+
+    public function fetchFoundArticles(Request $request)
+    {
+        $query = Article::query()->where('visible', 1);
+
+        $this->sort($query, $request);
+
+        $this->fetch(
+            $request,
+            $query,
+            function ($query) {
+                $html = '';
+
+                foreach (Article::fill($query) as $article) {
+                    $html .= Template::html(
+                        'search-article-item',
+                        [
+                            'article' => $article,
+                        ]
+                    );
+                }
+
+                return $html;
+            },
+            Pagination::DEFAULT_LIMIT
+        );
+    }
+
     public function newArticle(Request $request)
     {
         $this->checkAdmin();

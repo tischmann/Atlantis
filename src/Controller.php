@@ -72,6 +72,8 @@ class Controller
         callable $callback,
         int $limit
     ): void {
+        CSRF::verify($request);
+
         $html = '';
 
         $page = intval($request->request('page') ?? 1);
@@ -103,7 +105,7 @@ class Controller
         }
 
         Response::json([
-            'status' => 1,
+            'token' => CSRF::generateToken(),
             'html' => $html,
             ...get_object_vars($pagination)
         ]);

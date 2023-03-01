@@ -104,6 +104,7 @@ return [
     'route_not_found' => 'Маршрут не найден',
     'save' => 'Сохранить',
     'search' => 'Поиск',
+    'search_empty' => 'Ничего не найдено',
     'second_ago' => 'секунду назад',
     'seconds_ago' => 'секунд назад',
     'seconds_ago_2_4' => 'секунды назад',

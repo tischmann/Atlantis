@@ -18,7 +18,7 @@
          <ul class="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-left text-base shadow-lg dark:bg-neutral-700 [&[data-te-dropdown-show]]:block" aria-labelledby="sortingDropdown" data-te-dropdown-menu-ref>
              <?php
 
-                foreach ($sortings as $sorting) {
+                foreach ($sortings ?? [] as $sorting) {
                     assert($sorting instanceof Sorting);
 
                     $href = "?sort={$sorting->type}&order={$sorting->order}";

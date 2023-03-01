@@ -344,6 +344,23 @@ Router::add(new Route(
     title: Locale::get('home')
 ));
 
+// Поиск
+Router::add(new Route(
+    controller: new ArticlesController(),
+    path: 'search',
+    action: 'searchArticles',
+    method: 'GET',
+));
+
+Router::add(new Route(
+    controller: new ArticlesController(),
+    path: 'fetch/search',
+    action: 'fetchFoundArticles',
+    method: 'POST',
+    type: 'json',
+    accept: 'json'
+));
+
 // Статьи
 Router::add(new Route(
     controller: new ArticlesController(),
