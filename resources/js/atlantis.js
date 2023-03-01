@@ -723,7 +723,7 @@ export default class Atlantis {
         }
 
         function sanitizeSrc(src) {
-            return src.replace('/' + thumbPrefix + '/', '')
+            return src.replace(new RegExp(thumbPrefix), '')
         }
 
         function show(event) {
