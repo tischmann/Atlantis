@@ -63,19 +63,19 @@ export default class Atlantis {
     // Remove event listener
     off(element, event = undefined, handler = undefined) {
         for (const [eventName, set] of this.#handlers) {
-            if (eventName !== event) continue
+            if (eventName !== event && event !== undefined) continue
 
             for (const obj of set) {
-                if (obj.handler !== handler) continue
+                if (obj.handler !== handler && handler !== undefined) continue
 
                 element.removeEventListener(eventName, obj.handler, obj.capture)
 
                 set.delete(obj)
 
-                if (handler) return this
+                if (handler !== undefined) return this
             }
 
-            if (event) return this
+            if (event !== undefined) return this
         }
 
         return this
@@ -772,5 +772,137 @@ export default class Atlantis {
         container.querySelectorAll(`img`).forEach((element) => {
             this.on(element, 'click', onClick)
         })
+    }
+}
+
+export class Sortable {
+    draggingElement = undefined
+    items = new Set()
+
+    constructor(
+        container,
+        {
+            ondragstart = function () {},
+            ondragover = function () {},
+            ondragend = function () {}
+        } = {}
+    ) {
+        this.container = container
+
+        this.ondragstart = ondragstart
+
+        this.ondragover = ondragover
+
+        this.ondragend = ondragend
+
+        this.container.querySelectorAll('li').forEach((item) => {
+            this.items.add(item)
+            item.draggable = true
+            item.addEventListener('dragenter', this)
+        })
+
+        this.container.addEventListener('dragstart', this)
+    }
+
+    handleEvent(event) {
+        switch (event.type) {
+            case 'dragstart':
+                return this.#dragStartHandler(event)
+            case 'dragenter':
+                return this.#dragEnterHandler(event)
+            case 'dragend':
+                return this.#dragEndHandler(event)
+            case 'dragover':
+                return this.#dragOverHandler(event)
+        }
+    }
+
+    #dragOverHandler(event) {
+        event.preventDefault()
+    }
+
+    #dragStartHandler(event) {
+        const target = event.target.closest('li')
+
+        if (!target) return
+
+        document.addEventListener('dragover', this)
+
+        this.draggingElement = target
+
+        event.dataTransfer.effectAllowed = 'move'
+
+        this.container.addEventListener('dragend', this)
+
+        this.draggingElement.style.opacity = 0.7
+
+        this.ondragstart(this, event)
+    }
+
+    #appendPlaceholder(event) {
+        const target = event.target.closest('li')
+
+        if (!target) return
+
+        const nextSibling = target.nextSibling
+
+        const previousSibling = target.previousSibling
+
+        if (!previousSibling) {
+            this.container.insertBefore(this.draggingElement, target)
+        } else if (!nextSibling) {
+            this.container.insertBefore(target, this.draggingElement)
+        } else if (previousSibling === this.draggingElement) {
+            this.container.insertBefore(
+                this.draggingElement,
+                target.nextSibling
+            )
+        } else {
+            this.container.insertBefore(this.draggingElement, target)
+        }
+
+        return this
+    }
+
+    #dragEnterHandler(event) {
+        event.preventDefault()
+
+        const target = event.target.closest('li')
+
+        if (!target) return
+
+        event.dataTransfer.dropEffect = 'move'
+
+        if (target === this.draggingElement) return
+
+        this.#appendPlaceholder(event)
+
+        this.ondragover(this, event)
+    }
+
+    #dragEndHandler(event) {
+        event.preventDefault()
+
+        document.removeEventListener('dragover', this)
+
+        if (!this.draggingElement) return
+
+        this.draggingElement.style.opacity = 1
+
+        this.draggingElement = undefined
+
+        this.container.removeEventListener('dragend', this)
+
+        this.ondragend(this, event)
+    }
+
+    destroy() {
+        this.container.removeEventListener('dragstart', this)
+
+        this.items.forEach((item) =>
+            item.removeEventListener('dragenter', this)
+        )
+
+        this.items.clear()
     }
 }

@@ -123,7 +123,6 @@ include __DIR__ . "/../header.php"
             <?= Template::html('admin/save-button') ?>
         </div>
     </form>
-    <script src="/js/sortable.js" nonce="{{nonce}}" async></script>
     <script src="/js/category.js" nonce="{{nonce}}" type="module" async></script>
     <script src="/js/orderCategories.js" nonce="{{nonce}}" type="module" async></script>
 </main>
