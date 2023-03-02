@@ -23,7 +23,7 @@
     <link rel="preload" as="style"
         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" />
     <link rel="preload" as="style" href="/fontawesome.css">
-    <link rel="stylesheet" href="/app.css" media="all">
+    <link rel="stylesheet" href="/app.min.css" media="all">
     <script src="/app.js" nonce="{{nonce}}" type="module" async></script>
     <style>
         body {
