@@ -250,7 +250,7 @@ class CategoriesController extends Controller
         }
 
         Response::json([
-            'token' => CSRF::set()[1],
+            'token' => CSRF::generateToken(),
         ]);
     }
 
