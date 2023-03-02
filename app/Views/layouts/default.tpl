@@ -37,7 +37,7 @@
 <body class="bg-white dark:bg-gray-800 text-gray-800 dark:text-white antialiased">
     {{body}}
     {{alert}}
-    <script src="/tailwind.js" nonce="{{nonce}}"></script>
+    <script src="/tailwind.min.js" nonce="{{nonce}}"></script>
 </body>
 
 </html>
