@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tischmann\Atlantis;
 
+use Exception;
+
 final class View
 {
     protected Template $templateInstance;
@@ -16,6 +18,10 @@ final class View
         $alert = Session::get('alert') ?? new Alert();
 
         Session::delete('alert');
+
+        if (!is_file(__DIR__ . "/../app/Views/layouts/{$layout}.tpl")) {
+            die("Layout {$layout} not found");
+        }
 
         $this->templateInstance = new Template(
             "layouts/{$layout}",
