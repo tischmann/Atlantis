@@ -75,7 +75,7 @@ class User extends Model
         $root = getenv('APP_ROOT');
 
         if (!is_file("{$root}/public/images/avatars/{$this->avatar}")) {
-            return "/images/placeholder.svg";
+            return "/placeholder.svg";
         }
 
         return "/images/avatars/{$this->avatar}";

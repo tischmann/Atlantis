@@ -110,7 +110,7 @@ include __DIR__ . "/../header.php";
                     'value' => $article->image,
                     'name' => 'image',
                     'label' => Locale::get('article_image'),
-                    'src' => $article->id ? "/images/articles/{$article->id}/{$article->image}" : "/images/placeholder.svg",
+                    'src' => $article->id ? "/images/articles/{$article->id}/{$article->image}" : "/placeholder.svg",
                     'width' => '',
                     'height' => '',
                     'url' => "/upload/article/image/{$article->id}"

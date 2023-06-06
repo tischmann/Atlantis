@@ -838,7 +838,7 @@ class ArticlesController extends Controller
 
         $html = preg_replace(
             '/<(img.*(?=src="))src="([^"]+)"([^>]+)>/i',
-            '<$1src="/images/placeholder.svg" data-atlantis-lazy-image data-src="$2" $3>',
+            '<$1src="/placeholder.svg" data-atlantis-lazy-image data-src="$2" $3>',
             $html
         );
 

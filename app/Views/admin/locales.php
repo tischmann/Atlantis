@@ -14,7 +14,7 @@
             echo <<<HTML
             <a href="/{{env=APP_LOCALE}}/locale/edit/{$locale}" title="{{lang=locale_{$locale}}}" aria-label="{{lang=locale_{$locale}}}" class="bg-sky-800 text-white shadow rounded-lg px-4 py-3 flex justify-between items-center gap-4 hover:bg-sky-700 text-xl font-medium transition-all ease-in-out w-full md:w-auto">
                 <div class="flex items-center gap-4">
-                    <img src="/images/flags/1x1/{$locale}.svg" width="64" height="64" class="rounded-md shadow-md" alt="{{lang=locale_{$locale}}}"/>
+                    <img src="/images/flags/{$locale}.svg" width="64" height="64" class="rounded-md shadow-md" alt="{{lang=locale_{$locale}}}"/>
                     <div class="flex flex-col gap-2">
                         <span class="truncate drop-shadow">{{lang=locale_{$locale}}}</span>                
             HTML;

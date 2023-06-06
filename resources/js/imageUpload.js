@@ -60,7 +60,7 @@ document
         atlantis.on(deleteElement, 'click', () => {
             atlantis.attr(imgElement, {
                 src:
-                    imgElement.dataset?.placeholder || '/images/placeholder.svg'
+                    imgElement.dataset?.placeholder || '/placeholder.svg'
             })
             inputElement.value = ''
         })

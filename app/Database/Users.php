@@ -52,7 +52,7 @@ class Users extends Migration
             ),
             new Column(
                 name: 'refresh_token',
-                type: 'varchar',
+                type: 'text',
                 default: null,
                 description: 'Токен обновления',
             ),
