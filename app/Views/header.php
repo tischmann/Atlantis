@@ -1,6 +1,8 @@
 <?php
 
-if (\App\Models\User::current()->isAdmin()) {
+use App\Models\User;
+
+if (User::current()->isAdmin()) {
     require __DIR__ . "/admin/sidenav.php";
 }
 
@@ -9,11 +11,19 @@ if (\App\Models\User::current()->isAdmin()) {
     <div class="md:container md:mx-auto p-4">
         <div class="flex flex-row md:items-center flex-wrap md:justify-between gap-4">
             <div class="order-1 flex-grow flex items-center gap-4">
-                <!-- Toggler -->
-                <button class="text-white bg-pink-600 h-8 w-8 flex justify-center items-center rounded-lg transition-all ease-in-out hover:bg-pink-700 hover:shadow-lg" data-te-sidenav-toggle-ref data-te-target="#sidenav-admin" aria-controls="#sidenav-admin" aria-haspopup="true">
-                    <i class="fas fa-gear hover:animate-spin"></i>
-                </button>
-                <!-- Toggler -->
+                <?php
+
+                if (User::current()->isAdmin()) {
+                    echo <<<HTML
+                    <!-- Toggler -->
+                    <button class="text-white bg-pink-600 h-8 w-8 flex justify-center items-center rounded-lg transition-all ease-in-out hover:bg-pink-700 hover:shadow-lg" data-te-sidenav-toggle-ref data-te-target="#sidenav-admin" aria-controls="#sidenav-admin" aria-haspopup="true">
+                        <i class="fas fa-gear hover:animate-spin"></i>
+                    </button>
+                    <!-- Toggler -->
+                    HTML;
+                }
+
+                ?>
                 <a href="/{{env=APP_LOCALE}}" class="flex items-center" aria-label="{{env=APP_TITLE}}">
                     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 400 400" xml:space="preserve" width="32px" height="32px" class="text-sky-600 dark:text-sky-500">
                         <path fill="currentColor" d="M99.9,199.8C45,291.1,0,365.8,0,366s19.1,0.4,42.5,0.2l42.5-0.2l57.4-96c31.5-52.7,57.4-96,57.6-96s71.6,118.1,72,119.4
