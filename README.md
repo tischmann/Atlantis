@@ -12,7 +12,7 @@ Atlantis — это простой и легкий MVC PHP-фреймворк.
 
 OS: Linux
 
-PHP: 8.2+ (FPM)
+PHP: 8.1+ (FPM)
 
 MySQL: 8.0+ (Рекомендуется)
 
