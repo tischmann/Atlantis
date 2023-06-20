@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html lang="{{env=APP_LOCALE}}">
+<?php
+$production = !boolval(getenv('APP_DEV'));
+?>
 
 <head>
     <meta charset="utf-8">
@@ -20,11 +23,10 @@
     <title>{{env=APP_TITLE}}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" as="style"
-        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" />
     <link rel="preload" as="style" href="/fontawesome.css">
-    <link rel="stylesheet" href="/app.min.css" media="all">
-    <script src="/app.min.js" nonce="{{nonce}}" type="module" async></script>
+    <link rel="stylesheet" href="/app<?= $production ? ".min" : "" ?>.css" media="all">
+    <script src="/app<?= $production ? ".min" : "" ?>.js" nonce="{{nonce}}" type="module" async></script>
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
@@ -35,8 +37,8 @@
 </head>
 
 <body class="bg-white dark:bg-gray-800 text-gray-800 dark:text-white antialiased">
-    {{body}}
-    {{alert}}
+
+    {{body}}{{alert}}
     <script src="/tailwind.min.js" nonce="{{nonce}}"></script>
 </body>
 

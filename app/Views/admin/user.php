@@ -8,13 +8,10 @@ include __DIR__ . "/../header.php"
 
 ?>
 <main class="md:container md:mx-auto">
-    <div class="m-4 mb-8">
-        <?php include __DIR__ . "/../breadcrumbs.php" ?>
-    </div>
     <form method="post" class="m-4" autocomplete="off">
         {{csrf}}
-        <div class="grid grid-cols-1 md:grid-cols-2 md:gap-4">
-            <div class="flex flex-col">
+        <div class="grid grid-cols-1 md:grid-cols-3 md:gap-4">
+            <div class="flex flex-col md:col-span-2">
                 <?php
 
                 Template::echo(
@@ -145,5 +142,4 @@ include __DIR__ . "/../header.php"
             <?= Template::html('admin/save-button') ?>
         </div>
     </form>
-    <script src="/js/imageUpload.js" nonce="{{nonce}}" type="module"></script>
 </main>

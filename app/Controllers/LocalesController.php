@@ -33,15 +33,6 @@ class LocalesController extends Controller
         View::send(
             'admin/locales',
             [
-                'breadcrumbs' => [
-                    new Breadcrumb(
-                        url: "/" . getenv('APP_LOCALE') . '/admin',
-                        label: Locale::get('dashboard')
-                    ),
-                    new Breadcrumb(
-                        label: Locale::get('locales')
-                    ),
-                ],
                 'locales' => Locale::available(),
             ]
         );
@@ -72,24 +63,11 @@ class LocalesController extends Controller
 
         $title = Locale::get("locale_" . ($locale ? $locale : 'new'));
 
-        $breadcrumbs = [
-            new Breadcrumb(
-                url: "/" . getenv('APP_LOCALE') . '/admin',
-                label: Locale::get('dashboard')
-            ),
-            new Breadcrumb(
-                url: "/" . getenv('APP_LOCALE') .  '/admin/locales',
-                label: Locale::get('locales')
-            ),
-            new Breadcrumb($title)
-        ];
-
         static::setTitle($title);
 
         View::send(
             'admin/locale',
             [
-                'breadcrumbs' => $breadcrumbs,
                 'locale' => $locale,
                 'title' => $locale ? $title : '',
                 'strings' => $locale ? Locale::getLocale($locale) : ['' => ''],
@@ -108,8 +86,6 @@ class LocalesController extends Controller
     public function add(Request $request)
     {
         $this->checkAdmin();
-
-        CSRF::verify($request);
 
         $request->validate([
             'title' => ['required', 'string'],
@@ -201,8 +177,6 @@ class LocalesController extends Controller
     {
         $this->checkAdmin();
 
-        CSRF::verify($request);
-
         $request->validate([
             'keys' => ['required', 'array'],
             'values' => ['required', 'array'],
@@ -269,8 +243,6 @@ class LocalesController extends Controller
     public function delete(Request $request)
     {
         $this->checkAdmin();
-
-        CSRF::verify($request);
 
         $request->validate([
             'code' => ['required', 'string'],

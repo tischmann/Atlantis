@@ -19,8 +19,14 @@ final class View
 
         Session::delete('alert');
 
-        if (!is_file(__DIR__ . "/../app/Views/layouts/{$layout}.tpl")) {
-            die("Layout {$layout} not found");
+        $file = __DIR__ . "/../app/Views/layouts/{$layout}.tpl";
+
+        if (!is_file($file)) {
+            $file = __DIR__ . "/../app/Views/layouts/{$layout}.php";
+
+            if (!file_exists($file)) {
+                die("Layout {$layout} not found");
+            }
         }
 
         $this->templateInstance = new Template(

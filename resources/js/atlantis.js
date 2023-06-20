@@ -81,6 +81,14 @@ export default class Atlantis {
         return this
     }
 
+    find(parent, selector) {
+        return parent.querySelector(selector)
+    }
+
+    findAll(parent, selector) {
+        return parent.querySelectorAll(selector)
+    }
+
     // Create HTML element
     tag(
         tagName,
@@ -189,7 +197,7 @@ export default class Atlantis {
         fetch(url, { method, headers, body })
             .then((response) => {
                 if (!response.ok) {
-                    failure(response.statusText)
+                    failure(response.status)
 
                     return console.error('Atlantis.fetch():', response.status)
                 }
@@ -436,7 +444,6 @@ export default class Atlantis {
         container,
         {
             url = '',
-            token = '',
             page = 1,
             next = 1,
             last = 1,
@@ -482,10 +489,6 @@ export default class Atlantis {
             }
 
             this.fetch(url, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Csrf-Token': token
-                },
                 body: {
                     page,
                     next,
@@ -503,8 +506,6 @@ export default class Atlantis {
                     next = json.next
 
                     last = json.last
-
-                    token = json.token
 
                     container.appendChild(target)
 

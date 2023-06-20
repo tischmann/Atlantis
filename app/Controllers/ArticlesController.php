@@ -49,15 +49,6 @@ class ArticlesController extends Controller
             'admin/articles',
             [
                 'pagination' => $pagination,
-                'breadcrumbs' => [
-                    new Breadcrumb(
-                        url: '/admin',
-                        label: Locale::get('dashboard')
-                    ),
-                    new Breadcrumb(
-                        label: Locale::get('articles')
-                    ),
-                ],
                 'articles' => Article::fill($query),
                 'sortings' => [
                     new Sorting(),
@@ -122,8 +113,6 @@ class ArticlesController extends Controller
     public function add(Request $request)
     {
         $this->checkAdmin();
-
-        CSRF::verify($request);
 
         $request->validate([
             'title' => ['required'],
@@ -219,8 +208,6 @@ class ArticlesController extends Controller
     {
         $this->checkAdmin();
 
-        CSRF::verify($request);
-
         $request->validate([
             'title' => ['required'],
         ]);
@@ -292,8 +279,6 @@ class ArticlesController extends Controller
     {
         $this->checkAdmin();
 
-        CSRF::verify($request);
-
         $article = Article::find($request->route('id'));
 
         assert($article instanceof Article);
@@ -332,128 +317,27 @@ class ArticlesController extends Controller
     {
         $this->checkAdmin();
 
-        CSRF::verify($request);
+        $id = intval($request->route('id'));
 
-        $id = $request->route('id');
+        $article = $id ? Article::find($id) : new Article();
 
-        $width = intval($request->request('width'));
+        assert($article instanceof Article);
 
-        $height = intval($request->request('height'));
+        $request->args('max_width', Article::MAX_WIDTH);
 
-        $article = Article::find($id);
+        $request->args('max_height', Article::MAX_HEIGHT);
 
-        $imageFolder = $article->id
-            ? "images/articles/{$article->id}"
-            : 'images/articles/temp';
+        $request->args('thumb_width', Article::THUMB_WIDTH);
 
-        if (!is_dir("images/articles")) {
-            mkdir("images/articles", 0775, true);
-        }
+        $request->args('thumb_height', Article::THUMB_HEIGHT);
 
-        if (!is_dir("images/articles/temp")) {
-            mkdir("images/articles/temp", 0775, true);
-        }
+        $path = $article->id ? "{$article->id}" : 'temp';
 
-        if (!is_dir($imageFolder)) {
-            mkdir($imageFolder, 0775, true);
-        }
+        $request->args('path', "images/articles/{$path}");
 
-        reset($_FILES);
+        $request->args('thumb_path', "images/articles/{$path}");
 
-        $temp = current($_FILES);
-
-        if (!is_uploaded_file($temp['tmp_name'])) {
-            throw new Exception(Locale::get('error_upload_file'));
-        }
-
-        $extensions = ["gif", "jpg", "png", "webp", "jpeg", "bmp"];
-
-        $fileExtension = strtolower(
-            pathinfo(
-                $temp['name'],
-                PATHINFO_EXTENSION
-            )
-        );
-
-        if (!in_array($fileExtension, $extensions)) {
-            throw new Exception(Locale::get('error_unsupported_image_type'));
-        }
-
-        $extension = 'webp';
-
-        $filename = md5(bin2hex(random_bytes(128)));
-
-        $filetowrite =  "{$imageFolder}/{$filename}.{$extension}";
-
-        $thumbtowrite = "{$imageFolder}/thumb_{$filename}.{$extension}";
-
-        $quality = 80;
-
-        switch ($fileExtension) {
-            case 'gif':
-                $im = imagecreatefromgif($temp['tmp_name']);
-                break;
-            case 'jpg':
-            case 'jpeg':
-                $im = imagecreatefromjpeg($temp['tmp_name']);
-                break;
-            case 'png':
-                $im = imagecreatefrompng($temp['tmp_name']);
-                break;
-            case 'bmp':
-                $im = imagecreatefrombmp($temp['tmp_name']);
-                break;
-            case 'webp':
-                $im = imagecreatefromwebp($temp['tmp_name']);
-                break;
-        }
-
-        $src_width = imagesx($im);
-
-        $src_height = imagesy($im);
-
-        $src_ratio = $src_width / $src_height;
-
-        if ($src_width > Article::MAX_WIDTH) {
-            $width = Article::MAX_WIDTH;
-            $height = intval($width / $src_ratio);
-        } else if ($src_height > Article::MAX_HEIGHT) {
-            $height = Article::MAX_HEIGHT;
-            $width = intval($height * $src_ratio);
-        }
-
-        $image = ($width && $height) ? Image::resize($im, $width, $height) : $im;
-
-        $thumb = Image::resize(
-            $im,
-            Article::THUMB_WIDTH,
-            Article::THUMB_HEIGHT
-        );
-
-        $success = imagewebp($image, $filetowrite, $quality) &&
-            imagewebp($thumb, $thumbtowrite, $quality);
-
-        if (!$success) {
-            throw new Exception(Locale::get('error_image_to_webp'));
-        }
-
-        $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on'
-            ? "https://"
-            : "http://";
-
-        $baseurl = $protocol . $_SERVER["HTTP_HOST"];
-
-        $location = $baseurl . "/" . $filetowrite;
-
-        $thumb_location = $baseurl . "/" . $thumbtowrite;
-
-        Response::json([
-            'token' => CSRF::generateToken(),
-            'image' => basename($location),
-            'thumb' => basename($thumb_location),
-            'location' => $location,
-            'thumb_location' => $thumb_location,
-        ]);
+        parent::uploadImage($request);
     }
 
     /**
@@ -480,13 +364,6 @@ class ArticlesController extends Controller
         View::send(
             'article',
             [
-                'breadcrumbs' => [
-                    new Breadcrumb(
-                        $article->category->title,
-                        "/" . getenv('APP_LOCALE') . "/category/{$article->category->slug}",
-                    ),
-                    new Breadcrumb($article->title),
-                ],
                 'article' => $article,
             ]
         );
@@ -520,9 +397,6 @@ class ArticlesController extends Controller
         View::send(
             'search',
             [
-                'breadcrumbs' => [
-                    new Breadcrumb(Locale::get('search')),
-                ],
                 'pagination' => $pagination,
                 'articles' => Article::fill($query),
                 'sortings' => [
@@ -601,17 +475,6 @@ class ArticlesController extends Controller
             'admin/article',
             [
                 'article' => $article,
-                'breadcrumbs' => [
-                    new Breadcrumb(
-                        url: '/admin',
-                        label: Locale::get('dashboard')
-                    ),
-                    new Breadcrumb(
-                        url: '/admin/articles',
-                        label: Locale::get('articles')
-                    ),
-                    new Breadcrumb($title)
-                ],
             ]
         );
     }
@@ -674,8 +537,6 @@ class ArticlesController extends Controller
      */
     public function setRating(Request $request)
     {
-        CSRF::verify($request);
-
         $id = $request->route('id');
 
         $uuid = $request->request('uuid');
@@ -717,9 +578,7 @@ class ArticlesController extends Controller
             throw new Exception(Locale::get('rating_save_error'));
         }
 
-        Response::json([
-            'token' => CSRF::generateToken(),
-        ]);
+        Response::json();
     }
 
     public function showArticlesInCategory(Request $request)
@@ -762,9 +621,6 @@ class ArticlesController extends Controller
             'articles',
             [
                 'pagination' => $pagination,
-                'breadcrumbs' => [
-                    new Breadcrumb($category->title),
-                ],
                 'category' => $category,
                 'articles' => Article::fill($query),
                 'sortings' => [

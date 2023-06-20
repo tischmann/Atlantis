@@ -34,16 +34,16 @@
     float: right;
 }
 
-.atlantis-rating input:checked~label {
+.atlantis-rating input:checked ~ label {
     color: rgb(230, 187, 0);
 }
 
-.atlantis-rating:not(:checked)>label:hover,
-.atlantis-rating:not(:checked)>label:hover~label,
-.atlantis-rating input:checked+label:hover,
-.atlantis-rating input:checked~label:hover,
-.atlantis-rating label:hover~input:checked~label,
-.atlantis-rating input:checked~label:hover~label {
+.atlantis-rating:not(:checked) > label:hover,
+.atlantis-rating:not(:checked) > label:hover ~ label,
+.atlantis-rating input:checked + label:hover,
+.atlantis-rating input:checked ~ label:hover,
+.atlantis-rating label:hover ~ input:checked ~ label,
+.atlantis-rating input:checked ~ label:hover ~ label {
     color: rgb(230, 187, 0);
 }
 
@@ -52,4 +52,9 @@
         margin-right: 10px;
         font-size: 1.5rem;
     }
+}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+    display: block;
 }

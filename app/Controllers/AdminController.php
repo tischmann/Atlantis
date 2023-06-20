@@ -20,13 +20,6 @@ class AdminController extends Controller
     {
         $this->checkAdmin();
 
-        View::send(
-            'admin/index',
-            [
-                'breadcrumbs' => [
-                    new Breadcrumb(Locale::get('dashboard'))
-                ],
-            ]
-        );
+        View::send('admin/index');
     }
 }

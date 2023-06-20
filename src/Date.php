@@ -124,6 +124,11 @@ class Date
         return $formatter->format($date);
     }
 
+    public static function lastDigit(int $num): int
+    {
+        return abs($num % 10);
+    }
+
     public static function getElapsed(DateTime $date): string
     {
         $now = new DateTime();
@@ -135,7 +140,7 @@ class Date
         if ($diff->y > 0) {
             $elapsed .= $diff->y . ' ';
 
-            $elapsed .= match ($diff->y) {
+            $elapsed .= match (static::lastDigit($diff->y)) {
                 1 => Locale::get('year_ago'),
                 2, 3, 4 => Locale::get('years_ago_2_4'),
                 default => Locale::get('years_ago'),
@@ -143,7 +148,7 @@ class Date
         } else if ($diff->m > 0) {
             $elapsed .= $diff->m . ' ';
 
-            $elapsed .= match ($diff->m) {
+            $elapsed .= match (static::lastDigit($diff->m)) {
                 1 => Locale::get('month_ago'),
                 2, 3, 4 => Locale::get('months_ago_2_4'),
                 default => Locale::get('months_ago'),
@@ -151,7 +156,7 @@ class Date
         } else if ($diff->d > 0) {
             $elapsed .= $diff->d . ' ';
 
-            $elapsed .= match ($diff->d) {
+            $elapsed .= match (static::lastDigit($diff->d)) {
                 1 => Locale::get('day_ago'),
                 2, 3, 4 => Locale::get('days_ago_2_4'),
                 default => Locale::get('days_ago'),
@@ -159,7 +164,7 @@ class Date
         } else if ($diff->h > 0) {
             $elapsed .= $diff->h . ' ';
 
-            $elapsed .= match ($diff->h) {
+            $elapsed .= match (static::lastDigit($diff->h)) {
                 1 => Locale::get('hour_ago'),
                 2, 3, 4 => Locale::get('hours_ago_2_4'),
                 default => Locale::get('hours_ago'),
@@ -167,7 +172,7 @@ class Date
         } else if ($diff->i > 0) {
             $elapsed .= $diff->i . ' ';
 
-            $elapsed .= match ($diff->i) {
+            $elapsed .= match (static::lastDigit($diff->i)) {
                 1 => Locale::get('minute_ago'),
                 2, 3, 4 => Locale::get('minutes_ago_2_4'),
                 default => Locale::get('minutes_ago'),
@@ -175,7 +180,7 @@ class Date
         } else if ($diff->s > 0) {
             $elapsed .= $diff->s . ' ';
 
-            $elapsed .= match ($diff->s) {
+            $elapsed .= match (static::lastDigit($diff->s)) {
                 1 => Locale::get('second_ago'),
                 2, 3, 4 => Locale::get('seconds_ago_2_4'),
                 default => Locale::get('seconds_ago'),

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use Tischmann\Atlantis\{Controller, Locale, View, Response, Template};
+use Tischmann\Atlantis\{Controller, View, Response};
 
 class IndexController extends Controller
 {

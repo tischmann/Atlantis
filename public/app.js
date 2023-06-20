@@ -44,7 +44,6 @@ atlantis.on(window, 'load', () => {
         .forEach((container) =>
             atlantis.lazyload(container, {
                 url: container.dataset.url,
-                token: container.dataset.token,
                 page: container.dataset.page,
                 next: container.dataset.next,
                 last: container.dataset.last,

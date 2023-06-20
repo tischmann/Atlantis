@@ -33,6 +33,7 @@ class CategoriesController extends Controller
 
         $query = Category::query()
             ->where('parent_id', null)
+            ->order('locale', 'ASC')
             ->order('position', 'ASC');
 
         foreach (Category::fill($query) as $category) {
@@ -48,15 +49,6 @@ class CategoriesController extends Controller
         View::send(
             'admin/categories',
             [
-                'breadcrumbs' => [
-                    new Breadcrumb(
-                        url: '/admin',
-                        label: Locale::get('dashboard')
-                    ),
-                    new Breadcrumb(
-                        label: Locale::get('categories')
-                    ),
-                ],
                 'items' => $items,
             ]
         );
@@ -113,53 +105,12 @@ class CategoriesController extends Controller
     {
         $this->checkAdmin();
 
-        $parentBreadcrumbs = [];
-
-        if ($category->parent_id) {
-            $parent = Category::find($category->parent_id);
-
-            assert($parent instanceof Category);
-
-            while (true) {
-                $parentBreadcrumbs[] = new Breadcrumb(
-                    $parent->title,
-                    '/category/edit/' . $parent->id
-                );
-
-                $parent = Category::find($parent->parent_id);
-
-                if (!$parent->id) break;
-            }
-        }
-
-        $parentBreadcrumbs = array_reverse($parentBreadcrumbs);
-
-        $breadcrumbs = [
-            new Breadcrumb(
-                url: '/admin',
-                label: Locale::get('dashboard')
-            ),
-            new Breadcrumb(
-                url: '/admin/categories',
-                label: Locale::get('categories')
-            ),
-            ...$parentBreadcrumbs
-        ];
-
-        if ($category->id) {
-            $breadcrumbs[] = new Breadcrumb($category->title);
-
-            static::setTitle($category->title);
-        } else {
-            $breadcrumbs[] = new Breadcrumb(Locale::get('category_new'));
-        }
+        if ($category->id) static::setTitle($category->title);
 
         View::send(
             'admin/category',
             [
-                'breadcrumbs' => $breadcrumbs,
                 'category' => $category,
-
             ]
         );
     }
@@ -180,8 +131,6 @@ class CategoriesController extends Controller
             'slug' => ['required'],
             'locale' => ['required'],
         ]);
-
-        CSRF::verify($request);
 
         $category = new Category();
 
@@ -227,8 +176,6 @@ class CategoriesController extends Controller
     {
         $this->checkAdmin();
 
-        CSRF::verify($request);
-
         $categories = $request->request('children') ?? [];
 
         $position = 1;
@@ -249,9 +196,7 @@ class CategoriesController extends Controller
             }
         }
 
-        Response::json([
-            'token' => CSRF::generateToken(),
-        ]);
+        Response::json();
     }
 
     /**
@@ -270,8 +215,6 @@ class CategoriesController extends Controller
             'slug' => ['required'],
             'locale' => ['required'],
         ]);
-
-        CSRF::verify($request);
 
         $id = intval($request->route('id'));
 
@@ -339,8 +282,6 @@ class CategoriesController extends Controller
     {
         $this->checkAdmin();
 
-        CSRF::verify($request);
-
         $id = intval($request->route('id'));
 
         $category = Category::find($id);
@@ -380,27 +321,25 @@ class CategoriesController extends Controller
             'locale' => ['required', 'string'],
         ]);
 
-        CSRF::verify($request);
-
         $locale = $request->request('locale');
 
-        $id = $request->request('id');
+        $args = ['locale' => $locale];
 
-        $html = '';
+        $category = $request->request('category') ?? null;
 
-        $query = Category::query()->where('locale', $locale);
+        $article = $request->request('article') ?? null;
 
-        if ($id) $query->where('id', $id);
-
-        foreach (Category::fill($query) as $category) {
-            $html = Template::html('admin/parent-category-options', [
-                'category' => $category,
-            ]);
+        if ($category !== null) {
+            $args['category'] = Category::find($category);
+        } elseif ($article !== null) {
+            $args['article'] = Article::find($article);
         }
 
         Response::json([
-            'html' => $html,
-            'token' => CSRF::generateToken(),
+            'html' => Template::html(
+                'admin/category-options',
+                $args
+            )
         ]);
     }
 }

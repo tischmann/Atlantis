@@ -123,7 +123,7 @@ final class Response
      * @param string $response Данные для отправки 
      * @return void
      */
-    public static function json(mixed $response, int $code = 200): void
+    public static function json(mixed $response = [], int $code = 200): void
     {
         static::headers($code);
 

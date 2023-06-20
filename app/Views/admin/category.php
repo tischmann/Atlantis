@@ -1,14 +1,11 @@
 <?php
 
-use Tischmann\Atlantis\{CSRF, Locale, Template};
+use Tischmann\Atlantis\{Locale, Template};
 
 include __DIR__ . "/../header.php"
 
 ?>
 <main class="md:container md:mx-auto">
-    <div class="m-4 mb-8">
-        <?php include __DIR__ . "/../breadcrumbs.php" ?>
-    </div>
     <form method="post" class="m-4">
         {{csrf}}
         <?php
@@ -21,12 +18,8 @@ include __DIR__ . "/../header.php"
                 'id' => 'categoryLocale',
                 'options' => Template::html(
                     'admin/locales-options',
-                    ['locale' => $category->locale]
+                    ['locale' => $category->locale ?: getenv('APP_LOCALE')]
                 ),
-                'attr' => [
-                    'data-token' => CSRF::generateToken(),
-                    'data-id' => $category->id,
-                ]
             ]
         );
 
@@ -37,8 +30,11 @@ include __DIR__ . "/../header.php"
                 'name' => 'parent_id',
                 'id' => 'categoryParent',
                 'options' => Template::html(
-                    'admin/parent-category-options',
-                    ['category' => $category]
+                    'admin/category-options',
+                    [
+                        'locale' => $category->locale ?: getenv('APP_LOCALE'),
+                        'category' => $category
+                    ]
                 )
             ]
         );
@@ -81,7 +77,7 @@ include __DIR__ . "/../header.php"
 
         if ($category->children) {
             echo <<<HTML
-            <div class="mb-4">
+            <div class="mb-4 order-container">
                 <div class="h-full flex flex-col">
                     <div class="form-label inline-block mb-1">{{lang=category_children}}</div>
                     <div class="bg-sky-800 rounded-xl flex-grow p-4">
@@ -98,6 +94,34 @@ include __DIR__ . "/../header.php"
                     </div>
                 </div>
             </div>
+            <script nonce="{{nonce}}" type="module">
+                import Atlantis, { Sortable } from '/js/atlantis.js'
+
+                const $ = new Atlantis()
+
+                document
+                    .querySelectorAll('.order-container [data-atlantis-categories]')
+                    .forEach((container) => {
+                        new Sortable(container, {
+                            ondragend: () => {
+                                const children = []
+
+                                container
+                                    .querySelectorAll('li[data-id]')
+                                    .forEach((el, index) => children.push(el.dataset.id))
+
+                                $.fetch(`/categories/order`, {
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: {
+                                        children
+                                    }
+                                })
+                            }
+                        })
+                    })
+            </script>
             HTML;
         }
         ?>
@@ -123,6 +147,26 @@ include __DIR__ . "/../header.php"
             <?= Template::html('admin/save-button') ?>
         </div>
     </form>
-    <script src="/js/category.js" nonce="{{nonce}}" type="module" async></script>
-    <script src="/js/orderCategories.js" nonce="{{nonce}}" type="module" async></script>
+    <script nonce="{{nonce}}" type="module">
+        import Atlantis from '/js/atlantis.js'
+
+        const $ = new Atlantis()
+
+        $.on(document.getElementById('categoryLocale'), 'change', function() {
+            $.fetch(`/admin/fetch/parent/categories`, {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    locale: this.value,
+                    category: <?= $category->id ?>
+                },
+                success: ({
+                    html
+                }) => {
+                    document.getElementById(`categoryParent`).innerHTML = html
+                }
+            })
+        })
+    </script>
 </main>

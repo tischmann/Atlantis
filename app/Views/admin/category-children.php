@@ -1,4 +1,4 @@
-<ul class="list-none flex flex-wrap gap-4 text-sky-800 w-full" data-atlantis-categories data-token="{{csrf-token}}">
+<ul class="list-none flex flex-wrap gap-4 text-sky-800 w-full" data-atlantis-categories>
     <?php
 
     use App\Models\{Category};

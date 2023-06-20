@@ -13,19 +13,6 @@
             "runOptions": {
                 "runOn": "folderOpen"
             }
-        },
-        {
-            "label": "Launch Cleancss Watcher", // Name of task
-            "type": "shell",
-            "command": "cleancss -o ./public/app.min.css ./public/app.css --source-map --watch",
-            "group": "none",
-            "presentation": {
-                "reveal": "always",
-                "panel": "new"
-            },
-            "runOptions": {
-                "runOn": "folderOpen"
-            }
         }
     ]
 }

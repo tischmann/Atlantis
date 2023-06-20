@@ -80,7 +80,7 @@ return [
     'locale_current' => 'Активен',
     'locale_delete_confirm' => 'Вы действительно хотите удалить язык',
     'locale_edit' => 'Редактирование языка',
-    'locale_en' => 'Английский',
+    'locale_en' => 'English',
     'locale_key' => 'Ключ',
     'locale_new' => 'Новый язык',
     'locale_ru' => 'Русский',
@@ -109,6 +109,8 @@ return [
     'seconds_ago' => 'секунд назад',
     'seconds_ago_2_4' => 'секунды назад',
     'show' => 'Просмотр',
+    'signin' => 'Вход',
+    'signout' => 'Выход',
     'signin_error' => 'Неверный логин или пароль',
     'signin_login' => 'Логин',
     'signin_password' => 'Пароль',
@@ -161,5 +163,4 @@ return [
     'years_ago' => 'лет назад',
     'years_ago_2_4' => 'года назад',
     'yes' => 'Да',
-    'locale_tg' => 'Таджикский',
 ];

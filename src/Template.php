@@ -77,12 +77,17 @@ final class Template
             PREG_SET_ORDER
         );
 
+        $uniqid = uniqid();
+
         foreach ($matches as $set) {
             $search = $set[0];
 
             $key = $set[1];
 
             switch ($key) {
+                case 'uniqid':
+                    $replace = $uniqid;
+                    break;
                 case 'csrf':
                     $replace = Template::html('csrf');
                     break;
@@ -158,7 +163,6 @@ final class Template
             ...$env,
             ...$strings,
             'nonce' => getenv('APP_NONCE'),
-            'breadcrumbs' => '',
             'admin' => '',
             'pagination' => $pagination,
             'search' => strval($request->request('query')),

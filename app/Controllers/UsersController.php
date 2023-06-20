@@ -48,15 +48,6 @@ class UsersController extends Controller
             'admin/users',
             [
                 'pagination' => $pagination,
-                'breadcrumbs' => [
-                    new Breadcrumb(
-                        url: '/admin',
-                        label: Locale::get('dashboard')
-                    ),
-                    new Breadcrumb(
-                        label: Locale::get('users')
-                    ),
-                ],
                 'users' => User::fill($query),
                 'sortings' => [
                     new Sorting(),
@@ -194,19 +185,7 @@ class UsersController extends Controller
         View::send(
             'admin/user',
             [
-                'breadcrumbs' => [
-                    new Breadcrumb(
-                        url: '/admin',
-                        label: Locale::get('dashboard')
-                    ),
-                    new Breadcrumb(
-                        url: '/admin/users',
-                        label: Locale::get('users')
-                    ),
-                    new Breadcrumb($user->id ? $user->login : Locale::get('user_new'))
-                ],
                 'user' => $user,
-
             ]
         );
     }
@@ -221,8 +200,6 @@ class UsersController extends Controller
     public function add(Request $request): void
     {
         $this->checkAdmin();
-
-        CSRF::verify($request);
 
         $request->validate([
             'login' => ['required'],
@@ -270,12 +247,8 @@ class UsersController extends Controller
                 mkdir("{$root}/public/images/avatars", 0775, true);
             }
 
-            if (!is_dir("{$root}/public/images/avatars/temp")) {
-                mkdir("{$root}/public/images/avatars/temp", 0775, true);
-            }
-
             rename(
-                "{$root}/public/images/avatars/temp/{$avatar}",
+                sys_get_temp_dir() . "{$avatar}",
                 "{$root}/public/images/avatars/{$avatar}"
             );
 
@@ -307,8 +280,6 @@ class UsersController extends Controller
     public function update(Request $request): void
     {
         $this->checkAdmin();
-
-        CSRF::verify($request);
 
         $request->validate([
             'login' => ['required'],
@@ -397,24 +368,7 @@ class UsersController extends Controller
 
         $avatar = strval($request->request('avatar'));
 
-        $root = getenv('APP_ROOT');
-
-        if ($avatar) {
-            if (!is_dir("{$root}/public/images/avatars")) {
-                mkdir("{$root}/public/images/avatars", 0775, true);
-            }
-
-            if (!is_dir("{$root}/public/images/avatars/temp")) {
-                mkdir("{$root}/public/images/avatars/temp", 0775, true);
-            }
-
-            rename(
-                "{$root}/public/images/avatars/temp/{$avatar}",
-                "{$root}/public/images/avatars/{$avatar}"
-            );
-
-            $user->avatar = $avatar;
-        }
+        $user->avatar = $avatar;
 
         if (!$user->save()) {
             Response::redirect(
@@ -440,8 +394,6 @@ class UsersController extends Controller
     public function delete(Request $request)
     {
         $this->checkAdmin();
-
-        CSRF::verify($request);
 
         $id = intval($request->route('id'));
 
@@ -475,111 +427,13 @@ class UsersController extends Controller
     {
         $this->checkAdmin();
 
-        CSRF::verify($request);
+        $request->args('path', 'images/avatars');
 
-        $id = $request->route('id');
+        $request->args('width', 400);
 
-        $width = intval($request->request('width'));
+        $request->args('height', 400);
 
-        $height = intval($request->request('height'));
-
-        if (!is_dir("images/avatars")) {
-            mkdir("images/avatars", 0775, true);
-        }
-
-        $imageFolder = $id ? "images/avatars" : "images/avatars/temp";
-
-        if (!is_dir($imageFolder)) {
-            mkdir($imageFolder, 0775, true);
-        }
-
-        reset($_FILES);
-
-        $temp = current($_FILES);
-
-        if (!is_uploaded_file($temp['tmp_name'])) {
-            Response::send([
-                'message' => Locale::get('error_upload_file')
-            ], 500);
-
-            exit;
-        }
-
-        if (preg_match("/([^\w\s\d\-_~,;:\[\]\(\).])|([\.]{2,})/", $temp['name'])) {
-            Response::send([
-                'message' => Locale::get('error_invalid_filename')
-            ], 500);
-
-            exit;
-        }
-
-        $extensions = ["gif", "jpg", "png", "webp", "jpeg", "bmp"];
-
-        $fileExtension = strtolower(
-            pathinfo(
-                $temp['name'],
-                PATHINFO_EXTENSION
-            )
-        );
-
-        if (!in_array($fileExtension, $extensions)) {
-            Response::send([
-                'message' => Locale::get('error_unsupported_image_type')
-            ], 500);
-
-            exit;
-        }
-
-        $filename = md5(bin2hex(random_bytes(128))) . '.webp';
-
-        $filetowrite = $imageFolder . "/" . $filename;
-
-        $quality = 80;
-
-        switch ($fileExtension) {
-            case 'gif':
-                $im = imagecreatefromgif($temp['tmp_name']);
-                break;
-            case 'jpg':
-            case 'jpeg':
-                $im = imagecreatefromjpeg($temp['tmp_name']);
-                break;
-            case 'png':
-                $im = imagecreatefrompng($temp['tmp_name']);
-                break;
-            case 'bmp':
-                $im = imagecreatefrombmp($temp['tmp_name']);
-                break;
-            case 'webp':
-                $im = imagecreatefromwebp($temp['tmp_name']);
-                break;
-        }
-
-        if ($width && $height) {
-            $im = Image::resize($im, $width, $height);
-        }
-
-        if (!imagewebp($im, $filetowrite, $quality)) {
-            Response::json([
-                'message' => Locale::get('error_image_to_webp')
-            ], 500);
-
-            exit;
-        }
-
-        $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on'
-            ? "https://"
-            : "http://";
-
-        $baseurl = $protocol . $_SERVER["HTTP_HOST"];
-
-        $location = $baseurl . "/" . $filetowrite;
-
-        Response::json([
-            'token' => CSRF::generateToken(),
-            'image' => basename($location),
-            'location' => $location
-        ]);
+        parent::uploadImage($request);
     }
 
     protected static function removeTempAvatars()
@@ -588,11 +442,7 @@ class UsersController extends Controller
 
         $images = User::query()->distinct('avatar');
 
-        if (!is_dir("{$root}/public/images/avatars/temp")) {
-            mkdir("{$root}/public/images/avatars/temp", 0775, true);
-        }
-
-        foreach (glob("{$root}/public/images/avatars/temp/*.webp") as $file) {
+        foreach (glob("{$root}/public/images/avatars/*.webp") as $file) {
             if (!in_array(basename($file), $images)) {
                 unlink($file);
             }

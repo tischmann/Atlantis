@@ -1,68 +1,76 @@
 {
-	"folders": [
-		{
-			"path": "."
-		}
-	],
-	"remoteAuthority": "wsl+ubuntu-22.04",
-	"settings": {
-		"editor.fontSize": 14,
-		"editor.fontFamily": "JetBrains Mono, Consolas, 'Courier New', monospace",
-		"editor.fontLigatures": true,
-		"editor.rulers": [
-			80
-		],
-		"editor.tabSize": 4,
-		"editor.formatOnType": true,
-		"editor.formatOnSave": true,
-		"editor.wordWrap": "on",
-		"[javascript]": {
-			"editor.defaultFormatter": "esbenp.prettier-vscode",
-			"editor.tabSize": 4
-		},
-		"prettier.tabWidth": 4,
-		"prettier.semi": false,
-		"prettier.singleQuote": true,
-		"prettier.trailingComma": "none",
-		"prettier.enable": true,
-		"[php]": {
-			"editor.tabSize": 4,
-			"editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
-		},
-		"javascript.suggest.completeJSDocs": true,
-		"javascript.suggest.jsdoc.generateReturns": true,
-		"javascript.suggest.enabled": true,
-		"php.validate.enable": true,
-		"php.validate.executablePath": "/usr/bin/php",
-		"php.validate.run": "onType",
-		"php.suggest.basic": false,
-		"js/ts.implicitProjectConfig.checkJs": false,
-		"task.allowAutomaticTasks": "on",
-		"emeraldwalk.runonsave": {
-			"commands": [
-				{
-					"match": "\\.js$",
-					"cmd": "./minify.sh"
-				}
-			]
-		}
-	},
-	"launch": {
-		"version": "0.2.0",
-		"configurations": [
-			{
-				"name": "Listen for XDebug",
-				"type": "chrome",
-				"request": "launch",
-				"port": 9003
-			},
-			{
-				"name": "Launch currently open script",
-				"type": "chrome",
-				"request": "launch",
-				"cwd": "${fileDirname}",
-				"port": 9003
-			}
-		]
-	}
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "remoteAuthority": "wsl+ubuntu-22.04",
+    "settings": {
+        "editor.fontSize": 14,
+        "editor.fontFamily": "JetBrains Mono, Consolas, 'Courier New', monospace",
+        "editor.fontLigatures": true,
+        "editor.rulers": [80],
+        "editor.tabSize": 4,
+        "editor.formatOnType": true,
+        "editor.formatOnSave": true,
+        "editor.wordWrap": "on",
+        "[javascript]": {
+            "editor.defaultFormatter": "esbenp.prettier-vscode",
+            "editor.tabSize": 4
+        },
+        "prettier.tabWidth": 4,
+        "prettier.semi": false,
+        "prettier.singleQuote": true,
+        "prettier.trailingComma": "none",
+        "prettier.enable": true,
+        "[php]": {
+            "editor.tabSize": 4,
+            "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
+        },
+        "javascript.suggest.completeJSDocs": true,
+        "javascript.suggest.jsdoc.generateReturns": true,
+        "javascript.suggest.enabled": true,
+        "php.validate.enable": true,
+        "php.validate.executablePath": "/usr/bin/php",
+        "php.validate.run": "onType",
+        "php.suggest.basic": false,
+        "js/ts.implicitProjectConfig.checkJs": false,
+        "task.allowAutomaticTasks": "on",
+        "emeraldwalk.runonsave": {
+            "commands": [
+                {
+                    "match": "\\.js$",
+                    "cmd": "./minify.sh"
+                }
+            ]
+        },
+        "actionButtons": {
+            "loadNpmCommands": false, // Disables automatic generation of actions for npm commands.
+            "commands": [
+                {
+                    "name": "Production",
+                    "singleInstance": true,
+                    "command": "./production.sh" // This is executed in the terminal.
+                }
+            ]
+        }
+    },
+    "launch": {
+        "version": "0.2.0",
+        "configurations": [
+            {
+                "name": "Listen for XDebug",
+                "type": "chrome",
+                "request": "launch",
+                "port": 9003
+            },
+            {
+                "name": "Launch currently open script",
+                "type": "chrome",
+                "request": "launch",
+                "cwd": "${fileDirname}",
+                "port": 9003
+            }
+        ]
+    }
 }

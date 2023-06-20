@@ -1,9 +1,6 @@
 <?php include __DIR__ . "/../header.php" ?>
 <main class="md:container md:mx-auto">
-    <div class="m-4">
-        <?php include __DIR__ . "/../breadcrumbs.php" ?>
-    </div>
-    <div class="flex flex-wrap gap-4 m-4">
+    <div class="flex flex-wrap gap-4 m-4 order-container">
         <?php
 
         use App\Models\{Category};
@@ -31,7 +28,36 @@
         }
 
         ?>
+        <script nonce="{{nonce}}" type="module">
+            import Atlantis, {
+                Sortable
+            } from '/js/atlantis.js'
+
+            const $ = new Atlantis()
+
+            document
+                .querySelectorAll('.order-container [data-atlantis-categories]')
+                .forEach((container) => {
+                    new Sortable(container, {
+                        ondragend: () => {
+                            const children = []
+
+                            container
+                                .querySelectorAll('li[data-id]')
+                                .forEach((el, index) => children.push(el.dataset.id))
+
+                            $.fetch(`/categories/order`, {
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: {
+                                    children
+                                }
+                            })
+                        }
+                    })
+                })
+        </script>
     </div>
     <?= Template::html('admin/add-button', ['href' => '/{{env=APP_LOCALE}}/add/category']) ?>
-    <script src="/js/orderCategories.js" nonce="{{nonce}}" type="module" async></script>
 </main>
