@@ -10,7 +10,7 @@ include __DIR__ . "/../header.php"
         {{csrf}}
         <?php
 
-        if (empty($locale)) {
+        if (!$code) {
             Template::echo(
                 'admin/input-field',
                 [
@@ -86,14 +86,14 @@ include __DIR__ . "/../header.php"
         </div>
         <div class="mb-4 flex gap-4 flex-wrap justify-evenly md:justify-end items-center">
             <?php
-            if ($locale) {
+            if ($code) {
                 Template::echo(
                     'admin/delete-button',
                     [
-                        'id' => "delete-locale-{$locale}",
+                        'id' => "delete-locale-{$code}",
                         'title' => Locale::get('warning'),
                         'message' => Locale::get('locale_delete_confirm') . "?",
-                        'url' => "/" . getenv('APP_LOCALE') . "/locale/delete/{$locale}",
+                        'url' => "/" . getenv('APP_LOCALE') . "/locale/delete/{$code}",
                         'redirect' => "/" . getenv('APP_LOCALE') . "/admin/locales",
                     ]
                 );

@@ -257,8 +257,8 @@ new Template(
 необходимо предоставить права на запись в папки: public, lang
 
 ```bash
-sudo chown -R www-data:www-data /path/to/public
+sudo chown -R www-data:$USER /path/to/public
 sudo chmod -R g+rw /path/to/public
-sudo chown -R www-data:www-data /path/to/lang
+sudo chown -R www-data:$USER /path/to/lang
 sudo chmod -R g+rw /path/to/lang
 ```

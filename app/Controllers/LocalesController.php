@@ -68,7 +68,7 @@ class LocalesController extends Controller
         View::send(
             'admin/locale',
             [
-                'locale' => $locale,
+                'code' => $locale,
                 'title' => $locale ? $title : '',
                 'strings' => $locale ? Locale::getLocale($locale) : ['' => ''],
 

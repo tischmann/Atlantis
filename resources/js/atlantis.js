@@ -729,7 +729,7 @@ export default class Atlantis {
             return src.replace(new RegExp(thumbPrefix), '')
         }
 
-        function show(event) {
+        function show() {
             document.body.classList.add('overflow-hidden')
 
             wrapper.classList.remove('hidden')
