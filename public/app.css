@@ -2515,6 +2515,10 @@ video {
   font-size: 34px;
 }
 
+.text-\[48px\] {
+  font-size: 48px;
+}
+
 .text-\[64px\] {
   font-size: 64px;
 }
@@ -2542,10 +2546,6 @@ video {
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
-}
-
-.text-\[48px\] {
-  font-size: 48px;
 }
 
 .font-bold {
