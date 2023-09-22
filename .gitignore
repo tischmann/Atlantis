@@ -6,7 +6,5 @@ npm-debug.log
 yarn-error.log
 composer.lock
 *.pem
-minify.sh
-package.json
 package-lock.json
 /public/adminer.php
