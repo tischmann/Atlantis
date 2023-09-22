@@ -36,19 +36,12 @@
         "php.suggest.basic": false,
         "js/ts.implicitProjectConfig.checkJs": false,
         "task.allowAutomaticTasks": "on",
-        "emeraldwalk.runonsave": {
-            "commands": [
-                {
-                    "match": "\\.js$",
-                    "cmd": "./minify.sh"
-                }
-            ]
-        },
         "actionButtons": {
+            "reloadButton":"♻️",
             "loadNpmCommands": false, // Disables automatic generation of actions for npm commands.
             "commands": [
                 {
-                    "name": "Production",
+                    "name": "Compile",
                     "singleInstance": true,
                     "command": "./production.sh" // This is executed in the terminal.
                 }

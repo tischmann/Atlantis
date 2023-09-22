@@ -3,12 +3,15 @@
 
 declare(strict_types=1);
 
-use App\Database\Articles;
-use App\Database\Categories;
-use App\Database\Ratings;
-use App\Database\Users;
-use App\Database\Views;
-use Tischmann\Atlantis\{Console, Migration};
+use App\Database\{
+    Articles,
+    Categories,
+    Ratings,
+    Users,
+    Views
+};
+
+use Tischmann\Atlantis\{Console};
 
 require_once __DIR__ . "/bootstrap/require.php";
 
