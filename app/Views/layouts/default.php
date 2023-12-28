@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{env=APP_LOCALE}}">
 <?php
-$production = !boolval(getenv('APP_DEV'));
+$resource_suffix = boolval(getenv('APP_DEV')) ? "" : ".min";
 ?>
 
 <head>
@@ -25,8 +25,8 @@ $production = !boolval(getenv('APP_DEV'));
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" />
     <link rel="preload" as="style" href="/fontawesome.css">
-    <link rel="stylesheet" href="/app<?= $production ? ".min" : "" ?>.css" media="all">
-    <script src="/app<?= $production ? ".min" : "" ?>.js" nonce="{{nonce}}" type="module" async></script>
+    <link rel="stylesheet" href="/app<?= $resource_suffix ?>.css" media="all">
+    <script src="/app<?= $resource_suffix ?>.js" nonce="{{nonce}}" type="module" async></script>
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
@@ -36,7 +36,7 @@ $production = !boolval(getenv('APP_DEV'));
     </style>
 </head>
 
-<body class="bg-white dark:bg-gray-800 text-gray-800 dark:text-white antialiased">
+<body class="bg-white text-gray-800 antialiased">
 
     {{body}}{{alert}}
     <script src="/tailwind.min.js" nonce="{{nonce}}"></script>

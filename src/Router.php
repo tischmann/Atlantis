@@ -53,28 +53,42 @@ final class Router
      */
     public function resolve()
     {
+        foreach ($this->routes() as $route) {
+            assert($route instanceof Route);
+
+            if ($route->uri xor $this->request->uri) {
+                continue;
+            } elseif (!$route->uri && !$this->request->uri) {
+                return $route->resolve($this->request);
+            } elseif ($route->validate($this->request->uri)) {
+                return $route->resolve($this->request);
+            }
+        }
+
+        View::echo(
+            view: 'exception',
+            args: [
+                'code' => 404,
+                'message' => Locale::get('route_not_found'),
+            ]
+        );
+
+        exit;
+    }
+
+    /**
+     * Получение маршрутов
+     *
+     * @return array Маршруты
+     */
+    protected function routes(): array
+    {
         $routes = static::$routes[$this->request->method] ?? [];
 
         $routes = $routes[$this->request->accept] ?? [];
 
         $routes = $routes[$this->request->type] ?? [];
 
-        foreach ($routes as $route) {
-            assert($route instanceof Route);
-
-            if ($route->uri && $this->request->uri) {
-                if ($route->validate($this->request->uri)) {
-                    return $route->resolve($this->request);
-                }
-            } else if (!$route->uri && !$this->request->uri) {
-                return $route->resolve($this->request);
-            } else {
-                continue;
-            }
-        }
-
-        $path = '"' . implode("/", $this->request->uri) . '"';
-
-        throw new Exception(Locale::get('route_not_found') . ": {$path}", 404);
+        return $routes;
     }
 }

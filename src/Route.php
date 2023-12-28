@@ -53,9 +53,7 @@ final class Route
      */
     public function validate(array $uri): bool
     {
-        if (count($uri) !== count($this->uri)) {
-            return false;
-        }
+        if (count($uri) !== count($this->uri)) return false;
 
         $args = [];
 
@@ -75,9 +73,7 @@ final class Route
             $this->uri[$index] = $args[$key] = $value;
         }
 
-        if (array_diff($uri, $this->uri)) {
-            return false;
-        }
+        if (array_diff($uri, $this->uri)) return false;
 
         $this->args = array_merge($this->args, $args);
 

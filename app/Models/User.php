@@ -55,15 +55,23 @@ class User extends Model
     ) {
         parent::__construct();
 
+        if (!is_file(__DIR__ . "/../../private.pem")) {
+            throw new Exception('Private key not found');
+        }
+
         $privatekey = file_get_contents(__DIR__ . "/../../private.pem");
 
-        if (!$privatekey) throw new Exception('Private key not found');
+        if (!$privatekey) throw new Exception('Bad private key');
 
         $this->privateKey = $privatekey;
 
+        if (!is_file(__DIR__ . "/../../public.pem")) {
+            throw new Exception('Public key not found');
+        }
+
         $publicKey = file_get_contents(__DIR__ . "/../../public.pem");
 
-        if (!$publicKey) throw new Exception('Public key not found');
+        if (!$publicKey) throw new Exception('Bad public key');
 
         $this->publicKey = $publicKey;
 

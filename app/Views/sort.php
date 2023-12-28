@@ -16,7 +16,7 @@
              <button class="flex items-center justify-center whitespace-nowrap px-3 py-2 text-white rounded-lg bg-pink-600 hover:bg-pink-700 shadow active:bg-pink-700 focus:bg-pink-700 max-w-[256px] transition-all ease-in-out" type="button" id="sortingDropdown" data-te-dropdown-toggle-ref aria-expanded="false" data-te-ripple-init data-te-ripple-color="light">
                  <span class="drop-shadow max-w-[256px] truncate">{{lang=sorting_<?= $sort_type ?>_<?= $sort_order ?>}}<span>
              </button>
-             <ul class="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-left text-base shadow-lg dark:bg-neutral-700 [&[data-te-dropdown-show]]:block" aria-labelledby="sortingDropdown" data-te-dropdown-menu-ref>
+             <ul class="absolute z-[1000] float-left m-0 hidden min-w-max list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding text-left text-base shadow-lg [&[data-te-dropdown-show]]:block" aria-labelledby="sortingDropdown" data-te-dropdown-menu-ref>
                  <?php
 
                     foreach ($sortings ?? [] as $sorting) {
@@ -30,7 +30,7 @@
 
                         echo <<<HTML
                     <li>
-                        <a class="flex items-center w-full whitespace-nowrap bg-transparent py-2 px-4 text-sm font-normal text-neutral-700 hover:bg-neutral-100 active:text-neutral-800 active:no-underline disabled:pointer-events-none disabled:bg-transparent disabled:text-neutral-400 dark:text-neutral-200 dark:hover:bg-neutral-600" href="{$href}" data-te-dropdown-item-ref>{{lang=sorting_{$sorting->type}_{$sorting->order}}}
+                        <a class="flex items-center w-full whitespace-nowrap bg-transparent py-2 px-4 text-sm font-normal text-neutral-700 hover:bg-neutral-100 active:text-neutral-800 active:no-underline disabled:pointer-events-none disabled:bg-transparent disabled:text-neutral-400" href="{$href}" data-te-dropdown-item-ref>{{lang=sorting_{$sorting->type}_{$sorting->order}}}
                     HTML;
 
                         if ($selected) {
