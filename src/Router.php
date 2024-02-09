@@ -73,9 +73,7 @@ final class Router
      */
     protected function routeNotFound(): void
     {
-        $title = Locale::get('route_not_found') . " - " . getenv('APP_TITLE');
-
-        putenv("APP_TITLE={$title}");
+        Controller::setTitle(Locale::get('route_not_found'));
 
         View::echo(
             view: 'exception',

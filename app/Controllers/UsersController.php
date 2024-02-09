@@ -50,7 +50,6 @@ class UsersController extends Controller
                 'pagination' => $pagination,
                 'users' => User::fill($query),
                 'sortings' => [
-                    new Sorting(),
                     new Sorting('login', 'asc'),
                     new Sorting('login', 'desc'),
                     new Sorting('created_at', 'asc'),

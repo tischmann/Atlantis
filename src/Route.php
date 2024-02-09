@@ -16,10 +16,15 @@ final class Route
     public const REGEX_ARGS = "/^\{(\?)?(\w+)\}$/"; // Регулярное выражение для аргументов
     /**
      * @param Controller $controller Контроллер маршрута
+     * 
      * @param string $action Метод контроллера
+     * 
      * @param string $method Метод запроса
+     * 
      * @param string $path Путь
+     * 
      * @param string $title Заголовок страницы 
+     * 
      * @param array $args Аргументы запроса
      */
     public function __construct(
@@ -41,6 +46,7 @@ final class Route
      * Валидация маршрута
      *
      * @param array $uri URI запроса
+     * 
      * @return bool true - маршрут валиден, false - маршрут не валиден
      */
     public function validate(array $uri): bool
@@ -74,6 +80,8 @@ final class Route
 
     /**
      * Выполнение маршрута
+     * 
+     * @param Request $request Запрос
      *
      * @return void
      */

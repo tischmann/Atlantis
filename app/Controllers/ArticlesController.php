@@ -51,7 +51,6 @@ class ArticlesController extends Controller
                 'pagination' => $pagination,
                 'articles' => Article::fill($query),
                 'sortings' => [
-                    new Sorting(),
                     new Sorting('title', 'asc'),
                     new Sorting('title', 'desc'),
                     new Sorting('created_at', 'asc'),
@@ -400,7 +399,6 @@ class ArticlesController extends Controller
                 'pagination' => $pagination,
                 'articles' => Article::fill($query),
                 'sortings' => [
-                    new Sorting(),
                     new Sorting('created_at', 'asc'),
                     new Sorting('created_at', 'desc'),
                 ]
@@ -624,7 +622,6 @@ class ArticlesController extends Controller
                 'category' => $category,
                 'articles' => Article::fill($query),
                 'sortings' => [
-                    new Sorting(),
                     new Sorting('title', 'asc'),
                     new Sorting('title', 'desc'),
                     new Sorting('created_at', 'asc'),

@@ -22,7 +22,7 @@ class Controller
 
     public static function setTitle(string $title): void
     {
-        putenv('APP_TITLE=' . getenv('APP_TITLE') . " - " . $title);
+        putenv('APP_TITLE=' .  $title . " - " . getenv('APP_TITLE'));
     }
 
     protected function checkAdmin(): void
