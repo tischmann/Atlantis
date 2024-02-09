@@ -1,4 +1,3 @@
-<?php include __DIR__ . "/../header.php" ?>
 <main class="md:container md:mx-auto">
     <div class="flex flex-col md:flex-row md:flex-wrap gap-4 m-4">
         <?php

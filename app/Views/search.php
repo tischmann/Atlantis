@@ -2,8 +2,6 @@
 
 use Tischmann\Atlantis\Template;
 
-include __DIR__ . "/header.php"
-
 ?>
 <main class="md:container md:mx-auto">
     <?php

@@ -4,8 +4,6 @@ use App\Models\{Article, Category, User};
 
 use Tischmann\Atlantis\{Locale};
 
-include __DIR__ . "/../header.php"
-
 ?>
 <main class="md:container md:mx-auto">
     <div class="m-4">

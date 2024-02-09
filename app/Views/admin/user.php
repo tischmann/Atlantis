@@ -4,8 +4,6 @@ use App\Models\{User};
 
 use Tischmann\Atlantis\{Locale, Template};
 
-include __DIR__ . "/../header.php"
-
 ?>
 <main class="md:container md:mx-auto">
     <form method="post" class="m-4" autocomplete="off">

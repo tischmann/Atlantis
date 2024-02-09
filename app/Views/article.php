@@ -1,4 +1,3 @@
-<?php include __DIR__ . "/header.php" ?>
 <main class="md:container md:mx-auto">
     <article class="m-4 article">
         <div class="text-3xl font-bold flex items-center gap-4 mb-2"><?= $article->title ?>

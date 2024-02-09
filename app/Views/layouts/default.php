@@ -37,8 +37,10 @@ $resource_suffix = boolval(getenv('APP_DEV')) ? "" : ".min";
 </head>
 
 <body class="bg-white text-gray-800 antialiased">
+    <?php include __DIR__ . "/../header.php" ?>
 
     {{body}}{{alert}}
+    <?php include __DIR__ . "/../footer.php" ?>
     <script src="/tailwind.min.js" nonce="{{nonce}}"></script>
 </body>
 

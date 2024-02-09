@@ -65,6 +65,10 @@ final class Router
             }
         }
 
+        $title = Locale::get('route_not_found') . " - " . getenv('APP_TITLE');
+
+        putenv("APP_TITLE={$title}");
+
         View::echo(
             view: 'exception',
             args: [
