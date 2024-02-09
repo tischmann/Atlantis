@@ -54,9 +54,11 @@ final class View
         return Response::send(static::html($view, $args));
     }
 
-    public static function echo(string $view, array $args = [])
+    public static function echo(string $view, array $args = [], bool $exit = false)
     {
         echo static::make($view, $args)->render();
+
+        if ($exit) exit;
     }
 
     public function render(): string

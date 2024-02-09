@@ -47,20 +47,27 @@ final class Router
      * @return mixed
      * @throws Exception
      */
-    public function resolve()
+    public function resolve(): mixed
     {
         foreach ($this->routes() as $route) {
             assert($route instanceof Route);
 
-            if ($route->uri xor $this->request->uri) {
-                continue;
-            } elseif (!$route->uri && !$this->request->uri) {
+            if ($route->uri xor $this->request->uri) continue;
+
+            if (!$route->uri && !$this->request->uri) {
                 return $route->resolve($this->request);
-            } elseif ($route->validate($this->request->uri)) {
+            }
+
+            if ($route->validate($this->request->uri)) {
                 return $route->resolve($this->request);
             }
         }
 
+        $this->routeNotFound();
+    }
+
+    protected function routeNotFound(): void
+    {
         $title = Locale::get('route_not_found') . " - " . getenv('APP_TITLE');
 
         putenv("APP_TITLE={$title}");
@@ -70,10 +77,9 @@ final class Router
             args: [
                 'code' => 404,
                 'message' => Locale::get('route_not_found'),
-            ]
+            ],
+            exit: true
         );
-
-        exit;
     }
 
     /**
