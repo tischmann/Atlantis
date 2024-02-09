@@ -2,8 +2,24 @@
 
 use App\Models\{Article, Category};
 
-if (isset($category)) {
-    $locale = isset($locale) ? $locale : ($category->locale ?: getenv('APP_LOCALE'));
+if (isset($article)) {
+    assert($article instanceof Article);
+
+    $locale = $article->locale ?: getenv('APP_LOCALE');
+
+    $query = Category::query()
+        ->where('locale', $locale)
+        ->order('title', 'ASC');
+
+    $current = new Category();
+
+    if ($article->id) $current = $article->category;
+
+    if ($locale != $article->locale) $current = new Category();
+
+    $categories = [new Category(), ...Category::fill($query)];
+} elseif (isset($category)) {
+    $locale = $category->locale ?: getenv('APP_LOCALE');
 
     $current = isset($category) ? $category : new Category();
 
@@ -17,26 +33,6 @@ if (isset($category)) {
     if ($current->id) $query->where('id', '!=', $current->id);
 
     $categories = [new Category(), ...Category::fill($query)];
-} elseif (isset($article)) {
-    assert($article instanceof Article);
-
-    $locale = isset($locale) ? $locale : ($article->locale ?: getenv('APP_LOCALE'));
-
-    $current = new Category();
-
-    if ($article->id) $current = $article->category;
-
-    if ($locale != $article->locale) $current = new Category();
-
-    $categories = [
-        new Category(),
-        ...Category::fill(
-            Category::query()
-                ->where('locale', $locale)
-                ->where('parent_id', null)
-                ->order('title', 'ASC')
-        )
-    ];
 }
 
 function childOptions(Category $parent, Category $current)

@@ -54,8 +54,6 @@ class UsersController extends Controller
                     new Sorting('login', 'desc'),
                     new Sorting('created_at', 'asc'),
                     new Sorting('created_at', 'desc'),
-                    new Sorting('status', 'asc'),
-                    new Sorting('status', 'desc'),
                 ]
             ]
         );

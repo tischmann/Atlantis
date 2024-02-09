@@ -54,9 +54,7 @@ class ArticlesController extends Controller
                     new Sorting('title', 'asc'),
                     new Sorting('title', 'desc'),
                     new Sorting('created_at', 'asc'),
-                    new Sorting('created_at', 'desc'),
-                    new Sorting('visible', 'asc'),
-                    new Sorting('visible', 'desc'),
+                    new Sorting('created_at', 'desc')
                 ]
             ]
         );
