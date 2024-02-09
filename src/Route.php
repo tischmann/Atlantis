@@ -19,8 +19,6 @@ final class Route
      * @param string $action Метод контроллера
      * @param string $method Метод запроса
      * @param string $path Путь
-     * @param string $accept Тип данных (html, json, text)
-     * @param string $type Тип данных (html, json, text, form)
      * @param string $title Заголовок страницы 
      * @param array $args Аргументы запроса
      */
@@ -29,16 +27,10 @@ final class Route
         public string $action = 'index',
         public string $method = 'GET',
         public string $path = '',
-        public string $accept = 'html',
-        public string $type = 'html',
         public string $title = '',
         public array $args = [],
     ) {
         $this->method = strtoupper($this->method);
-
-        $this->accept = strtolower($this->accept);
-
-        $this->type = strtolower($this->type);
 
         $this->path = trim($this->path);
 

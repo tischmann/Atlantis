@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="{{env=APP_LOCALE}}">
 <?php
-$resource_suffix = boolval(getenv('APP_DEV')) ? "" : ".min";
+
+use Tischmann\Atlantis\App;
+
 ?>
 
 <head>
@@ -25,15 +27,7 @@ $resource_suffix = boolval(getenv('APP_DEV')) ? "" : ".min";
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" />
     <link rel="preload" as="style" href="/fontawesome.css">
-    <link rel="stylesheet" href="/app<?= $resource_suffix ?>.css" media="all">
-    <script src="/app<?= $resource_suffix ?>.js" nonce="{{nonce}}" type="module" async></script>
-    <style>
-        body {
-            font-family: 'Montserrat', sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-    </style>
+    <link rel="stylesheet" href="/app<?= App::getResourceSuffix() ?>.css" media="all">
 </head>
 
 <body class="bg-white text-gray-800 antialiased">
@@ -41,6 +35,7 @@ $resource_suffix = boolval(getenv('APP_DEV')) ? "" : ".min";
 
     {{body}}{{alert}}
     <?php include __DIR__ . "/../footer.php" ?>
+    <script src="/app<?= App::getResourceSuffix() ?>.js" nonce="{{nonce}}" type="module"></script>
     <script src="/tailwind.min.js" nonce="{{nonce}}"></script>
 </body>
 

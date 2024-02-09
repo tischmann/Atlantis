@@ -1,5 +1,5 @@
 /*
-! tailwindcss v3.3.2 | MIT License | https://tailwindcss.com
+! tailwindcss v3.4.1 | MIT License | https://tailwindcss.com
 */
 
 /*
@@ -1171,10 +1171,6 @@ video {
 
 .h-screen {
   height: 100vh;
-}
-
-.h-\[100dvh\] {
-  height: 100dvh;
 }
 
 .max-h-\[calc\(100\%-64px\)\] {
@@ -3097,6 +3093,12 @@ video {
   transition: background-color 250ms cubic-bezier(0.4,0,0.2,1) 0ms,box-shadow 250ms cubic-bezier(0.4,0,0.2,1) 0ms,border 250ms cubic-bezier(0.4,0,0.2,1) 0ms;
 }
 
+body {
+  font-family: 'Montserrat', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
 .article p {
   line-height: 1.5;
   margin-bottom: 1.5rem;
@@ -4226,6 +4228,10 @@ video {
   background-color: rgb(245 245 245 / var(--tw-bg-opacity));
 }
 
+.group:not([data-te-datepicker-cell-selected])[data-te-datepicker-cell-focused] .group-\[\:not\(\[data-te-datepicker-cell-selected\]\)\[data-te-datepicker-cell-focused\]\]\:bg-white\/10 {
+  background-color: rgb(255 255 255 / 0.1);
+}
+
 .group[data-te-datepicker-cell-selected] .group-\[\[data-te-datepicker-cell-selected\]\]\:bg-primary {
   --tw-bg-opacity: 1;
   background-color: rgb(59 113 202 / var(--tw-bg-opacity));
@@ -4586,18 +4592,6 @@ video {
 .peer[data-te-input-focused] ~ .peer-data-\[te-input-focused\]\:text-primary {
   --tw-text-opacity: 1;
   color: rgb(59 113 202 / var(--tw-text-opacity));
-}
-
-:is([dir="rtl"] .rtl\:\!left-auto) {
-  left: auto !important;
-}
-
-:is([dir="rtl"] .rtl\:\!origin-\[50\%_50\%_0\]) {
-  transform-origin: 50% 50% 0 !important;
-}
-
-:is([dir="rtl"] .rtl\:\[direction\:rtl\]) {
-  direction: rtl;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -5128,6 +5122,18 @@ video {
       }
     }
   }
+}
+
+.rtl\:\!left-auto:where([dir="rtl"], [dir="rtl"] *) {
+  left: auto !important;
+}
+
+.rtl\:\!origin-\[50\%_50\%_0\]:where([dir="rtl"], [dir="rtl"] *) {
+  transform-origin: 50% 50% 0 !important;
+}
+
+.rtl\:\[direction\:rtl\]:where([dir="rtl"], [dir="rtl"] *) {
+  direction: rtl;
 }
 
 .\[\&\.ps--clicking\]\:bg-\[\#eee\].ps--clicking {

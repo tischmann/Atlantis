@@ -11,11 +11,13 @@ use App\Controllers\{
     UsersController
 };
 
-use App\Models\User;
+use App\Models\{User};
 
 use Tischmann\Atlantis\{Locale, Router, Route};
 
-if (User::current()->exists()) {
+$user = User::current();
+
+if ($user->exists()) {
     Router::add(new Route(
         controller: new UsersController(),
         path: 'signout',
@@ -25,7 +27,7 @@ if (User::current()->exists()) {
 
     // Админка
 
-    if (User::current()->isAdmin()) {
+    if ($user->isAdmin()) {
         // Главная
 
         Router::add(new Route(
@@ -57,17 +59,14 @@ if (User::current()->exists()) {
             controller: new UsersController(),
             path: 'edit/user/{id}',
             action: 'update',
-            method: 'POST',
-            type: 'form',
+            method: 'POST'
         ));
 
         Router::add(new Route(
             controller: new UsersController(),
             path: 'upload/user/avatar/{id}',
             action: 'uploadAvatar',
-            method: 'POST',
-            type: 'form',
-            accept: 'json'
+            method: 'POST'
         ));
 
         Router::add(new Route(
@@ -81,34 +80,28 @@ if (User::current()->exists()) {
             controller: new UsersController(),
             path: 'add/user',
             action: 'add',
-            method: 'POST',
-            type: 'form',
+            method: 'POST'
         ));
 
         Router::add(new Route(
             controller: new UsersController(),
             path: 'add/user',
             action: 'add',
-            method: 'PUT',
-            type: 'form',
+            method: 'PUT'
         ));
 
         Router::add(new Route(
             controller: new UsersController(),
             path: 'user/delete/{id}',
             action: 'delete',
-            method: 'DELETE',
-            type: 'json',
-            accept: 'json'
+            method: 'DELETE'
         ));
 
         Router::add(new Route(
             controller: new UsersController(),
             path: 'fetch/admin/users',
             action: 'fetchUsers',
-            method: 'POST',
-            type: 'json',
-            accept: 'json'
+            method: 'POST'
         ));
 
         // Локали
@@ -132,17 +125,13 @@ if (User::current()->exists()) {
         Router::add(new Route(
             controller: new LocalesController(),
             path: 'add/locale',
-            action: 'add',
-            method: 'POST',
-            type: 'form',
+            action: 'add'
         ));
 
         Router::add(new Route(
             controller: new LocalesController(),
             path: 'add/locale',
-            action: 'add',
-            method: 'PUT',
-            type: 'form',
+            action: 'add'
         ));
 
         Router::add(new Route(
@@ -155,18 +144,14 @@ if (User::current()->exists()) {
         Router::add(new Route(
             controller: new LocalesController(),
             path: 'locale/edit/{code}',
-            action: 'update',
-            method: 'POST',
-            type: 'form',
+            action: 'update'
         ));
 
         Router::add(new Route(
             controller: new LocalesController(),
             path: 'locale/delete/{code}',
             action: 'delete',
-            method: 'DELETE',
-            type: 'json',
-            accept: 'json'
+            method: 'DELETE'
         ));
 
         // Категории
@@ -183,9 +168,7 @@ if (User::current()->exists()) {
             controller: new CategoriesController(),
             path: 'categories/order',
             action: 'order',
-            method: 'POST',
-            type: 'json',
-            accept: 'json'
+            method: 'POST'
         ));
 
         Router::add(new Route(
@@ -199,17 +182,13 @@ if (User::current()->exists()) {
         Router::add(new Route(
             controller: new CategoriesController(),
             path: 'add/category',
-            action: 'add',
-            method: 'POST',
-            type: 'form',
+            action: 'add'
         ));
 
         Router::add(new Route(
             controller: new CategoriesController(),
             path: 'add/category',
-            action: 'add',
-            method: 'PUT',
-            type: 'form',
+            action: 'add'
         ));
 
         Router::add(new Route(
@@ -222,27 +201,21 @@ if (User::current()->exists()) {
         Router::add(new Route(
             controller: new CategoriesController(),
             path: 'category/edit/{id}',
-            action: 'update',
-            method: 'POST',
-            type: 'form',
+            action: 'update'
         ));
 
         Router::add(new Route(
             controller: new CategoriesController(),
             path: 'category/delete/{id}',
             action: 'delete',
-            method: 'DELETE',
-            type: 'json',
-            accept: 'json'
+            method: 'DELETE'
         ));
 
         Router::add(new Route(
             controller: new CategoriesController(),
             path: 'admin/fetch/parent/categories',
             action: 'fetchParentCategories',
-            method: 'POST',
-            type: 'json',
-            accept: 'json'
+            method: 'POST'
         ));
 
         // Статьи
@@ -259,9 +232,7 @@ if (User::current()->exists()) {
             controller: new ArticlesController(),
             path: 'upload/article/image/{id}',
             action: 'uploadImage',
-            method: 'POST',
-            type: 'form',
-            accept: 'json'
+            method: 'POST'
         ));
 
         Router::add(new Route(
@@ -276,7 +247,6 @@ if (User::current()->exists()) {
             path: 'edit/article/{id}',
             action: 'update',
             method: 'POST',
-            type: 'form',
         ));
 
         Router::add(new Route(
@@ -291,7 +261,6 @@ if (User::current()->exists()) {
             path: 'add/article',
             action: 'add',
             method: 'POST',
-            type: 'form',
         ));
 
         Router::add(new Route(
@@ -299,16 +268,13 @@ if (User::current()->exists()) {
             path: 'add/article',
             action: 'add',
             method: 'PUT',
-            type: 'form',
         ));
 
         Router::add(new Route(
             controller: new ArticlesController(),
             path: 'article/delete/{id}',
             action: 'delete',
-            method: 'DELETE',
-            type: 'json',
-            accept: 'json'
+            method: 'DELETE'
         ));
 
         Router::add(new Route(
@@ -316,8 +282,6 @@ if (User::current()->exists()) {
             path: 'fetch/admin/articles',
             action: 'fetchAdmin',
             method: 'POST',
-            type: 'json',
-            accept: 'json'
         ));
     }
 } else {
@@ -333,7 +297,6 @@ if (User::current()->exists()) {
         path: 'signin',
         action: 'signIn',
         method: 'POST',
-        type: 'form',
     ));
 }
 
@@ -357,8 +320,6 @@ Router::add(new Route(
     path: 'fetch/search',
     action: 'fetchFoundArticles',
     method: 'POST',
-    type: 'json',
-    accept: 'json'
 ));
 
 // Статьи
@@ -381,8 +342,6 @@ Router::add(new Route(
     path: 'fetch/category/{slug}',
     action: 'fetchArticlesInCategory',
     method: 'POST',
-    type: 'json',
-    accept: 'json'
 ));
 
 Router::add(new Route(
@@ -390,6 +349,4 @@ Router::add(new Route(
     path: 'rating/{id}/{rating}',
     action: 'setRating',
     method: 'POST',
-    type: 'json',
-    accept: 'json'
 ));
