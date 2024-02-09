@@ -66,6 +66,11 @@ final class Router
         $this->routeNotFound();
     }
 
+    /**
+     * Маршрут не найден
+     *
+     * @return void
+     */
     protected function routeNotFound(): void
     {
         $title = Locale::get('route_not_found') . " - " . getenv('APP_TITLE');
