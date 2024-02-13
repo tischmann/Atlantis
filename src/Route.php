@@ -91,7 +91,7 @@ final class Route
             $request->route($key, $value);
         }
 
-        if ($this->title) Controller::setTitle($this->title);
+        if ($this->title) App::setTitle($this->title);
 
         $this->controller->{$this->action}($request);
     }

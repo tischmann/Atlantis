@@ -18,7 +18,7 @@ class AdminController extends Controller
      */
     public function index()
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         View::send('admin/index');
     }

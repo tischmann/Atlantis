@@ -12,6 +12,7 @@ use Exception;
 
 use Tischmann\Atlantis\{
     Alert,
+    App,
     Breadcrumb,
     Controller,
     CSRF,
@@ -28,7 +29,7 @@ class LocalesController extends Controller
      */
     public function index(Request $request)
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         View::send(
             'admin/locales',
@@ -47,7 +48,7 @@ class LocalesController extends Controller
      */
     public function new(Request $request)
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $this->editor();
     }
@@ -59,11 +60,11 @@ class LocalesController extends Controller
      */
     protected function editor(string $locale = '')
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $title = Locale::get("locale_" . ($locale ? $locale : 'new'));
 
-        static::setTitle($title);
+        App::setTitle($title);
 
         View::send(
             'admin/locale',
@@ -85,7 +86,7 @@ class LocalesController extends Controller
      */
     public function add(Request $request)
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $request->validate([
             'title' => ['required', 'string'],
@@ -152,7 +153,7 @@ class LocalesController extends Controller
      */
     public function get(Request $request)
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $request->validate([
             'code' => ['required', 'string'],
@@ -175,7 +176,7 @@ class LocalesController extends Controller
      */
     public function update(Request $request)
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $request->validate([
             'keys' => ['required', 'array'],
@@ -242,7 +243,7 @@ class LocalesController extends Controller
      */
     public function delete(Request $request)
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $request->validate([
             'code' => ['required', 'string'],

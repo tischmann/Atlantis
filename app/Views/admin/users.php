@@ -8,16 +8,8 @@ use Tischmann\Atlantis\Template;
 
     include __DIR__ . "/../sort.php";
 
-    $lazyload = Template::html(
-        'lazyload',
-        [
-            'pagination' => $pagination,
-            'url' => "/fetch/admin/users"
-        ]
-    );
-
     ?>
-    <div class="flex flex-wrap gap-4 m-4" <?= $lazyload ?>>
+    <div class="flex flex-wrap gap-4">
         <?php
 
         foreach ($users as $user) {

@@ -73,7 +73,7 @@ final class Router
      */
     protected function routeNotFound(): void
     {
-        Controller::setTitle(Locale::get('route_not_found'));
+        App::setTitle(Locale::get('route_not_found'));
 
         View::echo(
             view: 'exception',

@@ -1,3 +1,3 @@
-<div class="relative w-full md:w-auto">
-    <a href="/{{env=APP_LOCALE}}/signin" class="block text-center whitespace-nowrap rounded-lg p-2 px-4 bg-sky-600 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-sky-700 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-sky-700 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-sky-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] motion-reduce:transition-none" href="#" type="button" data-te-ripple-init data-te-ripple-color="light">{{lang=signin}}</a>
-</div>
+<a href="/{{env=APP_LOCALE}}/signin" class="flex items-center justify-center h-10 w-10 rounded-xl text-xl bg-gray-200 text-gray-800 transition hover:bg-gray-400 focus:bg-gray-300 focus:outline-none focus:ring-0 active:bg-gray-300 active:shadow-lg motion-reduce:transition-none">
+    <i class="fa-solid fa-door-open"></i>
+</a>

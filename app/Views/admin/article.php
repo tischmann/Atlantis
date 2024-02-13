@@ -84,13 +84,18 @@ use Tischmann\Atlantis\{Locale, Template};
                 ?>
             </div>
             <?php
+            $src = "/images/articles/{$article->id}/{$article->image}";
+
+            if (!is_file("{$_SERVER['DOCUMENT_ROOT']}{$src}")) {
+                $src = "/placeholder.svg";
+            }
             Template::echo(
                 'admin/load-image',
                 [
                     'value' => $article->image,
                     'name' => 'image',
                     'label' => Locale::get('article_image'),
-                    'src' => $article->id ? "/images/articles/{$article->id}/{$article->image}" : "/placeholder.svg",
+                    'src' => $src,
                     'width' => '',
                     'height' => '',
                     'url' => "/upload/article/image/{$article->id}"
@@ -163,10 +168,6 @@ use Tischmann\Atlantis\{Locale, Template};
 
         const textareaElement = document.getElementById(`articleFullText`)
 
-        const useDarkMode = window.matchMedia(
-            '(prefers-color-scheme: dark)'
-        ).matches
-
         tinymce.init({
             language: textareaElement.dataset.locale,
             target: textareaElement,
@@ -180,8 +181,8 @@ use Tischmann\Atlantis\{Locale, Template};
             toolbar_mode: 'floating',
             contextmenu: 'link image table',
             image_caption: true,
-            skin: useDarkMode ? 'oxide-dark' : 'oxide',
-            content_css: useDarkMode ? 'dark' : 'default',
+            skin: 'oxide',
+            content_css: 'default',
             image_advtab: true,
             image_class_list: [{
                     title: 'None',

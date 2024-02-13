@@ -39,8 +39,8 @@
                 </form>
             </div>
         </div>
-        <div class="mt-4" data-atlantis-lightbox data-atlantis-lazy-image-container>
-            <img class="w-full md:max-w-lg md:float-left mb-4 md:mr-8 rounded-xl shadow-md" data-src="<?= $article->image_url ?>" src="/placeholder.svg" width="<?= Article::THUMB_WIDTH ?>" height="<?= Article::THUMB_HEIGHT ?>" alt="<?= $article->title ?>" data-atlantis-lazy-image>
+        <div class="mt-4" data-gallery-container>
+            <img class="w-full md:max-w-lg md:float-left mb-4 md:mr-8 rounded-xl shadow-md" data-lazy-src="<?= $article->image_url ?>" src="/placeholder.svg" width="<?= Article::THUMB_WIDTH ?>" height="<?= Article::THUMB_HEIGHT ?>" alt="<?= $article->title ?>">
             <?= html_entity_decode($article->full_text) ?>
         </div>
         <?php require __DIR__ . "/tags.php" ?>

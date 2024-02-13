@@ -8,12 +8,44 @@ use App\Models\User;
 
 final class App
 {
-    private static ?string $resourceSuffix = null;
+    protected static ?User $user = null;
 
-    public static function getResourceSuffix(): string
+    public static ?string $title = null;
+
+    public static function getCurrentUser(): User
     {
-        static::$resourceSuffix ??= User::current()->isAdmin() ? '' : ".min";
+        static::$user ??= User::current();
+        return static::$user;
+    }
 
-        return static::$resourceSuffix;
+    public static function getResourcesDir(): string
+    {
+        if (static::getCurrentUser()->isAdmin()) {
+            return __DIR__ . '/../resources/js';
+        }
+
+        return __DIR__ . "/../public/js";
+    }
+
+    public static function getJsResource(string $name)
+    {
+        include static::getResourcesDir() . "/{$name}.js";
+    }
+
+    public static function getCssResource(string $name)
+    {
+        include static::getResourcesDir() . "/{$name}.css";
+    }
+
+    public static function getTitle(): string
+    {
+        static::$title ??= strval(getenv('APP_TITLE'));
+
+        return static::$title;
+    }
+
+    public static function setTitle(string $title): string
+    {
+        return (static::$title = $title);
     }
 }

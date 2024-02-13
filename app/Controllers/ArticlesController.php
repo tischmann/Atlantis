@@ -10,6 +10,7 @@ use Exception;
 
 use Tischmann\Atlantis\{
     Alert,
+    App,
     Breadcrumb,
     Controller,
     CSRF,
@@ -34,11 +35,15 @@ class ArticlesController extends Controller
      */
     public function index(Request $request): void
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $query = Article::query()->limit(static::ADMIN_FETCH_LIMIT);
 
-        $this->sort($query, $request);
+        $sort = $request->request('sort') ?: 'created_at';
+
+        $order = $request->request('order') ?: 'desc';
+
+        $query->order($sort, $order);
 
         $pagination = new Pagination(
             total: $query->count(),
@@ -74,11 +79,15 @@ class ArticlesController extends Controller
      */
     public function fetchAdmin(Request $request): void
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $query = Article::query();
 
-        $this->sort($query, $request);
+        $sort = $request->request('sort') ?: 'created_at';
+
+        $order = $request->request('order') ?: 'desc';
+
+        $query->order($sort, $order);
 
         $this->fetch(
             $request,
@@ -109,7 +118,7 @@ class ArticlesController extends Controller
      */
     public function add(Request $request)
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $request->validate([
             'title' => ['required'],
@@ -203,7 +212,7 @@ class ArticlesController extends Controller
      */
     public function update(Request $request): void
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $request->validate([
             'title' => ['required'],
@@ -274,7 +283,7 @@ class ArticlesController extends Controller
      */
     public function delete(Request $request)
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $article = Article::find($request->route('id'));
 
@@ -312,7 +321,7 @@ class ArticlesController extends Controller
      */
     public function uploadImage(Request $request)
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $id = intval($request->route('id'));
 
@@ -354,7 +363,7 @@ class ArticlesController extends Controller
             throw new Exception(Locale::get('article_not_found'));
         }
 
-        static::setTitle($article->title);
+        App::setTitle($article->title);
 
         $article->full_text = static::lazyfyImages($article->full_text);
 
@@ -380,16 +389,30 @@ class ArticlesController extends Controller
 
         $query = Article::query()->where('visible', 1)->limit($limit);
 
-        $this->sort($query, $request);
+        $sort = $request->request('sort') ?: 'created_at';
 
-        $this->search($query, $request, ['title', 'short_text', 'full_text']);
+        $order = $request->request('order') ?: 'desc';
+
+        $query->order($sort, $order);
+
+        $search = strval($request->request('query'));
+
+        $search = strip_tags($search);
+
+        if ($search) {
+            $query->where(function (&$nested) use ($search) {
+                foreach (['title', 'short_text', 'full_text'] as $column) {
+                    $nested->orWhere($column, 'LIKE', "%{$search}%");
+                }
+            });
+        }
 
         $pagination = new Pagination(
             total: $query->count(),
             limit: $limit,
         );
 
-        static::setTitle(Locale::get('search'));
+        App::setTitle(Locale::get('search'));
 
         View::send(
             'search',
@@ -408,7 +431,11 @@ class ArticlesController extends Controller
     {
         $query = Article::query()->where('visible', 1);
 
-        $this->sort($query, $request);
+        $sort = $request->request('sort') ?: 'created_at';
+
+        $order = $request->request('order') ?: 'desc';
+
+        $query->order($sort, $order);
 
         $this->fetch(
             $request,
@@ -433,14 +460,14 @@ class ArticlesController extends Controller
 
     public function newArticle(Request $request)
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $this->getArticleEditor($request, new Article());
     }
 
     public function editArticle(Request $request)
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $id = $request->route('id');
 
@@ -465,7 +492,7 @@ class ArticlesController extends Controller
             ? $article->title
             : Locale::get('article_new');
 
-        static::setTitle($title);
+        App::setTitle($title);
 
         View::send(
             'admin/article',
@@ -606,7 +633,11 @@ class ArticlesController extends Controller
             ->where('visible', 1)
             ->limit(Pagination::DEFAULT_LIMIT);
 
-        $this->sort($query, $request);
+        $sort = $request->request('sort') ?: 'created_at';
+
+        $order = $request->request('order') ?: 'desc';
+
+        $query->order($sort, $order);
 
         $pagination = new Pagination(
             total: $query->count(),
@@ -634,7 +665,7 @@ class ArticlesController extends Controller
      */
     public function fetchArticlesInCategory(Request $request)
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $query = Article::query()->where('visible', 1);
 
@@ -658,7 +689,11 @@ class ArticlesController extends Controller
 
         $query->where('category_id', '()', $id_list);
 
-        $this->sort($query, $request);
+        $sort = $request->request('sort') ?: 'created_at';
+
+        $order = $request->request('order') ?: 'desc';
+
+        $query->order($sort, $order);
 
         $this->fetch(
             $request,
@@ -689,7 +724,7 @@ class ArticlesController extends Controller
 
         $html = preg_replace(
             '/<(img.*(?=src="))src="([^"]+)"([^>]+)>/i',
-            '<$1src="/placeholder.svg" data-atlantis-lazy-image data-src="$2" $3>',
+            '<$1src="/placeholder.svg" data-lazy-src="$2" $3>',
             $html
         );
 

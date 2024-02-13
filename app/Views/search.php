@@ -8,16 +8,8 @@ use Tischmann\Atlantis\Template;
 
     include __DIR__ . "/sort.php";
 
-    $lazyload = Template::html(
-        'lazyload',
-        [
-            'pagination' => $pagination,
-            'url' => "/fetch/search"
-        ]
-    );
-
     ?>
-    <div class="m-4" <?= $lazyload ?>>
+    <div class="m-4">
         <?php
 
         if (!$articles) Template::echo('search-empty');

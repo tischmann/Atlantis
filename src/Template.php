@@ -85,6 +85,9 @@ final class Template
             $key = $set[1];
 
             switch ($key) {
+                case 'title':
+                    $replace = App::getTitle() . ' - ' . getenv('APP_TITLE');
+                    break;
                 case 'uniqid':
                     $replace = $uniqid;
                     break;
@@ -96,11 +99,15 @@ final class Template
                     break;
                 default:
                     if (!array_key_exists($key, $args)) {
-                        if (substr($key, 0, 5) === 'lang=') {
-                            $replace = substr($key, 5);
-                            break;
-                        } else {
-                            continue 2;
+                        switch (substr($key, 0, 5)) {
+                            case "lang=":
+                                $replace = substr($key, 5);
+                                break 2;
+                            case "date=":
+                                $replace = date(substr($key, 5));
+                                break 2;
+                            default:
+                                continue 3;
                         }
                     }
 

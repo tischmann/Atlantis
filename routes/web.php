@@ -59,7 +59,7 @@ if ($user->exists()) {
             controller: new UsersController(),
             path: 'edit/user/{id}',
             action: 'update',
-            method: 'POST'
+            method: 'PUT'
         ));
 
         Router::add(new Route(
@@ -101,7 +101,7 @@ if ($user->exists()) {
             controller: new UsersController(),
             path: 'fetch/admin/users',
             action: 'fetchUsers',
-            method: 'POST'
+            method: 'GET'
         ));
 
         // Локали
@@ -168,7 +168,7 @@ if ($user->exists()) {
             controller: new CategoriesController(),
             path: 'categories/order',
             action: 'order',
-            method: 'POST'
+            method: 'PUT'
         ));
 
         Router::add(new Route(
@@ -177,18 +177,6 @@ if ($user->exists()) {
             action: 'new',
             method: 'GET',
             title: Locale::get('category_new')
-        ));
-
-        Router::add(new Route(
-            controller: new CategoriesController(),
-            path: 'add/category',
-            action: 'add'
-        ));
-
-        Router::add(new Route(
-            controller: new CategoriesController(),
-            path: 'add/category',
-            action: 'add'
         ));
 
         Router::add(new Route(
@@ -215,7 +203,7 @@ if ($user->exists()) {
             controller: new CategoriesController(),
             path: 'admin/fetch/parent/categories',
             action: 'fetchParentCategories',
-            method: 'POST'
+            method: 'GET'
         ));
 
         // Статьи
@@ -246,7 +234,7 @@ if ($user->exists()) {
             controller: new ArticlesController(),
             path: 'edit/article/{id}',
             action: 'update',
-            method: 'POST',
+            method: 'PUT',
         ));
 
         Router::add(new Route(
@@ -281,7 +269,7 @@ if ($user->exists()) {
             controller: new ArticlesController(),
             path: 'fetch/admin/articles',
             action: 'fetchAdmin',
-            method: 'POST',
+            method: 'GET',
         ));
     }
 } else {
@@ -289,7 +277,8 @@ if ($user->exists()) {
         controller: new UsersController(),
         path: 'signin',
         action: 'signinForm',
-        method: 'GET'
+        method: 'GET',
+        title: Locale::get('signin')
     ));
 
     Router::add(new Route(
@@ -319,7 +308,7 @@ Router::add(new Route(
     controller: new ArticlesController(),
     path: 'fetch/search',
     action: 'fetchFoundArticles',
-    method: 'POST',
+    method: 'GET',
 ));
 
 // Статьи
@@ -341,12 +330,12 @@ Router::add(new Route(
     controller: new ArticlesController(),
     path: 'fetch/category/{slug}',
     action: 'fetchArticlesInCategory',
-    method: 'POST',
+    method: 'GET',
 ));
 
 Router::add(new Route(
     controller: new ArticlesController(),
     path: 'rating/{id}/{rating}',
     action: 'setRating',
-    method: 'POST',
+    method: 'PUT',
 ));

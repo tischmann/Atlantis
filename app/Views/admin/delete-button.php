@@ -15,14 +15,13 @@
                 text: `<i class="fas fa-check text-xl"></i>`,
                 class: `bg-pink-600 text-white hover:bg-pink-500 focus:bg-pink-500 active:bg-pink-500`,
                 callback: () => {
-                    $.fetch(`{{url}}`, {
+                    fetch(`{{url}}`, {
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        method: 'DELETE',
-                        success: () => {
-                            window.location.assign(`{{redirect}}`)
-                        }
+                        method: 'DELETE'
+                    }).then(() => {
+                        window.location.assign(`{{redirect}}`)
                     })
                 }
             }

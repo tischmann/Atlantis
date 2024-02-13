@@ -10,6 +10,7 @@ use Exception;
 
 use Tischmann\Atlantis\{
     Alert,
+    App,
     Breadcrumb,
     Controller,
     CSRF,
@@ -27,7 +28,7 @@ class CategoriesController extends Controller
      */
     public function index(Request $request): void
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $items = [];
 
@@ -63,7 +64,7 @@ class CategoriesController extends Controller
      */
     public function get(Request $request)
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $request->validate([
             'id' => ['required'],
@@ -91,7 +92,7 @@ class CategoriesController extends Controller
      */
     public function new(Request $request)
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $this->editor();
     }
@@ -103,9 +104,9 @@ class CategoriesController extends Controller
      */
     public function editor(Category $category = new Category())
     {
-        $this->checkAdmin();
+        $this->__admin();
 
-        if ($category->id) static::setTitle($category->title);
+        if ($category->id) App::setTitle($category->title);
 
         View::send(
             'admin/category',
@@ -124,7 +125,7 @@ class CategoriesController extends Controller
      */
     public function add(Request $request)
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $request->validate([
             'title' => ['required'],
@@ -174,7 +175,7 @@ class CategoriesController extends Controller
      */
     public function order(Request $request)
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $categories = $request->request('children') ?? [];
 
@@ -207,7 +208,7 @@ class CategoriesController extends Controller
      */
     public function update(Request $request)
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $request->validate([
             'id' => ['required'],
@@ -280,7 +281,7 @@ class CategoriesController extends Controller
      */
     public function delete(Request $request)
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $id = intval($request->route('id'));
 
@@ -315,7 +316,7 @@ class CategoriesController extends Controller
 
     public function fetchParentCategories(Request $request)
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $request->validate([
             'locale' => ['required', 'string'],

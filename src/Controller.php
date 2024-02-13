@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace Tischmann\Atlantis;
 
-use App\Models\{User};
-
 use BadMethodCallException;
 
 use Exception;
 
 class Controller
 {
+    /**
+     * Вызов несуществующего метода
+     * 
+     * @throws BadMethodCallException Если метод не существует
+     */
     public function __call($name, $arguments): mixed
     {
         throw new BadMethodCallException(
@@ -20,47 +23,16 @@ class Controller
         );
     }
 
-    public static function setTitle(string $title): void
+    /**
+     * Проверка прав доступа администратора
+     * 
+     * @throws AccessDeniedException Если пользователь не является администратором
+     */
+    protected function __admin(): void
     {
-        putenv('APP_TITLE=' .  $title . " - " . getenv('APP_TITLE'));
-    }
-
-    protected function checkAdmin(): void
-    {
-        if (!User::current()->isAdmin()) {
-            throw new Exception(Locale::get('access_denied'), 404);
+        if (!App::getCurrentUser()->isAdmin()) {
+            throw new AccessDeniedException();
         }
-    }
-
-    protected function sort(Query &$query, Request $request): Query
-    {
-        $sort = $request->request('sort') ?: 'id';
-
-        $order = $request->request('order') ?: 'desc';
-
-        return $query->order($sort, $order);
-    }
-
-    protected function search(
-        Query &$query,
-        Request $request,
-        array $columns
-    ): Query {
-        $search = strval($request->request('query'));
-
-        $search = strip_tags($search);
-
-        if (mb_strlen($search) == 0) return $query;
-
-        if ($search) {
-            $query->where(function (&$nested) use ($columns, $search) {
-                foreach ($columns as $column) {
-                    $nested->orWhere($column, 'LIKE', "%{$search}%");
-                }
-            });
-        }
-
-        return $query;
     }
 
     /**
@@ -110,7 +82,7 @@ class Controller
 
     public function uploadImage(Request $request)
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $request->validate([
             'path' => ['required'],

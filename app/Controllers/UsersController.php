@@ -10,11 +10,10 @@ use Exception;
 
 use Tischmann\Atlantis\{
     Alert,
-    Breadcrumb,
+    App,
     Controller,
     Cookie,
     CSRF,
-    Image,
     Locale,
     Pagination,
     Request,
@@ -26,18 +25,22 @@ use Tischmann\Atlantis\{
 
 class UsersController extends Controller
 {
-    public const ADMIN_FETCH_LIMIT = 5;
+    public const ADMIN_FETCH_LIMIT = 15;
 
     /**
      * Вывод списка пользователь в админпанели
      */
     public function index(Request $request): void
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $query = User::query()->limit(self::ADMIN_FETCH_LIMIT);
 
-        $this->sort($query, $request);
+        $sort = $request->request('sort') ?: 'created_at';
+
+        $order = $request->request('order') ?: 'desc';
+
+        $query->order($sort, $order);
 
         $pagination = new Pagination(
             total: $query->count(),
@@ -61,7 +64,7 @@ class UsersController extends Controller
 
     public function signinForm(): void
     {
-        View::send('signin');
+        View::send(view: 'signin', layout: 'signin');
     }
 
     public function signIn(Request $request)
@@ -83,8 +86,6 @@ class UsersController extends Controller
         $login = strval($request->request('login'));
 
         $password = strval($request->request('password'));
-
-        $remember = $request->request('remember') === 'on';
 
         $user = User::find($login, 'login');
 
@@ -113,7 +114,7 @@ class UsersController extends Controller
 
         $month = time() + 60 * 60 * 24 * 30;
 
-        Cookie::set('atlantis_remember', $remember ? $month : 0, ['expires' => $month]);
+        Cookie::set('atlantis_remember', $month, ['expires' => $month]);
 
         $user->signIn();
 
@@ -136,7 +137,7 @@ class UsersController extends Controller
      */
     public function get(Request $request)
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $request->validate([
             'id' => ['required'],
@@ -163,7 +164,7 @@ class UsersController extends Controller
      */
     public function new(Request $request)
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $this->editor(new User());
     }
@@ -175,9 +176,9 @@ class UsersController extends Controller
      */
     protected function editor(User $user = new User())
     {
-        $this->checkAdmin();
+        $this->__admin();
 
-        static::setTitle($user->id ? $user->login : Locale::get('user_new'));
+        App::setTitle($user->id ? $user->login : Locale::get('user_new'));
 
         View::send(
             'admin/user',
@@ -196,7 +197,7 @@ class UsersController extends Controller
      */
     public function add(Request $request): void
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $request->validate([
             'login' => ['required'],
@@ -276,7 +277,7 @@ class UsersController extends Controller
      */
     public function update(Request $request): void
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $request->validate([
             'login' => ['required'],
@@ -390,7 +391,7 @@ class UsersController extends Controller
      */
     public function delete(Request $request)
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $id = intval($request->route('id'));
 
@@ -422,7 +423,7 @@ class UsersController extends Controller
      */
     public function uploadAvatar(Request $request)
     {
-        $this->checkAdmin();
+        $this->__admin();
 
         $request->args('path', 'images/avatars');
 
@@ -451,9 +452,15 @@ class UsersController extends Controller
      */
     public function fetchUsers(Request $request): void
     {
-        $this->checkAdmin();
+        $this->__admin();
 
-        $this->sort($query, $request);
+        $query = User::query();
+
+        $sort = $request->request('sort') ?: 'created_at';
+
+        $order = $request->request('order') ?: 'desc';
+
+        $query->order($sort, $order);
 
         $this->fetch(
             $request,

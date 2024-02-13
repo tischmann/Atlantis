@@ -39,24 +39,37 @@ final class View
         );
     }
 
-    public static function make(string $view, array $args = []): View
-    {
-        return new static($view, $args);
+    public static function make(
+        string $view,
+        array $args = [],
+        string $layout = 'default'
+    ): View {
+        return new static($view, $args, $layout);
     }
 
-    public static function html(string $view, array $args = []): string
-    {
-        return static::make($view, $args)->render();
+    public static function html(
+        string $view,
+        array $args = [],
+        string $layout = 'default'
+    ): string {
+        return static::make($view, $args, $layout)->render();
     }
 
-    public static function send(string $view, array $args = [])
-    {
-        return Response::send(static::html($view, $args));
+    public static function send(
+        string $view,
+        array $args = [],
+        string $layout = 'default'
+    ) {
+        return Response::send(static::html($view, $args, $layout));
     }
 
-    public static function echo(string $view, array $args = [], bool $exit = false)
-    {
-        echo static::make($view, $args)->render();
+    public static function echo(
+        string $view,
+        array $args = [],
+        string $layout = 'default',
+        bool $exit = false
+    ) {
+        echo static::make($view, $args, $layout)->render();
 
         if ($exit) exit;
     }
