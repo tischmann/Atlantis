@@ -27,9 +27,6 @@ use Tischmann\Atlantis\{
 
 class ArticlesController extends Controller
 {
-    public const ADMIN_FETCH_LIMIT = 10;
-
-    public const FETCH_LIMIT = 10;
     /**
      * Вывод списка статей в админпанели
      */
@@ -37,7 +34,7 @@ class ArticlesController extends Controller
     {
         $this->__admin();
 
-        $query = Article::query()->limit(static::ADMIN_FETCH_LIMIT);
+        $query = Article::query()->limit(15);
 
         $sort = $request->request('sort') ?: 'created_at';
 
@@ -47,7 +44,7 @@ class ArticlesController extends Controller
 
         $pagination = new Pagination(
             total: $query->count(),
-            limit: static::ADMIN_FETCH_LIMIT,
+            limit: 15,
         );
 
         View::send(
@@ -106,7 +103,7 @@ class ArticlesController extends Controller
 
                 return $html;
             },
-            static::ADMIN_FETCH_LIMIT
+            10
         );
     }
 
@@ -381,13 +378,23 @@ class ArticlesController extends Controller
      * 
      * @param Request $request
      */
-    public function searchArticles(Request $request)
+    public function search(Request $request)
     {
-        if (!$request->request('query')) Response::redirect('/');
+        $search = strval($request->request('query'));
+
+        if (!mb_strlen($search)) Response::redirect('/');
+
+        $search = strip_tags($search);
 
         $limit = Pagination::DEFAULT_LIMIT;
 
-        $query = Article::query()->where('visible', 1)->limit($limit);
+        $query = Article::query()
+            ->where('visible', 1)
+            ->where(function (&$nested) use ($search) {
+                $nested->orWhere('title', 'LIKE', "%{$search}%")
+                    ->orWhere('short_text', 'LIKE', "%{$search}%")
+                    ->orWhere('full_text', 'LIKE', "%{$search}%");
+            });
 
         $sort = $request->request('sort') ?: 'created_at';
 
@@ -395,20 +402,17 @@ class ArticlesController extends Controller
 
         $query->order($sort, $order);
 
-        $search = strval($request->request('query'));
+        $total = $query->count();
 
-        $search = strip_tags($search);
+        $query->limit($limit);
 
-        if ($search) {
-            $query->where(function (&$nested) use ($search) {
-                foreach (['title', 'short_text', 'full_text'] as $column) {
-                    $nested->orWhere($column, 'LIKE', "%{$search}%");
-                }
-            });
-        }
+        $page = intval($request->request('page'));
+
+        if ($page) $query->offset(($page - 1) * $limit);
 
         $pagination = new Pagination(
-            total: $query->count(),
+            total: $total,
+            page: $page,
             limit: $limit,
         );
 

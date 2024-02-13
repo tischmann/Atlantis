@@ -11,7 +11,7 @@ namespace Tischmann\Atlantis;
  */
 class Pagination
 {
-    public const DEFAULT_LIMIT = 1; // Количество элементов на странице по умолчанию
+    public const DEFAULT_LIMIT = 5; // Количество элементов на странице по умолчанию
 
     public const PAGES_LIMIT = 3; // Количество страниц слева и справа от текущей
 
@@ -224,5 +224,60 @@ class Pagination
         }
 
         return $this;
+    }
+
+    public function getPrevQuery(): string
+    {
+        $request = new Request();
+
+        $data = $request->get();
+
+        $data['page'] = $this->prev;
+
+        return http_build_query($data);
+    }
+
+    public function getNextQuery(): string
+    {
+        $request = new Request();
+
+        $data = $request->get();
+
+        $data['page'] = $this->next;
+
+        return http_build_query($data);
+    }
+
+    public function getFirstQuery(): string
+    {
+        $request = new Request();
+
+        $data = $request->get();
+
+        $data['page'] = $this->first;
+
+        return http_build_query($data);
+    }
+
+    public function getLastQuery(): string
+    {
+        $request = new Request();
+
+        $data = $request->get();
+
+        $data['page'] = $this->last;
+
+        return http_build_query($data);
+    }
+
+    public function getPageQuery(int $page): string
+    {
+        $request = new Request();
+
+        $data = $request->get();
+
+        $data['page'] = $page;
+
+        return http_build_query($data);
     }
 }

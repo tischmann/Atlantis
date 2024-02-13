@@ -25,7 +25,15 @@ use Tischmann\Atlantis\{
 
 class UsersController extends Controller
 {
-    public const ADMIN_FETCH_LIMIT = 15;
+    /**
+     * Вывод формы авторизации
+     *
+     * @return void
+     */
+    public function signInForm(): void
+    {
+        View::send(view: 'signin', layout: 'signin');
+    }
 
     /**
      * Вывод списка пользователь в админпанели
@@ -34,7 +42,7 @@ class UsersController extends Controller
     {
         $this->__admin();
 
-        $query = User::query()->limit(self::ADMIN_FETCH_LIMIT);
+        $query = User::query()->limit(10);
 
         $sort = $request->request('sort') ?: 'created_at';
 
@@ -44,7 +52,7 @@ class UsersController extends Controller
 
         $pagination = new Pagination(
             total: $query->count(),
-            limit: self::ADMIN_FETCH_LIMIT,
+            limit: 10,
         );
 
         View::send(
@@ -60,11 +68,6 @@ class UsersController extends Controller
                 ]
             ]
         );
-    }
-
-    public function signinForm(): void
-    {
-        View::send(view: 'signin', layout: 'signin');
     }
 
     public function signIn(Request $request)
@@ -479,7 +482,7 @@ class UsersController extends Controller
 
                 return $html;
             },
-            static::ADMIN_FETCH_LIMIT
+            10
         );
     }
 }

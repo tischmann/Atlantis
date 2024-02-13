@@ -20,6 +20,7 @@ use Tischmann\Atlantis\Template;
             ]);
         }
 
+        include __DIR__ . "/pagination.php";
         ?>
     </div>
 </main>

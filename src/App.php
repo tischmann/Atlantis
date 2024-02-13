@@ -10,7 +10,7 @@ final class App
 {
     protected static ?User $user = null;
 
-    public static ?string $title = null;
+    public static string $title = '';
 
     public static function getCurrentUser(): User
     {
@@ -39,8 +39,6 @@ final class App
 
     public static function getTitle(): string
     {
-        static::$title ??= strval(getenv('APP_TITLE'));
-
         return static::$title;
     }
 
