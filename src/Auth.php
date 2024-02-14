@@ -4,26 +4,34 @@ declare(strict_types=1);
 
 namespace Tischmann\Atlantis;
 
-use App\Models\User;
+use App\Models\{User};
 
-use Exception;
-
+/**
+ * Класс для работы с авторизацией
+ */
 final class Auth
 {
-    public const JWT_ALGORITHM = 'RS256';
+    public const JWT_ALGORITHM = 'RS256'; // Алгоритм шифрования
 
-    public const JWT_EXPIRES = 600;
+    public const JWT_EXPIRES = 600; // Время жизни токена в секундах
 
-    protected static ?string $privateKey = null;
+    protected static ?string $privateKey = null; // Закрытый ключ
 
-    protected static ?string $publicKey = null;
+    protected static ?string $publicKey = null; // Открытый ключ
 
-    protected string $token = '';
+    protected string $token = ''; // Токен
 
     public function __construct(public User $user = new User())
     {
     }
 
+    /**
+     * Получение объекта авторизации
+     *
+     * @param User $user Пользователь
+     * 
+     * @return self
+     */
     public static function instance(User $user = new User()): self
     {
         return new self($user);
@@ -34,17 +42,17 @@ final class Auth
      *
      * @return string
      */
-    public static function getPrivateKey(): string
+    protected static function getPrivateKey(): string
     {
-        if (!static::$privateKey) {
-            if (!is_file(__DIR__ . "/../private.pem")) {
-                throw new Exception('Private key not found');
-            }
+        if (static::$privateKey) return static::$privateKey;
 
-            static::$privateKey = file_get_contents(__DIR__ . "/../private.pem");
-
-            if (!static::$privateKey) throw new Exception('Bad private key');
+        if (!is_file(__DIR__ . "/../private.pem")) {
+            die('Файл private.pem не найден');
         }
+
+        static::$privateKey = file_get_contents(__DIR__ . "/../private.pem");
+
+        if (!static::$privateKey) die('Файл private.pem поврежден');
 
         return static::$privateKey;
     }
@@ -54,42 +62,41 @@ final class Auth
      *
      * @return string
      */
-    public static function getPublicKey(): string
+    protected static function getPublicKey(): string
     {
         if (!static::$publicKey) {
             if (!is_file(__DIR__ . "/../public.pem")) {
-                throw new Exception('Public key not found');
+                die('Файл public.pem не найден');
             }
 
             static::$publicKey = file_get_contents(__DIR__ . "/../public.pem");
 
-            if (!static::$publicKey) throw new Exception('Bad public key');
+            if (!static::$publicKey) die('Файл public.pem поврежден');
         }
 
         return static::$publicKey;
     }
 
     /**
-     * Авторизация пользователя
+     * Авторизация
      *
-     * @throws Exception Ошибка авторизации
-     * @return self 
+     * @return User Пользователь 
      */
     public function authorize(): User
     {
         if (!static::isLastAccessValid()) {
             Session::destroy();
-            Session::start();
+            return $this->user;
         }
 
         if (!static::isClientUserAgentValid()) {
             Session::destroy();
-            Session::start();
+            return $this->user;
         }
 
         if (!static::isClientAddressValid()) {
             Session::destroy();
-            Session::start();
+            return $this->user;
         }
 
         $jwt = Request::authorization() ?: Cookie::get('jwt');
@@ -119,26 +126,11 @@ final class Auth
 
             Cookie::set('jwt', $jwt, ['expires' => $expires]);
         } catch (SignatureInvalidException $e) {
-            View::send(
-                view: '403',
-                args: ['exception' => $e],
-                layout: 'default',
-                exit: true
-            );
+            die('Подпись токена недействительна');
         } catch (BeforeValidException $e) {
-            View::send(
-                view: '403',
-                args: ['exception' => $e],
-                layout: 'default',
-                exit: true
-            );
+            die('Токен еще не вступил в силу');
         } catch (TokenExpiredException $e) {
-            View::send(
-                view: '403',
-                args: ['exception' => $e],
-                layout: 'default',
-                exit: true
-            );
+            die('Срок дейстаия токена истёк');
         }
 
         Session::set('LAST_ACCESS', time());
@@ -146,6 +138,11 @@ final class Auth
         return $this->user;
     }
 
+    /**
+     * Авторизация
+     *
+     * @return string Токен обновления
+     */
     public function signIn(): string
     {
         session_regenerate_id();
@@ -169,6 +166,11 @@ final class Auth
         return $refresh_token;
     }
 
+    /**
+     * Выход
+     *
+     * @return self
+     */
     public function signOut(): self
     {
         Cookie::delete('jwt');
@@ -184,7 +186,8 @@ final class Auth
      * Преобразование токена в объект
      * 
      * @param string $token Токен
-     * @return object Объект токена
+     * 
+     * @return object Объект
      */
     protected function decodeToken(string $token): object
     {
@@ -195,9 +198,12 @@ final class Auth
      * Обновление токена
      * 
      * @param string $token Токен
+     * 
      * @param string $refresh_token Токен обновления
+     * 
      * @return string Обновленный токен
-     * @throws RefreshTokenExpiredException
+     * 
+     * @throws TokenExpiredException
      */
     protected function refreshToken(string $token, string $refresh_token): string
     {
@@ -208,16 +214,17 @@ final class Auth
         $user = User::find($payload?->id ?? 0);
 
         if ($user->refresh_token !== $refresh_token || !$refresh_token) {
-            throw new TokenExpiredException(Locale::get('jwr_token_expired'));
+            throw new TokenExpiredException();
         }
 
         return $this->createToken($payload);
     }
 
     /**
-     * Получение JWT токена
+     * Создание токена
      * 
      * @param object $payload Объект токена
+     * 
      * @return string Токен
      */
     protected function createToken(object $payload): string
@@ -233,9 +240,9 @@ final class Auth
     }
 
     /**
-     * Получение данных объекта JWT токена
+     * Создание данных токена
      * 
-     * @return object Данные объекта токена
+     * @return object Данные токена
      */
     protected function createPayload(): object
     {
@@ -245,29 +252,31 @@ final class Auth
     }
 
     /**
-     * Получение объекта JWT токена из токена
+     * Получение данных из токена
      * 
      * @param string $token Токен
+     * 
      * @return object Объект токена
-     * @throws Exception
      */
     protected function getPayload(string $token): object
     {
         $segments = explode('.', $token);
 
         if (count($segments) !== 3) {
-            throw new Exception("Wrong number of segments");
+            die('Некорректное количество сегментов');
         }
 
         $payload = JWT::jsonDecode(JWT::urlsafeB64Decode($segments[1]));
 
-        if ($payload === null) throw new Exception("Invalid payload");
+        if ($payload === null) {
+            die('Ошибка декодирования данных токена');
+        }
 
         return $payload;
     }
 
     /**
-     * Генерация токена обновления
+     * Создание токена обновления
      * 
      * @return string Токен обновления
      */
@@ -277,7 +286,7 @@ final class Auth
     }
 
     /**
-     * Проверяет IP-адрес клиента
+     * Проверяет IP-адрес клиента 
      *
      * @return boolean true - проверка прошла успешно, false - проверка не прошла
      */

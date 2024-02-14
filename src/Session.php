@@ -81,6 +81,6 @@ final class Session
     public static function destroy(): void
     {
         session_unset();
-        session_destroy();
+        session_regenerate_id();
     }
 }
