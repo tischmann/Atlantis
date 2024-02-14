@@ -6,21 +6,39 @@ namespace Tischmann\Atlantis;
 
 use App\Models\User;
 
+/**
+ * Класс приложения
+ *
+ */
 final class App
 {
-    protected static ?User $user = null;
+    protected static ?User $user = null; // Текущий пользователь
 
-    protected static ?Auth $auth = null;
+    protected static ?Auth $auth = null; // Авторизация
 
-    public static string $title = '';
+    public static string $title = ''; // Заголовок страницы
 
-    public static ?string $assets_prefix = null;
+    public static ?string $assets_prefix = null; // Префикс для ассетов
 
+    public static ?bool $is_in_development = null; // Режим разработки
+
+    /**
+     * Проверяет, находится ли приложение в режиме разработки
+     *
+     * @return bool
+     */
     public static function isInDevelopment(): bool
     {
-        return boolval(getenv('APP_DEV'));
+        static::$is_in_development ??= boolval(Cookie::get('DEV_MODE'));
+
+        return static::$is_in_development;
     }
 
+    /**
+     * Возвращает префикс для ассетов
+     *
+     * @return string
+     */
     public static function getAssetsPrefix(): string
     {
         static::$assets_prefix ??= static::isInDevelopment() ? '' : '.min';
@@ -28,41 +46,42 @@ final class App
         return static::$assets_prefix;
     }
 
+    /**
+     * Возвращает текущего пользователя
+     *
+     * @return User
+     */
     public static function getCurrentUser(): User
     {
-        if (static::$user === null) {
-            static::$user = new User();
-            static::$auth = new Auth(static::$user);
-            static::$user = static::$auth->authorize();
-        }
+        static::$user ??= new User();
+
+        static::$auth = new Auth(static::$user);
+
+        static::$user = static::$auth->authorize();
 
         return static::$user;
     }
 
-    public static function getResourcesDir(): string
+    /**
+     * Возвращает заголовок страницы
+     *
+     * @return string
+     */
+    public static function getTitle(bool $use_postfix = true): string
     {
-        if (static::getCurrentUser()->isAdmin()) {
-            return __DIR__ . '/../resources/js';
-        }
+        if (!$use_postfix) return static::$title;
 
-        return __DIR__ . "/../public/js";
+        if (static::$title === '') return getenv('APP_TITLE');
+
+        return static::$title . ' | ' . getenv('APP_TITLE');
     }
 
-    public static function getJsResource(string $name)
-    {
-        include static::getResourcesDir() . "/{$name}.js";
-    }
-
-    public static function getCssResource(string $name)
-    {
-        include static::getResourcesDir() . "/{$name}.css";
-    }
-
-    public static function getTitle(): string
-    {
-        return static::$title;
-    }
-
+    /**
+     * Устанавливает заголовок страницы
+     *
+     * @param string $title - Заголовок страницы
+     * @return string - Заголовок страницы
+     */
     public static function setTitle(string $title): string
     {
         return (static::$title = $title);

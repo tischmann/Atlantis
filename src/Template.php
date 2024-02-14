@@ -86,9 +86,7 @@ final class Template
 
             switch ($key) {
                 case 'title':
-                    $title = App::getTitle();
-                    if ($title) $replace = $title . ' - ' . getenv('APP_TITLE');
-                    else $replace = getenv('APP_TITLE');
+                    $replace = App::getTitle();
                     break;
                 case 'uniqid':
                     $replace = $uniqid;

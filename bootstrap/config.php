@@ -55,7 +55,7 @@ putenv('APP_NONCE=' . bin2hex(random_bytes(32)));
 
 $config = getenv('APP_ROOT') . "/.env";
 
-if (!file_exists($config)) die("Configuration file not found: {$config}");
+if (!file_exists($config)) die("Не найден файл конфигурации: {$config}");
 
 foreach (file($config, FILE_SKIP_EMPTY_LINES) as $line) {
     if (preg_match("/^\s*([A-Z_0-9]+=.*)$/", $line)) {
