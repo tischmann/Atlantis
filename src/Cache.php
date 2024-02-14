@@ -6,9 +6,14 @@ namespace Tischmann\Atlantis;
 
 use Memcache;
 
-class Cache
+/**
+ * Класс для работы с кэшем
+ */
+final class Cache
 {
-    private static Memcache $memcache;
+    private static ?Memcache $memcache = null;
+
+    private static ?string $prefix = null;
 
     private function __construct()
     {
@@ -107,10 +112,11 @@ class Cache
      * 
      * @return Memcache Объект подключения к серверу кэша
      */
-    private static function connect(): Memcache
+    protected static function connect(): Memcache
     {
-        if (!isset(static::$memcache)) {
+        if (static::$memcache === null) {
             static::$memcache = new Memcache();
+
             static::$memcache->connect(
                 strval(getenv('MEMCACHED_HOST')),
                 intval(getenv('MEMCACHED_PORT'))
@@ -125,8 +131,10 @@ class Cache
      *
      * @return string
      */
-    private static function prefix(): string
+    protected static function prefix(): string
     {
-        return "atlantis_" . getenv('APP_ID') . "_";
+        static::$prefix ??= "atlantis_" . getenv('APP_ID') . "_";
+
+        return static::$prefix;
     }
 }
