@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tischmann\Atlantis;
 
-abstract class Migration
+abstract class Table
 {
     /**
      * Массив внешних ключей

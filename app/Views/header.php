@@ -1,6 +1,6 @@
-<header class="bg-white">
+<header class="bg-white my-8">
     <div class="md:container mx-8 md:mx-auto">
-        <div class="flex flex-row md:items-center flex-wrap md:justify-between gap-8 my-8">
+        <div class="flex flex-row md:items-center flex-wrap md:justify-between gap-8">
             <div class="flex-grow flex items-center gap-4">
                 <a href="/{{env=APP_LOCALE}}" class="flex items-center" aria-label="{{env=APP_TITLE}}">
                     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 400 400" xml:space="preserve" width="32px" height="32px" class="text-sky-600">

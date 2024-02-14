@@ -12,7 +12,7 @@ error_reporting(E_ALL);
 
 ini_set('date.timezone', getenv('APP_TIMEZONE') ?: 'UTC');
 
-ini_set('session.cookie_lifetime', getenv('APP_COOKIE_LIFETIME') ?: '0');
+ini_set('session.cookie_lifetime', 0);
 
 ini_set('session.cookie_httponly', getenv('APP_COOKIE_HTTP_ONLY') ?: '1');
 

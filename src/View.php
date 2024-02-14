@@ -15,12 +15,6 @@ final class View
         public array $args = [],
         string $layout = 'default'
     ) {
-        $alert = Session::get('alert') ?? new Alert();
-
-        assert($alert instanceof Alert);
-
-        Session::delete('alert');
-
         $file = __DIR__ . "/../app/Views/layouts/{$layout}.tpl";
 
         if (!is_file($file)) {
@@ -35,7 +29,6 @@ final class View
             "layouts/{$layout}",
             [
                 ...$this->args,
-                'alert' => $alert->toHtml(),
                 'body' => Template::html($this->template, $this->args),
             ]
         );
@@ -60,9 +53,12 @@ final class View
     public static function send(
         string $view,
         array $args = [],
-        string $layout = 'default'
+        string $layout = 'default',
+        bool $exit = false
     ) {
-        return Response::send(static::html($view, $args, $layout));
+        Response::send(static::html($view, $args, $layout));
+
+        if ($exit) exit;
     }
 
     public static function echo(

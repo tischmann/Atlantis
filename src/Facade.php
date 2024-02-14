@@ -93,7 +93,7 @@ class Facade
             case 'object':
                 return json_decode($variable) ?? (object) [];
             case 'DateTime':
-                if ($variable && !Date::isValid($variable)) {
+                if ($variable && !Date::validate($variable)) {
                     throw new InvalidArgumentException(
                         'Invalid date format',
                         500

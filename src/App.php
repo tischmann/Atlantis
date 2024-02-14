@@ -10,6 +10,8 @@ final class App
 {
     protected static ?User $user = null;
 
+    protected static ?Auth $auth = null;
+
     public static string $title = '';
 
     public static ?string $assets_prefix = null;
@@ -28,7 +30,12 @@ final class App
 
     public static function getCurrentUser(): User
     {
-        static::$user ??= User::current();
+        if (static::$user === null) {
+            static::$user = new User();
+            static::$auth = new Auth(static::$user);
+            static::$user = static::$auth->authorize();
+        }
+
         return static::$user;
     }
 

@@ -74,19 +74,23 @@ final class CSRF
     /**
      * Производит проверку токенов
      * 
-     * @throws Exception Если токен не найден
+     * @param Request $request Запрос
+     * 
+     * @return bool Результат проверки
      */
-    public static function verify(Request $request): void
+    public static function verify(Request $request): bool
     {
         $verified = true;
 
         if (in_array($request->method, ['POST', 'PUT', 'DELETE'])) {
-            $verified = array_intersect(
+            $found = array_intersect(
                 static::tokens(),
                 [$request->headers('X-Csrf-Token')]
             );
 
-            if (!$verified) {
+            $verified = false;
+
+            if (!$found) {
                 $args = $request->request();
 
                 foreach (static::tokens() as $key => $token) {
@@ -102,13 +106,36 @@ final class CSRF
                     static::tokens()
                 );
 
+                $verified = true;
+
                 static::flush($key);
             }
         }
 
-        if (!$verified) {
-            CSRF::flush();
-            throw new Exception(Locale::get('csrf_token_required'));
-        }
+        if (!$verified) static::flush();
+
+        return $verified;
+    }
+
+    /**
+     * Проверяет, что токен не прошел проверку
+     *
+     * @param Request $request
+     * @return boolean
+     */
+    public static function failed(Request $request): bool
+    {
+        return !static::verify($request);
+    }
+
+    /**
+     * Проверяет, что токен прошел проверку
+     *
+     * @param Request $request
+     * @return boolean
+     */
+    public static function passed(Request $request): bool
+    {
+        return static::verify($request);
     }
 }

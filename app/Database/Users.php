@@ -6,9 +6,9 @@ namespace App\Database;
 
 use App\Models\User;
 
-use Tischmann\Atlantis\{Column, Migration};
+use Tischmann\Atlantis\{Column, Table};
 
-class Users extends Migration
+class Users extends Table
 {
     public static function name(): string
     {

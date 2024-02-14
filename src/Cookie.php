@@ -59,7 +59,7 @@ final class Cookie
             $name,
             strval($value),
             array_merge([
-                'expires' => intval(getenv('APP_COOKIE_LIFETIME') ?: 0),
+                'expires' => 0,
                 'path' => strval(getenv('APP_COOKIE_PATH') ?: '/'),
                 'secure' => boolval(getenv('APP_COOKIE_SECURE') ?: true),
                 'httponly' => boolval(getenv('APP_COOKIE_HTTP_ONLY') ?: true),

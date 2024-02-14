@@ -73,14 +73,9 @@ final class Router
      */
     protected function routeNotFound(): void
     {
-        App::setTitle(Locale::get('route_not_found'));
-
-        View::echo(
-            view: 'exception',
-            args: [
-                'code' => 404,
-                'message' => Locale::get('route_not_found'),
-            ],
+        View::send(
+            view: '404',
+            layout: 'default',
             exit: true
         );
     }

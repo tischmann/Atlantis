@@ -32,7 +32,7 @@ use Tischmann\Atlantis\App;
 <body class="bg-white text-gray-800 antialiased">
     <?php include __DIR__ . "/../header.php" ?>
 
-    {{body}}{{alert}}
+    {{body}}
     <script src="/app<?= App::getAssetsPrefix() ?>.js" nonce="{{nonce}}"></script>
 </body>
 

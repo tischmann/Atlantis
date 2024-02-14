@@ -30,7 +30,7 @@ use Tischmann\Atlantis\App;
 
 <body class="bg-white text-gray-800 antialiased m-0 p-0">
 
-    {{body}}{{alert}}
+    {{body}}
 </body>
 
 </html>

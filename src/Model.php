@@ -8,16 +8,16 @@ use DateTime;
 
 use Exception;
 
-use Tischmann\Atlantis\{Migration};
+use Tischmann\Atlantis\{Table};
 
 abstract class Model extends Facade
 {
     /**
      * Таблица модели
      *
-     * @param Migration
+     * @param Table
      */
-    abstract public static function table(): Migration;
+    abstract public static function table(): Table;
 
     public function __construct(
         public int $id = 0,

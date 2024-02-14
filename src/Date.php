@@ -10,80 +10,15 @@ use Exception;
 
 use IntlDateFormatter;
 
-/**
- * Класс утилит
- * 
- * @author Yuriy Stolov <yuriystolov@gmail.com>
- */
-class Date
+class Date extends DateTime
 {
-    /**
-     * Возвращает год в виде числа
-     * 
-     * @return int Год
-     */
-    public static function getYear(DateTime $date): int
-    {
-        return intval($date->format("Y"));
-    }
-
-    /**
-     * Возвращает месяц в виде числа
-     * 
-     * @return int Месяц
-     */
-    public static function getMonth(DateTime $date): int
-    {
-        return intval($date->format("m"));
-    }
-
-    /**
-     * Возвращает день в виде числа
-     *
-     * @return int День
-     */
-    public static function getDay(DateTime $date): int
-    {
-        return intval($date->format("d"));
-    }
-
-    /**
-     * Возвращает часы в виде числа
-     * 
-     * @return int Часы
-     */
-    public static function getHours(DateTime $date): int
-    {
-        return intval($date->format("H"));
-    }
-
-    /**
-     * Возвращает минуты в виде числа
-     * 
-     * @return int Минуты
-     */
-    public static function getMinutes(DateTime $date): int
-    {
-        return intval($date->format("i"));
-    }
-
-    /**
-     * Возвращает секунды в виде числа
-     * 
-     * @return int Секунды
-     */
-    public static function getSeconds(DateTime $date): int
-    {
-        return intval($date->format("s"));
-    }
-
     /**
      * Проверяет корректность строкового представления даты и времени
      * 
      * @param string $dateString Строковое представление даты и времени
      * @return bool true - корректно, false - некорректно
      */
-    public static function isValid(string $dateString): bool
+    public static function validate(string $dateString): bool
     {
         if (!$dateString) return false;
 
@@ -101,13 +36,11 @@ class Date
     /**
      * Возвращает строковое представление даты и времени для выбранной локали и в выбранном формате
      * 
-     * @param DateTime $date Дата и время
      * @param string $locale Локаль
      * @param string $pattern Формат даты и времени
      * @return string Строковое представление даты и времени
      */
-    public static function localeFormat(
-        DateTime $date,
+    public function localeFormat(
         string $locale = 'ru',
         string $pattern = 'd MMMM kk:mm'
     ): string {
@@ -121,69 +54,73 @@ class Date
 
         $formatter->setPattern($pattern);
 
-        return $formatter->format($date);
+        return $formatter->format($this);
     }
 
-    public static function lastDigit(int $num): int
+    /**
+     * Возвращает строковое представление даты и времени в формате прошедшего времени
+     * 
+     * @param string|null $locale Локаль (по умолчанию - ru)
+     *
+     * @return string
+     */
+    public function getElapsedTime(?string $locale = null): string
     {
-        return abs($num % 10);
-    }
+        $locale ??= getenv('APP_LOCALE') ?: 'ru';
 
-    public static function getElapsed(DateTime $date): string
-    {
-        $now = new DateTime();
+        $now = new static('now');
 
-        $diff = $now->diff($date);
+        $diff = $now->diff($this);
 
         $elapsed = '';
 
         if ($diff->y > 0) {
             $elapsed .= $diff->y . ' ';
 
-            $elapsed .= match (static::lastDigit($diff->y)) {
-                1 => Locale::get('year_ago'),
-                2, 3, 4 => Locale::get('years_ago_2_4'),
-                default => Locale::get('years_ago'),
+            $elapsed .= match (abs($diff->y % 10)) {
+                1 => Locale::get('year_ago', $locale),
+                2, 3, 4 => Locale::get('years_ago_2_4', $locale),
+                default => Locale::get('years_ago', $locale),
             };
         } else if ($diff->m > 0) {
             $elapsed .= $diff->m . ' ';
 
-            $elapsed .= match (static::lastDigit($diff->m)) {
-                1 => Locale::get('month_ago'),
-                2, 3, 4 => Locale::get('months_ago_2_4'),
-                default => Locale::get('months_ago'),
+            $elapsed .= match (abs($diff->m % 10)) {
+                1 => Locale::get('month_ago', $locale),
+                2, 3, 4 => Locale::get('months_ago_2_4', $locale),
+                default => Locale::get('months_ago', $locale),
             };
         } else if ($diff->d > 0) {
             $elapsed .= $diff->d . ' ';
 
-            $elapsed .= match (static::lastDigit($diff->d)) {
-                1 => Locale::get('day_ago'),
-                2, 3, 4 => Locale::get('days_ago_2_4'),
-                default => Locale::get('days_ago'),
+            $elapsed .= match (abs($diff->d % 10)) {
+                1 => Locale::get('day_ago', $locale),
+                2, 3, 4 => Locale::get('days_ago_2_4', $locale),
+                default => Locale::get('days_ago', $locale),
             };
         } else if ($diff->h > 0) {
             $elapsed .= $diff->h . ' ';
 
-            $elapsed .= match (static::lastDigit($diff->h)) {
-                1 => Locale::get('hour_ago'),
-                2, 3, 4 => Locale::get('hours_ago_2_4'),
-                default => Locale::get('hours_ago'),
+            $elapsed .= match (abs($diff->h % 10)) {
+                1 => Locale::get('hour_ago', $locale),
+                2, 3, 4 => Locale::get('hours_ago_2_4', $locale),
+                default => Locale::get('hours_ago', $locale),
             };
         } else if ($diff->i > 0) {
             $elapsed .= $diff->i . ' ';
 
-            $elapsed .= match (static::lastDigit($diff->i)) {
-                1 => Locale::get('minute_ago'),
-                2, 3, 4 => Locale::get('minutes_ago_2_4'),
-                default => Locale::get('minutes_ago'),
+            $elapsed .= match (abs($diff->i % 10)) {
+                1 => Locale::get('minute_ago', $locale),
+                2, 3, 4 => Locale::get('minutes_ago_2_4', $locale),
+                default => Locale::get('minutes_ago', $locale),
             };
         } else if ($diff->s > 0) {
             $elapsed .= $diff->s . ' ';
 
-            $elapsed .= match (static::lastDigit($diff->s)) {
-                1 => Locale::get('second_ago'),
-                2, 3, 4 => Locale::get('seconds_ago_2_4'),
-                default => Locale::get('seconds_ago'),
+            $elapsed .= match (abs($diff->s % 10)) {
+                1 => Locale::get('second_ago', $locale),
+                2, 3, 4 => Locale::get('seconds_ago_2_4', $locale),
+                default => Locale::get('seconds_ago', $locale),
             };
         }
 

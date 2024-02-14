@@ -7,11 +7,14 @@ use App\Controllers\{
     UsersController
 };
 
-use App\Models\{User};
+use Tischmann\Atlantis\{
+    App,
+    Locale,
+    Router,
+    Route
+};
 
-use Tischmann\Atlantis\{Locale, Router, Route};
-
-$user = User::current();
+$user = App::getCurrentUser();
 
 
 // Главная страница
@@ -35,20 +38,6 @@ if ($user->exists()) {
     if ($user->isAdmin()) {
         Router::add(new Route(
             controller: new UsersController(),
-            path: 'user/{id}',
-            action: 'get',
-            method: 'GET'
-        ));
-
-        Router::add(new Route(
-            controller: new UsersController(),
-            path: 'user/{id}',
-            action: 'update',
-            method: 'PUT'
-        ));
-
-        Router::add(new Route(
-            controller: new UsersController(),
             path: 'user',
             action: 'new',
             method: 'GET'
@@ -59,6 +48,20 @@ if ($user->exists()) {
             path: 'user',
             action: 'add',
             method: 'POST'
+        ));
+
+        Router::add(new Route(
+            controller: new UsersController(),
+            path: 'user/{id}',
+            action: 'get',
+            method: 'GET'
+        ));
+
+        Router::add(new Route(
+            controller: new UsersController(),
+            path: 'user/{id}',
+            action: 'update',
+            method: 'PUT'
         ));
 
         Router::add(new Route(

@@ -8,11 +8,6 @@ use Exception;
 
 use GdImage;
 
-/**
- * Изображения
- * 
- * @author Yuriy Stolov <yuriystolov@gmail.com>
- */
 final class Image
 {
     /**
