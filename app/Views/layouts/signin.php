@@ -1,3 +1,7 @@
+<?php
+
+use Tischmann\Atlantis\App;
+?>
 <!DOCTYPE html>
 <html lang="{{env=APP_LOCALE}}">
 
@@ -21,8 +25,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" />
-    <link rel="stylesheet" href="/fontawesome.css">
-    <link rel="stylesheet" href="/app.css" media="all">
+    <link rel="stylesheet" href="/app<?= App::getAssetsPrefix() ?>.css" media="all">
 </head>
 
 <body class="bg-white text-gray-800 antialiased m-0 p-0">

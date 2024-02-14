@@ -12,6 +12,20 @@ final class App
 
     public static string $title = '';
 
+    public static ?string $assets_prefix = null;
+
+    public static function isInDevelopment(): bool
+    {
+        return boolval(getenv('APP_DEV'));
+    }
+
+    public static function getAssetsPrefix(): string
+    {
+        static::$assets_prefix ??= static::isInDevelopment() ? '' : '.min';
+
+        return static::$assets_prefix;
+    }
+
     public static function getCurrentUser(): User
     {
         static::$user ??= User::current();

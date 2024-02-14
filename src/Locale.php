@@ -56,7 +56,7 @@ final class Locale
             function ($path) {
                 return strtolower(basename($path, ".php"));
             },
-            glob(getenv('APP_ROOT') . "/lang/*.php")
+            glob(getenv('APP_ROOT') . "/locales/*.php")
         );
     }
 
@@ -83,7 +83,7 @@ final class Locale
 
         $strings = [];
 
-        $path = getenv('APP_ROOT') . "/lang/{$locale}.php";
+        $path = getenv('APP_ROOT') . "/locales/{$locale}.php";
 
         if (file_exists($path)) {
             $array = require_once $path;

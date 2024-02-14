@@ -16,10 +16,6 @@
 
             use Tischmann\Atlantis\App;
 
-            include __DIR__ . "/search_field.php";
-
-            include __DIR__ . "/lang.php";
-
             if (App::getCurrentUser()->id) {
                 include __DIR__ . "/user.php";
             } else {

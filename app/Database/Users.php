@@ -33,16 +33,11 @@ class Users extends Migration
             ),
             new Column(
                 name: 'role',
-                type: 'varchar',
-                default: null,
+                type: 'tinyint',
+                signed: false,
+                default: 0,
                 index: true,
                 description: 'Роль',
-            ),
-            new Column(
-                name: 'avatar',
-                type: 'varchar',
-                default: null,
-                description: 'Аватар',
             ),
             new Column(
                 name: 'remarks',
@@ -59,7 +54,8 @@ class Users extends Migration
             new Column(
                 name: 'status',
                 type: 'tinyint',
-                default: '0',
+                signed: false,
+                default: 0,
                 description: 'Статус',
             ),
         ]);

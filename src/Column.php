@@ -40,7 +40,7 @@ final class Column
         public bool $unique = false,
         public bool $null = true,
         public ?string $update = null,
-        public ?string $default = null,
+        public mixed $default = null,
         public ?Foreign $foreign = null,
     ) {
         $this->length = abs($this->length);

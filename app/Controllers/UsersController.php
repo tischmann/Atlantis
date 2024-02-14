@@ -35,41 +35,6 @@ class UsersController extends Controller
         View::send(view: 'signin', layout: 'signin');
     }
 
-    /**
-     * Вывод списка пользователь в админпанели
-     */
-    public function index(Request $request): void
-    {
-        $this->__admin();
-
-        $query = User::query()->limit(10);
-
-        $sort = $request->request('sort') ?: 'created_at';
-
-        $order = $request->request('order') ?: 'desc';
-
-        $query->order($sort, $order);
-
-        $pagination = new Pagination(
-            total: $query->count(),
-            limit: 10,
-        );
-
-        View::send(
-            'admin/users',
-            [
-                'pagination' => $pagination,
-                'users' => User::fill($query),
-                'sortings' => [
-                    new Sorting('login', 'asc'),
-                    new Sorting('login', 'desc'),
-                    new Sorting('created_at', 'asc'),
-                    new Sorting('created_at', 'desc'),
-                ]
-            ]
-        );
-    }
-
     public function signIn(Request $request)
     {
         try {
@@ -92,36 +57,31 @@ class UsersController extends Controller
 
         $user = User::find($login, 'login');
 
-        assert($user instanceof User);
-
-        if (!$user->exists()) {
-            Response::redirect('/signin', new Alert(
-                status: 0,
-                message: Locale::get('signin_error_user_not_found')
-            ));
+        if (
+            !$user->status
+            || !$user->exists()
+            || !password_verify($password, $user->password)
+        ) {
+            Response::redirect(
+                url: '/signin',
+                alert: new Alert(
+                    status: 0,
+                    message: Locale::get('access_denied')
+                )
+            );
         }
 
-        if (!$user->status) {
-            Response::redirect('/signin', new Alert(
-                status: 0,
-                message: Locale::get('signin_error_user_disabled')
-            ));
-        }
+        $expires = time() + 60 * 60 * 24 * 30;
 
-        if (!password_verify($password, $user->password)) {
-            Response::redirect('/signin', new Alert(
-                status: 0,
-                message: Locale::get('signin_error_bad_password')
-            ));
-        }
-
-        $month = time() + 60 * 60 * 24 * 30;
-
-        Cookie::set('atlantis_remember', $month, ['expires' => $month]);
+        Cookie::set(
+            name: 'atlantis_remember',
+            value: $expires,
+            options: ['expires' => $expires]
+        );
 
         $user->signIn();
 
-        Response::redirect('/');
+        Response::redirect(url: '/');
     }
 
     public function signOut()
@@ -239,23 +199,6 @@ class UsersController extends Controller
 
         $user->remarks = $remarks ?: null;
 
-        $avatar = strval($request->request('avatar'));
-
-        $root = getenv('APP_ROOT');
-
-        if ($avatar) {
-            if (!is_dir("{$root}/public/images/avatars")) {
-                mkdir("{$root}/public/images/avatars", 0775, true);
-            }
-
-            rename(
-                sys_get_temp_dir() . "{$avatar}",
-                "{$root}/public/images/avatars/{$avatar}"
-            );
-
-            $user->avatar = $avatar;
-        }
-
         if (!$user->save()) {
             Response::redirect(
                 url: $url,
@@ -265,8 +208,6 @@ class UsersController extends Controller
                 )
             );
         }
-
-        static::removeTempAvatars();
 
         Response::redirect($url);
     }
@@ -367,10 +308,6 @@ class UsersController extends Controller
 
         $user->remarks = $remarks ?: null;
 
-        $avatar = strval($request->request('avatar'));
-
-        $user->avatar = $avatar;
-
         if (!$user->save()) {
             Response::redirect(
                 url: $url,
@@ -380,8 +317,6 @@ class UsersController extends Controller
                 )
             );
         }
-
-        static::removeTempAvatars();
 
         Response::redirect("/" . getenv('APP_LOCALE') . '/admin/users');
     }
@@ -406,10 +341,6 @@ class UsersController extends Controller
             throw new Exception(Locale::get('user_not_found') . ": {$id}");
         }
 
-        $file = getenv('APP_ROOT') . "/images/avatars/{$user->avatar}";
-
-        if (is_file($file)) unlink($file);
-
         $result = $user->delete();
 
         Response::send([
@@ -417,72 +348,5 @@ class UsersController extends Controller
                 ? Locale::get('user_deleted')
                 : Locale::get('user_delete_error')
         ], $result ? 200 : 500);
-    }
-
-    /**
-     * Загрузка аватара
-     * 
-     * @param Request $request
-     */
-    public function uploadAvatar(Request $request)
-    {
-        $this->__admin();
-
-        $request->args('path', 'images/avatars');
-
-        $request->args('width', 400);
-
-        $request->args('height', 400);
-
-        parent::uploadImage($request);
-    }
-
-    protected static function removeTempAvatars()
-    {
-        $root = getenv('APP_ROOT');
-
-        $images = User::query()->distinct('avatar');
-
-        foreach (glob("{$root}/public/images/avatars/*.webp") as $file) {
-            if (!in_array(basename($file), $images)) {
-                unlink($file);
-            }
-        }
-    }
-
-    /**
-     * Динамическая подгрузка пользователей в админпанели
-     */
-    public function fetchUsers(Request $request): void
-    {
-        $this->__admin();
-
-        $query = User::query();
-
-        $sort = $request->request('sort') ?: 'created_at';
-
-        $order = $request->request('order') ?: 'desc';
-
-        $query->order($sort, $order);
-
-        $this->fetch(
-            $request,
-            User::query(),
-            function ($query) {
-                $html = '';
-
-                foreach (User::fill($query) as $user) {
-                    $html .= Template::html(
-                        'admin/user-item',
-                        [
-                            'user' => $user,
-                        ]
-                    );
-                }
-
-                return $html;
-            },
-            10
-        );
     }
 }

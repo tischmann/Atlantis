@@ -11,7 +11,6 @@ use Exception;
 use Tischmann\Atlantis\{
     BeforeValidException,
     Cookie,
-    Facade,
     JWT,
     Locale,
     Migration,
@@ -24,11 +23,11 @@ use Tischmann\Atlantis\{
 
 class User extends Model
 {
-    public const ROLE_ADMIN = 'admin';
+    public const ROLE_ADMIN = 255;
 
-    public const ROLE_USER = 'user';
+    public const ROLE_USER = 0;
 
-    public const ROLE_GUEST = 'guest';
+    public const ROLE_GUEST = 1;
 
     public const JWT_ALGORITHM = 'RS256';
 
@@ -40,15 +39,12 @@ class User extends Model
 
     private string $token = '';
 
-    public string $avatar_src = '';
-
-    private static User $user;
+    private static ?User $current = null;
 
     public function __construct(
         public string $login = '',
         public string $password = '',
-        public ?string $role = null,
-        public ?string $avatar = null,
+        public int $role = 0,
         public ?string $remarks = null,
         public bool $status = false,
         public ?string $refresh_token = null,
@@ -74,28 +70,15 @@ class User extends Model
         if (!$publicKey) throw new Exception('Bad public key');
 
         $this->publicKey = $publicKey;
-
-        $this->avatar_src = $this->getAvatarSource();
     }
 
-    public function getAvatarSource(): string
+    public static function find(mixed $value, string|array $column = 'id'): self
     {
-        $root = getenv('APP_ROOT');
+        $model = parent::find($value, $column);
 
-        if (!is_file("{$root}/public/images/avatars/{$this->avatar}")) {
-            return "/placeholder.svg";
-        }
+        assert($model instanceof User);
 
-        return "/images/avatars/{$this->avatar}";
-    }
-
-    public function __fill(object|array $traversable): Facade
-    {
-        parent::__fill($traversable);
-
-        $this->avatar_src = $this->getAvatarSource();
-
-        return $this;
+        return $model;
     }
 
     public static function table(): Migration
@@ -105,12 +88,12 @@ class User extends Model
 
     public static function current(): self
     {
-        if (!isset(static::$user)) {
-            static::$user ??= new static();
-            static::$user->authorize();
+        if (static::$current === null) {
+            static::$current = new static();
+            static::$current->authorize();
         }
 
-        return static::$user;
+        return static::$current;
     }
 
     public function isAdmin(): bool

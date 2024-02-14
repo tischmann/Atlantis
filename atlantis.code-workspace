@@ -37,33 +37,15 @@
         "js/ts.implicitProjectConfig.checkJs": false,
         "task.allowAutomaticTasks": "on",
         "actionButtons": {
-            "reloadButton":"♻️",
-            "loadNpmCommands": false, // Disables automatic generation of actions for npm commands.
+            "reloadButton": "♻️",
+            "loadNpmCommands": false,
             "commands": [
                 {
-                    "name": "Compile",
+                    "name": "Minify assets",
                     "singleInstance": true,
-                    "command": "./production.sh" // This is executed in the terminal.
+                    "command": "./minify.sh"
                 }
             ]
         }
-    },
-    "launch": {
-        "version": "0.2.0",
-        "configurations": [
-            {
-                "name": "Listen for XDebug",
-                "type": "chrome",
-                "request": "launch",
-                "port": 9003
-            },
-            {
-                "name": "Launch currently open script",
-                "type": "chrome",
-                "request": "launch",
-                "cwd": "${fileDirname}",
-                "port": 9003
-            }
-        ]
     }
 }

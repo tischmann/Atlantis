@@ -1,1 +1,0 @@
-<p class="text-xl font-semibold">{{lang=search_empty}}</p>

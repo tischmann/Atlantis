@@ -56,7 +56,7 @@ final class Template
 
             extract([...static::getCachedArgs(), ...$this->args]);
 
-            require $file;
+            include_once $file;
 
             return ob_get_clean();
         }

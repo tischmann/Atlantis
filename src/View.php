@@ -17,6 +17,8 @@ final class View
     ) {
         $alert = Session::get('alert') ?? new Alert();
 
+        assert($alert instanceof Alert);
+
         Session::delete('alert');
 
         $file = __DIR__ . "/../app/Views/layouts/{$layout}.tpl";

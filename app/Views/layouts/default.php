@@ -26,18 +26,14 @@ use Tischmann\Atlantis\App;
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" />
-    <link rel="preload" as="style" href="/fontawesome.css">
-    <link rel="stylesheet" href="/app.css" media="all">
-    <link rel="preload" as="image" href="/images/placeholder.svg" />
+    <link rel="stylesheet" href="/app<?= App::getAssetsPrefix() ?>.css" media="all">
 </head>
 
 <body class="bg-white text-gray-800 antialiased">
     <?php include __DIR__ . "/../header.php" ?>
 
     {{body}}{{alert}}
-    <?php include __DIR__ . "/../footer.php" ?>
-    <script src="/app.js" nonce="{{nonce}}"></script>
-    <script src="/js/lazyimage.js" nonce="{{nonce}}"></script>
+    <script src="/app<?= App::getAssetsPrefix() ?>.js" nonce="{{nonce}}"></script>
 </body>
 
 </html>

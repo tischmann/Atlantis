@@ -13,20 +13,4 @@ window.addEventListener('load', () => {
     document.head.querySelectorAll('link[rel="preload"]').forEach((link) => {
         link.setAttribute('rel', 'stylesheet')
     })
-
-    document
-        .querySelector('input[type="search"][name="query"]')
-        ?.addEventListener('search', (event) => {
-            if (event.target.value != '') return
-
-            let search = window.location.search.split('?')[1]?.split('&')
-
-            search = search.filter(function (value, index, arr) {
-                return value.split('=')[0] != 'query'
-            })
-
-            search = search.length > 0 ? '?' + search.join('&') : ''
-
-            window.location.assign(`${window.location.origin}/search${search}`)
-        })
 })
