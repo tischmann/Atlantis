@@ -118,8 +118,8 @@ final class Cache
             static::$memcache = new Memcache();
 
             static::$memcache->connect(
-                strval(getenv('MEMCACHED_HOST')),
-                intval(getenv('MEMCACHED_PORT'))
+                strval(getenv('MEMCACHED_HOST') ?: '127.0.0.1'),
+                intval(getenv('MEMCACHED_PORT') ?: 11211)
             );
         }
 

@@ -32,7 +32,7 @@ final class Column
         public string $name,
         public string $description = '',
         public string $type = 'varchar',
-        public int $length = 0,
+        public int $length = 255,
         public bool $autoincrement = false,
         public bool $signed = false,
         public bool $primary = false,
@@ -58,11 +58,6 @@ final class Column
     public function getMaxLength(): int
     {
         return  match ($this->type) {
-            'tinyint' => 1,
-            'smallint' => 5,
-            'mediumint' => 8,
-            'int' => 10,
-            'bigint' => 20,
             'char' => 255,
             'varchar' => 255,
             default => $this->length

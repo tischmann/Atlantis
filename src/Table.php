@@ -184,6 +184,7 @@ abstract class Table
             case 'mediumint':
             case 'int':
             case 'bigint':
+                return $column->type;
             case 'char':
             case 'varchar':
                 if ($column->length) {
