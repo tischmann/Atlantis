@@ -3,14 +3,6 @@
 
 declare(strict_types=1);
 
-use App\Database\{
-    Articles,
-    Categories,
-    Ratings,
-    Users,
-    Views
-};
-
 use Tischmann\Atlantis\{Console};
 
 require_once __DIR__ . "/bootstrap/require.php";
@@ -19,85 +11,87 @@ require_once __DIR__ . "/bootstrap/config.php";
 
 require_once __DIR__ . "/vendor/autoload.php";
 
-$namespace = "App\\Database\\";
-
-$dir = __DIR__ . "/app/Database";
-
 $migrations = [
-    new Users(),
-    new Categories(),
-    new Views(),
-    new Ratings(),
-    new Articles(),
+    new App\Database\Users()
 ];
 
 foreach (Console::parse($argv) as $command => $value) {
     switch ($command) {
         case 'remove':
-            Console::separator();
-            Console::print("Очистка БД", "");
-            Console::separator();
+            Console::print(
+                message: "Очистка БД",
+                postfix: "",
+                separate: true
+            );
 
             foreach ($migrations as $migration) {
                 if (!$migration->drop()) {
                     Console::print(
-                        "Ошибка при удалении таблицы",
-                        $migration::name()
+                        message: "Ошибка при удалении таблицы",
+                        postfix: $migration::name()
                     );
                 } else {
-                    Console::print("Таблица удалена", $migration::name());
+                    Console::print(
+                        message: "Таблица удалена",
+                        postfix: $migration::name()
+                    );
                 }
             }
 
-            Console::separator();
-            Console::print("Очистка БД завершена", "");
-            Console::separator();
+            Console::print(
+                message: "Очистка БД завершена",
+                postfix: "",
+                separate: true
+            );
             break;
         case 'create':
-            Console::separator();
-            Console::print("Создание БД", "");
-            Console::separator();
-
-            $migrations = [
-                new Users(),
-                new Categories(),
-                new Views(),
-                new Ratings(),
-                new Articles(),
-            ];
+            Console::print(
+                message: "Создание БД",
+                postfix: "",
+                separate: true
+            );
 
             foreach ($migrations as $migration) {
                 if (!$migration->create()) {
                     Console::print(
-                        "Ошибка при создании таблицы",
-                        $migration::name()
+                        message: "Ошибка при создании таблицы",
+                        postfix: $migration::name()
                     );
                 } else {
-                    Console::print("Таблица создана", $migration::name());
+                    Console::print(
+                        message: "Таблица создана",
+                        postfix: $migration::name()
+                    );
                 }
             }
 
-            Console::separator();
-            Console::print("Создание БД завершено", "");
-            Console::separator();
+            Console::print(
+                message: "Создание БД завершено",
+                postfix: "",
+                separate: true
+            );
             break;
         case 'seed':
-            Console::separator();
-            Console::print("Заполнение БД", "");
-            Console::separator();
+            Console::print(
+                message: "Заполнение БД завершено",
+                postfix: "",
+                separate: true
+            );
 
             foreach ($migrations as $migration) {
                 $inserted = $migration->seed();
 
                 Console::print(
-                    "Записей добавлено: {$inserted}",
-                    $migration::name()
+                    message: "Записей добавлено: {$inserted}",
+                    postfix: $migration::name()
                 );
             }
 
-            Console::separator();
-            Console::print("Заполнение БД завершено", "");
-            Console::separator();
+            Console::print(
+                message: "Заполнение БД завершено",
+                postfix: "",
+                separate: true
+            );
             break;
     }
 }

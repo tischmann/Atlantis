@@ -1,6 +1,6 @@
 <main class="md:container mx-8 md:mx-auto h-[calc(100vh-104px)] flex flex-col items-center justify-center">
-    <h1 class="text-center text-3xl font-bold mt-8">{{lang=access_denied}}</h1>
-    <p class="text-center mt-4">{{lang=error_403}}</p>
+    <h1 class="text-center text-3xl font-bold mt-8">403</h1>
+    <p class="text-center mt-4">{{lang=access_denied}}</p>
     <?php
 
     if (isset($exception)) {

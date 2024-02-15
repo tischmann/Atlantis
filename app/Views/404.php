@@ -1,6 +1,6 @@
 <main class="md:container mx-8 md:mx-auto h-[calc(100vh-104px)] flex flex-col items-center justify-center">
-    <h1 class="text-center text-3xl font-bold mt-8">{{lang=not_found}}</h1>
-    <p class="text-center mt-4">{{lang=error_404}}</p>
+    <h1 class="text-center text-3xl font-bold mt-8">404</h1>
+    <p class="text-center mt-4">{{lang=not_found}}</p>
     <?php
 
     if (isset($exception)) {

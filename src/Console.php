@@ -60,8 +60,11 @@ final class Console
      * @param string $message Сообщение
      * @param string $postfix Постфикс
      */
-    public static function print(string $message, string $postfix = "OK"): void
-    {
+    public static function print(
+        string $message,
+        string $postfix = "OK",
+        bool $separate = false
+    ): void {
         $width = static::getLineWidth();
 
         $length = $width - mb_strlen($postfix) - 3;
@@ -72,7 +75,11 @@ final class Console
 
         $width = $width - mb_strlen($message) - mb_strlen($postfix);
 
+        if ($separate) static::separator();
+
         echo $message . str_repeat(' ', $width) . $postfix, PHP_EOL;
+
+        if ($separate) static::separator();
     }
 
     /**
