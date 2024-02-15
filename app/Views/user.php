@@ -17,15 +17,15 @@ assert($user instanceof \App\Models\User);
         </div>
         <div class="mb-4">
             <label for="password" class="block mb-2 select-none">{{lang=user_password}}:</label>
-            <input type="password" id="password" name="password" class="w-full px-3 py-2 border focus:outline-none border-gray-300 rounded-xl focus:border-sky-600" required autocomplete="new-password">
+            <input type="password" id="password" name="password" class="w-full px-3 py-2 border focus:outline-none border-gray-300 rounded-xl focus:border-sky-600" <?= $user?->exists() ? '' : 'required' ?> autocomplete="new-password">
         </div>
         <div class="mb-4">
             <label for="password_repeat" class="block mb-2 select-none">{{lang=user_password_repeat}}:</label>
-            <input type="password" id="password_repeat" name="password_repeat" class="w-full px-3 py-2 border focus:outline-none border-gray-300 rounded-xl focus:border-sky-600" required autocomplete="new-password">
+            <input type="password" id="password_repeat" name="password_repeat" class="w-full px-3 py-2 border focus:outline-none border-gray-300 rounded-xl focus:border-sky-600" <?= $user?->exists() ? '' : 'required' ?> autocomplete="new-password">
         </div>
         <div class="mb-4">
             <label for="remarks" class="block mb-2 select-none">{{lang=user_remarks}}:</label>
-            <textarea id="remarks" name="remarks" class="w-full px-3 py-2 border focus:outline-none border-gray-300 rounded-xl focus:border-sky-600 resize-y min-h-16" required autocomplete="new-password"><?= strval($user?->remarks) ?></textarea>
+            <textarea id="remarks" name="remarks" class="w-full px-3 py-2 border focus:outline-none border-gray-300 rounded-xl focus:border-sky-600 resize-y min-h-16" autocomplete="new-password"><?= strval($user?->remarks) ?></textarea>
         </div>
         <div class="mb-4 select-none">
             <label class="block mb-2 select-none">{{lang=user_role}}:</label>
