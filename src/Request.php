@@ -8,8 +8,6 @@ use InvalidArgumentException;
 
 /**
  * Класс HTTP запроса
- * 
- * @author Yuriy Stolov <yuriystolov@gmail.com>
  */
 class Request
 {
@@ -79,7 +77,7 @@ class Request
      */
     public static function uri(): array
     {
-        $uri = parse_url(strtolower($_SERVER['REQUEST_URI']));
+        $uri = parse_url(mb_strtolower($_SERVER['REQUEST_URI']));
 
         $uri = is_array($uri) ? $uri : [];
 
@@ -110,15 +108,17 @@ class Request
     /**
      * Фильтрует переменную
      * 
-     * @param string $value Переменная
+     * @param mixed $value Переменная
      * @return mixed Фильтрованная переменная
      */
     public static function sanitize(mixed $value): mixed
     {
         return match (gettype($value)) {
+            'boolean' => boolval(filter_var($value, 258)),
             'integer' => intval(filter_var($value, 519)),
             'double' => floatval(filter_var($value, 520)),
             'string' => htmlspecialchars($value),
+            'array' => array_map(static::class . '::sanitize', $value),
             default =>  $value,
         };
     }
@@ -391,6 +391,8 @@ class Request
             str_contains($headers, 'text/html') => 'html',
             str_contains($headers, 'text/xml') => 'xml',
             str_contains($headers, 'text/plain') => 'text',
+            str_contains($headers, 'application/x-www-form-urlencoded') => 'form',
+            str_contains($headers, 'multipart/form-data') => 'form',
             default => 'html',
         };
     }
