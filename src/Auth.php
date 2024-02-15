@@ -197,7 +197,7 @@ final class Auth
      */
     protected function decodeToken(string $token): object
     {
-        return JWT::decode($token, static::getPublicKey(), [self::JWT_ALGORITHM]);
+        return JsonWebToken::decode($token, static::getPublicKey(), [self::JWT_ALGORITHM]);
     }
 
     /**
@@ -242,7 +242,7 @@ final class Auth
             "data" => $payload
         ];
 
-        return JWT::encode($payload, static::getPrivateKey(), static::JWT_ALGORITHM);
+        return JsonWebToken::encode($payload, static::getPrivateKey(), static::JWT_ALGORITHM);
     }
 
     /**
@@ -272,7 +272,7 @@ final class Auth
             die('Некорректное количество сегментов');
         }
 
-        $payload = JWT::jsonDecode(JWT::urlsafeB64Decode($segments[1]));
+        $payload = JsonWebToken::jsonDecode(JsonWebToken::urlsafeB64Decode($segments[1]));
 
         if ($payload === null) {
             die('Ошибка декодирования данных токена');

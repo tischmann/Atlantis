@@ -16,7 +16,7 @@ use Tischmann\Atlantis\Exceptions\{
  * Класс для работы с JSON Web Token
  * 
  */
-final class JWT
+final class JsonWebToken
 {
     private const ASN1_INTEGER = 0x02;
 

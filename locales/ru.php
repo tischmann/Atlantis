@@ -10,7 +10,7 @@ return [
     'template_not_found' => 'Шаблон не найден',
     'variable_required' => 'Переменная обязательна',
     'invalid_type' => 'Неверный тип',
-    // Ошибки JWT
+    // Ошибки Json Web Token
     'jwt_missing_public_key' => 'Отсутствует публичный ключ',
     'jwt_wrong_segment_amount' => 'Неверное количество сегментов',
     'jwt_bad_header' => 'Неверный заголовок',
