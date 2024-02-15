@@ -99,9 +99,9 @@ final class Auth
             return $this->user;
         }
 
-        $jwt = Request::authorization() ?: Cookie::get('jwt');
+        $jwt = Request::authorization() ?: cookies_get('jwt');
 
-        $jwr = Cookie::get('jwr');
+        $jwr = cookies_get('jwr');
 
         if (!$jwt || !$jwr) return $this->user;
 
@@ -124,7 +124,7 @@ final class Auth
 
             $expires = time() + 2678400;
 
-            Cookie::set('jwt', $jwt, ['expires' => $expires]);
+            cookies_set('jwt', $jwt, ['expires' => $expires]);
         } catch (SignatureInvalidException $e) {
             die('Подпись токена недействительна');
         } catch (BeforeValidException $e) {
@@ -153,9 +153,9 @@ final class Auth
 
         $expires = time() + 2678400;
 
-        Cookie::set('jwr', $refresh_token, ['expires' => $expires]);
+        cookies_set('jwr', $refresh_token, ['expires' => $expires]);
 
-        Cookie::set('jwt', $this->token, ['expires' => $expires]);
+        cookies_set('jwt', $this->token, ['expires' => $expires]);
 
         Session::set('LAST_ACCESS', time());
 
@@ -173,9 +173,9 @@ final class Auth
      */
     public function signOut(): self
     {
-        Cookie::delete('jwt');
+        cookies_del('jwt');
 
-        Cookie::delete('jwr');
+        cookies_del('jwr');
 
         $this->token = '';
 

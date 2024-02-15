@@ -29,7 +29,7 @@ final class App
      */
     public static function isInDevelopment(): bool
     {
-        static::$is_in_development ??= boolval(Cookie::get('DEV_MODE'));
+        static::$is_in_development ??= boolval(cookies_get('DEV_MODE'));
 
         return static::$is_in_development;
     }

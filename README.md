@@ -142,6 +142,25 @@ CSRF::verify(Request $request)
 
 После верификации токенов, они удаляются из сессии.
 
+## Роутинг
+
+Роутинг осуществляется в файле /bootstrap/routes.php.
+
+Маршруты задаются в директории /routes в виде файлов с расширением .php.
+
+### Пример маршрута
+
+```php
+Router::add(
+    new Route(
+        controller: new Controller(),
+        path: 'path',
+        action: 'action',
+        method: 'GET'
+    )
+);
+```
+
 ## Шаблонизатор представлений
 
 Шаблоны представлений хранятся в директории /app/Views и имеют расширение .tpl или .php.
@@ -242,21 +261,4 @@ new Template(
 
 ```bash
 ./migrate seed
-```
-
-## Статьи
-
-### Структура
-
-Статьи хранятся в таблице: articles.
-
-Изображения для статей хранятся в папке: /public/images/articles/id, где id - id статьи.
-
-необходимо предоставить права на запись в папки: public, lang
-
-```bash
-sudo chown -R www-data:$USER /path/to/public
-sudo chmod -R g+rw /path/to/public
-sudo chown -R www-data:$USER /path/to/lang
-sudo chmod -R g+rw /path/to/lang
 ```
