@@ -6,6 +6,12 @@ namespace Tischmann\Atlantis;
 
 use Exception;
 
+use Tischmann\Atlantis\Exceptions\{
+    BeforeValidException,
+    SignatureInvalidException,
+    TokenExpiredException
+};
+
 /**
  * Класс для работы с JSON Web Token
  * 

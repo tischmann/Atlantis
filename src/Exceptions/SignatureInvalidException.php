@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tischmann\Atlantis;
+namespace Tischmann\Atlantis\Exceptions;
 
 use Exception;
 

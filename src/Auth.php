@@ -6,6 +6,12 @@ namespace Tischmann\Atlantis;
 
 use App\Models\{User};
 
+use Tischmann\Atlantis\Exceptions\{
+    BeforeValidException,
+    SignatureInvalidException,
+    TokenExpiredException
+};
+
 /**
  * Класс для работы с авторизацией
  */
