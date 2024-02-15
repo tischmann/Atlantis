@@ -26,6 +26,12 @@ class UsersTable extends Table
                 description: 'Логин',
             ),
             new Column(
+                name: 'name',
+                type: 'varchar',
+                default: null,
+                description: 'Имя пользователя',
+            ),
+            new Column(
                 name: 'password',
                 type: 'varchar',
                 default: null,

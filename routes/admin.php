@@ -17,21 +17,23 @@ if (App::getCurrentUser()->isAdmin()) {
         controller: new UsersController(),
         path: 'user',
         action: 'addUserForm',
-        method: 'GET'
+        method: 'GET',
+        title: get_str('user_new')
     ));
 
     Router::add(new Route(
         controller: new UsersController(),
         path: 'user',
         action: 'addUser',
-        method: 'POST'
+        method: 'POST',
     ));
 
     Router::add(new Route(
         controller: new UsersController(),
         path: 'user/{id}',
         action: 'getUser',
-        method: 'GET'
+        method: 'GET',
+        title: get_str('user_update')
     ));
 
     Router::add(new Route(

@@ -21,6 +21,7 @@ class User extends Model
 
     public function __construct(
         public string $login = '',
+        public string $name = '',
         public string $password = '',
         public int $role = 0,
         public ?string $remarks = null,
@@ -72,5 +73,25 @@ class User extends Model
     public function isGuest(): bool
     {
         return $this->role === self::ROLE_GUEST;
+    }
+
+    /**
+     * Проверка на активность
+     *
+     * @return bool Возвращает true, если пользователь активен
+     */
+    public function isActive(): bool
+    {
+        return $this->status;
+    }
+
+    /**
+     * Проверка на неактивность
+     *
+     * @return bool Возвращает true, если пользователь неактивен
+     */
+    public function isInactive(): bool
+    {
+        return !$this->status;
     }
 }
