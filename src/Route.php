@@ -85,14 +85,12 @@ final class Route
      *
      * @return void
      */
-    public function resolve(Request $request): void
+    public function resolve(): void
     {
-        foreach ($this->args as $key => $value) {
-            $request->route($key, $value);
-        }
-
         if ($this->title) App::setTitle($this->title);
 
-        $this->controller->{$this->action}($request);
+        $this->controller->route = $this;
+
+        $this->controller->{$this->action}();
     }
 }

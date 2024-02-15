@@ -19,8 +19,6 @@ class Request
 
     public string $accept = 'html'; // Тип ответа
 
-    private array $__route = []; // Переменные маршрута
-
     private array $__get = []; // GET параметры
 
     private array $__post = []; // POST параметры
@@ -60,6 +58,11 @@ class Request
         $this->__files = $_FILES;
     }
 
+    public static function instance(): self
+    {
+        return new static();
+    }
+
     /**
      * Возвращает метод запроса
      * 
@@ -67,7 +70,7 @@ class Request
      */
     public static function method(): string
     {
-        return strtoupper($_SERVER['REQUEST_METHOD'] ?? '');
+        return mb_strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
     }
 
     /**
@@ -300,43 +303,15 @@ class Request
                 $this->__get,
                 $this->__post,
                 $this->__args,
-                $this->__route,
                 $this->__input
             );
         }
 
-        return $this->__route[$key]
-            ?? $this->__args[$key]
+        return $this->__args[$key]
             ?? $this->__input[$key]
             ?? $this->__post[$key]
             ?? $this->__get[$key]
             ?? null;
-    }
-
-    /**
-     * Возвращает или устанавливает значение переменной маршрута
-     * 
-     * @param mixed ...$args Аргументы:
-     * 
-     * - Если не передано ни одного значения, то возвращает массив переменных маршрута
-     * - Если передано одно значение, то возвращает значение переменной маршрута
-     * - Если передано два значения, то устанавливает значение переменной маршрута
-     *
-     * @return mixed Значение переменной маршрута или сам массив переменных маршрута
-     */
-    public function route(...$args): mixed
-    {
-        switch (count($args)) {
-            case 0:
-                return $this->__route;
-            case 1:
-                return $this->__route[$args[0]] ?? null;
-            case 2:
-                $this->__route[$args[0]] = static::sanitize($args[1]);
-                return $this->__route[$args[0]];
-        }
-
-        return null;
     }
 
     /**

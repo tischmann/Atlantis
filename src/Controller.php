@@ -6,8 +6,15 @@ namespace Tischmann\Atlantis;
 
 use Exception;
 
+/**
+ * Контроллер
+ * 
+ * @property Route $route Маршрут
+ */
 class Controller
 {
+    public Route $route;
+
     public function __call($name, $arguments): mixed
     {
         $class = get_class($this);

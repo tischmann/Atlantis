@@ -16,8 +16,11 @@ final class Router
     public static array $routes = []; // Маршруты приложения
 
     public function __construct(
-        public Request $request = new Request(),
+        public string $method = '',
+        public array $uri = [],
     ) {
+        $this->method = $this->method ?: Request::method();
+        $this->uri = $this->uri ?: Request::uri();
     }
 
     /**
@@ -25,7 +28,7 @@ final class Router
      */
     public static function bootstrap(): void
     {
-        (new static(request: new Request()))->resolve();
+        (new static())->resolve();
     }
 
     /**
@@ -52,14 +55,14 @@ final class Router
         foreach ($this->routes() as $route) {
             assert($route instanceof Route);
 
-            if ($route->uri xor $this->request->uri) continue;
+            if ($route->uri xor $this->uri) continue;
 
-            if (!$route->uri && !$this->request->uri) {
-                return $route->resolve($this->request);
+            if (!$route->uri && !$this->uri) {
+                return $route->resolve();
             }
 
-            if ($route->validate($this->request->uri)) {
-                return $route->resolve($this->request);
+            if ($route->validate($this->uri)) {
+                return $route->resolve();
             }
         }
 
@@ -92,6 +95,6 @@ final class Router
      */
     protected function routes(): array
     {
-        return static::$routes[$this->request->method] ?? [];
+        return static::$routes[$this->method] ?? [];
     }
 }

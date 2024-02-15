@@ -12,9 +12,13 @@ use Tischmann\Atlantis\{
     Controller,
     Request,
     Response,
+    Route,
     View
 };
 
+/**
+ * Контроллер пользователей
+ */
 class UsersController extends Controller
 {
     /**
@@ -34,11 +38,13 @@ class UsersController extends Controller
      * 
      * @return void
      */
-    public function signIn(Request $request)
+    public function signIn()
     {
         if (csrf_failed()) {
             View::send(view: '403', layout: 'default', exit: true);
         }
+
+        $request = Request::instance();
 
         $login = strval($request->request('login'));
 
