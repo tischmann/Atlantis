@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Tischmann\Atlantis\Request;
+use Tischmann\Atlantis\{Date, DateTime, Time};
 
 /**
  * Получение значения куки
@@ -296,4 +296,127 @@ function csrf_failed(): bool
 function csrf_passed(): bool
 {
     return csrf_verify();
+}
+
+/**
+ * Проверяет корректность строкового представления даты и времени
+ * 
+ * @param mixed $value Значение даты и времени в строковом представлении
+ * 
+ * @return bool true - корректно, false - некорректно
+ */
+function date_validate(mixed $value): bool
+{
+    if (!is_string($value)) return false;
+
+    if (!$value) return false;
+
+    try {
+        $date = new DateTime($value);
+    } catch (Exception $e) {
+        return false;
+    }
+
+    $errors = $date::getLastErrors();
+
+    return ($errors['warning_count'] ?? 0) + ($errors['error_count'] ?? 0) == 0;
+}
+
+/**
+ * Возвращает типизированную переменную
+ *
+ * @param mixed $variable Переменная
+ * @param string $type Тип переменной
+ * @return mixed Типизированная переменная
+ */
+function typify(mixed $variable, string $type): mixed
+{
+    switch ($type) {
+        case 'bool':
+            return boolval($variable);
+        case 'int':
+            return intval($variable);
+        case 'float':
+            return floatval($variable);
+        case 'array':
+            if (is_array($variable)) return $variable;
+            if (!is_string($variable)) return [];
+            return json_decode($variable, true) ?? [];
+        case 'object':
+            if (is_object($variable)) return $variable;
+            if (!is_string($variable)) return (object) [];
+            return json_decode($variable) ?? (object) [];
+        case 'Tischmann\Atlantis\DateTime':
+            if (!date_validate($variable)) return new DateTime();
+            return new DateTime($variable);
+        case 'DateTime':
+            if (!date_validate($variable)) return new \DateTime();
+            return new \DateTime($variable);
+        case 'Tischmann\Atlantis\Date':
+            if (!date_validate($variable)) return new Date();
+            return new Date($variable);
+        case 'Tischmann\Atlantis\Time':
+            if (!date_validate($variable)) return new Time();
+            return new Time($variable);
+        case 'string':
+            return strval($variable);
+        default:
+            return $variable;
+    }
+}
+
+/**
+ * Возвращает тип данных свойства
+ * 
+ * @param object $object Объект или класс
+ * @param string $property Имя свойства
+ * @return string Тип данных
+ */
+function get_property_type(object $object, string $property): string
+{
+    if (!property_exists($object, $property)) return 'mixed';
+
+    $reflectionProperty = new \ReflectionProperty($object, $property);
+
+    $reflectionNamedType = $reflectionProperty->getType();
+
+    assert($reflectionNamedType instanceof \ReflectionNamedType);
+
+    return $reflectionNamedType?->getName() ?? 'mixed';
+}
+
+/**
+ * Возвращает представление переменной для записи в БД
+ *
+ * @param object $object Объект или класс
+ * @param mixed $variable Переменная
+ * @return mixed Представление переменной или null
+ */
+function stringify_property(object $object, string $property): mixed
+{
+    $value = $object->{$property} ?? null;
+
+    if ($value === null) return null;
+
+    $type = get_property_type($object, $property);
+
+    switch ($type) {
+        case 'bool':
+            return strval(intval($value));
+        case 'int':
+        case 'float':
+            return strval($value);
+        case 'array':
+        case 'object':
+            return json_encode($value, 32 | 256) ?: null;
+        case 'Tischmann\Atlantis\DateTime':
+        case 'DateTime':
+            return strval($value->format('Y-m-d H:i:s'));
+        case 'Tischmann\Atlantis\Date':
+            return strval($value->format('Y-m-d'));
+        case 'Tischmann\Atlantis\Time':
+            return strval($value->format('H:i:s'));
+        default:
+            return strval($value);
+    }
 }

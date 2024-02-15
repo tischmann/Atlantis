@@ -49,6 +49,14 @@ abstract class Table
         ];
     }
 
+    public function columnsNames(): array
+    {
+        return array_map(
+            fn ($column) => $column->name,
+            $this->columns()
+        );
+    }
+
     /**
      * Возвращает объект запроса
      * 
@@ -57,7 +65,9 @@ abstract class Table
     public static function query(): Query
     {
         $query = new Query();
+
         $query->table(static::name());
+
         return $query;
     }
 

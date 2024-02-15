@@ -757,13 +757,16 @@ final class Query
      * @param array $insert Данные для добавления 
      * @return int Идентификатор добавленной строки
      */
-    public function insert(array $insert): int
+    public function insert(array $values): int
     {
-        $this->insert = $insert;
+        if (!$values) return 0;
 
-        if (!$this->insert) return 0;
+        $this->insert = $values;
 
-        $this->database->execute($this->getInsertQuery(), $this->values);
+        $this->database->execute(
+            $this->getInsertQuery(),
+            $this->values
+        );
 
         $this->reset();
 
@@ -782,7 +785,10 @@ final class Query
 
         if (!$this->upsert) return false;
 
-        $result = $this->database->execute($this->getUpsertQuery(), $this->values);
+        $result = $this->database->execute(
+            $this->getUpsertQuery(),
+            $this->values
+        );
 
         $this->reset();
 

@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace Tischmann\Atlantis;
 
-use DateTime;
-
 use Exception;
 
 use Tischmann\Atlantis\{Table};
 
-abstract class Model extends Facade
+abstract class Model
 {
     /**
      * Таблица модели
@@ -24,6 +22,74 @@ abstract class Model extends Facade
         public ?DateTime $created_at = null,
         public ?DateTime $updated_at = null,
     ) {
+        $this->__init();
+    }
+
+    /**
+     * Инициализация класса
+     *
+     * @return self
+     */
+    public function __init(): self
+    {
+        return $this;
+    }
+
+    public function __clone()
+    {
+        foreach ($this as $property => $value) {
+            if (is_object($value)) {
+                $reflectionClass = new \ReflectionClass($value);
+
+                if ($reflectionClass->isCloneable()) {
+                    $this->{$property} = clone $value;
+                }
+            }
+        }
+    }
+
+    /**
+     * Создаёт экземпляр класса
+     *
+     * @param array|object|null $fill Данные для заполнения свойств класса
+     * @return self Экземпляр класса
+     */
+    public static function make(array|object|null $fill = null): static
+    {
+        $model = new static();
+
+        if ($fill === null) return $model;
+
+        return $model->__fill($fill);
+    }
+
+    /**
+     * Заполняет свойства класса данными
+     * Если свойство не существует или недоступно для записи, то оно игнорируется
+     *
+     * @param array|object|null $traversable Объект, который можно перебрать
+     * 
+     * @return self
+     */
+    public function __fill(array|object|null $traversable = null): self
+    {
+        if ($traversable === null) return $this->__init();
+
+        if ($traversable instanceof Query) $traversable = $traversable->first();
+
+        foreach ($traversable as $property => $value) {
+            if (property_exists($this, $property)) {
+                $value ??= null;
+
+                $type = get_property_type($this, $property);
+
+                $value = typify($value, $type);
+
+                $this->{$property} = $value;
+            }
+        }
+
+        return $this->__init();
     }
 
     /**
@@ -65,31 +131,19 @@ abstract class Model extends Facade
      */
     public function insert(): bool
     {
-        if ($this->exists()) {
-            throw new Exception('Model already exists');
-        }
+        if ($this->exists()) return $this->update();
 
-        $insert = [];
+        $values = [];
 
         $this->created_at = new DateTime();
 
-        $columns = [];
-
-        foreach ($this->table()->columns() as $column) {
-            $columns[$column->name] = $column;
+        foreach ($this->table()->columnsNames() as $property) {
+            if (property_exists($this, $property)) {
+                $values[$property] = stringify_property($this, $property);
+            }
         }
 
-        foreach ($this as $property => $value) {
-            if (!array_key_exists($property, $columns)) continue;
-
-            $insert[$property] = $this->__stringify($property);
-        }
-
-        if ($insert) {
-            $this->id = self::query()->insert($insert);
-        } else {
-            throw new Exception('Model is empty');
-        }
+        $this->id = self::query()->insert($values);
 
         return $this->exists();
     }
@@ -124,7 +178,7 @@ abstract class Model extends Facade
 
             if (!array_key_exists($property, $columns)) continue;
 
-            $update[$property] = $this->__stringify($property);
+            $update[$property] = stringify_property($this, $property);
         }
 
         if ($update) {
@@ -166,7 +220,7 @@ abstract class Model extends Facade
 
         foreach ($column as $col) $query->orWhere($col, $value);
 
-        return self::make()->__fill($query->first());
+        return self::make($query);
     }
 
     /**
