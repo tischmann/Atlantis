@@ -85,17 +85,17 @@ final class Auth
     public function authorize(): User
     {
         if (!static::isLastAccessValid()) {
-            Session::destroy();
+            session_kill();
             return $this->user;
         }
 
         if (!static::isClientUserAgentValid()) {
-            Session::destroy();
+            session_kill();
             return $this->user;
         }
 
         if (!static::isClientAddressValid()) {
-            Session::destroy();
+            session_kill();
             return $this->user;
         }
 
@@ -133,7 +133,7 @@ final class Auth
             die('Срок дейстаия токена истёк');
         }
 
-        Session::set('LAST_ACCESS', time());
+        session_set('LAST_ACCESS', time());
 
         return $this->user;
     }
@@ -157,11 +157,11 @@ final class Auth
 
         cookies_set('jwt', $this->token, ['expires' => $expires]);
 
-        Session::set('LAST_ACCESS', time());
+        session_set('LAST_ACCESS', time());
 
-        Session::set('REMOTE_ADDR', $_SERVER['REMOTE_ADDR']);
+        session_set('REMOTE_ADDR', $_SERVER['REMOTE_ADDR']);
 
-        Session::set('USER_AGENT', $_SERVER['HTTP_USER_AGENT']);
+        session_set('USER_AGENT', $_SERVER['HTTP_USER_AGENT']);
 
         return $refresh_token;
     }
@@ -292,9 +292,9 @@ final class Auth
      */
     public static function isClientAddressValid(): bool
     {
-        if (!Session::has('REMOTE_ADDR')) return true;
+        if (!session_has('REMOTE_ADDR')) return true;
 
-        return Session::get('REMOTE_ADDR') === $_SERVER['REMOTE_ADDR'];
+        return session_get('REMOTE_ADDR') === $_SERVER['REMOTE_ADDR'];
     }
 
     /**
@@ -304,9 +304,9 @@ final class Auth
      */
     public static function isClientUserAgentValid()
     {
-        if (!Session::has('USER_AGENT')) return true;
+        if (!session_has('USER_AGENT')) return true;
 
-        return Session::get('USER_AGENT') === $_SERVER['HTTP_USER_AGENT'];
+        return session_get('USER_AGENT') === $_SERVER['HTTP_USER_AGENT'];
     }
 
     /**
@@ -316,8 +316,8 @@ final class Auth
      */
     public static function isLastAccessValid(int $seconds = 1440): bool
     {
-        if (!Session::has('LAST_ACCESS')) return true;
+        if (!session_has('LAST_ACCESS')) return true;
 
-        return time() < intval(Session::get('LAST_ACCESS')) + $seconds;
+        return time() < intval(session_get('LAST_ACCESS')) + $seconds;
     }
 }

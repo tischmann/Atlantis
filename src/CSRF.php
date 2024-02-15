@@ -24,11 +24,11 @@ final class CSRF
      */
     public static function flush(string $key = null)
     {
-        if ($key === null) Session::delete(static::SESSION_KEY);
+        if ($key === null) session_del(static::SESSION_KEY);
         else {
             $tokens = static::tokens();
             unset($tokens[$key]);
-            Session::set(static::SESSION_KEY, $tokens);
+            session_set(static::SESSION_KEY, $tokens);
         }
     }
 
@@ -39,11 +39,9 @@ final class CSRF
      */
     public static function tokens(): array
     {
-        if (!Session::has(static::SESSION_KEY)) {
-            Session::set(static::SESSION_KEY, []);
-        }
-
-        return Session::get(static::SESSION_KEY);
+        return session_find(static::SESSION_KEY, function () {
+            return [];
+        });
     }
 
     /**
@@ -61,7 +59,7 @@ final class CSRF
 
         $tokens[$key] = $token;
 
-        Session::set(static::SESSION_KEY, $tokens);
+        session_set(static::SESSION_KEY, $tokens);
 
         return [$key, $token];
     }

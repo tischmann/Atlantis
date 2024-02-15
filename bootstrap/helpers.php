@@ -95,3 +95,99 @@ function sanitize(mixed $value): mixed
         default =>  $value,
     };
 }
+
+/**
+ * Запуск сессии
+ *
+ * @return bool
+ */
+function session_init(
+    string $name = 'PHPSESSID',
+    ?string $id = null
+): void {
+    session_name($name);
+
+    $id ??= session_id();
+
+    session_id($id);
+
+    session_start();
+}
+
+/**
+ * Установка значения в сессию
+ *
+ * @param string $key Ключ
+ * @param mixed $value Значение
+ * @return void
+ */
+function session_set(string $key, mixed $value): void
+{
+    $_SESSION[$key] = $value;
+}
+
+/**
+ * Проверка наличия значения в сессии
+ *
+ * @param string $key Ключ
+ * @return bool true - если значение есть, false - если значения нет
+ */
+function session_has(string $key): bool
+{
+    return key_exists($key, $_SESSION ?? []);
+}
+
+/**
+ * Проверка наличия значения в сессии
+ *
+ * @param string $key Ключ
+ * 
+ * @param callable $setter Функция, которая устанавливает значение в сессию
+ * 
+ * @return mixed Значение
+ */
+function session_find(string $key, callable $setter): mixed
+{
+    if (!session_has($key)) {
+        $value = $setter();
+
+        session_set($key, $value);
+
+        return $value;
+    }
+
+    return session_get($key);
+}
+
+/**
+ * Получение значения из сессии
+ *
+ * @param string $key Ключ
+ * @return mixed Значение или null, если значения нет
+ */
+function session_get(string $key): mixed
+{
+    return $_SESSION[$key] ?? null;
+}
+
+/**
+ * Удаление значения из сессии
+ *
+ * @param string $key Ключ
+ * @return void
+ */
+function session_del(string $key): void
+{
+    if (session_has($key)) unset($_SESSION[$key]);
+}
+
+/**
+ * Удаление всех значений из сессии
+ *
+ * @return void
+ */
+function session_kill(): void
+{
+    session_unset();
+    session_regenerate_id();
+}

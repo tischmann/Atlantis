@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Tischmann\Atlantis\{Router, Session};
+use Tischmann\Atlantis\{Router};
 
 require_once "require.php";
 
@@ -12,7 +12,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 require_once "helpers.php";
 
-Session::start(name: 'PHPSESSID', id: cookies_get('PHPSESSID'));
+session_init(name: 'PHPSESSID', id: cookies_get('PHPSESSID'));
 
 cookies_set('PHPSESSID', session_id());
 
