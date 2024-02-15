@@ -9,7 +9,6 @@ use Exception;
 /**
  * Класс для работы с JSON Web Token
  * 
- * @author Yuriy Stolov <yuriystolov@gmail.com>
  */
 final class JWT
 {
