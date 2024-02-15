@@ -93,4 +93,9 @@ final class Route
 
         $this->controller->{$this->action}();
     }
+
+    public function args(string $key): mixed
+    {
+        return $this->args[$key] ?? null;
+    }
 }

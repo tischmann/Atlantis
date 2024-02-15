@@ -35,10 +35,8 @@ class Controller
      * Проверка прав доступа администратора
      * 
      * @param bool $return Вернуть результат проверки
-     * 
-     * @return mixed Результат проверки или ничего
      */
-    protected function checkAdminRights(bool $return = false): mixed
+    protected function checkAdminRights(bool $return = false)
     {
         $is_admin = App::getCurrentUser()->isAdmin();
 

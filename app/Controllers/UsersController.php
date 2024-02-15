@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Models\{User};
-
+use Exception;
 use Tischmann\Atlantis\{
     App,
     Auth,
@@ -91,5 +91,47 @@ class UsersController extends Controller
         $user->save();
 
         Response::redirect('/');
+    }
+
+
+    /**
+     * Вывод страницы добавления пользователя
+     *
+     * @return void
+     */
+    public function addUserForm()
+    {
+        $this->checkAdminRights(return: false);
+
+        View::send(
+            view: 'user',
+            layout: 'default',
+            args: ['user' => User::instance()]
+        );
+    }
+
+    /**
+     * Вывод страницы пользователя
+     *
+     * @return void
+     */
+    public function getUser()
+    {
+        $this->checkAdminRights(return: false);
+
+        $id = intval($this->route->args('id'));
+
+        $user = User::find($id);
+
+        if (!$user->exists()) {
+            View::send(
+                view: '404',
+                layout: 'default',
+                args: ['exception' => new Exception(get_str('user_not_found'))],
+                exit: true
+            );
+        }
+
+        View::send(view: 'user', layout: 'default', args: ['user' => $user]);
     }
 }

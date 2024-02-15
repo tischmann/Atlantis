@@ -16,35 +16,35 @@ if (App::getCurrentUser()->isAdmin()) {
     Router::add(new Route(
         controller: new UsersController(),
         path: 'user',
-        action: 'new',
+        action: 'addUserForm',
         method: 'GET'
     ));
 
     Router::add(new Route(
         controller: new UsersController(),
         path: 'user',
-        action: 'add',
+        action: 'addUser',
         method: 'POST'
     ));
 
     Router::add(new Route(
         controller: new UsersController(),
         path: 'user/{id}',
-        action: 'get',
+        action: 'getUser',
         method: 'GET'
     ));
 
     Router::add(new Route(
         controller: new UsersController(),
         path: 'user/{id}',
-        action: 'update',
+        action: 'updateUser',
         method: 'PUT'
     ));
 
     Router::add(new Route(
         controller: new UsersController(),
         path: 'user/{id}',
-        action: 'delete',
+        action: 'deleteUser',
         method: 'DELETE'
     ));
 }

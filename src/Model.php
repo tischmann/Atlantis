@@ -62,7 +62,7 @@ abstract class Model
      * @param array|object|null $fill Данные для заполнения свойств класса
      * @return self Экземпляр класса
      */
-    public static function make(array|object|null $fill = null): static
+    public static function instance(array|object|null $fill = null): static
     {
         $model = new static();
 
@@ -213,6 +213,6 @@ abstract class Model
 
         foreach ($column as $col) $query->orWhere($col, $value);
 
-        return self::make($query);
+        return self::instance($query);
     }
 }

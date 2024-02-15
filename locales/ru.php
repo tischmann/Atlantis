@@ -28,6 +28,8 @@ return [
     'signin_password' => 'Пароль',
     'signin_submit' => 'Войти',
     'signout_submit' => 'Выйти',
+    // Пользователи
+    'user_not_found' => 'Пользователь не найден',
     // Даты
     'year_ago' => 'год',
     'years_ago' => 'лет',
