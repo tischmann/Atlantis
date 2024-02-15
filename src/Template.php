@@ -95,7 +95,7 @@ final class Template
                     $replace = Template::html('csrf');
                     break;
                 case 'csrf-token':
-                    $replace = CSRF::generateToken();
+                    $replace = csrf_set()->token;
                     break;
                 default:
                     if (!array_key_exists($key, $args)) {

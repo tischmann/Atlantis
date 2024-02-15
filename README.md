@@ -133,7 +133,7 @@ MEMCACHED_PORT — порт Memcached
 Для проверки токенов используется метод:
 
 ```php
-CSRF::verify(Request $request)
+csrf_verify();
 ```
 
 В качестве параметра передается объект запроса.

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Tischmann\Atlantis\Request;
 
 /**
  * Получение значения куки
@@ -190,4 +191,109 @@ function session_kill(): void
 {
     session_unset();
     session_regenerate_id();
+}
+
+function csrf_session_key(): string
+{
+    return 'ATLANTIS_CSRF_TOKENS_' . strval(getenv('APP_ID'));
+}
+
+/**
+ * Удаляет все токены
+ */
+function csrf_flush(string $key = null)
+{
+    if ($key === null) {
+        session_del(csrf_session_key());
+    } else {
+        $tokens = csrf_tokens();
+        unset($tokens[$key]);
+        session_set(csrf_session_key(), $tokens);
+    }
+}
+
+/**
+ * Возвращает токены
+ * 
+ * @return array Токены
+ */
+function csrf_tokens(): array
+{
+    return session_find(csrf_session_key(), function () {
+        return [];
+    });
+}
+
+/**
+ * Устанавливает токен
+ * 
+ * @return object (object)[key => 'Key', token => 'Token']
+ */
+function csrf_set(): object
+{
+    $key = bin2hex(random_bytes(128));
+
+    $token = bin2hex(random_bytes(128));
+
+    $tokens = csrf_tokens();
+
+    $tokens[$key] = $token;
+
+    session_set(csrf_session_key(), $tokens);
+
+    return (object)['key' => $key, 'token' => $token];
+}
+
+/**
+ * Производит проверку токенов
+ * 
+ * @return bool Результат проверки
+ */
+function csrf_verify(): bool
+{
+    $method = mb_strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
+
+    if (!in_array($method, ['POST', 'PUT', 'DELETE'])) return true;
+
+    $token = apache_request_headers()['X-Csrf-Token'] ?? null;
+
+    $key = $token !== null ? array_search($token, csrf_tokens()) : false;
+
+    if ($key !== false) {
+        csrf_flush($key);
+        return true;
+    }
+
+    foreach (csrf_tokens() as $key => $token) {
+        if (array_key_exists($key, $_REQUEST)) {
+            if ($_REQUEST[$key] === $token) {
+                csrf_flush($key);
+                return true;
+            }
+        }
+    }
+
+    csrf_flush();
+
+    return false;
+}
+
+/**
+ * Проверяет, что токен не прошел проверку
+ * 
+ * @return boolean
+ */
+function csrf_failed(): bool
+{
+    return !csrf_verify();
+}
+
+/**
+ * Проверяет, что токен прошел проверку
+ * 
+ * @return boolean
+ */
+function csrf_passed(): bool
+{
+    return csrf_verify();
 }

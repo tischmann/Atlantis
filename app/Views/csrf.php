@@ -1,8 +1,6 @@
 <?php
 
-use Tischmann\Atlantis\CSRF;
-
-list($key, $value) = CSRF::set();
+$csrf = csrf_set();
 
 ?>
-<input type="hidden" name="<?= $key ?>" value="<?= $value ?>" />
+<input type="hidden" name="<?= $csrf->key ?>" value="<?= $csrf->token ?>" />

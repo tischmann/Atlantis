@@ -10,7 +10,6 @@ use Tischmann\Atlantis\{
     App,
     Auth,
     Controller,
-    CSRF,
     Request,
     Response,
     View
@@ -37,7 +36,7 @@ class UsersController extends Controller
      */
     public function signIn(Request $request)
     {
-        if (CSRF::failed($request)) {
+        if (csrf_failed()) {
             View::send(view: '403', layout: 'default', exit: true);
         }
 

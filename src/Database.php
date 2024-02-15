@@ -12,8 +12,6 @@ use PDOException;
 
 /**
  * Класс для работы с базой данных
- *  
- * @author Yuriy Stolov <yuriystolov@gmail.com>
  */
 final class Database extends PDO
 {
