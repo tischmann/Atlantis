@@ -26,6 +26,16 @@ abstract class Model
     }
 
     /**
+     * Запрос для модели
+     *
+     * @param Query
+     */
+    public static function query(): Query
+    {
+        return static::table()::query();
+    }
+
+    /**
      * Инициализация класса
      *
      * @return self
@@ -93,16 +103,6 @@ abstract class Model
     }
 
     /**
-     * Запрос для модели
-     *
-     * @param Query
-     */
-    public static function query(): Query
-    {
-        return static::table()::query();
-    }
-
-    /**
      * Проверяет, существует ли модель в базе данных
      *
      * @return boolean true если существует, false если нет
@@ -155,41 +155,33 @@ abstract class Model
      */
     public function update(): bool
     {
-        $current = self::find($this->id);
+        $before = self::find($this->id);
 
-        if (!$current->exists()) {
-            throw new Exception('Model not found');
-        }
+        if (!$before->exists()) return false;
 
         $this->updated_at = new DateTime();
 
         $update = [];
 
-        $columns = [];
+        foreach ($this->table()->columnsNames() as $property) {
+            if (!property_exists($this, $property)) continue;
 
-        foreach ($this->table()->columns() as $column) {
-            $columns[$column->name] = $column;
+            $old_value = stringify_property($before, $property);
+
+            $new_value = stringify_property($this, $property);
+
+            if ($old_value === $new_value) continue;
+
+            $update[$property] = $new_value;
         }
 
-        foreach ($this as $property => $value) {
-            if ($property === 'id') continue;
+        if (!$update) return true;
 
-            if ($current->{$property} === $this->{$property}) continue;
+        $query = self::query()
+            ->where('id', $this->id)
+            ->limit(1);
 
-            if (!array_key_exists($property, $columns)) continue;
-
-            $update[$property] = stringify_property($this, $property);
-        }
-
-        if ($update) {
-            $query = self::query();
-
-            $query->where('id', $this->id)->limit(1);
-
-            return $query->update($update);
-        }
-
-        return true;
+        return $query->update($update);
     }
 
     /**
