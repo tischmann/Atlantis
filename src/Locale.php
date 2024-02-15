@@ -24,9 +24,9 @@ final class Locale
      * @param string $locale Локаль
      * @return string Строка из файла локализации
      */
-    public static function get(string $key, string $locale = ''): string
+    public static function get(string $key, ?string $locale = null): string
     {
-        $locale = $locale ?: getenv('APP_LOCALE');
+        $locale ??= getenv('APP_LOCALE') ?: 'ru';
 
         self::$locales[$locale] ??= static::load($locale);
 
@@ -77,7 +77,7 @@ final class Locale
      * @param string $locale Локаль
      * @return array Массив строк из файла локализации
      */
-    public static function load(string $locale = ''): array
+    public static function load(string $locale): array
     {
         $locale = $locale ?: getenv('APP_LOCALE');
 
@@ -100,7 +100,7 @@ final class Locale
      *
      * @return array Массив с локализациями
      */
-    public static function all(): array
+    public static function isoLocales(): array
     {
         return [
             'af' => 'af-ZA',

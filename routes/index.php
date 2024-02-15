@@ -8,23 +8,31 @@ use App\Controllers\{
 };
 
 use Tischmann\Atlantis\{
-    Locale,
     Router,
     Route
 };
 
+/**
+ * Главная страница
+ */
 Router::add(new Route(
     controller: new IndexController(),
 ));
 
+/**
+ * Форма входа
+ */
 Router::add(new Route(
     controller: new UsersController(),
     path: 'signin',
     action: 'signInForm',
     method: 'GET',
-    title: Locale::get('signin')
+    title: get_str('signin')
 ));
 
+/**
+ * Авторизация
+ */
 Router::add(new Route(
     controller: new UsersController(),
     path: 'signin',

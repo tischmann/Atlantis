@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Tischmann\Atlantis\{Date, DateTime, Time};
+use Tischmann\Atlantis\{Date, DateTime, Locale, Time};
 
 /**
  * Получение значения куки
@@ -479,4 +479,16 @@ function image_resize(
     }
 
     return $output;
+}
+
+/**
+ * Возвращает строку из файла локализации по ключу
+ *
+ * @param string $key Ключ
+ * @param string $locale Локаль
+ * @return string Строка из файла локализации
+ */
+function get_str(string $key, ?string $locale = null): string
+{
+    return Locale::get($key, $locale);
 }

@@ -147,7 +147,9 @@ final class Template
 
         $strings = [];
 
-        foreach (Locale::getLocale(getenv('APP_LOCALE')) as $key => $value) {
+        $locale = getenv('APP_LOCALE') ?: 'ru';
+
+        foreach (Locale::getLocale($locale) as $key => $value) {
             $strings["lang={$key}"] = $value;
         }
 
