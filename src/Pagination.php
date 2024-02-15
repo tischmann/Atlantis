@@ -5,19 +5,15 @@ declare(strict_types=1);
 namespace Tischmann\Atlantis;
 
 /**
- * Класс пагинатора 
- * 
- * @author Yuriy Stolov <yuriystolov@gmail.com>
+ * Класс пагинатора для постраничной навигации
  */
 class Pagination
 {
-    public const DEFAULT_LIMIT = 5; // Количество элементов на странице по умолчанию
+    public const DEFAULT_LIMIT = 10; // Количество элементов на странице по умолчанию
 
-    public const PAGES_LIMIT = 3; // Количество страниц слева и справа от текущей
+    protected array $prev_pages = []; // Массив предыдущих от текущей страниц
 
-    public array $prev_pages = []; // Массив предыдущих от текущей страниц
-
-    public array $next_pages = []; // Массив следующих от текущей страниц
+    protected array $next_pages = []; // Массив следующих от текущей страниц
     /**
      * Конструктор
      * 
@@ -29,17 +25,21 @@ class Pagination
      * @param int $next Номер следующей страницы
      * @param int $last Номер последней страницы
      * @param int $offset Смещение от начала списка
+     * @param int $pages_prev_limit Количество страниц слева от текущей
+     * @param int $pages_next_limit Количество страниц справа от текущей
      * 
      */
     public function __construct(
         public int $total = 0,
         public int $page = 1,
-        public int $limit = 0,
+        public int $limit = 5,
         public int $first = 1,
         public int $prev = 1,
         public int $next = 1,
         public int $last = 1,
         public int $offset = 0,
+        public int $pages_prev_limit = 3,
+        public int $pages_next_limit = 3
     ) {
         $this->setTotal($this->total <= 0 ? 0 : $this->total)
             ->setPage($this->page <= 1 ? 1 : $this->page)
@@ -160,20 +160,22 @@ class Pagination
     }
 
     /**
-     * Сброс значений по умолчанию
+     * Сброс параметров пагинатора
      * 
      * @return self
      */
     public function reset(): self
     {
-        return $this->setTotal(0)
-            ->setPage(1)
-            ->setLimit(self::DEFAULT_LIMIT)
-            ->setFirst(1)
-            ->setPrev(1)
-            ->setNext(1)
-            ->setLast(1)
-            ->setOffset(0);
+        $this->total = 0;
+        $this->first = 1;
+        $this->last = 1;
+        $this->prev = 1;
+        $this->next = 1;
+        $this->offset = 0;
+        $this->page = 1;
+        $this->prev_pages = [];
+        $this->next_pages = [];
+        return $this;
     }
 
     /**
@@ -197,35 +199,62 @@ class Pagination
             ->setNext($next)
             ->setOffset(max(intval(($this->page - 1) * $this->limit),  0));
 
-        $this->prev_pages = [];
+        $this->prev_pages = $this->computePrevPages();
 
-        $this->next_pages = [];
+        $this->next_pages = $this->computeNextPages();
+
+        return $this;
+    }
+
+    /**
+     * Получение количества элементов на уменьшение
+     * 
+     * @return array
+     */
+    protected function computePrevPages(): array
+    {
+        $prev_pages = [];
 
         $page = $this->page - 1;
 
         while (true) {
             if ($page < 1) break;
 
-            if (count($this->prev_pages) === static::PAGES_LIMIT) break;
+            if (count($prev_pages) === $this->pages_prev_limit) break;
 
-            $this->prev_pages[] = $page--;
+            $prev_pages[] = $page--;
         }
 
-        $this->prev_pages = array_reverse($this->prev_pages);
+        return array_reverse($prev_pages);
+    }
+
+    /**
+     * Получение количества элементов на увеличение
+     * 
+     * @return array
+     */
+    protected function computeNextPages(): array
+    {
+        $next_pages = [];
 
         $page = $this->page + 1;
 
         while (true) {
             if ($page > $this->last) break;
 
-            if (count($this->next_pages) === static::PAGES_LIMIT) break;
+            if (count($next_pages) === $this->pages_next_limit) break;
 
-            $this->next_pages[] = $page++;
+            $next_pages[] = $page++;
         }
 
-        return $this;
+        return $next_pages;
     }
 
+    /**
+     * Получение строки запроса на уменьшение
+     * 
+     * @return string Строка запроса 
+     */
     public function getPrevQuery(): string
     {
         $request = new Request();
@@ -237,6 +266,11 @@ class Pagination
         return http_build_query($data);
     }
 
+    /**
+     * Получение строки запроса на увеличение
+     * 
+     * @return string Строка запроса 
+     */
     public function getNextQuery(): string
     {
         $request = new Request();
@@ -248,6 +282,11 @@ class Pagination
         return http_build_query($data);
     }
 
+    /**
+     * Получение строки запроса на первую страницу
+     * 
+     * @return string Строка запроса 
+     */
     public function getFirstQuery(): string
     {
         $request = new Request();
@@ -259,6 +298,11 @@ class Pagination
         return http_build_query($data);
     }
 
+    /**
+     * Получение строки запроса на последнюю страницу
+     * 
+     * @return string Строка запроса 
+     */
     public function getLastQuery(): string
     {
         $request = new Request();
@@ -270,6 +314,13 @@ class Pagination
         return http_build_query($data);
     }
 
+    /**
+     * Получение строки запроса на указанную страницу
+     * 
+     * @param int $page Номер страницы
+     * 
+     * @return string Строка запроса 
+     */
     public function getPageQuery(int $page): string
     {
         $request = new Request();
