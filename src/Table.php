@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Tischmann\Atlantis;
 
+/**
+ * Класс таблицы
+ * 
+ * @package Tischmann\Atlantis
+ */
 abstract class Table
 {
     /**
@@ -20,6 +25,11 @@ abstract class Table
      */
     abstract public static function name(): string;
 
+    /**
+     * Возвращает объект таблицы
+     * 
+     * @return static Объект таблицы
+     */
     public static function instance(): static
     {
         return new static();
@@ -54,6 +64,11 @@ abstract class Table
         ];
     }
 
+    /**
+     * Возвращает массив имен столбцов таблицы
+     * 
+     * @return array Массив имен столбцов таблицы
+     */
     public function columnsNames(): array
     {
         return array_map(

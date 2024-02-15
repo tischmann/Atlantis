@@ -4,32 +4,26 @@ declare(strict_types=1);
 
 namespace Tischmann\Atlantis;
 
-use Exception;
-
+/**
+ * Представление
+ */
 final class View
 {
-    protected Template $templateInstance;
+    protected Template $template_instance;
 
     public function __construct(
         public string $template,
         public array $args = [],
-        string $layout = 'default'
+        public string $layout = 'default'
     ) {
-        $file = __DIR__ . "/../app/Views/layouts/{$layout}.tpl";
-
-        if (!is_file($file)) {
-            $file = __DIR__ . "/../app/Views/layouts/{$layout}.php";
-
-            if (!file_exists($file)) {
-                die("Layout {$layout} not found");
-            }
-        }
-
-        $this->templateInstance = new Template(
-            "layouts/{$layout}",
-            [
+        $this->template_instance = new Template(
+            template: "layouts/{$this->layout}",
+            args: [
                 ...$this->args,
-                'body' => Template::html($this->template, $this->args),
+                'body' => Template::html(
+                    template: $this->template,
+                    args: $this->args
+                ),
             ]
         );
     }
@@ -74,6 +68,6 @@ final class View
 
     public function render(): string
     {
-        return $this->templateInstance->render();
+        return $this->template_instance->render();
     }
 }

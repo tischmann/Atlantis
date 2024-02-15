@@ -4,72 +4,102 @@ declare(strict_types=1);
 
 namespace Tischmann\Atlantis;
 
-use DateTime;
-
-use Exception;
-
+/**
+ * Шаблонизатор
+ */
 final class Template
 {
     public static ?array $cached_args = null;
 
-    public string $content = ''; // The content of the template file
+    public string $content = '';
 
+    /**
+     * @param string $template Шаблон
+     * @param array $args Аргументы
+     */
     public function __construct(
-        protected string $template,
-        protected array $args = []
+        public string $template,
+        public array $args = []
     ) {
 
         $this->content = $this->read();
     }
 
+    /**
+     * Создаёт экземпляр класса
+     *
+     * @param string $template Шаблон
+     * @param array $args Аргументы
+     * @return Template
+     */
     public static function make(string $template, array $args = []): Template
     {
         return new static($template, $args);
     }
 
+    /**
+     * Возвращает рендеринг шаблона в виде HTML строки
+     *
+     * @param string $template Шаблон
+     * @param array $args Аргументы
+     * @return string
+     */
     public static function html(string $template, array $args = []): string
     {
         return (new static($template, $args))->render();
     }
 
+    /**
+     * Выводит рендеринг шаблона в виде HTML строки в поток вывода
+     *
+     * @param string $template Шаблон
+     * @param array $args Аргументы
+     * @return void
+     */
     public static function echo(string $template, array $args = [])
     {
         echo (new static($template, $args))->render();
     }
 
+    /**
+     * Читает содержимое шаблона
+     *
+     * @return string Содержимое шаблона
+     */
     public function read(): string
     {
-        $file = __DIR__ . '/../app/Views/' . $this->template . '.tpl';
+        $file = __DIR__ . '/../app/Views/' . $this->template . '.php';
 
-        if (!file_exists($file)) {
-            $file = __DIR__ . '/../app/Views/' . $this->template . '.php';
-
-            if (!in_array('ob_gzhandler', ob_list_handlers())) {
-                ob_start('ob_gzhandler');
-            } else {
-                ob_start();
-            }
-
-            if (file_exists($file)) {
-                extract([...static::getCachedArgs(), ...$this->args]);
-
-                include_once $file;
-            } else {
-                $message = get_str('not_found') . ": {$this->template}";
-
-                echo <<<HTML
-                <div style="background:red !important; color: white !important; padding:4px">
-                    {$message}
-                </div>
-                HTML;
-            }
-
-            return ob_get_clean();
+        if (!in_array('ob_gzhandler', ob_list_handlers())) {
+            ob_start('ob_gzhandler');
+        } else {
+            ob_start();
         }
 
-        return file_get_contents($file);
+        if (file_exists($file)) {
+            extract([...static::getCachedArgs(), ...$this->args]);
+
+            require $file;
+        } else {
+            $message = get_str('template_not_found') . ": '{$this->template}'";
+
+            echo <<<HTML
+            <div title="{$message}" style="padding:8px; text-align:center; background:red !important; color: white !important">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="32px" height="32px" style="display:inline-block">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                </svg>
+            </div>
+            HTML;
+        }
+
+        return ob_get_clean();
     }
 
+    /**
+     * Рендеринг шаблона
+     *
+     * @return string HTML строка
+     */
     public function render(): string
     {
         $args = [...static::getCachedArgs(), ...$this->args];
@@ -83,73 +113,76 @@ final class Template
             PREG_SET_ORDER
         );
 
-        $uniqid = uniqid();
-
         foreach ($matches as $set) {
-            $search = $set[0];
-
-            $key = $set[1];
-
-            switch ($key) {
-                case 'title':
-                    $replace = App::getTitle();
-                    break;
-                case 'uniqid':
-                    $replace = $uniqid;
-                    break;
-                case 'csrf':
-                    $replace = Template::html('csrf');
-                    break;
-                case 'csrf-token':
-                    $replace = csrf_set()->token;
-                    break;
-                default:
-                    if (!array_key_exists($key, $args)) {
-                        switch (substr($key, 0, 5)) {
-                            case "lang=":
-                                $replace = substr($key, 5);
-                                break 2;
-                            case "date=":
-                                $replace = date(substr($key, 5));
-                                break 2;
-                            default:
-                                continue 3;
-                        }
-                    }
-
-                    $replace = $this->stringify($args[$key]);
-                    break;
-            }
-
-            $parsed = str_replace($search, $replace, $parsed);
+            $parsed = str_replace(
+                $set[0],
+                $this->parse($set[1], $args),
+                $parsed
+            );
         }
 
         return $parsed;
     }
 
+    /**
+     * Парсинг тэгов шаблона
+     *
+     * @param string $key Ключ
+     * @param array $args Аргументы
+     * @return string
+     */
+    private function parse(string $key, array $args): string
+    {
+        if (array_key_exists($key, $args)) {
+            return  $this->stringify($args[$key]);
+        }
+
+        return match (true) {
+            substr($key, 0, 5) === "date=" => date(substr($key, 5)),
+            default => $key
+        };
+    }
+
+    /**
+     * Преобразует значение в строку
+     *
+     * @param mixed $value Значение
+     * @return string
+     */
     private function stringify(mixed $value): string
     {
+        if ($value === null) return '';
+
         switch (true) {
             case is_bool($value):
                 return intval($value);
             case is_int($value):
             case is_float($value):
                 return strval($value);
+            case $value instanceof \DateTime:
+                return strval($value?->format('Y-m-d H:i:s'));
             case $value instanceof DateTime:
-                return $value->format('Y-m-d H:i:s');
+                return strval($value?->format('Y-m-d H:i:s'));
+            case $value instanceof Date:
+                return strval($value?->format('Y-m-d'));
+            case $value instanceof Time:
+                return strval($value?->format('H:i:s'));
             case is_array($value):
             case is_object($value):
-                return json_encode($value, 32 | 256) ?: '';
+                return strval(json_encode($value, 32 | 256));
             default:
                 return strval($value);
         }
     }
 
+    /**
+     * Возвращает кэшированные аргументы для шаблона
+     *
+     * @return array Аргументы
+     */
     public static function getCachedArgs(): array
     {
-        if (static::$cached_args !== null) {
-            return static::$cached_args;
-        }
+        if (static::$cached_args !== null) return static::$cached_args;
 
         $strings = [];
 
@@ -165,23 +198,24 @@ final class Template
             $env["env=$key"] = getenv($key);
         }
 
-        $pagination = new Pagination(limit: Pagination::DEFAULT_LIMIT);
+        $csrf = csrf_set();
 
-        $request = new Request();
+        $csrf_input = <<<HTML
+        <input type="hidden" name="{$csrf->key}" value="{$csrf->token}" />
+        HTML;
 
-        $sorting = new Sorting(
-            type: strval($request->request('sort')),
-            order: strval($request->request('order'))
-        );
+        $uniqid = uniqid(more_entropy: true);
+
+        $title = App::getTitle();
 
         static::$cached_args = [
             ...$env,
             ...$strings,
             'nonce' => getenv('APP_NONCE'),
-            'admin' => '',
-            'pagination' => $pagination,
-            'search' => strval($request->request('query')),
-            'sorting' => $sorting,
+            'csrf' => $csrf_input,
+            'csrf-token' => $csrf->token,
+            'title' => $title,
+            'uniqid' => $uniqid,
         ];
 
         return static::$cached_args;

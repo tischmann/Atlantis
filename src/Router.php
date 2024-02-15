@@ -76,6 +76,11 @@ final class Router
         View::send(
             view: '404',
             layout: 'default',
+            args: [
+                'exception' => new Exception(
+                    get_str('route_not_found') . ": '{$_SERVER['REQUEST_URI']}'"
+                )
+            ],
             exit: true
         );
     }

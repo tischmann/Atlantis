@@ -231,9 +231,9 @@ function csrf_tokens(): array
  */
 function csrf_set(): object
 {
-    $key = bin2hex(random_bytes(128));
+    $key = bin2hex(random_bytes(32));
 
-    $token = bin2hex(random_bytes(128));
+    $token = bin2hex(random_bytes(32));
 
     $tokens = csrf_tokens();
 

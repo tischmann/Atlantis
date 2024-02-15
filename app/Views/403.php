@@ -5,7 +5,11 @@
 
     if (isset($exception)) {
         echo <<<HTML
-        <p class="text-center mt-4">{$exception->getMessage()}</p>
+        <p class="text-center mt-4">
+            <div class="bg-gray-100 p-4 rounded-xl">
+                {$exception->getMessage()}
+            </div>
+        </p>
         HTML;
     }
 
