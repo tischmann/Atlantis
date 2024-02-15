@@ -36,11 +36,11 @@ assert($user instanceof \App\Models\User);
                 </div>
                 <div>
                     <input type="radio" name="role" id="role_user" value="1" class="peer hidden" <?= $user?->isUser() ? 'checked' : '' ?> />
-                    <label for="role_user" class="block cursor-pointer select-none rounded-xl p-2 text-center bg-gray-200 peer-checked:bg-gray-600 peer-checked:font-bold peer-checked:text-white">{{lang=user_role_user}}</label>
+                    <label for="role_user" class="block cursor-pointer select-none rounded-xl p-2 text-center bg-gray-200 peer-checked:bg-sky-600 peer-checked:font-bold peer-checked:text-white">{{lang=user_role_user}}</label>
                 </div>
                 <div>
                     <input type="radio" name="role" id="role_admin" value="255" class="peer hidden" <?= $user?->isAdmin() ? 'checked' : '' ?> />
-                    <label for="role_admin" class="block cursor-pointer select-none rounded-xl p-2 text-center bg-gray-200 peer-checked:bg-gray-600 peer-checked:font-bold peer-checked:text-white">{{lang=user_role_admin}}</label>
+                    <label for="role_admin" class="block cursor-pointer select-none rounded-xl p-2 text-center bg-gray-200 peer-checked:bg-red-600 peer-checked:font-bold peer-checked:text-white">{{lang=user_role_admin}}</label>
                 </div>
             </div>
         </div>
@@ -49,11 +49,11 @@ assert($user instanceof \App\Models\User);
             <div class="grid w-full grid-cols-1 md:grid-cols-2 gap-2 rounded-xl bg-white border border-gray-300 p-2">
                 <div>
                     <input type="radio" name="status" id="status_inactive" value="0" class="peer hidden" <?= $user?->isInactive() ? 'checked' : '' ?> />
-                    <label for="status_inactive" class="block cursor-pointer select-none rounded-xl p-2 text-center bg-gray-200 peer-checked:bg-gray-600 peer-checked:font-bold peer-checked:text-white">{{lang=user_status_inactive}}</label>
+                    <label for="status_inactive" class="block cursor-pointer select-none rounded-xl p-2 text-center bg-gray-200 peer-checked:bg-red-600 peer-checked:font-bold peer-checked:text-white">{{lang=user_status_inactive}}</label>
                 </div>
                 <div>
                     <input type="radio" name="status" id="status_active" value="1" class="peer hidden" <?= $user?->isActive() ? 'checked' : '' ?> />
-                    <label for="status_active" class="block cursor-pointer select-none rounded-xl p-2 text-center bg-gray-200 peer-checked:bg-gray-600 peer-checked:font-bold peer-checked:text-white">{{lang=user_status_active}}</label>
+                    <label for="status_active" class="block cursor-pointer select-none rounded-xl p-2 text-center bg-gray-200 peer-checked:bg-green-600 peer-checked:font-bold peer-checked:text-white">{{lang=user_status_active}}</label>
                 </div>
             </div>
         </div>
