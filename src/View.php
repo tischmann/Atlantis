@@ -11,6 +11,11 @@ final class View
 {
     protected Template $template_instance;
 
+    /**
+     * @param string $template Шаблон
+     * @param array $args Аргументы
+     * @param string $layout Макет
+     */
     public function __construct(
         public string $template,
         public array $args = [],
@@ -28,6 +33,14 @@ final class View
         );
     }
 
+    /**
+     * Создаёт экземпляр класса
+     *
+     * @param string $view Шаблон
+     * @param array $args Аргументы
+     * @param string $layout Макет
+     * @return View
+     */
     public static function make(
         string $view,
         array $args = [],
@@ -36,6 +49,14 @@ final class View
         return new static($view, $args, $layout);
     }
 
+    /**
+     * Возвращает рендеринг представления в виде HTML строки
+     *
+     * @param string $view Шаблон
+     * @param array $args Аргументы
+     * @param string $layout Макет
+     * @return string
+     */
     public static function html(
         string $view,
         array $args = [],
@@ -44,6 +65,15 @@ final class View
         return static::make($view, $args, $layout)->render();
     }
 
+    /**
+     * Выводит рендеринг представления в виде HTML строки в поток вывода с заголовками
+     *
+     * @param string $view Шаблон
+     * @param array $args Аргументы
+     * @param string $layout Макет
+     * @param bool $exit Завершить выполнение
+     * @return void
+     */
     public static function send(
         string $view,
         array $args = [],
@@ -55,6 +85,15 @@ final class View
         if ($exit) exit;
     }
 
+    /**
+     * Выводит рендеринг представления в виде HTML строки в поток вывода
+     *
+     * @param string $view Шаблон
+     * @param array $args Аргументы
+     * @param string $layout Макет
+     * @param bool $exit Завершить выполнение
+     * @return void
+     */
     public static function echo(
         string $view,
         array $args = [],
@@ -66,6 +105,11 @@ final class View
         if ($exit) exit;
     }
 
+    /**
+     * Возвращает рендеринг представления в виде HTML строки
+     *
+     * @return string
+     */
     public function render(): string
     {
         return $this->template_instance->render();
