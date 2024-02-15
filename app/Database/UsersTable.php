@@ -8,7 +8,7 @@ use App\Models\User;
 
 use Tischmann\Atlantis\{Column, Table};
 
-class Users extends Table
+class UsersTable extends Table
 {
     public static function name(): string
     {

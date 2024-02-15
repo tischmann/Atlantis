@@ -20,6 +20,11 @@ abstract class Table
      */
     abstract public static function name(): string;
 
+    public static function instance(): static
+    {
+        return new static();
+    }
+
     /**
      * Возвращает массив столбцов таблицы
      * 

@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace Tischmann\Atlantis;
 
-use Exception;
-
 use Tischmann\Atlantis\{Table};
 
 abstract class Model
 {
     /**
      * Таблица модели
-     *
-     * @param Table
+     * 
+     * @return Table Таблица
      */
     abstract public static function table(): Table;
 
@@ -192,7 +190,12 @@ abstract class Model
      */
     public function delete(string $key = 'id'): bool
     {
-        return static::query()->where($key, $this->{$key})->limit(1)->delete();
+        if (!property_exists($this, $key)) return false;
+
+        return static::query()
+            ->where($key, $this->{$key})
+            ->limit(1)
+            ->delete();
     }
 
     /**
@@ -204,36 +207,12 @@ abstract class Model
      */
     public static function find(mixed $value, string|array $column = 'id'): self
     {
-        $query = self::query();
-
-        $query->limit(1);
-
         $column = is_array($column) ? $column : [$column];
+
+        $query = self::query()->limit(1);
 
         foreach ($column as $col) $query->orWhere($col, $value);
 
         return self::make($query);
-    }
-
-    /**
-     * Возвращает массив моделей из запроса
-     *
-     * @param Query $query Запрос
-     * @param string $key Ключ
-     * @return array Массив моделей
-     */
-    public static function fill(Query $query, string $key = 'id'): array
-    {
-        $array = [];
-
-        foreach ($query->get() as $row) {
-            $model = new static();
-
-            $model->__fill($row);
-
-            $array[$model->{$key}] = $model;
-        }
-
-        return $array;
     }
 }

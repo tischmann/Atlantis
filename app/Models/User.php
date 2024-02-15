@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Database\{Users};
+use App\Database\{UsersTable};
 
 use Tischmann\Atlantis\{
     Table,
@@ -15,9 +15,9 @@ class User extends Model
 {
     public const ROLE_ADMIN = 255;
 
-    public const ROLE_USER = 0;
+    public const ROLE_USER = 1;
 
-    public const ROLE_GUEST = 1;
+    public const ROLE_GUEST = 0;
 
     public function __construct(
         public string $login = '',
@@ -32,20 +32,45 @@ class User extends Model
 
     public static function find(mixed $value, string|array $column = 'id'): self
     {
-        $model = parent::find($value, $column);
+        $user = parent::find($value, $column);
 
-        assert($model instanceof User);
+        assert($user instanceof self);
 
-        return $model;
+        return $user;
     }
 
     public static function table(): Table
     {
-        return new Users();
+        return UsersTable::instance();
     }
 
+    /**
+     * Проверка на администратора
+     *
+     * @return bool Возвращает true, если пользователь администратор
+     */
     public function isAdmin(): bool
     {
         return $this->role === self::ROLE_ADMIN;
+    }
+
+    /**
+     * Проверка на пользователя
+     *
+     * @return bool Возвращает true, если пользователь обычный
+     */
+    public function isUser(): bool
+    {
+        return $this->role === self::ROLE_USER;
+    }
+
+    /**
+     * Проверка на гостя
+     *
+     * @return bool Возвращает true, если пользователь гость
+     */
+    public function isGuest(): bool
+    {
+        return $this->role === self::ROLE_GUEST;
     }
 }
