@@ -29,7 +29,7 @@ use Tischmann\Atlantis\App;
     <link rel="stylesheet" href="/app<?= App::getAssetsPrefix() ?>.css" media="all">
 </head>
 
-<body class="bg-white text-gray-800 antialiased">
+<body class="bg-white text-gray-800 antialiased m-0 p-0">
     <?php include __DIR__ . "/../header.php" ?>
 
     {{body}}

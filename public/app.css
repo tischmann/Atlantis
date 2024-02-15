@@ -580,6 +580,10 @@ video {
   margin: 2rem;
 }
 
+.m-0 {
+  margin: 0px;
+}
+
 .mx-8 {
   margin-left: 2rem;
   margin-right: 2rem;
@@ -965,6 +969,10 @@ video {
   padding: 1.5rem;
 }
 
+.p-0 {
+  padding: 0px;
+}
+
 .px-4 {
   padding-left: 1rem;
   padding-right: 1rem;
@@ -1101,6 +1109,11 @@ video {
 .text-sky-800 {
   --tw-text-opacity: 1;
   color: rgb(7 89 133 / var(--tw-text-opacity));
+}
+
+.antialiased {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .shadow {
