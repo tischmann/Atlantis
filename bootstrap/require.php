@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-if (version_compare(phpversion(), '8.2', '<')) {
-    die("Требуется PHP версии 8.2 или выше. Установленная версия: " . phpversion());
+if (version_compare(phpversion(), '8.3', '<')) {
+    die("Требуется PHP версии 8.3 или выше. Текущая версия: " . phpversion());
 }
 
 $extensions = [
@@ -14,7 +14,6 @@ $extensions = [
     'json',
     'zlib',
     'curl',
-    'memcache',
     'xml',
 ];
 
