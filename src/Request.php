@@ -14,15 +14,25 @@ use InvalidArgumentException;
 class Request
 {
     public array $uri = []; // URI запроса
+
     public string $method = 'GET'; // Метод запроса
+
     public string $type = 'html'; // Тип данных
+
     public string $accept = 'html'; // Тип ответа
+
     private array $__route = []; // Переменные маршрута
+
     private array $__get = []; // GET параметры
+
     private array $__post = []; // POST параметры
+
     private array $__input = []; // Переменные php://input
+
     private array $__headers = []; // HTTP-Заголовки
+
     private array $__files = []; // Файлы
+
     private array $__args = []; // Аргументы запроса
 
     public function __construct()
@@ -182,7 +192,7 @@ class Request
             $variable = $this->request($key);
 
             if ($variable === null || $variable === '') {
-                throw new InvalidArgumentException("{$key} is required");
+                throw new InvalidArgumentException(get_str('variable_required') . ": {$key}");
             }
 
             foreach (array_diff($types, ['required']) as $assert) {
@@ -195,7 +205,7 @@ class Request
                 if ($type === $assert) continue;
 
                 throw new InvalidArgumentException(
-                    "Invalid type: {$key} ({$type} != {$assert})"
+                    get_str('invalid_type') . ": {$key} [{$type} != {$assert}]"
                 );
             }
         }

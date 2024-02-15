@@ -44,7 +44,7 @@ final class JWT
         $timestamp = time();
 
         if (!$publicKey) {
-            throw new Exception("Public key must be provided");
+            throw new Exception(get_str('jwt_missing_public_key'));
         }
 
         $segments = explode('.', $token);
@@ -52,8 +52,7 @@ final class JWT
         $amount = count($segments);
 
         if ($amount !== 3) {
-            $message = "Wrong number of segments: {$amount}";
-            throw new Exception($message);
+            throw new Exception(get_str('jwt_wrong_segment_amount') . ": {$amount}");
         }
 
         list($headb64, $bodyb64, $cryptob64) = $segments;
@@ -61,13 +60,13 @@ final class JWT
         $header = static::jsonDecode(static::urlsafeB64Decode($headb64));
 
         if ($header === null) {
-            throw new Exception("Invalid header");
+            throw new Exception(get_str('jwt_bad_header'));
         }
 
         $payload = static::jsonDecode(static::urlsafeB64Decode($bodyb64));
 
         if ($payload === null) {
-            throw new Exception("Invalid payload");
+            throw new Exception(get_str('jwt_bad_payload'));
         }
 
         $signature = static::urlsafeB64Decode($cryptob64);
@@ -75,11 +74,11 @@ final class JWT
         if ($signature === false) throw new SignatureInvalidException();
 
         if (!key_exists($header->alg, static::SUPPORTED_ALGORITHMS)) {
-            throw new Exception("Algorithm not supported");
+            throw new Exception(get_str('jwt_algorithm_not_supported'));
         }
 
         if (!in_array($header->alg, $allowedAlgorithms)) {
-            throw new Exception("Algorithm not allowed");
+            throw new Exception(get_str('jwt_algorithm_not_allowed'));
         }
 
         if ($header->alg === 'ES256') {
@@ -89,12 +88,12 @@ final class JWT
         if ($publicKey === (array) $publicKey) {
             if (property_exists($header, 'kid')) {
                 if (!key_exists($header->kid, $publicKey)) {
-                    throw new Exception("Key ID invalid");
+                    throw new Exception(get_str('jwt_key_id_invalid'));
                 }
 
                 $publicKey = $publicKey[$header->kid];
             } else {
-                throw new Exception("Key ID missing");
+                throw new Exception(get_str('jwt_key_id_missing'));
             }
         }
 
@@ -110,19 +109,19 @@ final class JWT
         $nbf = $payload?->nbf ?? 0;
 
         if ($nbf > $timestamp) {
-            throw new BeforeValidException("Token expired");
+            throw new BeforeValidException(get_str('jwt_token_not_yet_valid'));
         }
 
         $iat = $payload?->iat ?? 0;
 
         if ($iat > $timestamp) {
-            throw new BeforeValidException("Token expired");
+            throw new BeforeValidException(get_str('jwt_token_not_yet_valid'));
         }
 
         $exp = $payload?->exp ?? 0;
 
         if ($timestamp >= $exp) {
-            throw new TokenExpiredException("Token expired");
+            throw new TokenExpiredException(get_str('jwt_token_expired'));
         }
 
         return $payload;
@@ -183,7 +182,7 @@ final class JWT
         string $algorithm = 'HS256'
     ): string {
         if (!key_exists($algorithm, static::SUPPORTED_ALGORITHMS)) {
-            throw new Exception("Algorithm not supported");
+            throw new Exception(get_str('jwt_algorithm_not_supported'));
         }
 
         list($function, $algorithm) = static::SUPPORTED_ALGORITHMS[$algorithm];
@@ -202,7 +201,7 @@ final class JWT
                 );
 
                 if (!$success) {
-                    throw new Exception("OpenSSL unable to sign data");
+                    throw new Exception(get_str('jwt_ssl_unable_to_sign'));
                 } else {
                     if ($algorithm === 'ES256') {
                         $signature = static::signatureFromDER($signature, 256);
@@ -229,7 +228,7 @@ final class JWT
         string $algorithm
     ): bool {
         if (!key_exists($algorithm, static::SUPPORTED_ALGORITHMS)) {
-            throw new Exception("Algorithm not supported");
+            throw new Exception(get_str('jwt_algorithm_not_supported'));
         }
 
         list($function, $algorithm) = static::SUPPORTED_ALGORITHMS[$algorithm];
@@ -246,9 +245,7 @@ final class JWT
                 if ($success === 1) return true;
                 elseif ($success === 0) return false;
 
-                $message = 'OpenSSL error: ' . openssl_error_string();
-
-                throw new Exception($message);
+                throw new Exception(get_str('jwt_ssl_unable_to_sign') . ": " . openssl_error_string());
             case 'hash_hmac':
             default:
                 $hash = hash_hmac($algorithm, $data, $publicKey, true);
@@ -288,7 +285,7 @@ final class JWT
         if ($errno = json_last_error()) {
             static::handleJsonError($errno);
         } elseif ($obj === null && $input !== 'null') {
-            throw new Exception("Null result");
+            throw new Exception(get_str('jwt_null_result'));
         }
 
         return $obj;
@@ -307,7 +304,7 @@ final class JWT
         if ($errno = json_last_error()) {
             static::handleJsonError($errno);
         } elseif ($json === 'null' && $input !== null) {
-            throw new Exception("Null result");
+            throw new Exception(get_str('jwt_null_result'));
         }
 
         return $json;
@@ -358,7 +355,7 @@ final class JWT
             JSON_ERROR_UTF8 => 'Malformed UTF-8 characters'
         ];
 
-        throw new Exception("JSON error: " . $messages[$errorCode] ?? "?");
+        throw new Exception(get_str('json_error') . ": " . $messages[$errorCode] ?? $errorCode);
     }
 
     /**

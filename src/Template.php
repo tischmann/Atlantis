@@ -44,19 +44,25 @@ final class Template
         if (!file_exists($file)) {
             $file = __DIR__ . '/../app/Views/' . $this->template . '.php';
 
-            if (!file_exists($file)) {
-                throw new Exception('View file not found: ' . $this->template);
-            }
-
             if (!in_array('ob_gzhandler', ob_list_handlers())) {
                 ob_start('ob_gzhandler');
             } else {
                 ob_start();
             }
 
-            extract([...static::getCachedArgs(), ...$this->args]);
+            if (file_exists($file)) {
+                extract([...static::getCachedArgs(), ...$this->args]);
 
-            include_once $file;
+                include_once $file;
+            } else {
+                $message = get_str('not_found') . ": {$this->template}";
+
+                echo <<<HTML
+                <div style="background:red !important; color: white !important; padding:4px">
+                    {$message}
+                </div>
+                HTML;
+            }
 
             return ob_get_clean();
         }

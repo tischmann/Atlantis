@@ -4,7 +4,23 @@ return [
     // Общие
     'access_denied' => 'Доступ запрещен',
     'back' => 'Назад',
+    'json_error' => 'Ошибка JSON',
     'not_found' => 'Запрашиваемый ресурс не найден',
+    'variable_required' => 'Переменная обязательна',
+    'invalid_type' => 'Неверный тип',
+    // Ошибки JWT
+    'jwt_missing_public_key' => 'Отсутствует публичный ключ',
+    'jwt_wrong_segment_amount' => 'Неверное количество сегментов',
+    'jwt_bad_header' => 'Неверный заголовок',
+    'jwt_bad_payload' => 'Неверное тело',
+    'jwt_algorithm_not_supported' => 'Алгоритм не поддерживается',
+    'jwt_algorithm_not_allowed' => 'Алгоритм не разрешен',
+    'jwt_key_id_invalid' => 'Неверный идентификатор ключа',
+    'jwt_key_id_missing' => 'Отсутствует идентификатор ключа',
+    'jwt_token_expired' => 'Истёк срок действия токена',
+    'jwt_token_not_yet_valid' => 'Токен еще не действителен',
+    'jwt_ssl_unable_to_sign' => 'Не удалось подписать токен',
+    'jwt_null_result' => 'Пустой результат',
     // Авторизация
     'signin_login' => 'Логин',
     'signin_password' => 'Пароль',
