@@ -6,8 +6,6 @@ namespace Tischmann\Atlantis;
 
 /**
  * Класс HTTP ответа
- * 
- * @author Yuriy Stolov <yuriystolov@gmail.com>
  */
 final class Response
 {
@@ -40,7 +38,7 @@ final class Response
             . "default-src 'self'; "
             . "img-src 'self' data: blob: https:; "
             . "child-src 'self' https:;"
-            . "script-src https: http: 'strict-dynamic' 'nonce-" . getenv('APP_NONCE') . "' 'unsafe-inline'; "
+            . "script-src https: http: 'strict-dynamic' 'nonce-" . getenv('APP_NONCE') . "'; "
             . "style-src 'unsafe-inline' https:; "
             . "frame-src 'none';"
             . "font-src 'self' https:; ");
@@ -88,8 +86,8 @@ final class Response
                 return static::xml($response, $code);
             default:
                 static::headers($code);
-
                 var_dump($response);
+                exit;
         }
     }
 
@@ -110,6 +108,8 @@ final class Response
         } else {
             var_dump($response);
         }
+
+        exit;
     }
 
     /**
@@ -129,6 +129,8 @@ final class Response
         } else {
             echo json_encode($response, 256 | 128 | 32);
         }
+
+        exit;
     }
 
     /**
@@ -160,6 +162,8 @@ final class Response
         }
 
         echo $xml->asXML();
+
+        exit;
     }
 
     /**
@@ -175,9 +179,11 @@ final class Response
         header('Content-Type: text/plain; charset=UTF-8');
 
         if (is_object($response) || is_array($response)) {
-            json_encode($response, 256 | 128 | 32);
+            echo "<pre>" . json_encode($response, 256 | 128 | 32) . "</pre>";
         } else {
             echo strval($response);
         }
+
+        exit;
     }
 }
