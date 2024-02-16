@@ -60,7 +60,7 @@ var dialog = function ({
 
 window.addEventListener('load', () => {
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/service-worker.js')
+        navigator.serviceWorker.register('/service-worker.min.js')
     }
 
     if (window.location.protocol === 'http:') {
