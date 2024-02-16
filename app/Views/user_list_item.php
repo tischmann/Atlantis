@@ -7,6 +7,6 @@
         <a href="/user/<?= $user->id ?>" class="select-none underline" title="{{lang=edit}}">{{lang=edit}}</a>
     </td>
     <td class="whitespace-nowrap px-6 py-4 text-center">
-        <a href="!#" data-id="<?= $user->id ?>" class="usr-del-btn select-none underline" title="{{lang=delete}}">{{lang=delete}}</a>
+        <span data-id="<?= $user->id ?>" class="usr-del-btn select-none underline cursor-pointer" title="{{lang=delete}}">{{lang=delete}}</span>
     </td>
 </tr>

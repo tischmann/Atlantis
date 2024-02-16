@@ -27,7 +27,7 @@ class UsersController extends Controller
 {
     public function showAllUsers(): void
     {
-        $this->checkAdminRights(return: false);
+        $this->checkAdminHtml();
 
         $query = User::query();
 
@@ -128,7 +128,7 @@ class UsersController extends Controller
      */
     public function addUserForm(): void
     {
-        $this->checkAdminRights(return: false);
+        $this->checkAdminHtml();
 
         View::send(
             view: 'user',
@@ -144,19 +144,9 @@ class UsersController extends Controller
      */
     public function addUser(): void
     {
-        if (!csrf_verify()) {
-            Response::json(
-                response: ['text' => get_str('csrf_failed')],
-                code: 403
-            );
-        }
+        $this->checkCsrfJson();
 
-        if (!App::getCurrentUser()->isAdmin()) {
-            Response::json(
-                response: ['text' => get_str('access_denied')],
-                code: 403
-            );
-        }
+        $this->checkAdminJson();
 
         $user = User::instance();
 
@@ -185,7 +175,7 @@ class UsersController extends Controller
      */
     public function getUser(): void
     {
-        $this->checkAdminRights(return: false);
+        $this->checkAdminHtml();
 
         $id = intval($this->route->args('id'));
 
@@ -211,68 +201,49 @@ class UsersController extends Controller
      */
     public function deleteUser(): void
     {
-        try {
-            if (!csrf_verify()) {
-                Response::json(
-                    response: ['text' => get_str('csrf_failed')],
-                    code: 403
-                );
-            }
+        $this->checkCsrfJson();
 
-            if (!App::getCurrentUser()->isAdmin()) {
-                Response::json(
-                    response: ['text' => get_str('access_denied')],
-                    code: 403
-                );
-            }
+        $this->checkAdminJson();
 
-            $id = intval($this->route->args('id'));
+        $id = intval($this->route->args('id'));
 
-            $user = User::find($id);
+        $user = User::find($id);
 
-            if (!$user->exists()) {
-                Response::json(
-                    response: [
-                        'text' => get_str('user_not_found'),
-                        'redirect' => '/users'
-                    ],
-                    code: 404
-                );
-            }
-
-            if ($user->isLastAdmin()) {
-                Response::json(
-                    response: [
-                        'token' => csrf_set()->token,
-                        'text' => get_str('user_last_admin')
-                    ],
-                    code: 403
-                );
-            }
-
-            if (!$user->delete()) {
-                Response::json(
-                    response: [
-                        'token' => csrf_set()->token,
-                        'text' => get_str('user_delete_error')
-                    ],
-                    code: 500
-                );
-            }
-        } catch (Exception $exception) {
+        if (!$user->exists()) {
             Response::json(
-                response: ['text' => $exception->getMessage()],
+                response: [
+                    'title' => get_str('error'),
+                    'text' => get_str('user_not_found'),
+                    'redirect' => '/users'
+                ],
+                code: 404
+            );
+        }
+
+        if ($user->isLastAdmin()) {
+            Response::json(
+                response: [
+                    'token' => csrf_set()->token,
+                    'title' => get_str('error'),
+                    'text' => get_str('user_last_admin')
+                ],
+                code: 403
+            );
+        }
+
+        if (!$user->delete()) {
+            Response::json(
+                response: [
+                    'token' => csrf_set()->token,
+                    'title' => get_str('error'),
+                    'text' => get_str('user_delete_error')
+                ],
                 code: 500
             );
         }
 
         Response::json(
             response: ['redirect' => '/users'],
-            code: 200
-        );
-
-        Response::json(
-            response: ['ok' => true, 'redirect' => '/users'],
             code: 200
         );
     }
@@ -284,19 +255,9 @@ class UsersController extends Controller
      */
     public function updateUser(): void
     {
-        if (!csrf_verify()) {
-            Response::json(
-                response: ['text' => get_str('csrf_failed')],
-                code: 403
-            );
-        }
+        $this->checkCsrfJson();
 
-        if (!App::getCurrentUser()->isAdmin()) {
-            Response::json(
-                response: ['text' => get_str('access_denied')],
-                code: 403
-            );
-        }
+        $this->checkAdminJson();
 
         $id = intval($this->route->args('id'));
 
@@ -304,7 +265,10 @@ class UsersController extends Controller
 
         if (!$user->exists()) {
             Response::json(
-                response: ['text' => get_str('user_not_found')],
+                response: [
+                    'title' => get_str('error'),
+                    'text' => get_str('user_not_found')
+                ],
                 code: 404
             );
         }
@@ -315,6 +279,7 @@ class UsersController extends Controller
             Response::json(
                 response: [
                     'token' => csrf_set()->token,
+                    'title' => get_str('error'),
                     'text' => get_str('user_save_error')
                 ],
                 code: 500
@@ -352,6 +317,7 @@ class UsersController extends Controller
                 Response::json(
                     response: [
                         'token' => csrf_set()->token,
+                        'title' => get_str('error'),
                         'text' => get_str('user_name_format')
                     ],
                     code: 400
@@ -364,20 +330,24 @@ class UsersController extends Controller
                 Response::json(
                     response: [
                         'token' => csrf_set()->token,
+                        'title' => get_str('error'),
                         'text' => get_str('user_login_format')
                     ],
                     code: 400
                 );
             }
 
-            if (!User::checkUserLoginExists($user->login)) {
-                Response::json(
-                    response: [
-                        'token' => csrf_set()->token,
-                        'text' => get_str('user_login_exists')
-                    ],
-                    code: 400
-                );
+            if (!$user->exists()) {
+                if (!User::checkUserLoginExists($user->login)) {
+                    Response::json(
+                        response: [
+                            'token' => csrf_set()->token,
+                            'title' => get_str('error'),
+                            'text' => get_str('user_login_exists')
+                        ],
+                        code: 400
+                    );
+                }
             }
 
             $password = strval($request->request('password'));
@@ -399,6 +369,7 @@ class UsersController extends Controller
                     Response::json(
                         response: [
                             'token' => csrf_set()->token,
+                            'title' => get_str('error'),
                             'text' => get_str('user_password_complexity')
                         ],
                         code: 400
@@ -419,9 +390,53 @@ class UsersController extends Controller
             Response::json(
                 response: [
                     'token' => csrf_set()->token,
+                    'title' => get_str('error'),
                     'text' => $exception->getMessage()
                 ],
                 code: 500
+            );
+        }
+    }
+
+
+    /**
+     * Проверка CSRF токена
+     *
+     * В случае ошибки токена отправляет JSON
+     *
+     * @return void
+     */
+    protected function checkCsrfJson(): void
+    {
+        if (!csrf_verify()) {
+            Response::json(
+                response: [
+                    'title' => get_str('error'),
+                    'text' => get_str('csrf_failed'),
+                    'redirect' => '/'
+                ],
+                code: 403
+            );
+        }
+    }
+
+    /**
+     * Проверка прав доступа администратора
+     *
+     * В случае отсутствия прав доступа отправляет JSON
+     *
+     * @return void
+     */
+    protected function checkAdminJson(): void
+    {
+        if (!App::getCurrentUser()->isAdmin()) {
+            Response::json(
+                response: [
+                    'title' => get_str('error'),
+                    'text' => get_str('access_denied'),
+                    'redirect' => '/'
+                ],
+                code: 403
             );
         }
     }

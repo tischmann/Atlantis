@@ -1,4 +1,8 @@
-var dialog = function (title = 'Dialog title', text = 'Dialog text') {
+var dialog = function ({
+    title = 'Dialog title',
+    text = 'Dialog text',
+    redirect
+}) {
     const dialog = document.createElement('dialog')
     const container = document.createElement('div')
     const close = document.createElement('button')
@@ -31,6 +35,7 @@ var dialog = function (title = 'Dialog title', text = 'Dialog text') {
 
     close.addEventListener('click', () => {
         dialog.close()
+        if (redirect) window.location.href = redirect
     })
 
     dialog.classList.add(

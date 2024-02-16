@@ -35,15 +35,13 @@ class Controller
     /**
      * Проверка прав доступа администратора
      * 
-     * @param bool $return Вернуть результат проверки
+     * В случае отсутствия прав доступа отправляет 403 ошибку
+     * 
+     * @return void
      */
-    protected function checkAdminRights(bool $return = false)
+    protected function checkAdminHtml(): void
     {
-        $is_admin = App::getCurrentUser()->isAdmin();
-
-        if ($return) return $is_admin;
-
-        if (!$is_admin) {
+        if (!App::getCurrentUser()->isAdmin()) {
             View::send(
                 view: '403',
                 layout: 'default',
