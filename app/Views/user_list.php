@@ -17,7 +17,7 @@
                                 <th scope="col" class="px-6 py-4 text-center select-none">{{lang=delete}}</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="font-medium">
                             <?php
 
                             use Tischmann\Atlantis\Template;

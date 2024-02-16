@@ -161,6 +161,11 @@ class User extends Model
         return $query->count() === 0;
     }
 
+    /**
+     * Получение текстового представления роли пользователя
+     *
+     * @return string Текстовое представление роли пользователя
+     */
     public function getUserRoleText(): string
     {
         return match ($this->role) {
