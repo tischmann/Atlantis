@@ -122,6 +122,45 @@ class User extends Model
             && $hasMinimumLength;
     }
 
+
+    /**
+     * Проверка имени пользователя на корректность
+     *
+     * @param string $name Имя пользователя
+     * @return bool Возвращает true, если имя пользователя корректное
+     */
+    public static function checkUserName(string $name): bool
+    {
+        return boolval(preg_match('/^.{3,255}$/', $name));
+    }
+
+    /**
+     * Проверка логина пользователя на корректность
+     *
+     * @param string $login Логин пользователя
+     * @return bool Возвращает true, если логин пользователя корректный
+     */
+    public static function checkUserLogin(string $login): bool
+    {
+        if (strlen($login) < 3) return false;
+
+        return !boolval(preg_match('/^[^a-z0-9_-]$/i', $login));
+    }
+
+
+    /**
+     * Проверка на уникальность логина
+     *
+     * @param string $login Логин
+     * @return bool Возвращает true, если логин уникален
+     */
+    public static function checkUserLoginExists(string $login): bool
+    {
+        $query = self::query()->where('login', $login);
+
+        return $query->count() === 0;
+    }
+
     public function getUserRoleText(): string
     {
         return match ($this->role) {

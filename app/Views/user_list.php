@@ -9,12 +9,12 @@
                     <table class="min-w-full text-left text-sm">
                         <thead class="border-b font-medium">
                             <tr>
-                                <th scope="col" class="px-6 py-4 text-center">{{lang=edit}}</th>
                                 <th scope="col" class="px-6 py-4">{{lang=user_login}}</th>
                                 <th scope="col" class="px-6 py-4">{{lang=user_name}}</th>
                                 <th scope="col" class="px-6 py-4">{{lang=user_role}}</th>
                                 <th scope="col" class="px-6 py-4">{{lang=user_status}}</th>
-                                <th scope="col" class="px-6 py-4 text-center">{{lang=delete}}</th>
+                                <th scope="col" class="px-6 py-4 text-center select-none">{{lang=edit}}</th>
+                                <th scope="col" class="px-6 py-4 text-center select-none">{{lang=delete}}</th>
                             </tr>
                         </thead>
                         <tbody>

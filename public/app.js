@@ -1,4 +1,4 @@
-var showDialog = function (title = 'Dialog title', text = 'Dialog text') {
+var dialog = function (title = 'Dialog title', text = 'Dialog text') {
     const dialog = document.createElement('dialog')
     const container = document.createElement('div')
     const close = document.createElement('button')

@@ -138,6 +138,47 @@ class UsersController extends Controller
     }
 
     /**
+     * Добавление пользователя
+     *
+     * @return void
+     */
+    public function addUser(): void
+    {
+        if (!csrf_verify()) {
+            Response::json(
+                response: ['text' => get_str('csrf_failed')],
+                code: 403
+            );
+        }
+
+        if (!App::getCurrentUser()->isAdmin()) {
+            Response::json(
+                response: ['text' => get_str('access_denied')],
+                code: 403
+            );
+        }
+
+        $user = User::instance();
+
+        $this->fillUser($user);
+
+        if (!$user->save()) {
+            Response::json(
+                response: [
+                    'token' => csrf_set()->token,
+                    'text' => get_str('user_save_error')
+                ],
+                code: 500
+            );
+        }
+
+        Response::json(
+            response: ['ok' => true, 'redirect' => '/users'],
+            code: 200
+        );
+    }
+
+    /**
      * Вывод страницы пользователя
      *
      * @return void
@@ -171,8 +212,18 @@ class UsersController extends Controller
     public function deleteUser(): void
     {
         try {
+            if (!csrf_verify()) {
+                Response::json(
+                    response: ['text' => get_str('csrf_failed')],
+                    code: 403
+                );
+            }
+
             if (!App::getCurrentUser()->isAdmin()) {
-                Response::text(response: get_str('access_denied'), code: 403);
+                Response::json(
+                    response: ['text' => get_str('access_denied')],
+                    code: 403
+                );
             }
 
             $id = intval($this->route->args('id'));
@@ -180,24 +231,50 @@ class UsersController extends Controller
             $user = User::find($id);
 
             if (!$user->exists()) {
-                Response::text(response: get_str('user_not_found'), code: 404);
+                Response::json(
+                    response: [
+                        'text' => get_str('user_not_found'),
+                        'redirect' => '/users'
+                    ],
+                    code: 404
+                );
             }
 
             if ($user->isLastAdmin()) {
-                Response::text(response: get_str('user_last_admin'), code: 403);
+                Response::json(
+                    response: [
+                        'token' => csrf_set()->token,
+                        'text' => get_str('user_last_admin')
+                    ],
+                    code: 403
+                );
             }
 
             if (!$user->delete()) {
-                Response::text(
-                    response: get_str('user_delete_error'),
+                Response::json(
+                    response: [
+                        'token' => csrf_set()->token,
+                        'text' => get_str('user_delete_error')
+                    ],
                     code: 500
                 );
             }
         } catch (Exception $exception) {
-            Response::text(response: $exception->getMessage(), code: 500);
+            Response::json(
+                response: ['text' => $exception->getMessage()],
+                code: 500
+            );
         }
 
-        Response::send(code: 200);
+        Response::json(
+            response: ['redirect' => '/users'],
+            code: 200
+        );
+
+        Response::json(
+            response: ['ok' => true, 'redirect' => '/users'],
+            code: 200
+        );
     }
 
     /**
@@ -207,19 +284,52 @@ class UsersController extends Controller
      */
     public function updateUser(): void
     {
+        if (!csrf_verify()) {
+            Response::json(
+                response: ['text' => get_str('csrf_failed')],
+                code: 403
+            );
+        }
+
+        if (!App::getCurrentUser()->isAdmin()) {
+            Response::json(
+                response: ['text' => get_str('access_denied')],
+                code: 403
+            );
+        }
+
+        $id = intval($this->route->args('id'));
+
+        $user = User::find($id);
+
+        if (!$user->exists()) {
+            Response::json(
+                response: ['text' => get_str('user_not_found')],
+                code: 404
+            );
+        }
+
+        $this->fillUser($user);
+
+        if (!$user->save()) {
+            Response::json(
+                response: [
+                    'token' => csrf_set()->token,
+                    'text' => get_str('user_save_error')
+                ],
+                code: 500
+            );
+        }
+
+        Response::json(
+            response: ['ok' => true, 'redirect' => '/users'],
+            code: 200
+        );
+    }
+
+    protected function fillUser(User &$user): User
+    {
         try {
-            if (!App::getCurrentUser()->isAdmin()) {
-                Response::text(response: get_str('access_denied'), code: 403);
-            }
-
-            $id = intval($this->route->args('id'));
-
-            $user = User::find($id);
-
-            if (!$user->exists()) {
-                Response::text(response: get_str('user_not_found'), code: 404);
-            }
-
             $request = Request::instance();
 
             try {
@@ -238,23 +348,59 @@ class UsersController extends Controller
 
             $user->name = strval($request->request('name'));
 
+            if (!User::checkUserName($user->name)) {
+                Response::json(
+                    response: [
+                        'token' => csrf_set()->token,
+                        'text' => get_str('user_name_format')
+                    ],
+                    code: 400
+                );
+            }
+
             $user->login = strval($request->request('login'));
+
+            if (!User::checkUserLogin($user->login)) {
+                Response::json(
+                    response: [
+                        'token' => csrf_set()->token,
+                        'text' => get_str('user_login_format')
+                    ],
+                    code: 400
+                );
+            }
+
+            if (!User::checkUserLoginExists($user->login)) {
+                Response::json(
+                    response: [
+                        'token' => csrf_set()->token,
+                        'text' => get_str('user_login_exists')
+                    ],
+                    code: 400
+                );
+            }
 
             $password = strval($request->request('password'));
 
             $password_repeat = strval($request->request('password_repeat'));
 
-            if ($password || $password_repeat) {
+            if ($password || $password_repeat || !$user->exists()) {
                 if ($password !== $password_repeat) {
-                    Response::text(
-                        response: get_str('user_passwords_not_match'),
+                    Response::json(
+                        response: [
+                            'token' => csrf_set()->token,
+                            'text' => get_str('user_passwords_not_match')
+                        ],
                         code: 400
                     );
                 }
 
                 if (!User::checkPasswordComplexity($password)) {
-                    Response::text(
-                        response: get_str('user_password_complexity'),
+                    Response::json(
+                        response: [
+                            'token' => csrf_set()->token,
+                            'text' => get_str('user_password_complexity')
+                        ],
                         code: 400
                     );
                 }
@@ -268,13 +414,15 @@ class UsersController extends Controller
 
             $user->status = boolval($request->request('status'));
 
-            if (!$user->save()) {
-                Response::text(response: get_str('user_save_error'), code: 400);
-            }
-
-            Response::send(code: 200);
+            return $user;
         } catch (Exception $exception) {
-            Response::text(response: $exception->getMessage(), code: 500);
+            Response::json(
+                response: [
+                    'token' => csrf_set()->token,
+                    'text' => $exception->getMessage()
+                ],
+                code: 500
+            );
         }
     }
 }

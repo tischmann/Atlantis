@@ -18,7 +18,7 @@ if (App::getCurrentUser()->isAdmin()) {
         path: 'users',
         action: 'showAllUsers',
         method: 'GET',
-        title: get_str('users_list')
+        title: get_str('user_list')
     ));
 
     Router::add(new Route(

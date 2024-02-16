@@ -8,7 +8,7 @@
                 c0.2,0.2-13.1,0.4-28.8,0.4h-29L193,329.7c-11.7,19.5-21.3,35.7-21.5,36.1c-0.2,0.4,40.1,0.4,114.1,0.4c62.9,0,114.3-0.2,114.3-0.4
                 c0-0.4-199.7-332.2-199.9-332.2C199.9,33.9,154.9,108.5,99.9,199.8z" />
                     </svg>
-                    <div class="uppercase text-4xl leading-8 font-bold -ml-1 tracking-wide">TLANTIS</div>
+                    <div class="uppercase text-4xl leading-8 font-bold -ml-1 tracking-wide select-none">TLANTIS</div>
                 </a>
             </div>
 

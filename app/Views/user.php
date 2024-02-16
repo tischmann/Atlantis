@@ -67,7 +67,7 @@ if (isset($exception)) {
         if (!$user?->exists()) {
             echo <<<HTML
             <div class="mb-4 text-right">
-                <button type="submit" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-xl w-full md:w-auto outline-none transition select-none">{{lang=add}}</button>
+                <button type="button" class="usr-add-btn bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-xl w-full md:w-auto outline-none transition select-none">{{lang=add}}</button>
             </div>
             HTML;
         } else {
@@ -80,6 +80,13 @@ if (isset($exception)) {
         }
         ?>
     </form>
-    <?php require 'user_delete_script.php' ?>
-    <?php require 'user_update_script.php' ?>
+    <?php
+    if (!$user?->exists()) {
+        require 'user_add_script.php';
+    } else {
+        require 'user_delete_script.php';
+        require 'user_update_script.php';
+    }
+
+    ?>
 </main>
