@@ -15,6 +15,6 @@
 
     ?>
     <div class="flex justify-center mt-8">
-        <a href="/" class="bg-gray-500 hover:bg-sky-800 text-white font-bold py-2 px-4 rounded-xl">{{lang=back}}</a>
+        <a href="/{{env=APP_LOCALE}}/" class="bg-gray-500 hover:bg-sky-800 text-white font-bold py-2 px-4 rounded-xl">{{lang=back}}</a>
     </div>
 </main>
