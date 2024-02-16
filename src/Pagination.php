@@ -11,9 +11,9 @@ class Pagination
 {
     public const DEFAULT_LIMIT = 10; // Количество элементов на странице по умолчанию
 
-    protected array $prev_pages = []; // Массив предыдущих от текущей страниц
+    public array $prev_pages = []; // Массив предыдущих от текущей страниц
 
-    protected array $next_pages = []; // Массив следующих от текущей страниц
+    public array $next_pages = []; // Массив следующих от текущей страниц
     /**
      * Конструктор
      * 
@@ -39,12 +39,15 @@ class Pagination
         public int $last = 1,
         public int $offset = 0,
         public int $pages_prev_limit = 3,
-        public int $pages_next_limit = 3
+        public int $pages_next_limit = 3,
+        public ?Query $query = null
     ) {
         $this->setTotal($this->total <= 0 ? 0 : $this->total)
             ->setPage($this->page <= 1 ? 1 : $this->page)
             ->setLimit($this->limit <= 0 ? static::DEFAULT_LIMIT : $this->limit)
             ->compute();
+
+        if ($query) $this->query(query: $query);
     }
 
     /**
@@ -330,5 +333,54 @@ class Pagination
         $data['page'] = $page;
 
         return http_build_query($data);
+    }
+
+    /**
+     * Получение запроса на текущую страницу
+     * 
+     * @param Query Запрос 
+     * @param int|null $page Номер страницы
+     * @param int|null $limit Количество элементов на странице
+     * 
+     * @return Query Запрос 
+     */
+    public function query(
+        Query &$query,
+        ?int $page = null,
+        ?int $limit = null
+    ): Query {
+        $request = Request::instance();
+
+        $page ??= 1;
+
+        if ($request->request('page') !== null) {
+            $page = intval($request->request('page'));
+        }
+
+        $limit ??= static::DEFAULT_LIMIT;
+
+        if ($request->request('limit') !== null) {
+            $limit = intval($request->request('limit'));
+        }
+
+        $offset = 0;
+
+        $total = $query->count();
+
+        $max_pages = intval(ceil($total / $limit));
+
+        if ($page < 1) $page = 1;
+        else if ($page > $max_pages) $page = $max_pages;
+
+        $offset = ($page - 1) * $limit;
+
+        $query->limit($limit)->offset($offset);
+
+        $this->setTotal($total)
+            ->setPage($page)
+            ->setLimit($limit)
+            ->compute();
+
+        return $query;
     }
 }

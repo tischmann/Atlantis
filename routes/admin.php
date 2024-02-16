@@ -15,6 +15,14 @@ use Tischmann\Atlantis\{
 if (App::getCurrentUser()->isAdmin()) {
     Router::add(new Route(
         controller: new UsersController(),
+        path: 'users',
+        action: 'showAllUsers',
+        method: 'GET',
+        title: get_str('users_list')
+    ));
+
+    Router::add(new Route(
+        controller: new UsersController(),
         path: 'user',
         action: 'addUserForm',
         method: 'GET',

@@ -73,7 +73,7 @@ final class Response
      * @param int $code Код ответа (по умолчанию 200)
      * @return void
      */
-    public static function send(mixed $response, int $code = 200)
+    public static function send(mixed $response = '', int $code = 200)
     {
         switch (Request::accept()) {
             case 'html':

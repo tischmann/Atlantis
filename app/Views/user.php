@@ -1,6 +1,12 @@
 <?php
 assert($user instanceof \App\Models\User);
+
+if (isset($exception)) {
+    echo '<div class="bg-red-600 text-white font-bold p-4 rounded-xl mb-4">' . $exception->getMessage() . '</div>';
+}
 ?>
+
+
 <main class="md:container mx-4 md:mx-auto">
     <h1 class="text-2xl font-bold mb-4 select-none bg-gray-200 text-gray-800 rounded-xl px-4 py-3">
         <?= $user?->exists() ? get_str('user_update') : get_str('user_new') ?>
@@ -57,8 +63,23 @@ assert($user instanceof \App\Models\User);
                 </div>
             </div>
         </div>
-        <div class="mb-4 text-right">
-            <button type="submit" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-xl w-full md:w-auto outline-none transition select-none">{{lang=add}}</button>
-        </div>
+        <?php
+        if (!$user?->exists()) {
+            echo <<<HTML
+            <div class="mb-4 text-right">
+                <button type="submit" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-xl w-full md:w-auto outline-none transition select-none">{{lang=add}}</button>
+            </div>
+            HTML;
+        } else {
+            echo <<<HTML
+            <div class="mb-4 flex flex-col md:flex-row md:justify-between gap-4">
+                <button type="button" data-id="{$user?->id}" class="usr-del-btn bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-xl outline-none transition select-none">{{lang=delete}}</button>
+                <button type="button" data-id="{$user?->id}" class="usr-upd-btn bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-xl outline-none transition select-none">{{lang=save}}</button>
+            </div>
+            HTML;
+        }
+        ?>
     </form>
+    <?php require 'user_delete_script.php' ?>
+    <?php require 'user_update_script.php' ?>
 </main>

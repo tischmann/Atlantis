@@ -194,7 +194,7 @@ class Request
 
             $variable = $this->request($key);
 
-            if ($variable === null || $variable === '') {
+            if ($variable === null) {
                 throw new InvalidArgumentException(get_str('variable_required') . ": {$key}");
             }
 

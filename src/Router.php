@@ -84,7 +84,8 @@ final class Router
                     get_str('route_not_found') . ": '{$_SERVER['REQUEST_URI']}'"
                 )
             ],
-            exit: true
+            exit: true,
+            code: 404
         );
     }
 

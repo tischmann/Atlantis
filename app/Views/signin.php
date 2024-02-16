@@ -1,5 +1,4 @@
 <main class="w-screen h-screen flex flex-col items-center justify-center select-none p-6 bg-gray-200">
-    <a href="/" class="absolute m-8 top-0 left-0 flex justify-center font-semibold text-sm rounded-lg bg-gray-600 px-3 py-3 uppercase text-white shadow transition duration-150 ease-in-out hover:bg-gray-500 hover:shadow-lg focus:bg-gray-500 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gray-500 active:shadow-lg">{{lang=back}}</a>
     <div class="flex items-center mb-6">
         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 400 400" xml:space="preserve" class="h-[54px] text-sky-800">
             <path fill="currentColor" d="M99.9,199.8C45,291.1,0,365.8,0,366s19.1,0.4,42.5,0.2l42.5-0.2l57.4-96c31.5-52.7,57.4-96,57.6-96s71.6,118.1,72,119.4

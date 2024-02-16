@@ -78,9 +78,10 @@ final class View
         string $view,
         array $args = [],
         string $layout = 'default',
-        bool $exit = false
+        bool $exit = false,
+        int $code = 200
     ) {
-        Response::send(static::html($view, $args, $layout));
+        Response::send(static::html($view, $args, $layout), $code);
 
         if ($exit) exit;
     }

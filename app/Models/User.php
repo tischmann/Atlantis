@@ -94,4 +94,55 @@ class User extends Model
     {
         return !$this->status;
     }
+
+    /**
+     * Проверка пароля на сложность
+     * 
+     * Пароль должен содержать хотя бы одну заглавную букву, одну строчную букву, одну цифру и один спецсимвол и быть не менее 8 символов
+     *
+     * @param string $password Пароль
+     * @return bool Возвращает true, если пароль сложный
+     */
+    public static function checkPasswordComplexity(string $password): bool
+    {
+        $hasCapitalLetter = preg_match('/[A-Z]/', $password);
+
+        $hasSmallLetter = preg_match('/[a-z]/', $password);
+
+        $hasNumber = preg_match('/[0-9]/', $password);
+
+        $hasSpecialChar = preg_match('/[^A-Za-z0-9]/', $password);
+
+        $hasMinimumLength = strlen($password) >= 8;
+
+        return $hasCapitalLetter
+            && $hasSmallLetter
+            && $hasNumber
+            && $hasSpecialChar
+            && $hasMinimumLength;
+    }
+
+    public function getUserRoleText(): string
+    {
+        return match ($this->role) {
+            self::ROLE_ADMIN => get_str('user_role_admin'),
+            self::ROLE_USER => get_str('user_role_user'),
+            self::ROLE_GUEST => get_str('user_role_guest'),
+            default => get_str('unknown'),
+        };
+    }
+
+    /**
+     * Проверка на последнего администратора
+     *
+     * @return bool Возвращает true, если пользователь последний администратор
+     */
+    public function isLastAdmin(): bool
+    {
+        if (!$this->isAdmin()) return false;
+
+        $query = self::query()->where('role', self::ROLE_ADMIN);
+
+        return $query->count() === 1;
+    }
 }

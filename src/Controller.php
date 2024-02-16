@@ -27,7 +27,8 @@ class Controller
                     message: "Метод '{$class}\\{$name}()' не найден"
                 )
             ],
-            exit: true
+            exit: true,
+            code: 404
         );
     }
 
@@ -46,7 +47,8 @@ class Controller
             View::send(
                 view: '403',
                 layout: 'default',
-                exit: true
+                exit: true,
+                code: 403
             );
         }
     }
