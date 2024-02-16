@@ -150,7 +150,7 @@ class UsersController extends Controller
 
         $user = User::instance();
 
-        $this->fillUser($user);
+        $this->fillUserFromRequest($user);
 
         if (!$user->save()) {
             Response::json(
@@ -273,7 +273,7 @@ class UsersController extends Controller
             );
         }
 
-        $this->fillUser($user);
+        $this->fillUserFromRequest($user);
 
         if (!$user->save()) {
             Response::json(
@@ -292,7 +292,12 @@ class UsersController extends Controller
         );
     }
 
-    protected function fillUser(User &$user): User
+    /**
+     * Заполнение пользователя данными из запроса
+     *
+     * @return User 
+     */
+    protected function fillUserFromRequest(User &$user): User
     {
         try {
             $request = Request::instance();
