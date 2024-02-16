@@ -12,7 +12,7 @@ Atlantis — это простой и легкий MVC PHP-фреймворк.
 
 OS: Linux
 
-PHP: 8.1+ (FPM)
+PHP: 8.2+ (FPM)
 
 MySQL: 8.0+ (Рекомендуется)
 
@@ -157,6 +157,48 @@ Router::add(
         method: 'GET'
     )
 );
+```
+
+### Параметры маршрута
+
+Переменные, переданные в маршруте, доступны в контроллере через свойство route, являющеся экземпляром класса Route.
+
+Пример:
+
+```php
+class SomeController extends Controller
+{
+    public function someAction()
+    {
+        $args = $this->route->args();
+    }
+}
+```
+
+### Параметры запроса
+
+Параметры запроса доступны в контроллере экземпляр класса Request.
+
+Пример:
+
+```php
+class SomeController extends Controller
+{
+    public function someAction()
+    {
+        $request = Request::instance();
+
+        $post = $request->post();
+
+        $get = $request->get();
+
+        $input = $request->input();
+
+        $headers = $request->headers();
+
+        $request = $request->request();
+    }
+}
 ```
 
 ## Шаблонизатор представлений
