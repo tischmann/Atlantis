@@ -25,7 +25,6 @@ use Tischmann\Atlantis\{
  */
 class UsersController extends Controller
 {
-
     public function showAllUsers(): void
     {
         $this->checkAdminRights(return: false);
