@@ -32,7 +32,7 @@
                 </div>
             </div>
         </div>
-        <?php require 'pagination.php' ?>
+        <?php require 'pagination.php'; ?>
     </div>
-    <?php require 'user_delete_script.php' ?>
+    <?php require 'user_delete_script.php'; ?>
 </main>
