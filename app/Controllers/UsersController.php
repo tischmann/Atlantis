@@ -144,8 +144,6 @@ class UsersController extends Controller
      */
     public function addUser(): void
     {
-        $this->checkCsrfJson();
-
         $this->checkAdminJson();
 
         $user = User::instance();
@@ -155,7 +153,6 @@ class UsersController extends Controller
         if (!$user->save()) {
             Response::json(
                 response: [
-                    'token' => csrf_set()->token,
                     'text' => get_str('user_save_error')
                 ],
                 code: 500
@@ -201,8 +198,6 @@ class UsersController extends Controller
      */
     public function deleteUser(): void
     {
-        $this->checkCsrfJson();
-
         $this->checkAdminJson();
 
         $id = intval($this->route->args('id'));
@@ -223,7 +218,6 @@ class UsersController extends Controller
         if ($user->isLastAdmin()) {
             Response::json(
                 response: [
-                    'token' => csrf_set()->token,
                     'title' => get_str('error'),
                     'text' => get_str('user_last_admin')
                 ],
@@ -234,7 +228,6 @@ class UsersController extends Controller
         if (!$user->delete()) {
             Response::json(
                 response: [
-                    'token' => csrf_set()->token,
                     'title' => get_str('error'),
                     'text' => get_str('user_delete_error')
                 ],
@@ -255,8 +248,6 @@ class UsersController extends Controller
      */
     public function updateUser(): void
     {
-        $this->checkCsrfJson();
-
         $this->checkAdminJson();
 
         $id = intval($this->route->args('id'));
@@ -278,7 +269,6 @@ class UsersController extends Controller
         if (!$user->save()) {
             Response::json(
                 response: [
-                    'token' => csrf_set()->token,
                     'title' => get_str('error'),
                     'text' => get_str('user_save_error')
                 ],
@@ -321,7 +311,6 @@ class UsersController extends Controller
             if (!User::checkUserName($user->name)) {
                 Response::json(
                     response: [
-                        'token' => csrf_set()->token,
                         'title' => get_str('error'),
                         'text' => get_str('user_name_format')
                     ],
@@ -334,7 +323,6 @@ class UsersController extends Controller
             if (!User::checkUserLogin($user->login)) {
                 Response::json(
                     response: [
-                        'token' => csrf_set()->token,
                         'title' => get_str('error'),
                         'text' => get_str('user_login_format')
                     ],
@@ -346,7 +334,6 @@ class UsersController extends Controller
                 if (!User::checkUserLoginExists($user->login)) {
                     Response::json(
                         response: [
-                            'token' => csrf_set()->token,
                             'title' => get_str('error'),
                             'text' => get_str('user_login_exists')
                         ],
@@ -363,7 +350,6 @@ class UsersController extends Controller
                 if ($password !== $password_repeat) {
                     Response::json(
                         response: [
-                            'token' => csrf_set()->token,
                             'text' => get_str('user_passwords_not_match')
                         ],
                         code: 400
@@ -373,7 +359,6 @@ class UsersController extends Controller
                 if (!User::checkPasswordComplexity($password)) {
                     Response::json(
                         response: [
-                            'token' => csrf_set()->token,
                             'title' => get_str('error'),
                             'text' => get_str('user_password_complexity')
                         ],
@@ -394,33 +379,10 @@ class UsersController extends Controller
         } catch (Exception $exception) {
             Response::json(
                 response: [
-                    'token' => csrf_set()->token,
                     'title' => get_str('error'),
                     'text' => $exception->getMessage()
                 ],
                 code: 500
-            );
-        }
-    }
-
-
-    /**
-     * Проверка CSRF токена
-     *
-     * В случае ошибки токена отправляет JSON
-     *
-     * @return void
-     */
-    protected function checkCsrfJson(): void
-    {
-        if (!csrf_verify()) {
-            Response::json(
-                response: [
-                    'title' => get_str('error'),
-                    'text' => get_str('csrf_failed'),
-                    'redirect' => '/'
-                ],
-                code: 403
             );
         }
     }

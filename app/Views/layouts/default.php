@@ -22,7 +22,6 @@ use Tischmann\Atlantis\App;
     <link rel="manifest" href="/webmanifest.json">
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#ffffff">
     <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="csrf-token" content="{{csrf-token}}">
     <title>{{title}}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

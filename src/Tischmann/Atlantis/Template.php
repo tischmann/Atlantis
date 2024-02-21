@@ -114,11 +114,27 @@ final class Template
         );
 
         foreach ($matches as $set) {
-            $parsed = str_replace(
-                $set[0],
-                $this->parse($set[1], $args),
-                $parsed
-            );
+            $subject = $set[0];
+
+            $key = $set[1];
+
+            switch ($key) {
+                case 'csrf':
+                    $csrf = csrf_set();
+
+                    $replace = <<<HTML
+                    <input type="hidden" name="{$csrf->key}" value="{$csrf->token}" />
+                    HTML;
+                    break;
+                case 'csrf-token':
+                    $replace = csrf_set()->token;
+                    break;
+                default:
+                    $replace = $this->parse($key, $args);
+                    break;
+            }
+
+            $parsed = str_replace($subject, $replace, $parsed);
         }
 
         return $parsed;
@@ -198,12 +214,6 @@ final class Template
             $env["env=$key"] = getenv($key);
         }
 
-        $csrf = csrf_set();
-
-        $csrf_input = <<<HTML
-        <input type="hidden" name="{$csrf->key}" value="{$csrf->token}" />
-        HTML;
-
         $uniqid = uniqid(more_entropy: true);
 
         $title = App::getTitle();
@@ -212,8 +222,6 @@ final class Template
             ...$env,
             ...$strings,
             'nonce' => getenv('APP_NONCE'),
-            'csrf' => $csrf_input,
-            'csrf-token' => $csrf->token,
             'title' => $title,
             'uniqid' => $uniqid,
         ];

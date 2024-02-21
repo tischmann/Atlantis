@@ -1,8 +1,5 @@
 <script nonce="{{nonce}}">
     (function() {
-        let token = document.querySelector('meta[name="csrf-token"]')
-            .getAttribute('content')
-
         function onClick() {
             if (!confirm('{{lang=confirm_delete}}')) return
 
@@ -12,13 +9,10 @@
                     'Cross-Origin-Resource-Policy': 'same-origin',
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-Token': token
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
             }).then(response => {
                 response.clone().json().then(json => {
-                    token = json?.token
-
                     if (!json?.ok) {
                         return document.dialog(json)
                     }
