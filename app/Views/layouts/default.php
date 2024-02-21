@@ -26,7 +26,7 @@ use Tischmann\Atlantis\App;
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" />
-    <link rel="stylesheet" href="/app<?= App::getAssetsPrefix() ?>.css" media="all">
+    <link rel="stylesheet" href="/app.min.css" media="all">
 </head>
 
 <body class="bg-white text-gray-800 antialiased m-0 p-0">
@@ -34,7 +34,7 @@ use Tischmann\Atlantis\App;
 
     {{body}}
 
-    <script src="/app<?= App::getAssetsPrefix() ?>.js" nonce="{{nonce}}"></script>
+    <script src="/app.min.js" nonce="{{nonce}}"></script>
 </body>
 
 </html>

@@ -35,18 +35,6 @@ final class App
     }
 
     /**
-     * Возвращает префикс для ассетов
-     *
-     * @return string
-     */
-    public static function getAssetsPrefix(): string
-    {
-        static::$assets_prefix ??= static::isInDevelopment() ? '' : '.min';
-
-        return static::$assets_prefix;
-    }
-
-    /**
      * Возвращает текущего пользователя
      *
      * @return User
