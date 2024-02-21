@@ -14,22 +14,8 @@
                 ))
             }).then(response => {
                 response.clone().json().then(json => {
-                    if (!json?.ok) {
-                        return document.dialog(json)
-                    }
-
-                    if (json?.redirect) {
-                        return window.location.href = json.redirect
-                    }
-
-                    window.location.reload()
-                }).catch(error => {
-                    response.text().then(text => {
-                        document.dialog({
-                            title: '{{lang=error}}',
-                            text
-                        })
-                    })
+                    if (!json?.ok) return document.dialog(json)
+                    if (json?.redirect) return window.location.href = json.redirect
                 })
             })
         })
