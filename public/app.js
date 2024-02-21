@@ -1,11 +1,14 @@
-var dialog = function ({
+Document.prototype.dialog = function ({
     title = 'Dialog title',
     text = 'Dialog text',
     redirect
 }) {
-    const dialog = document.createElement('dialog')
-    const container = document.createElement('div')
-    const close = document.createElement('button')
+    const dialogElement = document.createElement('dialog')
+
+    const containerElement = document.createElement('div')
+
+    const closeElement = document.createElement('button')
+
     const titleElement = document.createElement('h2')
 
     titleElement.textContent = title
@@ -18,11 +21,13 @@ var dialog = function ({
         'pr-4'
     )
 
-    container.classList.add('overflow-auto')
+    containerElement.classList.add('overflow-auto')
 
-    close.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>`
+    containerElement.innerHTML = text
 
-    close.classList.add(
+    closeElement.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>`
+
+    closeElement.classList.add(
         'absolute',
         'text-gray-400',
         'hover:text-red-600',
@@ -33,12 +38,12 @@ var dialog = function ({
         'select-none'
     )
 
-    close.addEventListener('click', () => {
-        dialog.close()
-        if (redirect) window.location.href = redirect
+    closeElement.addEventListener('click', () => {
+        if (redirect) return (window.location.href = redirect)
+        dialogElement.close()
     })
 
-    dialog.classList.add(
+    dialogElement.classList.add(
         'relative',
         'p-8',
         'rounded-xl',
@@ -49,13 +54,11 @@ var dialog = function ({
         'max-w-[90vw]'
     )
 
-    container.insertAdjacentHTML('beforeend', text)
+    dialogElement.append(titleElement, containerElement, closeElement)
 
-    dialog.append(titleElement, container, close)
+    document.body.append(dialogElement)
 
-    document.body.append(dialog)
-
-    dialog.showModal()
+    dialogElement.showModal()
 }
 
 window.addEventListener('load', () => {
@@ -65,8 +68,11 @@ window.addEventListener('load', () => {
 
     if (window.location.protocol === 'http:') {
         const requireHTTPS = document.getElementById('requireHTTPS')
-        const link = requireHTTPS.querySelector('a')
-        link.href = window.location.href.replace('http://', 'https://')
+
+        requireHTTPS.querySelectorAll('a').forEach((link) => {
+            link.href = window.location.href.replace('http://', 'https://')
+        })
+
         requireHTTPS.classList.remove('hidden')
     }
 

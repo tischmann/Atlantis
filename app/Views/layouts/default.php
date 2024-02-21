@@ -34,6 +34,7 @@ use Tischmann\Atlantis\App;
     <?php include __DIR__ . "/../header.php" ?>
 
     {{body}}
+
     <script src="/app<?= App::getAssetsPrefix() ?>.js" nonce="{{nonce}}"></script>
 </body>
 

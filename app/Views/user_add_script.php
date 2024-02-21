@@ -3,10 +3,12 @@
         let token = document.querySelector('meta[name="csrf-token"]')
             .getAttribute('content')
 
-        function addUser() {
+        function onClick() {
             fetch(`/user`, {
                 method: 'POST',
                 headers: {
+                    'Cross-Origin-Resource-Policy': 'same-origin',
+                    'Accept': 'application/json',
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
                     'X-CSRF-Token': token
@@ -17,11 +19,19 @@
             }).then(response => {
                 response.clone().json().then(json => {
                     token = json?.token
-                    if (!json?.ok) return dialog(json)
-                    window.location.href = json?.redirect || `/`
+
+                    if (!json?.ok) {
+                        return document.dialog(json)
+                    }
+
+                    if (json?.redirect) {
+                        return window.location.href = json.redirect
+                    }
+
+                    window.location.reload()
                 }).catch(error => {
                     response.text().then(text => {
-                        dialog({
+                        document.dialog({
                             title: `{{lang=error}}`,
                             text
                         })
@@ -30,8 +40,10 @@
             })
         }
 
-        document.querySelectorAll('.usr-add-btn').forEach(button => {
-            button.addEventListener('click', addUser)
-        })
+        function addListeners(el) {
+            el.addEventListener('click', onClick)
+        }
+
+        document.querySelectorAll('.usr-add-btn').forEach(addListeners)
     })()
 </script>

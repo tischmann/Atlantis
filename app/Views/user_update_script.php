@@ -3,10 +3,12 @@
         let token = document.querySelector('meta[name="csrf-token"]')
             .getAttribute('content')
 
-        function updateUser(id) {
-            fetch(`/user/${id}`, {
+        function onClick() {
+            fetch(`/user/${this.dataset.id}`, {
                 method: 'PUT',
                 headers: {
+                    'Cross-Origin-Resource-Policy': 'same-origin',
+                    'Accept': 'application/json',
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
                     'X-CSRF-Token': token
@@ -17,12 +19,20 @@
             }).then(response => {
                 response.clone().json().then(json => {
                     token = json?.token
-                    if (!json?.ok) return dialog(json)
-                    window.location.href = json?.redirect || `/`
+
+                    if (!json?.ok) {
+                        return document.dialog(json)
+                    }
+
+                    if (json?.redirect) {
+                        return window.location.href = json.redirect
+                    }
+
+                    window.location.reload()
                 }).catch(error => {
                     response.text().then(text => {
-                        dialog({
-                            title: `{{lang=error}}`,
+                        document.dialog({
+                            title: '{{lang=error}}',
                             text
                         })
                     })
@@ -30,10 +40,10 @@
             })
         }
 
-        document.querySelectorAll('.usr-upd-btn[data-id]').forEach(button => {
-            button.addEventListener('click', () => {
-                updateUser(button.dataset.id)
-            })
-        })
+        function addListeners(el) {
+            el.addEventListener('click', onClick)
+        }
+
+        document.querySelectorAll('.usr-upd-btn[data-id]').forEach(addListeners)
     })()
 </script>
