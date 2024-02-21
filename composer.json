@@ -16,7 +16,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Tischmann\\Atlantis\\": "src/",
+            "Tischmann\\Atlantis\\": "src/Tischmann/Atlantis/",
             "App\\": "app/"
         }
     },
