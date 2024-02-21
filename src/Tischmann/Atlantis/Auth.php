@@ -52,11 +52,11 @@ final class Auth
     {
         if (static::$privateKey) return static::$privateKey;
 
-        if (!is_file(__DIR__ . "/../private.pem")) {
+        if (!is_file(__DIR__ . "/../../../private.pem")) {
             die('Файл private.pem не найден');
         }
 
-        static::$privateKey = file_get_contents(__DIR__ . "/../private.pem");
+        static::$privateKey = file_get_contents(__DIR__ . "/../../../private.pem");
 
         if (!static::$privateKey) die('Файл private.pem поврежден');
 
@@ -71,11 +71,11 @@ final class Auth
     protected static function getPublicKey(): string
     {
         if (!static::$publicKey) {
-            if (!is_file(__DIR__ . "/../public.pem")) {
+            if (!is_file(__DIR__ . "/../../../public.pem")) {
                 die('Файл public.pem не найден');
             }
 
-            static::$publicKey = file_get_contents(__DIR__ . "/../public.pem");
+            static::$publicKey = file_get_contents(__DIR__ . "/../../../public.pem");
 
             if (!static::$publicKey) die('Файл public.pem поврежден');
         }

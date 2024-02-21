@@ -68,7 +68,7 @@ final class Template
      */
     public function read(): string
     {
-        $file = __DIR__ . '/../app/Views/' . $this->template . '.php';
+        $file = __DIR__ . '/../../../app/Views/' . $this->template . '.php';
 
         if (!in_array('ob_gzhandler', ob_list_handlers())) {
             ob_start('ob_gzhandler');

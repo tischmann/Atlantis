@@ -43,17 +43,14 @@ mb_language('uni');
 // Настройки приложения
 
 $env = [
-    'APP_ROOT',
     'APP_NONCE',
     'APP_LOCALE',
     'APP_TITLE'
 ];
 
-putenv("APP_ROOT=" . dirname(__FILE__, 2));
-
 putenv('APP_NONCE=' . bin2hex(random_bytes(32)));
 
-$config = getenv('APP_ROOT') . "/.env";
+$config = dirname(__FILE__, 2) . "/.env";
 
 if (!file_exists($config)) die("Не найден файл конфигурации: {$config}");
 
