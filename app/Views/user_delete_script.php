@@ -1,6 +1,6 @@
 <script nonce="{{nonce}}">
-    (function() {
-        function onClick() {
+    document.querySelectorAll('.usr-del-btn[data-id]').forEach(el => {
+        el.addEventListener('click', function() {
             if (!confirm('{{lang=confirm_delete}}')) return
 
             fetch(`/user/${this.dataset.id}`, {
@@ -31,12 +31,6 @@
                     })
                 })
             })
-        }
-
-        function addListeners(el) {
-            el.addEventListener('click', onClick)
-        }
-
-        document.querySelectorAll('.usr-del-btn[data-id]').forEach(addListeners)
-    })()
+        })
+    })
 </script>

@@ -1,6 +1,6 @@
 <script nonce="{{nonce}}">
-    (function() {
-        function onClick() {
+    document.querySelectorAll('.usr-upd-btn[data-id]').forEach(el => {
+        el.addEventListener('click', function() {
             fetch(`/user/${this.dataset.id}`, {
                 method: 'PUT',
                 headers: {
@@ -32,12 +32,6 @@
                     })
                 })
             })
-        }
-
-        function addListeners(el) {
-            el.addEventListener('click', onClick)
-        }
-
-        document.querySelectorAll('.usr-upd-btn[data-id]').forEach(addListeners)
-    })()
+        })
+    })
 </script>

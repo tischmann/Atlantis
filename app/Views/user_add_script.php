@@ -1,6 +1,6 @@
 <script nonce="{{nonce}}">
-    (function() {
-        function onClick() {
+    document.querySelectorAll('.usr-add-btn').forEach(el => {
+        el.addEventListener('click', function() {
             fetch(`/user`, {
                 method: 'POST',
                 headers: {
@@ -32,12 +32,6 @@
                     })
                 })
             })
-        }
-
-        function addListeners(el) {
-            el.addEventListener('click', onClick)
-        }
-
-        document.querySelectorAll('.usr-add-btn').forEach(addListeners)
-    })()
+        })
+    })
 </script>
