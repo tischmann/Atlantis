@@ -101,6 +101,23 @@ abstract class Model
     }
 
     /**
+     * Возвращает все модели из базы данных по запросу
+     *
+     * @param Query $query Запрос
+     * @return array Модели
+     */
+    public static function all(Query $query): array
+    {
+        $models = [];
+
+        foreach ($query->get() as $fill) {
+            $models[] = static::instance($fill);
+        }
+
+        return $models;
+    }
+
+    /**
      * Проверяет, существует ли модель в базе данных
      *
      * @return boolean true если существует, false если нет

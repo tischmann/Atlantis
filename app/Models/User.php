@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Database\{UsersTable};
 
 use Tischmann\Atlantis\{
+    DateTime,
     Table,
     Model
 };
@@ -20,6 +21,7 @@ class User extends Model
     public const ROLE_GUEST = 0;
 
     public function __construct(
+        public int $id = 0,
         public string $login = '',
         public string $name = '',
         public string $password = '',
@@ -27,8 +29,16 @@ class User extends Model
         public ?string $remarks = null,
         public bool $status = false,
         public ?string $refresh_token = null,
+        public ?DateTime $created_at = null,
+        public ?DateTime $updated_at = null,
     ) {
-        parent::__construct();
+        parent::__construct(
+            id: $id,
+            created_at: $created_at,
+            updated_at: $updated_at
+        );
+
+        $this->__init();
     }
 
     public static function find(mixed $value, string|array $column = 'id'): self

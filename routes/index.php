@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Controllers\{
+    ArticlesController,
     IndexController,
     UsersController
 };
@@ -38,4 +39,11 @@ Router::add(new Route(
     path: 'signin',
     action: 'signIn',
     method: 'POST',
+));
+
+Router::add(new Route(
+    controller: new ArticlesController(),
+    path: 'article/{id}',
+    action: 'showFullArticle',
+    method: 'GET',
 ));

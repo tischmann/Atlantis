@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Database;
 
-use App\Models\User;
+use App\Models\{User};
 
 use Tischmann\Atlantis\{Column, Table};
 

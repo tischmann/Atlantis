@@ -45,8 +45,11 @@ mb_language('uni');
 $env = [
     'APP_NONCE',
     'APP_LOCALE',
-    'APP_TITLE'
+    'APP_TITLE',
+    'APP_ROOT'
 ];
+
+putenv('APP_ROOT=' . dirname(__FILE__, 2));
 
 putenv('APP_NONCE=' . bin2hex(random_bytes(32)));
 

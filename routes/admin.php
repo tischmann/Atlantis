@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Controllers\{
+    ArticlesController,
     UsersController
 };
 
@@ -56,5 +57,19 @@ if (App::getCurrentUser()->isAdmin()) {
         path: 'user/{id}',
         action: 'deleteUser',
         method: 'DELETE'
+    ));
+
+    Router::add(new Route(
+        controller: new ArticlesController(),
+        path: 'edit/article/{id}',
+        action: 'getArticleEditor',
+        method: 'GET',
+    ));
+
+    Router::add(new Route(
+        controller: new ArticlesController(),
+        path: 'upload/article/images/{id}',
+        action: 'uploadImages',
+        method: 'POST',
     ));
 }

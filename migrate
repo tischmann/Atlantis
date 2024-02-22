@@ -11,10 +11,12 @@ require_once __DIR__ . "/bootstrap/config.php";
 
 require_once __DIR__ . "/vendor/autoload.php";
 
-require_once __DIR__ . "/bootstrap/helpers..php";
+require_once __DIR__ . "/bootstrap/helpers.php";
 
 $migrations = [
-    new App\Database\Users()
+    new App\Database\UsersTable(),
+    new App\Database\CategoriesTable(),
+    new App\Database\ArticlesTable()
 ];
 
 foreach (Console::parse($argv) as $command => $value) {
