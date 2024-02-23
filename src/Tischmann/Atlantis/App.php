@@ -61,7 +61,7 @@ final class App
 
         if (static::$title === '') return getenv('APP_TITLE');
 
-        return static::$title . ' | ' . getenv('APP_TITLE');
+        return static::$title . ' • ' . getenv('APP_TITLE');
     }
 
     /**

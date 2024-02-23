@@ -108,7 +108,7 @@ class Article extends Model
     {
         $attachements = [];
 
-        foreach (glob(getenv('APP_ROOT') . "/public/uploads/articles/{$this->id}/*") as $file) {
+        foreach (glob(getenv('APP_ROOT') . "/public/uploads/articles/{$this->id}/*.*") as $file) {
             $filename = basename($file);
 
             $attachements[] = [
@@ -118,5 +118,21 @@ class Article extends Model
         }
 
         return $attachements;
+    }
+
+    public function getVideos(): array
+    {
+        $videos = [];
+
+        foreach (glob(getenv('APP_ROOT') . "/public/uploads/articles/{$this->id}/video/*.*") as $file) {
+            $filename = basename($file);
+
+            $videos[] = [
+                "name" => $filename,
+                "url" => "/uploads/articles/{$this->id}/video/{$filename}",
+            ];
+        }
+
+        return $videos;
     }
 }

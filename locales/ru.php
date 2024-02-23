@@ -105,4 +105,6 @@ return [
     'article_not_found' => 'Статья не найдена',
     'article_generate_tags' => 'Сгенерировать теги',
     'article_attachement' => 'Вложения',
+    'article_created_at' => 'Дата и время создания',
+    'article_video' => 'Видео',
 ];
