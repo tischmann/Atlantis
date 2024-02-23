@@ -8,8 +8,7 @@ $category = $article->getCategory();
 
 ?>
 <main class="md:container mx-8 md:mx-auto">
-    <form>
-        {{csrf}}
+    <form id="article-form">
         <div class="mb-8 relative">
             <label for="title" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=article_title}}</label>
             <input class="py-2 px-3 outline-none border-2 border-gray-200 rounded-lg w-full focus:border-sky-600 transition" aria-label="title" id="title" name="title" value="<?= $article->title ?>" required>
@@ -69,7 +68,7 @@ $category = $article->getCategory();
                     <div class="rounded-lg border-2 border-gray-200">
                         <div class="rounded-lg border-[16px] border-white">
                             <input type="hidden" name="image" value="<?= basename($article->getImage()) ?>">
-                            <img id="article-image" src="<?= $article->getImage() ?>" alt="<?= $article->title ?>" width="400" height="300" class="bg-gray-200 rounded-t-md w-full" decoding="async" loading="lazy">
+                            <img id="article-image" src="<?= $article->getImage() ?>" alt="<?= $article->title ?>" width="320" height="180" class="bg-gray-200 rounded-t-md w-full" decoding="async" loading="lazy">
                             <div class="flex items-center justify-center flex-col select-none">
                                 <button id="delete-image" type="button" class="flex items-center justify-center px-3 py-2 w-full bg-red-600 hover:bg-red-500 text-white cursor-pointer transition shadow hover:shadow-lg" title="{{lang=delete}}">{{lang=delete}}</button>
                                 <button id="upload-image" type="button" class="flex items-center justify-center px-3 py-2 w-full rounded-b-md bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg" title="{{lang=upload}}">{{lang=upload}}</button>
@@ -181,8 +180,8 @@ $category = $article->getCategory();
                     <input class="py-2 px-3 outline-none border-2 border-gray-200 rounded-lg w-full focus:border-sky-600 transition" aria-label="created_at" id="created_at" name="created_at" type="datetime-local" value="<?= $article->created_at->format("Y-m-d H:i") ?>">
                 </div>
                 <div class="flex flex-col gap-4">
-                    <button class="flex items-center justify-center px-3 py-2 bg-red-600 hover:bg-red-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full" type="button" title="{{lang=delete}}">{{lang=delete}}</button>
-                    <button class="flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full" type="button" title="{{lang=save}}">{{lang=save}}</button>
+                    <button id="delete-article" class="flex items-center justify-center px-3 py-2 bg-red-600 hover:bg-red-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full" type="button" title="{{lang=delete}}">{{lang=delete}}</button>
+                    <button id="save-article" class="flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full" type="button" title="{{lang=save}}">{{lang=save}}</button>
                 </div>
             </div>
             <div class="relative order-1 xl:order-2 xl:col-span-2 flex flex-col">
@@ -294,4 +293,5 @@ $category = $article->getCategory();
             file.click()
         })
     </script>
+    <?php require "article_update_script.php" ?>
 </main>

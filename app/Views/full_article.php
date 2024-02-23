@@ -49,7 +49,7 @@ assert($article instanceof Article);
             </div>
         </div>
         <div class="mb-4">
-            <img src=" <?= $article->getImage() ?>" alt="<?= $article->title ?>" width="400" height="300" class="bg-gray-200 w-auto rounded-lg mr-4 shadow-lg float-left" decoding="async" loading="lazy">
+            <img src=" <?= $article->getImage(thumb: false) ?>" alt="<?= $article->title ?>" width="400" height="300" class="bg-gray-200 w-full rounded-lg mr-4 shadow-lg mb-8" decoding="async" loading="lazy">
             <?php
             $paragraphs = explode("\n", $article->text);
 

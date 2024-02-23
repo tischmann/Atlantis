@@ -6,6 +6,7 @@ return [
     'back' => 'Назад',
     'add' => 'Добавить',
     'actions' => 'Действия',
+    'attention' => 'Внимание',
     'edit' => 'Изменить',
     'delete' => 'Удалить',
     'upload' => 'Загрузить',
@@ -107,4 +108,8 @@ return [
     'article_attachement' => 'Вложения',
     'article_created_at' => 'Дата и время создания',
     'article_video' => 'Видео',
+    'article_not_saved' => 'Статья не сохранена',
+    'article_saved' => 'Статья сохранена',
+    'article_temp_image_not_found' => 'Временное изображение не найдено',
+    'article_temp_image_not_moved' => 'Временное изображение не перемещено',
 ];

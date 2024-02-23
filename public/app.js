@@ -1,7 +1,8 @@
 Document.prototype.dialog = function ({
     title = 'Dialog title',
     text = 'Dialog text',
-    redirect
+    redirect = null,
+    onclose = function () {}
 }) {
     const dialogElement = document.createElement('dialog')
 
@@ -14,8 +15,8 @@ Document.prototype.dialog = function ({
     titleElement.textContent = title
 
     titleElement.classList.add(
-        'text-2xl',
-        'font-bold',
+        'text-xl',
+        'font-semibold',
         'mb-4',
         'select-none',
         'pr-4'
@@ -38,10 +39,15 @@ Document.prototype.dialog = function ({
         'select-none'
     )
 
-    closeElement.addEventListener('click', () => {
-        if (redirect) return (window.location.href = redirect)
-        dialogElement.close()
-    })
+    closeElement.addEventListener(
+        'click',
+        () => {
+            if (redirect) return (window.location.href = redirect)
+            dialogElement.close()
+            onclose()
+        },
+        { once: true }
+    )
 
     dialogElement.classList.add(
         'relative',

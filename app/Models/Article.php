@@ -36,6 +36,15 @@ class Article extends Model
         $this->__init();
     }
 
+    public static function find(mixed $value, string|array $column = 'id'): self
+    {
+        $model = parent::find($value, $column);
+
+        assert($model instanceof self);
+
+        return $model;
+    }
+
     public function __init(): self
     {
 
@@ -47,12 +56,14 @@ class Article extends Model
         return ArticlesTable::instance();
     }
 
-    public function getImage(): string
+    public function getImage(bool $thumb = true): string
     {
         $src = "/images/article_image_placeholder.webp";
 
-        foreach (glob(getenv('APP_ROOT') . "/public/images/articles/{$this->id}/image/thumb_*.webp") as $file) {
-            return "/images/articles/{$this->id}/image/" . basename($file);
+        if ($thumb) {
+            foreach (glob(getenv('APP_ROOT') . "/public/images/articles/{$this->id}/image/thumb_*.webp") as $file) {
+                return "/images/articles/{$this->id}/image/" . basename($file);
+            }
         }
 
         foreach (glob(getenv('APP_ROOT') . "/public/images/articles/{$this->id}/image/*.webp") as $file) {
