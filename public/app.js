@@ -67,6 +67,72 @@ Document.prototype.dialog = function ({
     dialogElement.showModal()
 }
 
+Document.prototype.sortable = function (container) {
+    let draggedElement
+
+    const getMouseOffset = (event) => {
+        const targetRect = event.target.getBoundingClientRect()
+
+        const offset = {
+            x: event.pageX - targetRect.left,
+            y: event.pageY - targetRect.top
+        }
+
+        return offset
+    }
+
+    const getElementVerticalCenter = (el) => {
+        const rect = el.getBoundingClientRect()
+        return (rect.bottom - rect.top) / 2
+    }
+
+    ;[].slice.call(container.querySelectorAll('li')).forEach(function (el) {
+        el.draggable = true
+    })
+
+    function onDragOver(event) {
+        event.preventDefault()
+
+        event.dataTransfer.dropEffect = 'move'
+
+        const target = event.target.closest('li')
+
+        if (target && target !== draggedElement && target.nodeName === 'LI') {
+            const offset = getMouseOffset(event)
+
+            const middleY = getElementVerticalCenter(event.target)
+
+            if (offset.y > middleY) {
+                container.insertBefore(draggedElement, target.nextSibling)
+            } else {
+                container.insertBefore(draggedElement, target)
+            }
+        }
+    }
+
+    function onDragEnd(event) {
+        event.preventDefault()
+        draggedElement.classList.remove('opacity-40')
+        container.removeEventListener('dragover', onDragOver, false)
+        container.removeEventListener('dragend', onDragEnd, false)
+    }
+
+    container.addEventListener(
+        'dragstart',
+        function (event) {
+            draggedElement = event.target.closest('li')
+            event.dataTransfer.effectAllowed = 'move'
+            event.dataTransfer.setData('Text', draggedElement.textContent)
+            container.addEventListener('dragover', onDragOver, false)
+            container.addEventListener('dragend', onDragEnd, false)
+            setTimeout(function () {
+                draggedElement.classList.add('opacity-40')
+            }, 0)
+        },
+        false
+    )
+}
+
 window.addEventListener('load', () => {
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/service-worker.min.js')

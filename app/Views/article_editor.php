@@ -81,27 +81,27 @@ $category = $article->getCategory();
                     <label for="title" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=article_gallery}}</label>
                     <div class="rounded-lg border-2 border-gray-200">
                         <div class="rounded-lg border-[16px] border-white">
-                            <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-2 gap-4">
-                                <div class="w-full rounded-lg bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition cursor-pointer">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                    </svg>
-                                </div>
+                            <div class="w-full rounded-lg bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                </svg>
+                            </div>
+                            <ul class="sortable-list grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-2 gap-4">
                                 <?php
                                 foreach ($article->getGalleryImages() as $image) {
                                     echo <<<HTML
-                                    <div class="text-sm select-none relative">
+                                    <li class="text-sm select-none relative">
                                         <img src="{$image['thumb']}" width="400" height="300" alt="{$article->title}" decoding="async" loading="lazy" class="block w-full rounded-md">
                                         <div class="absolute top-0 right-0 p-2 text-white bg-red-600 rounded-md hover:bg-red-500 cursor-pointer transition drop-shadow" title="{{lang=delete}}">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                                             </svg>
                                         </div>
-                                    </div>
+                                    </li>
                                     HTML;
                                 }
                                 ?>
-                            </div>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -137,29 +137,29 @@ $category = $article->getCategory();
             <div class="relative order-3">
                 <div class="mb-8 relative">
                     <label for="attachement" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=article_attachement}}</label>
-                    <div class="border-2 border-gray-200 rounded-lg p-4 transition flex flex-col gap-4" aria-label="attachement" name="attachement">
+                    <ul class="sortable-list mb-4 border-2 border-gray-200 rounded-lg p-4 transition flex flex-col gap-4" aria-label="attachement" name="attachement">
                         <?php
 
                         foreach ($article->getAttachements() as $attachement) {
                             echo <<<HTML
-                            <div class="flex flex-nowrap gap-2 items-center justify-between text-gray-800">
-                                <a href="{$attachement['url']}" class="hover:underline line-clamp-1" target="_blank" title="{{lang=delete}}">
+                            <li class="flex flex-nowrap gap-2 items-center justify-between text-gray-800 w-full hover:bg-gray-100 rounded-md">
+                                <a href="{$attachement['url']}" class="text-ellipsis overflow-hidden whitespace-nowrap grow px-3 py-2" target="_blank" title="{{lang=delete}}">
                                     {$attachement['name']}
                                 </a>
-                                <div class="text-gray-500 cursor-pointer hover:text-red-600">
+                                <div class="text-gray-500 cursor-pointer hover:text-red-600 pr-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                                     </svg>
                                 </div>
-                            </div>
+                            </li>
                             HTML;
                         }
                         ?>
-                        <div class="w-full p-3 rounded-lg bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition cursor-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                            </svg>
-                        </div>
+                    </ul>
+                    <div class="w-full p-3 rounded-lg bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
                     </div>
                 </div>
                 <div class="mb-8 relative">
@@ -321,6 +321,12 @@ $category = $article->getCategory();
                 document.querySelector('textarea[name="text"]').value,
                 document.getElementById('tags-limit').value
             )
+        })
+
+        window.addEventListener('load', () => {
+            document.querySelectorAll(`.sortable-list`).forEach(el => {
+                document.sortable(el)
+            })
         })
     </script>
     <?php require "article_update_script.php" ?>
