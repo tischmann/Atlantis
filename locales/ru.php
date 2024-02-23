@@ -8,6 +8,7 @@ return [
     'actions' => 'Действия',
     'edit' => 'Изменить',
     'delete' => 'Удалить',
+    'upload' => 'Загрузить',
     'close' => 'Закрыть',
     'save' => 'Сохранить',
     'error' => 'Ошибка',
@@ -102,4 +103,6 @@ return [
     'article_created_at' => 'Создано',
     'article_updated_at' => 'Изменено',
     'article_not_found' => 'Статья не найдена',
+    'article_generate_tags' => 'Сгенерировать теги',
+    'article_attachement' => 'Вложения',
 ];

@@ -103,4 +103,20 @@ class Article extends Model
 
         return $images;
     }
+
+    public function getAttachements(): array
+    {
+        $attachements = [];
+
+        foreach (glob(getenv('APP_ROOT') . "/public/uploads/articles/{$this->id}/*") as $file) {
+            $filename = basename($file);
+
+            $attachements[] = [
+                "name" => $filename,
+                "url" => "/uploads/articles/{$this->id}/{$filename}",
+            ];
+        }
+
+        return $attachements;
+    }
 }
