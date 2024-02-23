@@ -1,6 +1,6 @@
 {
     "name": "tischmann/atlantis",
-    "description": "Simple MVC framework",
+    "description": "Simple MVC framework with CMS functionality",
     "type": "framework",
     "require": {
         "php": ">=8.2",
