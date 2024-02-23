@@ -8,3 +8,5 @@ composer.lock
 *.pem
 package-lock.json
 /public/adminer.php
+/public/uploads/
+/public/images/articles/
