@@ -104,7 +104,7 @@ return [
     'article_created_at' => 'Создано',
     'article_updated_at' => 'Изменено',
     'article_not_found' => 'Статья не найдена',
-    'article_generate_tags' => 'Сгенерировать теги',
+    'article_generate_tags' => 'Сгенерировать',
     'article_attachement' => 'Вложения',
     'article_created_at' => 'Дата и время создания',
     'article_video' => 'Видео',
@@ -112,4 +112,8 @@ return [
     'article_saved' => 'Статья сохранена',
     'article_temp_image_not_found' => 'Временное изображение не найдено',
     'article_temp_image_not_moved' => 'Временное изображение не перемещено',
+    'article_title_required' => 'Заголовок обязателен',
+    'article_text_required' => 'Текст обязателен',
+    'article_category_required' => 'Категория обязательна',
+    'article_created_at_invalid' => 'Неверная дата и время создания',
 ];

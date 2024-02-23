@@ -4,10 +4,32 @@ declare(strict_types=1);
 
 namespace Tischmann\Atlantis;
 
+use Exception;
+
 use IntlDateFormatter;
 
 class DateTime extends \DateTime
 {
+    /**
+     * Проверяет корректность строкового представления даты и времени
+     * 
+     * @param string $date_string Строковое представление даты и времени
+     * @return bool true - корректно, false - некорректно
+     */
+    public static function validate(string $date_string): bool
+    {
+        if (!$date_string) return false;
+
+        try {
+            $date = new static($date_string);
+        } catch (Exception $e) {
+            return false;
+        }
+
+        $errors = $date::getLastErrors();
+
+        return ($errors['warning_count'] ?? 0) + ($errors['error_count'] ?? 0) == 0;
+    }
 
     /**
      * Возвращает строковое представление даты и времени для выбранной локали и в выбранном формате

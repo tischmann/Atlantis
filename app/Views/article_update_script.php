@@ -17,7 +17,10 @@
                     return response.json().then(json => {
                         document.dialog({
                             title: `{{lang=error}}: ${response.status}`,
-                            text: json.message
+                            text: json.message,
+                            onclose: () => {
+                                window.location.reload()
+                            }
                         })
                     })
                 }

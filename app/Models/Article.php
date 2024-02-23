@@ -131,4 +131,25 @@ class Article extends Model
 
         return $videos;
     }
+
+    public static function removeOldTempImagesAndUploads(int $minutes = 3600): void
+    {
+        $temp_dir = getenv('APP_ROOT') . "/public/images/articles/temp";
+
+        $uploads_temp_dir = getenv('APP_ROOT') . "/public/uploads/articles/temp";
+
+        $time = time();
+
+        foreach (glob("{$temp_dir}/*") as $file) {
+            if (filemtime($file) < $time - $minutes) {
+                unlink($file);
+            }
+        }
+
+        foreach (glob("{$uploads_temp_dir}/*") as $file) {
+            if (filemtime($file) < $time - $minutes) {
+                unlink($file);
+            }
+        }
+    }
 }

@@ -8,6 +8,7 @@ use App\Models\Article;
 use Exception;
 use Tischmann\Atlantis\{
     Controller,
+    DateTime,
     Image,
     Request,
     Response,
@@ -107,9 +108,14 @@ class ArticlesController extends Controller
         $request = Request::instance();
 
         $request->validate([
+            'category_id' => ['required', 'string'],
             'image' => ['required', 'string'],
             'title' => ['required', 'string'],
-            'text' => ['required', 'string']
+            'text' => ['required', 'string'],
+            'tags' => ['required', 'string'],
+            'views' => ['required', 'string'],
+            'rating' => ['required', 'string'],
+            'created_at' => ['required', 'string'],
         ]);
 
         $id = $this->route->args('id');
@@ -123,6 +129,24 @@ class ArticlesController extends Controller
         }
 
         try {
+            $article->title = $request->request('title');
+
+            if (!$article->title) {
+                throw new Exception(get_str('article_title_required'), 400);
+            }
+
+            $article->text = $request->request('text');
+
+            if (!$article->text) {
+                throw new Exception(get_str('article_text_required'), 400);
+            }
+
+            $article->category_id = intval($request->request('category_id'));
+
+            if (!$article->category_id) {
+                throw new Exception(get_str('article_category_required'), 400);
+            }
+
             $image = $request->request('image');
 
             $article_dir = getenv('APP_ROOT') . "/public/images/articles/{$id}";
@@ -160,16 +184,39 @@ class ArticlesController extends Controller
                 }
             }
 
-            $article->title = $request->request('title');
+            $article->tags = explode(",", $request->request('tags'));
 
-            $article->text = $request->request('text');
+            $article->tags = array_map('trim', $article->tags);
+
+            $views = $request->request('views');
+
+            if ($views !== null) {
+                $article->views = intval($views);
+            }
+
+            $rating = $request->request('rating');
+
+            if ($rating !== null) {
+                $rating = floatval($rating);
+                $article->rating = $rating < 0 ? 0 : ($rating > 5 ? 5 : $rating);
+            }
+
+            $date = $request->request('created_at');
+
+            if (!DateTime::validate($date)) {
+                throw new Exception(get_str('article_created_at_invalid'), 400);
+            }
+
+            $article->created_at = new DateTime($date);
 
             if (!$article->save()) {
                 throw new Exception(get_str('article_not_saved'));
             }
         } catch (Exception $e) {
-            Response::json(['message' => $e->getMessage()], 500);
+            Response::json(['message' => $e->getMessage()], $e->getCode() ?: 500);
         }
+
+        Article::removeOldTempImagesAndUploads();
 
         Response::json();
     }
