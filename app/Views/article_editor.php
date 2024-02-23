@@ -68,10 +68,11 @@ $category = $article->getCategory();
                 <div class="mb-8 relative">
                     <div class="rounded-lg border-2 border-gray-200">
                         <div class="rounded-lg border-[16px] border-white">
-                            <img src=" <?= $article->getImage() ?>" alt="<?= $article->title ?>" width="400" height="300" class="bg-gray-200 rounded-t-md w-full" decoding="async" loading="lazy">
+                            <input type="hidden" name="image" value="<?= basename($article->getImage()) ?>">
+                            <img id="article-image" src="<?= $article->getImage() ?>" alt="<?= $article->title ?>" width="400" height="300" class="bg-gray-200 rounded-t-md w-full" decoding="async" loading="lazy">
                             <div class="flex items-center justify-center flex-col select-none">
-                                <div class="flex items-center justify-center px-3 py-2 w-full bg-red-600 hover:bg-red-500 text-white cursor-pointer transition shadow hover:shadow-lg" title="{{lang=delete}}">{{lang=delete}}</div>
-                                <div class="flex items-center justify-center px-3 py-2 w-full rounded-b-md bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg" title="{{lang=upload}}">{{lang=upload}}</div>
+                                <button id="delete-image" type="button" class="flex items-center justify-center px-3 py-2 w-full bg-red-600 hover:bg-red-500 text-white cursor-pointer transition shadow hover:shadow-lg" title="{{lang=delete}}">{{lang=delete}}</button>
+                                <button id="upload-image" type="button" class="flex items-center justify-center px-3 py-2 w-full rounded-b-md bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg" title="{{lang=upload}}">{{lang=upload}}</button>
                             </div>
                         </div>
                     </div>
@@ -228,6 +229,69 @@ $category = $article->getCategory();
                     }
                 })
             })
+        })
+
+        document.getElementById('delete-image').addEventListener('click', function() {
+            const image = document.getElementById('article-image')
+            const input = document.querySelector('input[name="image"]')
+
+            fetch('/article/temp/image', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        image: input.value
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return document.dialog({
+                            text: response.message
+                        })
+                    }
+
+                    response.json().then(json => {
+                        image.src = '/images/article_image_placeholder.webp'
+                        input.setAttribute('value', '')
+                    })
+                })
+        })
+
+        document.getElementById('upload-image').addEventListener('click', function() {
+            const image = document.getElementById('article-image')
+
+            const file = document.createElement('input')
+
+            file.hidden = true
+            file.type = 'file'
+            file.accept = 'image/.jpg,.jpeg,.png,.webp,.gif,.bmp'
+            file.multiple = false
+
+            file.addEventListener('change', (event) => {
+                const formData = new FormData();
+
+                formData.append('image', event.target.files[0]);
+
+                fetch('/article/image', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return document.dialog({
+                                text: response.message
+                            })
+                        }
+
+                        response.json().then(json => {
+                            image.src = `/images/articles/temp/${json.images[0]}`
+                            document.querySelector('input[name="image"]').setAttribute('value', json.images[0])
+                        })
+                    })
+            })
+
+            file.click()
         })
     </script>
 </main>

@@ -47,34 +47,19 @@ class Article extends Model
         return ArticlesTable::instance();
     }
 
-    public function getDescription(): string
-    {
-        if (!strlen($this->text)) return '';
-
-        preg_match('/^(?:[^\.]+\.){3}/', $this->text, $matches);
-
-        if ($matches) return $matches[0];
-
-        $text = strip_tags($this->text);
-
-        $text = preg_replace('/\s+/', ' ', $text);
-
-        $text = mb_substr($text, 0, 200) . '...';
-
-        return $text;
-    }
-
     public function getImage(): string
     {
-        if (!is_file(getenv('APP_ROOT') . "/public/images/articles/thumb_{$this->id}.webp")) {
-            if (!is_file(getenv('APP_ROOT') . "/public/images/articles/{$this->id}.webp")) {
-                return "/images/placeholder.webp";
-            }
+        $src = "/images/article_image_placeholder.webp";
 
-            return "/images/articles/{$this->id}.webp";
+        foreach (glob(getenv('APP_ROOT') . "/public/images/articles/{$this->id}/image/thumb_*.webp") as $file) {
+            return "/images/articles/{$this->id}/image/" . basename($file);
         }
 
-        return "/images/articles/thumb_{$this->id}.webp";
+        foreach (glob(getenv('APP_ROOT') . "/public/images/articles/{$this->id}/image/*.webp") as $file) {
+            return "/images/articles/{$this->id}/image/" . basename($file);
+        }
+
+        return $src;
     }
 
     public function getCategory(): Category
@@ -108,12 +93,12 @@ class Article extends Model
     {
         $attachements = [];
 
-        foreach (glob(getenv('APP_ROOT') . "/public/uploads/articles/{$this->id}/*.*") as $file) {
+        foreach (glob(getenv('APP_ROOT') . "/public/uploads/articles/{$this->id}/attachements/*.*") as $file) {
             $filename = basename($file);
 
             $attachements[] = [
                 "name" => $filename,
-                "url" => "/uploads/articles/{$this->id}/{$filename}",
+                "url" => "/uploads/articles/{$this->id}/attachements/{$filename}",
             ];
         }
 
