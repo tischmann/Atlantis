@@ -59,7 +59,7 @@ class Article extends Model
 
     public function getImage(): string
     {
-        $src = "/images/article_image_placeholder.webp";
+        $src = "/images/placeholder.svg";
 
         foreach (glob(getenv('APP_ROOT') . "/public/images/articles/{$this->id}/image/thumb_*.webp") as $file) {
             $filename = basename($file);

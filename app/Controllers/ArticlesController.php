@@ -48,24 +48,22 @@ class ArticlesController extends Controller
         Article::removeOldTempImagesAndUploads();
 
         try {
-            $response = [
-                'images' => Image::upload(
-                    files: $_FILES,
-                    path: getenv('APP_ROOT') . "/public/images/articles/temp",
-                    min_width: 1280,
-                    min_height: 720,
-                    max_width: 1280,
-                    max_height: 720,
-                    thumb_width: 320,
-                    thumb_height: 180,
-                    quality: 80
-                )
-            ];
+            $images = Image::upload(
+                files: $_FILES,
+                path: getenv('APP_ROOT') . "/public/images/articles/temp",
+                min_width: 1280,
+                min_height: 720,
+                max_width: 1280,
+                max_height: 720,
+                thumb_width: 320,
+                thumb_height: 180,
+                quality: 80
+            );
+
+            Response::json(['image' => reset($images)]);
         } catch (Exception $e) {
             Response::json(['message' => $e->getMessage()], 500);
         }
-
-        Response::json($response);
     }
 
     /**
@@ -77,7 +75,7 @@ class ArticlesController extends Controller
         Article::removeOldTempImagesAndUploads();
 
         try {
-            $response = [
+            Response::json([
                 'images' => Image::upload(
                     files: $_FILES,
                     path: getenv('APP_ROOT') . "/public/images/articles/temp",
@@ -89,12 +87,10 @@ class ArticlesController extends Controller
                     thumb_height: 180,
                     quality: 80
                 ),
-            ];
+            ]);
         } catch (Exception $e) {
             Response::json(['message' => $e->getMessage()], 500);
         }
-
-        Response::json($response);
     }
 
     /**
