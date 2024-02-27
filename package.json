@@ -6,5 +6,7 @@
     "tailwindcss": "^3.4.1",
     "uglify-js": "^3.17.4"
   },
-  "dependencies": {}
+  "dependencies": {
+    "swiper": "^11.0.6"
+  }
 }

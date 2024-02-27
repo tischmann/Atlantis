@@ -24,6 +24,12 @@ class ArticlesTable extends Table
                 description: 'Заголовок',
             ),
             new Column(
+                name: 'short_text',
+                type: 'longtext',
+                default: null,
+                description: 'Краткий текст статьи',
+            ),
+            new Column(
                 name: 'text',
                 type: 'longtext',
                 default: null,

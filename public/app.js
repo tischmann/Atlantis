@@ -67,7 +67,10 @@ Document.prototype.dialog = function ({
     dialogElement.showModal()
 }
 
-Document.prototype.sortable = function (container) {
+Document.prototype.sortable = function (
+    container,
+    { ondragend = function () {} } = {}
+) {
     let draggedElement
 
     const getMouseOffset = (event) => {
@@ -112,9 +115,10 @@ Document.prototype.sortable = function (container) {
 
     function onDragEnd(event) {
         event.preventDefault()
-        draggedElement.classList.remove('opacity-40')
+        draggedElement.classList.remove('opacity-50')
         container.removeEventListener('dragover', onDragOver, false)
         container.removeEventListener('dragend', onDragEnd, false)
+        ondragend(event)
     }
 
     container.addEventListener(
@@ -126,11 +130,134 @@ Document.prototype.sortable = function (container) {
             container.addEventListener('dragover', onDragOver, false)
             container.addEventListener('dragend', onDragEnd, false)
             setTimeout(function () {
-                draggedElement.classList.add('opacity-40')
+                draggedElement.classList.add('opacity-50')
             }, 0)
         },
         false
     )
+}
+
+Document.prototype.tags = function (text, limit = 5) {
+    const tags = {}
+
+    text.split(/[\s,]+/).forEach((tag, index) => {
+        tag = tag.toLowerCase()
+        if (tags[tag] === undefined) tags[tag] = 1
+        else tags[tag]++
+    })
+
+    if (!Object.entries(tags).length) return ''
+
+    return Object.entries(tags)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, limit)
+        .map((tag) => tag[0])
+        .join(', ')
+}
+
+Document.prototype.progress = function (percent = 0, container = null) {
+    const progress = document.createElement('div')
+    progress.classList.add('h-8', 'rounded-lg', 'bg-sky-600', 'transition-all')
+    progress.style.width = `${percent}%`
+    if (container) container.append(progress)
+    return {
+        element: progress,
+        update: (percent) => {
+            if (!progress) return
+            progress.style.width = `${percent}%`
+        },
+        destroy: () => {
+            progress?.remove()
+        }
+    }
+}
+
+Document.prototype.upload = function (
+    url,
+    data,
+    progress = function () {},
+    method = 'POST'
+) {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest()
+
+        xhr.open(method, url)
+
+        xhr.upload.addEventListener('progress', (event) => {
+            if (event.lengthComputable) {
+                const percent = (event.loaded / event.total) * 100
+                progress(percent)
+            }
+        })
+
+        xhr.onload = () => {
+            const json = JSON.parse(xhr.response)
+
+            if (xhr.status === 200) {
+                resolve(json)
+            } else {
+                document.dialog({
+                    text: json.message
+                })
+
+                reject(json)
+            }
+        }
+
+        xhr.onerror = () => {
+            reject(new Error('Network error'))
+        }
+
+        xhr.send(data)
+    })
+}
+
+Document.prototype.select = function (
+    fieldSelector = '[data-select]',
+    optionsSelector = '[data-options]'
+) {
+    document.querySelectorAll(optionsSelector).forEach((ul) => {
+        const parent = ul.parentElement
+
+        const select = parent.querySelector(fieldSelector)
+
+        const input = parent.querySelector('input')
+
+        const options = ul.querySelectorAll('li')
+
+        select.addEventListener('click', function (event) {
+            this.classList.toggle('border-sky-600')
+
+            ul.classList.toggle('hidden')
+
+            event.stopPropagation()
+
+            document.addEventListener(
+                'click',
+                () => {
+                    this.classList.remove('border-sky-600')
+                    ul.classList.add('hidden')
+                },
+                {
+                    once: true
+                }
+            )
+        })
+
+        options.forEach((li) => {
+            li.addEventListener('click', function (event) {
+                input.setAttribute('value', this.dataset.value)
+
+                select.textContent = this.textContent
+
+                options.forEach((li) => {
+                    li.classList.remove('bg-sky-600', 'text-white')
+                })
+
+                li.classList.add('bg-sky-600', 'text-white')
+            })
+        })
+    })
 }
 
 window.addEventListener('load', () => {

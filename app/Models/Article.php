@@ -19,6 +19,7 @@ class Article extends Model
         public string $locale = '',
         public string $title = '',
         public ?string $image = null,
+        public ?string $short_text = null,
         public ?string $text = null,
         public ?array $tags = [],
         public int $views = 0,
@@ -56,18 +57,14 @@ class Article extends Model
         return ArticlesTable::instance();
     }
 
-    public function getImage(bool $thumb = true): string
+    public function getImage(): string
     {
         $src = "/images/article_image_placeholder.webp";
 
-        if ($thumb) {
-            foreach (glob(getenv('APP_ROOT') . "/public/images/articles/{$this->id}/image/thumb_*.webp") as $file) {
-                return "/images/articles/{$this->id}/image/" . basename($file);
-            }
-        }
-
-        foreach (glob(getenv('APP_ROOT') . "/public/images/articles/{$this->id}/image/*.webp") as $file) {
-            return "/images/articles/{$this->id}/image/" . basename($file);
+        foreach (glob(getenv('APP_ROOT') . "/public/images/articles/{$this->id}/image/thumb_*.webp") as $file) {
+            $filename = basename($file);
+            $filename = str_replace('thumb_', '', $filename);
+            return $filename;
         }
 
         return $src;
@@ -82,19 +79,16 @@ class Article extends Model
     {
         $images = [];
 
-        foreach (glob(getenv('APP_ROOT') . "/public/images/articles/{$this->id}/gallery/*.webp") as $file) {
+        $files = glob(getenv('APP_ROOT') . "/public/images/articles/{$this->id}/gallery/thumb_*.webp");
+
+        usort($files, function ($a, $b) {
+            return filemtime($a) - filemtime($b);
+        });
+
+        foreach ($files as $file) {
             $filename = basename($file);
-
-            $image = [
-                "src" => "/images/articles/{$this->id}/gallery/{$filename}",
-                "thumb" => "/images/articles/{$this->id}/gallery/{$filename}",
-            ];
-
-            if (is_file(getenv('APP_ROOT') . "/public/images/articles/{$this->id}/gallery/thumb_{$filename}")) {
-                $image["thumb"] = "/images/articles/{$this->id}/gallery/thumb_{$filename}";
-            }
-
-            $images[] = $image;
+            $filename = str_replace('thumb_', '', $filename);
+            $images[] = $filename;
         }
 
         return $images;
@@ -123,10 +117,7 @@ class Article extends Model
         foreach (glob(getenv('APP_ROOT') . "/public/uploads/articles/{$this->id}/video/*.*") as $file) {
             $filename = basename($file);
 
-            $videos[] = [
-                "name" => $filename,
-                "url" => "/uploads/articles/{$this->id}/video/{$filename}",
-            ];
+            $videos[] = $filename;
         }
 
         return $videos;

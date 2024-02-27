@@ -9,7 +9,7 @@ assert($article instanceof Article);
 ?>
 <main class="md:container mx-8 md:mx-auto">
     <article>
-        <h2 class="mb-1 font-semibold text-xl flex items-center w-full line-clamp-1"><?= $article->title ?>
+        <h2 class="mb-1 font-bold text-2xl flex items-center w-full line-clamp-1"><?= $article->title ?>
             <?php
 
             if (App::getCurrentUser()->isAdmin()) {
@@ -49,25 +49,100 @@ assert($article instanceof Article);
             </div>
         </div>
         <div class="mb-4">
-            <img src=" <?= $article->getImage(thumb: false) ?>" alt="<?= $article->title ?>" width="400" height="300" class="bg-gray-200 w-full rounded-lg mr-4 shadow-lg mb-8" decoding="async" loading="lazy">
             <?php
-            $paragraphs = explode("\n", $article->text);
+            $image = $article->getImage();
 
-            foreach ($paragraphs as $paragraph) {
-                echo "<p class='mb-4'>{$paragraph}</p>";
+            $gallery = $article->getGalleryImages();
+
+            if ($gallery) {
+                echo <<<HTML
+                <div class="gallery-swiper mb-2 relative overflow-hidden select-none">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide">
+                            <img src="/images/articles/{$article->id}/image/{$image}" alt="{$article->title}" width="720" height="405" class="w-full rounded-xl mr-4 shadow-lg" decoding="async" loading="lazy">
+                        </div>
+                HTML;
+
+                foreach ($gallery as $filename) {
+                    echo <<<HTML
+                    <div class="swiper-slide">
+                        <img src="/images/articles/{$article->id}/gallery/{$filename}" width="720" height="405" alt="{$article->title}" decoding="async" loading="lazy" class="w-full rounded-xl">
+                    </div>
+                    HTML;
+                }
+
+                echo <<<HTML
+                    </div>
+                </div>
+                <div thumbsSlider="" class="thumb-gallery-swiper relative overflow-hidden select-none">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide cursor-pointer">
+                            <img src="/images/articles/{$article->id}/image/thumb_{$image}" width="320" height="180" alt="{$article->title}" decoding="async" loading="lazy" class="rounded-xl w-full">
+                        </div>
+                HTML;
+
+                foreach ($gallery as $filename) {
+                    echo <<<HTML
+                    <div class="swiper-slide cursor-pointer">
+                        <img src="/images/articles/{$article->id}/gallery/thumb_{$filename}" width="320" height="180" alt="{$article->title}" decoding="async" loading="lazy" class="rounded-xl w-full">
+                    </div>
+                    HTML;
+                }
+                echo <<<HTML
+                    </div>
+                </div>
+                HTML;
+            } else {
+                echo <<<HTML
+                <img src="/images/articles/{$article->id}/image/{$image}" alt="{$article->title}" width="720" height="405" class="w-full rounded-xl mr-4 shadow-lg" decoding="async" loading="lazy">
+                HTML;
             }
             ?>
         </div>
-        <div class="mb-8">
-            <div class="grid grid-cols-1 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-4">
-                <?php
-                foreach ($article->getGalleryImages() as $image) {
-                    echo <<<HTML
-                        <img src="{$image['thumb']}" width="400" height="300" alt="{$article->title}" decoding="async" loading="lazy" class="w-full rounded-lg">
-                    HTML;
-                }
-                ?>
-            </div>
+        <div class="mb-4 ql-editor">
+            <?= html_entity_decode($article->text) ?>
+        </div>
+        <div class="mb-8 grid grid-cols-1 gap-4">
+            <?php
+            foreach ($article->getVideos() as $video) {
+                echo <<<HTML
+                <video src="/uploads/articles/{$article->id}/video/{$video}" class="block w-full rounded-xl" controls ></video>
+                HTML;
+            }
+            ?>
         </div>
     </article>
 </main>
+<script nonce="{{nonce}}">
+    window.addEventListener('load', () => {
+        const thumbs = new Swiper('.thumb-gallery-swiper', {
+            spaceBetween: 8,
+            slidesPerView: getTabAmount(),
+            freeMode: true,
+            watchSlidesProgress: true,
+        })
+
+        new Swiper('.gallery-swiper', {
+            autoplay: {
+                delay: 2500,
+                disableOnInteraction: true,
+            },
+            spaceBetween: 8,
+            thumbs: {
+                swiper: thumbs
+            },
+            effect: 'fade',
+        })
+
+        function getTabAmount() {
+            if (window.innerWidth <= 768) return 4
+            if (window.innerWidth <= 1280) return 6
+            return 8
+        }
+
+        window.addEventListener('resize', () => {
+            thumbs.params.slidesPerView = getTabAmount()
+            thumbs.update()
+        })
+    })
+</script>

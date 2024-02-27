@@ -9,7 +9,7 @@ assert($article instanceof Article);
     <a href="/{{env=APP_LOCALE}}/article/<?= $article->id ?>" title="<?= $article->title ?>" class="block transition-all hover:text-sky-600 sm:hover:-translate-y-2">
         <h2 class="mb-1 font-semibold text-xl line-clamp-1"><?= $article->title ?></h2>
         <h3 class="line-clamp-1 text-gray-600 text-sm mb-2"><?= $article->getCategory()->title ?></h3>
-        <img src=" <?= $article->getImage() ?>" alt="<?= $article->title ?>" width="400" height="300" class="bg-gray-200 w-full rounded-lg mb-4 shadow-lg" decoding="async" loading="lazy">
+        <img src="/images/articles/<?= $article->id ?>/image/thumb_<?= $article->getImage() ?>" alt="<?= $article->title ?>" width="400" height="300" class="bg-gray-200 w-full rounded-lg mb-4 shadow-lg" decoding="async" loading="lazy">
         <div class="mb-4 text-gray-600 text-sm flex justify-between items-center flex-nowrap">
             <div class="flex flex-row flex-nowrap gap-2 items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -33,6 +33,6 @@ assert($article instanceof Article);
                 </div>
             </div>
         </div>
-        <p class="mb-4 line-clamp-5"><?= mb_substr($article->text, 0, 500) ?></p>
+        <p class="mb-4 line-clamp-5"><?= mb_substr($article->short_text, 0, 500) ?></p>
     </a>
 </article>

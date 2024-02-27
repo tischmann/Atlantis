@@ -24,8 +24,8 @@ final class Image
      */
     public static function resize(
         GdImage $image,
-        int $dst_width = 800,
-        int $dst_height = 600
+        int $dst_width,
+        int $dst_height
     ): GdImage {
         $image_width = imagesx($image);
 
@@ -78,10 +78,10 @@ final class Image
     public static function upload(
         array $files,
         string $path,
-        int $width = 400,
-        int $height = 300,
-        int $max_width = 1920,
-        int $max_height = 1080,
+        int $min_width = 0,
+        int $min_height = 0,
+        int $max_width = 0,
+        int $max_height = 0,
         int $thumb_width = 400,
         int $thumb_height = 300,
         int $quality = 80
@@ -90,18 +90,28 @@ final class Image
 
         $images = [];
 
-        foreach ($files as $file) {
-            if (!is_uploaded_file($file['tmp_name'])) {
+        $names = $files['image']['name'] ?? [];
+
+        if (!is_array($names)) $names = [$names];
+
+        $tmp_names = $files['image']['tmp_name'] ?? [];
+
+        if (!is_array($tmp_names)) $tmp_names = [$tmp_names];
+
+        foreach ($names as $index => $name) {
+            $tmp_name = $tmp_names[$index];
+
+            if (!is_uploaded_file($tmp_name)) {
                 throw new Exception(Locale::get('error_upload_file'));
             }
 
-            if (preg_match("/([^\w\s\d\-_~,;:\[\]\(\).])|([\.]{2,})/", $file['name'])) {
+            if (preg_match("/([^\w\s\d\-_~,;:\[\]\(\).])|([\.]{2,})/", $name)) {
                 throw new Exception(Locale::get('error_invalid_filename'));
             }
 
             $extensions = ["gif", "jpg", "png", "webp", "jpeg", "bmp"];
 
-            $extension = mb_strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+            $extension = mb_strtolower(pathinfo($name, PATHINFO_EXTENSION));
 
             if (!in_array($extension, $extensions)) {
                 throw new Exception(Locale::get('error_unsupported_image_type'));
@@ -115,44 +125,50 @@ final class Image
 
             switch ($extension) {
                 case 'gif':
-                    $im = imagecreatefromgif($file['tmp_name']);
+                    $im = imagecreatefromgif($tmp_name);
                     break;
                 case 'jpg':
                 case 'jpeg':
-                    $im = imagecreatefromjpeg($file['tmp_name']);
+                    $im = imagecreatefromjpeg($tmp_name);
                     break;
                 case 'png':
-                    $im = imagecreatefrompng($file['tmp_name']);
+                    $im = imagecreatefrompng($tmp_name);
                     break;
                 case 'bmp':
-                    $im = imagecreatefrombmp($file['tmp_name']);
+                    $im = imagecreatefrombmp($tmp_name);
                     break;
                 case 'webp':
-                    $im = imagecreatefromwebp($file['tmp_name']);
+                    $im = imagecreatefromwebp($tmp_name);
                     break;
             }
 
-            if ($max_width && $max_height) {
-                $src_width = imagesx($im);
+            $src_width = $width = imagesx($im);
 
-                $src_height = imagesy($im);
+            $src_height = $height = imagesy($im);
 
-                $src_ratio = $src_width / $src_height;
+            $min_ratio = $min_width / $min_height;
 
-                if ($src_width > $max_width) {
-                    $width = $max_width;
-                    $height = intval($width / $src_ratio);
-                } else if ($src_height > $max_height) {
-                    $height = $max_height;
-                    $width = intval($height * $src_ratio);
-                }
+            $max_ratio = $max_width / $max_height;
+
+            $src_ratio = $src_width / $src_height;
+
+            if ($min_width) {
+                $width = $min_width;
+                $height = intval($width / $min_ratio);
+            } else if ($max_width) {
+                $width = $max_width;
+                $height = intval($width / $max_ratio);
             }
 
-            $image = $im;
-
-            if ($width && $height) {
-                $image = Image::resize($im, $width, $height);
+            if ($min_height) {
+                $height = $min_height;
+                $width = intval($height * $min_ratio);
+            } else if ($max_height) {
+                $height = $max_height;
+                $width = intval($height * $max_ratio);
             }
+
+            $image = Image::resize($im, $width, $height);
 
             $thumb = Image::resize($im, $thumb_width, $thumb_height);
 

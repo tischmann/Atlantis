@@ -40,8 +40,8 @@ final class Response
             . "child-src 'self' https:;"
             . "script-src https: http: 'strict-dynamic' 'nonce-" . getenv('APP_NONCE') . "'; "
             . "style-src 'unsafe-inline' https:; "
-            . "frame-src 'none';"
-            . "font-src 'self' https:; ");
+            . "frame-src 'self' https:;"
+            . "font-src 'self' https: data:; ");
 
         header("Strict-Transport-Security: max-age=31536000; preload");
 

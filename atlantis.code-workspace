@@ -42,7 +42,7 @@
             "commands": [
                 {
                     "name": "Minify assets",
-                    "singleInstance": true,
+                    "singleInstance": false,
                     "command": "./minify.sh"
                 }
             ]
