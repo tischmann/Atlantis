@@ -1556,6 +1556,11 @@ body {
   background-color: rgb(7 89 133 / var(--tw-bg-opacity));
 }
 
+.hover\:bg-gray-200:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(229 231 235 / var(--tw-bg-opacity));
+}
+
 .hover\:text-red-600:hover {
   --tw-text-opacity: 1;
   color: rgb(220 38 38 / var(--tw-text-opacity));
@@ -1674,12 +1679,24 @@ body {
     margin-right: -1.5rem;
   }
 
+  .sm\:w-auto {
+    width: auto;
+  }
+
+  .sm\:grow-0 {
+    flex-grow: 0;
+  }
+
   .sm\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .sm\:grid-cols-4 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .sm\:flex-row {
+    flex-direction: row;
   }
 
   .sm\:px-6 {
@@ -1709,6 +1726,10 @@ body {
 
   .md\:max-w-screen-xl {
     max-width: 1280px;
+  }
+
+  .md\:grow-0 {
+    flex-grow: 0;
   }
 
   .md\:grid-cols-2 {
