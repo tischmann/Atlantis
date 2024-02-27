@@ -402,7 +402,7 @@ class ArticlesController extends Controller
 
                 foreach ($gallery as $key => $image) {
                     $image = str_replace('thumb_', '', $image);
-                    $timestamp = time() + $key + 1;
+                    $timestamp = time() + $key;
                     touch("{$gallery_dir}/{$image}", $timestamp);
                     touch("{$gallery_dir}/thumb_{$image}", $timestamp);
                 }
@@ -456,7 +456,7 @@ class ArticlesController extends Controller
                 }
 
                 foreach ($videos as $key => $video) {
-                    $timestamp = time() + $key + 1;
+                    $timestamp = time() + $key;
                     touch("{$videos_dir}/{$video}", $timestamp);
                 }
 
@@ -503,7 +503,7 @@ class ArticlesController extends Controller
                 }
 
                 foreach ($attachements as $key => $attachement) {
-                    $timestamp = time() + $key + 1;
+                    $timestamp = time() + $key;
                     touch("{$attachements_dir}/{$attachement}", $timestamp);
                 }
 
