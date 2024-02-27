@@ -24,6 +24,7 @@ return [
     'response_code' => 'Код ответа',
     'csrf_failed' => 'CSRF токен не прошел проверку',
     'bad_request' => 'Неверный запрос',
+    'upload_error' => 'Ошибка загрузки',
     // Ошибки Json Web Token
     'jwt_missing_public_key' => 'Отсутствует публичный ключ',
     'jwt_wrong_segment_amount' => 'Неверное количество сегментов',
@@ -111,12 +112,10 @@ return [
     'article_video' => 'Видео',
     'article_not_saved' => 'Статья не сохранена',
     'article_saved' => 'Статья сохранена',
-    'article_temp_image_not_found' => 'Временное изображение не найдено',
-    'article_temp_image_not_moved' => 'Временное изображение не перемещено',
     'article_title_required' => 'Заголовок обязателен',
     'article_text_required' => 'Текст статьи обязателен',
     'article_short_text_required' => 'Краткий текст обязателен',
     'article_category_required' => 'Категория обязательна',
     'article_created_at_invalid' => 'Неверная дата и время создания',
-    'article_temp_video_not_moved' => 'Временное видео не перемещено',
+    'article_temp_file_not_moved' => 'Временный файл не перемещен',
 ];

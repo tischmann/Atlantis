@@ -98,13 +98,16 @@ class Article extends Model
     {
         $attachements = [];
 
-        foreach (glob(getenv('APP_ROOT') . "/public/uploads/articles/{$this->id}/attachements/*.*") as $file) {
+        $files = glob(getenv('APP_ROOT') . "/public/uploads/articles/{$this->id}/attachements/*.*");
+
+        usort($files, function ($a, $b) {
+            return filemtime($a) - filemtime($b);
+        });
+
+        foreach ($files as $file) {
             $filename = basename($file);
 
-            $attachements[] = [
-                "name" => $filename,
-                "url" => "/uploads/articles/{$this->id}/attachements/{$filename}",
-            ];
+            $attachements[] = $filename;
         }
 
         return $attachements;
@@ -114,7 +117,13 @@ class Article extends Model
     {
         $videos = [];
 
-        foreach (glob(getenv('APP_ROOT') . "/public/uploads/articles/{$this->id}/video/*.*") as $file) {
+        $files = glob(getenv('APP_ROOT') . "/public/uploads/articles/{$this->id}/video/*.*");
+
+        usort($files, function ($a, $b) {
+            return filemtime($a) - filemtime($b);
+        });
+
+        foreach ($files as $file) {
             $filename = basename($file);
 
             $videos[] = $filename;

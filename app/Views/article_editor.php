@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\{Article, Category};
+use Tischmann\Atlantis\Template;
 
 assert($article instanceof Article);
 
@@ -76,8 +77,15 @@ $category = $article->getCategory();
                             </div>
                             <ul class="gallery-container grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-2 gap-4">
                                 <?php
-                                foreach ($article->getGalleryImages() as $image) {
-                                    require "article_gallery_item.php";
+                                foreach ($article->getGalleryImages() as $src) {
+                                    Template::echo(
+                                        template: 'article_gallery_item',
+                                        args: [
+                                            'src' => $article->id
+                                                ? "/images/articles/{$article->id}/gallery/thumb_{$src}"
+                                                : "/images/articles/temp/thumb_{$src}"
+                                        ]
+                                    );
                                 }
                                 ?>
                             </ul>
@@ -89,7 +97,7 @@ $category = $article->getCategory();
                     <input type="hidden" name="videos" value="<?= implode(";", $article->getVideos()) ?>">
                     <div class="rounded-lg border-2 border-gray-200">
                         <div class="rounded-lg border-[16px] border-white">
-                            <div class="mb-4 add-video-button w-full p-3 rounded-lg bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition cursor-pointer">
+                            <div id="upload-video" class="mb-4 w-full p-3 rounded-lg bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition cursor-pointer">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                                 </svg>
@@ -108,28 +116,26 @@ $category = $article->getCategory();
             <div class="relative order-3">
                 <div class="mb-8 relative">
                     <label for="attachement" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=article_attachement}}</label>
+                    <input type="hidden" name="attachements" value="<?= implode(";", $article->getAttachements()) ?>">
                     <div class="border-2 border-gray-200 rounded-lg p-4 transition">
-                        <div class="mb-4  w-full p-3 rounded-lg bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition cursor-pointer">
+                        <div id="upload-attachement" class="mb-4  w-full p-3 rounded-lg bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition cursor-pointer">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                             </svg>
                         </div>
-                        <ul class="sortable-list flex flex-col gap-4" aria-label="attachement" name="attachement">
+                        <ul class="attachements-container flex flex-col gap-4" aria-label="attachement" name="attachement">
                             <?php
 
                             foreach ($article->getAttachements() as $attachement) {
-                                echo <<<HTML
-                                <li class="flex flex-nowrap gap-2 items-center justify-between text-gray-800 w-full hover:bg-gray-100 rounded-md">
-                                    <a href="{$attachement['url']}" class="text-ellipsis overflow-hidden whitespace-nowrap grow px-3 py-2" target="_blank" title="{{lang=delete}}">
-                                        {$attachement['name']}
-                                    </a>
-                                    <div class="delete-attachement-button text-gray-500 cursor-pointer hover:text-red-600 pr-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                        </svg>
-                                    </div>
-                                </li>
-                                HTML;
+                                Template::echo(
+                                    template: 'article_attachement_item',
+                                    args: [
+                                        'file' => $attachement,
+                                        'href' => $article->id
+                                            ? "/uploads/articles/{$article->id}/attachements/{$attachement}"
+                                            : "/uploads/articles/temp/{$attachement}"
+                                    ]
+                                );
                             }
                             ?>
                         </ul>
@@ -183,7 +189,9 @@ $category = $article->getCategory();
                 </div>
                 <div class="mb-8 flex flex-col relative">
                     <label for="short_text" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=article_short_text}}</label>
-                    <textarea class="flex-grow w-full min-h-48 outline-none border-2 border-gray-200 rounded-lg p-4 focus:border-sky-600 transition" name="short_text"><?= $article->short_text ?></textarea>
+                    <div class="flex-grow w-full border-2 border-gray-200 rounded-lg p-4">
+                        <textarea class="w-full min-h-48 border-none outline-none block" name="short_text"><?= $article->short_text ?></textarea>
+                    </div>
                 </div>
                 <div class="flex flex-col relative">
                     <label for="text" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=article_text}}</label>
@@ -204,10 +212,14 @@ $category = $article->getCategory();
     const uploadGalleryButton = document.getElementById('upload-gallery')
     const videosContainer = document.querySelector('.videos-container')
     const videosInput = document.querySelector('input[name="videos"]')
+    const uploadVideoButton = document.getElementById('upload-video')
     const uploadImageButton = document.getElementById('upload-image')
     const deleteImageButton = document.getElementById('delete-image')
     const articleImage = document.getElementById('article-image')
     const articleImageInput = document.querySelector('input[name="image"]')
+    const attachementsContainer = document.querySelector('.attachements-container')
+    const attachementInput = document.querySelector('input[name="attachements"]')
+    const uploadAttachementButton = document.getElementById('upload-attachement')
     const tagsElement = document.querySelector('textarea[name="tags"]')
 
     // Text
@@ -270,6 +282,7 @@ $category = $article->getCategory();
         file.addEventListener('change', (event) => {
             const data = new FormData()
             data.append('image', event.target.files[0])
+            articleImage.src = `/images/placeholder.svg`
             document.upload('/article/image', data).then(({
                 image
             }) => {
@@ -324,6 +337,8 @@ $category = $article->getCategory();
         })
     }
 
+    galleryContainer.querySelectorAll(`li`).forEach(initGalleryItem)
+
     uploadGalleryButton.addEventListener('click', () => {
         const file = document.createElement('input')
         file.hidden = true
@@ -359,22 +374,17 @@ $category = $article->getCategory();
 
                             wrapper.insertAdjacentHTML(
                                 'beforeend',
-                                `<?= require "article_gallery_item.php" ?>`
+                                `<?= Template::html(
+                                        template: 'article_gallery_item',
+                                        args: ['src' => '/images/placeholder.svg']
+                                    ) ?>`
                             )
 
                             const li = wrapper.querySelector('li')
 
                             galleryContainer.append(li)
 
-                            const image = li.querySelector('img')
-
-                            const imageLoader = new Image()
-
-                            imageLoader.src = `/images/articles/temp/thumb_${src}`
-
-                            imageLoader.onload = () => {
-                                image.src = imageLoader.src
-                            }
+                            li.querySelector('img').src = `/images/articles/temp/thumb_${src}`
 
                             values.push(src)
 
@@ -392,8 +402,6 @@ $category = $article->getCategory();
         file.click()
     })
 
-    galleryContainer.querySelectorAll(`li`).forEach(initGalleryItem)
-
     // Videos
 
     document.sortable(videosContainer, {
@@ -407,121 +415,193 @@ $category = $article->getCategory();
         }
     })
 
-    function getVideosInputValues() {
-        const value = videosInput.value.split(';')
+    function initVideosItem(li) {
+        const deleteButton = li.querySelector('.delete-videos-button')
 
-        value.map((v, i) => {
-            if (v === '') value.splice(i, 1)
-        })
-
-        return value
-    }
-
-    function computeVideosInputValues() {
-        const values = []
-
-        videosContainer.querySelectorAll('li').forEach(li => {
-            values.push(li.querySelector('video').src.split('/').pop())
-        })
-
-        return values
-    }
-
-    function initVideosItem(element) {
-        element.addEventListener('click', function() {
-            const li = this.closest('li')
+        deleteButton.addEventListener('click', function() {
             li.classList.add('transition', 'scale-0')
             setTimeout(() => {
                 li.remove()
-                videosInput.setAttribute('value', computeVideosInputValues().join(';'))
+                const values = []
+                videosContainer.querySelectorAll('li').forEach(li => {
+                    values.push(li.querySelector('video').src.split('/').pop())
+                })
+                videosInput.setAttribute('value', values.join(';'))
             }, 200)
         }, {
             once: true
         })
     }
 
-    function processVideosResponse(response) {
-        const values = getVideosInputValues()
+    videosContainer.querySelectorAll(`li`).forEach(initVideosItem)
 
-        response.videos.forEach(src => {
-            const div = document.createElement('div')
+    uploadVideoButton.addEventListener('click', () => {
+        const file = document.createElement('input')
 
-            div.insertAdjacentHTML('beforeend', `<?= require "article_video_item.php" ?>`)
+        file.hidden = true
+        file.type = 'file'
+        file.accept = 'video/*'
+        file.multiple = true
 
-            const li = div.querySelector('li')
+        file.addEventListener('change', (event) => {
+            Array.from(event.target.files).forEach(file => {
+                new Promise((resolve, reject) => {
+                    const data = new FormData()
 
-            const video = li.querySelector('video')
+                    data.append('video[]', file)
 
-            li.querySelectorAll(`.delete-videos-button`)
-                .forEach(initVideosItem)
+                    const progress = document.progress(0, videosContainer)
 
-            video.src = `/uploads/articles/temp/${src}`
+                    document.upload(
+                        '/article/videos',
+                        data,
+                        function(percent) {
+                            progress.update(percent)
+                        }
+                    ).then(({
+                        videos
+                    }) => {
+                        progress.destroy()
 
-            videosContainer.append(li)
+                        const values = videosInput.value
+                            .split(';')
+                            .filter(src => src !== '')
 
-            values.push(src)
+                        videos.forEach(src => {
+                            const div = document.createElement('div')
 
-            videosInput.setAttribute('value', values.join(';'))
-        })
-    }
+                            div.insertAdjacentHTML('beforeend', `<?= require "article_video_item.php" ?>`)
 
-    document.querySelectorAll('.add-video-button').forEach(el => {
-        el.addEventListener('click', () => {
-            const file = document.createElement('input')
+                            const li = div.querySelector('li')
 
-            file.hidden = true
-            file.type = 'file'
-            file.accept = 'video/*'
-            file.multiple = true
+                            const video = li.querySelector('video')
 
-            file.addEventListener('change', (event) => {
-                Array.from(event.target.files).forEach(file => {
-                    new Promise((resolve, reject) => {
-                        const data = new FormData()
+                            initVideosItem(li)
 
-                        data.append('video[]', file)
+                            video.src = `/uploads/articles/temp/${src}`
 
-                        const progress = document.progress(0, videosContainer)
+                            videosContainer.append(li)
 
-                        document.upload(
-                            '/article/videos',
-                            data,
-                            function(percent) {
-                                progress.update(percent)
-                            }
-                        ).then((response) => {
-                            progress.destroy()
-                            processVideosResponse(response)
+                            values.push(src)
                         })
 
-                        resolve()
+                        videosInput.setAttribute('value', values.join(';'))
                     })
+
+                    resolve()
                 })
             })
-
-            file.click()
         })
-    })
 
-    document.querySelectorAll(`.delete-videos-button`)
-        .forEach(initVideosItem)
+        file.click()
+    })
 
     // Attachements
 
-    document.querySelectorAll(`.sortable-list`).forEach(el => {
-        document.sortable(el)
+    document.sortable(attachementsContainer, {
+        ondragend: () => {
+            attachementInput.setAttribute('value',
+                Array.from(attachementsContainer.querySelectorAll('li > a'))
+                .map(a => a.getAttribute('href').split('/').pop())
+                .filter(src => src !== '')
+                .join(';')
+            )
+        }
     })
 
-    document.querySelectorAll(`.delete-attachement-button`).forEach(el => {
-        el.addEventListener('click', () => {
-            const li = el.closest('li')
+    function initAttachementItem(li) {
+        const deleteButton = li.querySelector('.delete-attachement-button')
+
+        deleteButton.addEventListener('click', function() {
             li.classList.add('transition', 'scale-0')
             setTimeout(() => {
                 li.remove()
+                const values = []
+                attachementsContainer.querySelectorAll('li').forEach(li => {
+                    values.push(
+                        li.querySelector('a').getAttribute('href')
+                        .split('/')
+                        .pop()
+                    )
+                })
+                attachementInput.setAttribute('value', values.join(';'))
             }, 200)
         }, {
             once: true
         })
+    }
+
+    attachementsContainer.querySelectorAll(`li`).forEach(initAttachementItem)
+
+    uploadAttachementButton.addEventListener('click', () => {
+        const file = document.createElement('input')
+
+        file.hidden = true
+        file.type = 'file'
+        file.accept = '*'
+        file.multiple = true
+
+        file.addEventListener('change', (event) => {
+            Array.from(event.target.files).forEach(file => {
+                new Promise((resolve, reject) => {
+                    const data = new FormData()
+
+                    data.append('file[]', file)
+
+                    const progress = document.progress(0, attachementsContainer)
+
+                    document.upload(
+                        '/article/attachements',
+                        data,
+                        function(percent) {
+                            progress.update(percent)
+                        }
+                    ).then(({
+                        files
+                    }) => {
+                        progress.destroy()
+
+                        const values = attachementInput.value
+                            .split(';')
+                            .filter(src => src !== '')
+
+                        files.forEach(file => {
+
+                            const div = document.createElement('div')
+
+                            div.insertAdjacentHTML('beforeend',
+                                `<?php
+                                    Template::echo(
+                                        template: 'article_attachement_item',
+                                        args: ['file' => "", 'href' => ""]
+                                    );
+                                    ?>`
+                            )
+
+                            const li = div.querySelector('li')
+
+                            const a = li.querySelector('a')
+
+                            initAttachementItem(li)
+
+                            a.setAttribute('href', `/uploads/articles/temp/${file}`)
+
+                            a.innerText = file
+
+                            attachementsContainer.append(li)
+
+                            values.push(file)
+                        })
+
+                        attachementInput.setAttribute('value', values.join(';'))
+                    })
+
+                    resolve()
+                })
+            })
+        })
+
+        file.click()
     })
 
     // Tags

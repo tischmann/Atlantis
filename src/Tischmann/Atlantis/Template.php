@@ -68,7 +68,7 @@ final class Template
      */
     public function read(): string
     {
-        $file = __DIR__ . '/../../../app/Views/' . $this->template . '.php';
+        $template_php_file = __DIR__ . '/../../../app/Views/' . $this->template . '.php';
 
         if (!in_array('ob_gzhandler', ob_list_handlers())) {
             ob_start('ob_gzhandler');
@@ -76,10 +76,10 @@ final class Template
             ob_start();
         }
 
-        if (file_exists($file)) {
+        if (file_exists($template_php_file)) {
             extract([...static::getCachedArgs(), ...$this->args]);
 
-            require $file;
+            require $template_php_file;
         } else {
             $message = get_str('template_not_found') . ": '{$this->template}'";
 

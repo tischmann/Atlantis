@@ -97,6 +97,13 @@ if (App::getCurrentUser()->isAdmin()) {
 
     Router::add(new Route(
         controller: new ArticlesController(),
+        path: 'article/attachements',
+        action: 'uploadAttachements',
+        method: 'POST',
+    ));
+
+    Router::add(new Route(
+        controller: new ArticlesController(),
         path: 'article/image/{id}',
         action: 'uploadImage',
         method: 'POST',

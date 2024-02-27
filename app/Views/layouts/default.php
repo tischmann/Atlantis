@@ -24,6 +24,7 @@
     <link rel="stylesheet" href="/app.min.css" media="all">
     <link rel="stylesheet" href="/swiper-bundle.min.css" />
     <link rel="stylesheet" href="/quill.min.css">
+    <link rel="preload" as="image" href="/images/placeholder.svg">
     <script src="/app.min.js" nonce="{{nonce}}"></script>
     <script src="/swiper-bundle.min.js" nonce="{{nonce}}"></script>
 </head>

@@ -156,18 +156,21 @@ Document.prototype.tags = function (text, limit = 5) {
 }
 
 Document.prototype.progress = function (percent = 0, container = null) {
+    const wrapper = document.createElement('div')
+    wrapper.classList.add('w-full', 'h-8', 'rounded-lg', 'bg-gray-200')
     const progress = document.createElement('div')
     progress.classList.add('h-8', 'rounded-lg', 'bg-sky-600', 'transition-all')
     progress.style.width = `${percent}%`
-    if (container) container.append(progress)
+    wrapper.append(progress)
+    if (container) container.append(wrapper)
     return {
-        element: progress,
+        element: wrapper,
         update: (percent) => {
             if (!progress) return
             progress.style.width = `${percent}%`
         },
         destroy: () => {
-            progress?.remove()
+            wrapper?.remove()
         }
     }
 }
