@@ -276,6 +276,7 @@ class ArticlesController extends Controller
             'text' => ['required', 'string'],
             'tags' => ['required', 'string'],
             'created_at' => ['required', 'string'],
+            'visible' => ['required', 'string']
         ]);
 
         $id = $this->route->args('id');
@@ -517,6 +518,8 @@ class ArticlesController extends Controller
             $article->tags = explode(",", $request->request('tags'));
 
             $article->tags = array_map('trim', $article->tags);
+
+            $article->visible = boolval($request->request('visible'));
 
             $date = $request->request('created_at');
 

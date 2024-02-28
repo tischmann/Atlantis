@@ -153,6 +153,19 @@ $category = $article->getCategory();
                     <label for="created_at" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=article_created_at}}</label>
                     <input class="py-2 px-3 outline-none border-2 border-gray-200 rounded-lg w-full focus:border-sky-600 transition" aria-label="created_at" id="created_at" name="created_at" type="datetime-local" value="<?= $article->created_at->format("Y-m-d H:i") ?>">
                 </div>
+                <div class="mb-8 relative">
+                    <label for="visible" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=article_visibility}}</label>
+                    <div class="grid w-full grid-cols-1 md:grid-cols-2 gap-4 bg-white border-2 border-gray-200 rounded-lg p-4">
+                        <div>
+                            <input type="radio" name="visible" id="visible_inactive" value="0" class="peer hidden" <?= !$article->visible ? 'checked' : '' ?> />
+                            <label for="visible_inactive" class="block cursor-pointer select-none rounded-md p-2 text-center bg-gray-200 peer-checked:bg-red-600 peer-checked:text-white">{{lang=article_visibility_invisible}}</label>
+                        </div>
+                        <div>
+                            <input type="radio" name="visible" id="visible_active" value="1" class="peer hidden" <?= $article->visible ? 'checked' : '' ?> />
+                            <label for="visible_active" class="block cursor-pointer select-none rounded-md p-2 text-center bg-gray-200 peer-checked:bg-green-600 peer-checked:text-white">{{lang=article_visibility_visible}}</label>
+                        </div>
+                    </div>
+                </div>
                 <div class="flex flex-col gap-4">
                     <button id="delete-article" class="flex items-center justify-center px-3 py-2 bg-red-600 hover:bg-red-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full" type="button" title="{{lang=delete}}">{{lang=delete}}</button>
                     <button id="save-article" class="flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full" type="button" title="{{lang=save}}">{{lang=save}}</button>
