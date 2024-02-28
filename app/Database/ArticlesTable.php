@@ -80,6 +80,13 @@ class ArticlesTable extends Table
                 default: '1',
                 description: 'Видимость',
             ),
+            new Column(
+                name: 'fixed',
+                type: 'tinyint',
+                length: 1,
+                default: 0,
+                description: 'Закреплена',
+            ),
         ]);
     }
 }

@@ -1,0 +1,1 @@
+<li data-value="{{value}}" class="px-4 py-3 cursor-pointer hover:bg-sky-600 hover:text-white {{class}}">{{title}}</li>

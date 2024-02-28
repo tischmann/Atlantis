@@ -8,15 +8,15 @@ assert($pagination instanceof Pagination);
 
 if ($pagination->last > 1) {
     echo <<<HTML
-        <div class="flex items-center justify-end">
-            <nav class="w-full md:w-auto flex justify-center md:justify-end flex-nowrap gap-2 rounded-xl text-base font-semibold">
-                <a href="?{$pagination->getFirstQuery()}" class="flex items-center justify-center h-10 w-10 rounded-lg bg-gray-200 hover:bg-gray-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+        <div class="flex items-center justify-end text-gray-800">
+            <nav class="w-full md:w-auto flex justify-center md:justify-end flex-nowrap gap-2 rounded-xl text-sm font-semibold">
+                <a href="?{$pagination->getFirstQuery()}" class="flex items-center justify-center h-10 w-10 rounded-lg bg-gray-100 hover:bg-gray-200" title="{{lang=pagination_first}}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m18.75 4.5-7.5 7.5 7.5 7.5m-6-15L5.25 12l7.5 7.5" />
                     </svg>
                 </a>
-                <a href="?{$pagination->getPrevQuery()}" class="flex items-center justify-center h-10 w-10 rounded-lg bg-gray-200 hover:bg-gray-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <a href="?{$pagination->getPrevQuery()}" class="flex items-center justify-center h-10 w-10 rounded-lg bg-gray-100 hover:bg-gray-200" title="{{lang=pagination_prev}}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
                     </svg>
                 </a>
@@ -25,34 +25,34 @@ if ($pagination->last > 1) {
 
     foreach ($pagination->prev_pages as $page) {
         echo <<<HTML
-        <a href="?{$pagination->getPageQuery($page)}" class="hidden md:flex items-center justify-center h-10 w-10 rounded-lg bg-gray-200 hover:bg-gray-300">
+        <a href="?{$pagination->getPageQuery($page)}" class="hidden md:flex items-center justify-center h-10 w-10 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800" title="{{lang=pagination_page}} {$page}">
             {$page}
         </a>
         HTML;
     }
 
     echo <<<HTML
-        <a href="?{$pagination->getPageQuery($pagination->page)}" class="flex items-center justify-center h-10 w-10 rounded-lg bg-sky-400">
+        <span class="flex items-center justify-center h-10 w-10 rounded-lg bg-gray-100 text-sky-600 cursor-default" title="{{lang=pagination_page}} {$pagination->page}">
             {$pagination->page}
-        </a>
+        </span>
         HTML;
 
     foreach ($pagination->next_pages as $page) {
         echo <<<HTML
-        <a href="?{$pagination->getPageQuery($page)}" class="hidden md:flex items-center justify-center h-10 w-10 rounded-lg bg-gray-200 hover:bg-gray-300">
+        <a href="?{$pagination->getPageQuery($page)}" class="hidden md:flex items-center justify-center h-10 w-10 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800" title="{{lang=pagination_page}} {$page}">
             {$page}
         </a>
         HTML;
     }
 
     echo <<<HTML
-                <a href="?{$pagination->getNextQuery()}" class="flex items-center justify-center h-10 w-10 rounded-lg bg-gray-200 hover:bg-gray-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <a href="?{$pagination->getNextQuery()}" class="flex items-center justify-center h-10 w-10 rounded-lg bg-gray-100 hover:bg-gray-200" title="{{lang=pagination_next}}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                     </svg>
                 </a>
-                <a href="?{$pagination->getLastQuery()}" class="flex items-center justify-center h-10 w-10 rounded-lg bg-gray-200 hover:bg-gray-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <a href="?{$pagination->getLastQuery()}" class="flex items-center justify-center h-10 w-10 rounded-lg bg-gray-100 hover:bg-gray-200" title="{{lang=pagination_last}}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
                     </svg>
                 </a>

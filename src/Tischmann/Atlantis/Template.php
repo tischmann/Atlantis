@@ -79,7 +79,7 @@ final class Template
         if (file_exists($template_php_file)) {
             extract([...static::getCachedArgs(), ...$this->args]);
 
-            require $template_php_file;
+            include $template_php_file;
         } else {
             $message = get_str('template_not_found') . ": '{$this->template}'";
 
@@ -92,7 +92,13 @@ final class Template
             HTML;
         }
 
-        return ob_get_clean();
+        $buffer = ob_get_clean();
+
+        if ($buffer === false) {
+            die('Ошибка при чтении из буфера вывода');
+        }
+
+        return $buffer;
     }
 
     /**

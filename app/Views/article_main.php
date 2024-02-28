@@ -1,12 +1,19 @@
 <?php
 
 use App\Models\Article;
+use Tischmann\Atlantis\App;
 
 assert($article instanceof Article);
 
+$user = App::getCurrentUser();
+
+$href = $user->isAdmin() ? "/{{env=APP_LOCALE}}/edit/article/{$article->id}" : "/{{env=APP_LOCALE}}/article/{$article->id}";
+
+$hover_title = $user->isAdmin() ? "{{lang=edit}}" : "{{lang=read}}";
+
 ?>
 
-<a href="/{{env=APP_LOCALE}}/article/<?= $article->id ?>" title="<?= $article->title ?>" class="group/item block p-4 rounded-xl border-2 border-gray-200 hover:border-gray-300">
+<a href="<?= $href ?>" title="<?= $article->title ?>" class="group/item block p-4 rounded-xl border-2 border-gray-200 hover:border-gray-300 <?= $article->visible ? "" : "opacity-50" ?>">
     <article>
         <h2 class="mb-1 font-semibold text-lg line-clamp-1"><?= $article->title ?></h2>
         <h3 class="line-clamp-1 text-gray-600 text-sm mb-2"><?= $article->getCategory()->title ?></h3>
@@ -16,7 +23,7 @@ assert($article instanceof Article);
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
                     </svg>
-                    {{lang=read}}
+                    <?= $hover_title ?>
                 </div>
             </div>
             <img src="<?= $article->getImage() ? "/images/articles/{$article->id}/image/thumb_{$article->getImage()} " : "/images/placeholder.svg" ?>" alt="<?= $article->title ?>" width="400" height="300" class="bg-gray-200 w-full rounded-lg mb-4 shadow-lg" decoding="async" loading="lazy">

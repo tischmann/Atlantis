@@ -4,16 +4,20 @@
 
         use App\Models\Article;
 
+        use Tischmann\Atlantis\Pagination;
+
         $query = Article::query()
-            ->where('visible', '1')
             ->order('fixed', 'DESC')
             ->order('created_at', 'DESC');
 
+        $pagination = new Pagination(query: $query, limit: 10);
+
         foreach (Article::all($query) as $article) {
             assert($article instanceof Article);
-            include __DIR__ . '/article_main.php';
+            include  'article_main.php';
         }
 
         ?>
     </div>
+    <div class="my-4"><?php include 'pagination.php'; ?></div>
 </main>

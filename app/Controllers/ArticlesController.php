@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Models\Article;
+
 use Exception;
+
 use Tischmann\Atlantis\{
+    App,
     Controller,
     DateTime,
     Image,
@@ -20,6 +23,16 @@ use Tischmann\Atlantis\{
  */
 class ArticlesController extends Controller
 {
+
+    public function showAllArticles(): void
+    {
+        if (!App::getCurrentUser()->isAdmin()) {
+            View::send('403', exit: true);
+        }
+
+        View::send('articles_list');
+    }
+
     /**
      * Вывод полной статьи
      *
@@ -34,6 +47,10 @@ class ArticlesController extends Controller
 
     public function getArticleEditor(): void
     {
+        if (!App::getCurrentUser()->isAdmin()) {
+            View::send('403', exit: true);
+        }
+
         $article = Article::find($this->route->args('id'));
 
         View::send('article_editor', ['article' => $article], 'default');
@@ -45,6 +62,10 @@ class ArticlesController extends Controller
      */
     public function uploadImage()
     {
+        if (!App::getCurrentUser()->isAdmin()) {
+            Response::json(['message' => get_str('access_denied')], 403);
+        }
+
         Article::removeOldTempImagesAndUploads();
 
         try {
@@ -72,6 +93,10 @@ class ArticlesController extends Controller
      */
     public function uploadGalleryImage()
     {
+        if (!App::getCurrentUser()->isAdmin()) {
+            Response::json(['message' => get_str('access_denied')], 403);
+        }
+
         Article::removeOldTempImagesAndUploads();
 
         try {
@@ -99,6 +124,10 @@ class ArticlesController extends Controller
      */
     public function uploadVideos()
     {
+        if (!App::getCurrentUser()->isAdmin()) {
+            Response::json(['message' => get_str('access_denied')], 403);
+        }
+
         Article::removeOldTempImagesAndUploads();
 
         try {
@@ -169,6 +198,10 @@ class ArticlesController extends Controller
      */
     public function uploadAttachements()
     {
+        if (!App::getCurrentUser()->isAdmin()) {
+            Response::json(['message' => get_str('access_denied')], 403);
+        }
+
         Article::removeOldTempImagesAndUploads();
 
         try {
@@ -235,6 +268,10 @@ class ArticlesController extends Controller
      */
     public function deleteTempImage()
     {
+        if (!App::getCurrentUser()->isAdmin()) {
+            Response::json(['message' => get_str('access_denied')], 403);
+        }
+
         $request = Request::instance();
 
         $files = [
@@ -259,8 +296,8 @@ class ArticlesController extends Controller
      */
     public function updateArticle()
     {
-        if (csrf_failed()) {
-            Response::json(['message' => get_str('csrf_failed')], 403);
+        if (!App::getCurrentUser()->isAdmin()) {
+            Response::json(['message' => get_str('access_denied')], 403);
         }
 
         $request = Request::instance();
@@ -276,7 +313,8 @@ class ArticlesController extends Controller
             'text' => ['required', 'string'],
             'tags' => ['required', 'string'],
             'created_at' => ['required', 'string'],
-            'visible' => ['required', 'string']
+            'visible' => ['required', 'string'],
+            'fixed' => ['required', 'string']
         ]);
 
         $id = $this->route->args('id');
@@ -520,6 +558,8 @@ class ArticlesController extends Controller
             $article->tags = array_map('trim', $article->tags);
 
             $article->visible = boolval($request->request('visible'));
+
+            $article->fixed = boolval($request->request('fixed'));
 
             $date = $request->request('created_at');
 

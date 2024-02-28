@@ -32,7 +32,7 @@ class Pagination
     public function __construct(
         public int $total = 0,
         public int $page = 1,
-        public int $limit = 5,
+        public int $limit = 10,
         public int $first = 1,
         public int $prev = 1,
         public int $next = 1,
@@ -47,7 +47,7 @@ class Pagination
             ->setLimit($this->limit <= 0 ? static::DEFAULT_LIMIT : $this->limit)
             ->compute();
 
-        if ($query) $this->query(query: $query);
+        if ($query) $this->query(query: $query, page: $this->page, limit: $this->limit);
     }
 
     /**

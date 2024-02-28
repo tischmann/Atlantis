@@ -16,7 +16,7 @@ use Tischmann\Atlantis\{
 if (App::getCurrentUser()->isAdmin()) {
     Router::add(new Route(
         controller: new UsersController(),
-        path: 'users',
+        path: 'edit/users',
         action: 'showAllUsers',
         method: 'GET',
         title: get_str('user_list')
@@ -65,6 +65,13 @@ if (App::getCurrentUser()->isAdmin()) {
         action: 'getArticleEditor',
         method: 'GET',
         title: get_str('article_edit')
+    ));
+
+    Router::add(new Route(
+        controller: new ArticlesController(),
+        path: 'edit/articles',
+        action: 'showAllArticles',
+        method: 'GET',
     ));
 
     Router::add(new Route(

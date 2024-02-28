@@ -23,6 +23,7 @@ class Article extends Model
         public ?string $text = null,
         public ?array $tags = [],
         public bool $visible = true,
+        public bool $fixed = false,
         public ?DateTime $created_at = null,
         public ?DateTime $updated_at = null,
     ) {

@@ -1,7 +1,8 @@
 <?php
 
 use App\Models\{Article, Category};
-use Tischmann\Atlantis\Template;
+
+use Tischmann\Atlantis\{Template};
 
 assert($article instanceof Article);
 
@@ -10,59 +11,6 @@ $category = $article->getCategory();
 ?>
 <main class="md:container mx-8 md:mx-auto">
     <form id="article-form">
-        <div class="mb-8 relative">
-            <label for="title" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=article_title}}</label>
-            <input class="py-2 px-3 outline-none border-2 border-gray-200 rounded-lg w-full focus:border-sky-600 transition" aria-label="title" id="title" name="title" value="<?= $article->title ?>" required>
-        </div>
-        <div class="mb-8 relative">
-            <label for="title" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=article_category}}</label>
-            <input value="<?= $category->id ?>" name="category_id" class="hidden" required />
-            <div class="px-3 py-2 outline-none border-2 border-gray-200 rounded-lg w-full focus:border-sky-600 transition" data-select><?= $category->title ?></div>
-            <ul class="absolute select-none mt-1 hidden bg-white border-2 border-gray-200 rounded-lg shadow-lg max-h-[50vh] overflow-y-auto z-20" data-options>
-                <?php
-
-                $query = Category::query()
-                    ->where('parent_id', null)
-                    ->order('locale', 'ASC')
-                    ->order('title', 'ASC');
-
-                foreach (Category::all($query) as $cat) {
-                    assert($cat instanceof Category);
-
-                    $class = $cat->id === $category->id ? 'bg-sky-600 text-white' : '';
-
-                    echo <<<HTML
-                        <li data-value="{$cat->id}" class="px-4 py-3 cursor-pointer hover:bg-sky-600 hover:text-white {$class}">{$cat->title}</li>
-                    HTML;
-
-                    $cat->children = $cat->fetchChildren();
-
-                    foreach ($cat->children as $child) {
-                        assert($child instanceof Category);
-
-                        $class = $child->id === $category->id ? 'bg-sky-600 text-white' : '';
-
-                        echo <<<HTML
-                            <li data-value="{$child->id}" class="px-4 py-3 pl-8 cursor-pointer bg-gray-100 hover:bg-sky-600 hover:text-white {$class}">{$child->title}</li>
-                        HTML;
-
-                        $child->children = $child->fetchChildren();
-
-                        foreach ($child->children as $grandchild) {
-                            assert($grandchild instanceof Category);
-
-                            $class = $grandchild->id === $category->id ? 'bg-sky-600 text-white' : '';
-
-                            echo <<<HTML
-                                <li data-value="{$grandchild->id}" class="px-4 py-3 pl-12 cursor-pointer bg-gray-200 hover:bg-sky-600 hover:text-white {$class}">{$grandchild->title}</li>
-                            HTML;
-                        }
-                    }
-                }
-
-                ?>
-            </ul>
-        </div>
         <div class="mb-8 grid grid-cols-1 xl:grid-cols-4 gap-8">
             <div class="relative order-2 xl:order-1">
                 <div class="mb-8 relative">
@@ -154,7 +102,7 @@ $category = $article->getCategory();
                     <input class="py-2 px-3 outline-none border-2 border-gray-200 rounded-lg w-full focus:border-sky-600 transition" aria-label="created_at" id="created_at" name="created_at" type="datetime-local" value="<?= $article->created_at->format("Y-m-d H:i") ?>">
                 </div>
                 <div class="mb-8 relative">
-                    <label for="visible" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=article_visibility}}</label>
+                    <label class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=article_visibility}}</label>
                     <div class="grid w-full grid-cols-1 md:grid-cols-2 gap-4 bg-white border-2 border-gray-200 rounded-lg p-4">
                         <div>
                             <input type="radio" name="visible" id="visible_inactive" value="0" class="peer hidden" <?= !$article->visible ? 'checked' : '' ?> />
@@ -166,12 +114,100 @@ $category = $article->getCategory();
                         </div>
                     </div>
                 </div>
+                <div class="mb-8 relative">
+                    <label class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=article_fixed}}</label>
+                    <div class="grid w-full grid-cols-1 md:grid-cols-2 gap-4 bg-white border-2 border-gray-200 rounded-lg p-4">
+                        <div>
+                            <input type="radio" name="fixed" id="fixed_off" value="0" class="peer hidden" <?= !$article->fixed ? 'checked' : '' ?> />
+                            <label for="fixed_off" class="block cursor-pointer select-none rounded-md p-2 text-center bg-gray-200 peer-checked:bg-red-600 peer-checked:text-white">{{lang=article_fixed_off}}</label>
+                        </div>
+                        <div>
+                            <input type="radio" name="fixed" id="fixed_on" value="1" class="peer hidden" <?= $article->fixed ? 'checked' : '' ?> />
+                            <label for="fixed_on" class="block cursor-pointer select-none rounded-md p-2 text-center bg-gray-200 peer-checked:bg-green-600 peer-checked:text-white">{{lang=article_fixed_on}}</label>
+                        </div>
+                    </div>
+                </div>
                 <div class="flex flex-col gap-4">
                     <button id="delete-article" class="flex items-center justify-center px-3 py-2 bg-red-600 hover:bg-red-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full" type="button" title="{{lang=delete}}">{{lang=delete}}</button>
                     <button id="save-article" class="flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full" type="button" title="{{lang=save}}">{{lang=save}}</button>
                 </div>
             </div>
             <div class="order-1 xl:order-2 xl:col-span-2">
+                <div class="mb-8 relative">
+                    <label for="title" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=article_title}}</label>
+                    <input class="py-2 px-3 outline-none border-2 border-gray-200 rounded-lg w-full focus:border-sky-600 transition" aria-label="title" id="title" name="title" value="<?= $article->title ?>" required>
+                </div>
+                <div class="mb-8">
+                    <?php
+
+                    $query = Category::query()
+                        ->where('parent_id', null)
+                        ->order('locale', 'ASC')
+                        ->order('title', 'ASC');
+
+                    $items = "";
+
+                    foreach (Category::all($query) as $cat) {
+                        assert($cat instanceof Category);
+
+                        $items .= Template::html(
+                            template: 'assets/option_field',
+                            args: [
+                                'value' => $cat->id,
+                                'title' => $cat->title,
+                                'class' => $cat->id === $category->id
+                                    ? 'bg-sky-600 text-white'
+                                    : ''
+                            ]
+                        );
+
+                        $cat->children = $cat->fetchChildren();
+
+                        foreach ($cat->children as $child) {
+                            assert($child instanceof Category);
+
+                            $items .= Template::html(
+                                template: 'assets/option_field',
+                                args: [
+                                    'value' => $child->id,
+                                    'title' => $child->title,
+                                    'class' => $child->id === $category->id
+                                        ? 'bg-sky-600 text-white'
+                                        : ''
+                                ]
+                            );
+
+                            $child->children = $child->fetchChildren();
+
+                            foreach ($child->children as $grandchild) {
+                                assert($grandchild instanceof Category);
+
+                                $items .= Template::html(
+                                    template: 'assets/option_field',
+                                    args: [
+                                        'value' => $grandchild->id,
+                                        'title' => $grandchild->title,
+                                        'class' => $grandchild->id === $category->id
+                                            ? 'bg-sky-600 text-white'
+                                            : ''
+                                    ]
+                                );
+                            }
+                        }
+                    }
+
+                    Template::echo(
+                        template: 'assets/select_field',
+                        args: [
+                            'label' => get_str('article_category'),
+                            'value' => $category->id,
+                            'name' => "category_id",
+                            'title' => $category->title,
+                            'items' => $items
+                        ]
+                    );
+                    ?>
+                </div>
                 <div class="mb-8 relative">
                     <div class="rounded-lg border-2 border-gray-200 select-none">
                         <div class="rounded-lg border-[16px] border-white relative">
