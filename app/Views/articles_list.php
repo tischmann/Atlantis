@@ -6,7 +6,7 @@ use Tischmann\Atlantis\{Locale, Request, Template};
 
 $reqest = Request::instance();
 
-$category_id = mb_strtolower(strval($reqest->request('category_id')));
+$category_id = mb_strtolower(strval($reqest->request('category_id') ?? 'all'));
 
 $visible = strval($reqest->request('visible'));
 
