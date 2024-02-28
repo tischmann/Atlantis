@@ -276,7 +276,6 @@ class ArticlesController extends Controller
             'text' => ['required', 'string'],
             'tags' => ['required', 'string'],
             'views' => ['required', 'string'],
-            'rating' => ['required', 'string'],
             'created_at' => ['required', 'string'],
         ]);
 
@@ -524,13 +523,6 @@ class ArticlesController extends Controller
 
             if ($views !== null) {
                 $article->views = intval($views);
-            }
-
-            $rating = $request->request('rating');
-
-            if ($rating !== null) {
-                $rating = floatval($rating);
-                $article->rating = $rating < 0 ? 0 : ($rating > 5 ? 5 : $rating);
             }
 
             $date = $request->request('created_at');

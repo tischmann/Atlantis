@@ -80,12 +80,6 @@ class ArticlesTable extends Table
                 description: 'Просмотры',
             ),
             new Column(
-                name: 'rating',
-                type: 'float',
-                default: null,
-                description: 'Рейтинг',
-            ),
-            new Column(
                 name: 'visible',
                 type: 'tinyint',
                 length: 1,

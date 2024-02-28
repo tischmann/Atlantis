@@ -155,10 +155,6 @@ $category = $article->getCategory();
                     <input class="py-2 px-3 outline-none border-2 border-gray-200 rounded-lg w-full focus:border-sky-600 transition" aria-label="views" id="views" name="views" type="number" min="0" step="1" value="<?= $article->views ?>">
                 </div>
                 <div class="mb-8 relative">
-                    <label for="rating" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=article_rating}}</label>
-                    <input class="py-2 px-3 outline-none border-2 border-gray-200 rounded-lg w-full focus:border-sky-600 transition" aria-label="rating" id="rating" name="rating" type="number" min="0" max="5" step="0.1" value="<?= $article->rating ?>">
-                </div>
-                <div class="mb-8 relative">
                     <label for="created_at" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=article_created_at}}</label>
                     <input class="py-2 px-3 outline-none border-2 border-gray-200 rounded-lg w-full focus:border-sky-600 transition" aria-label="created_at" id="created_at" name="created_at" type="datetime-local" value="<?= $article->created_at->format("Y-m-d H:i") ?>">
                 </div>
@@ -172,7 +168,7 @@ $category = $article->getCategory();
                     <div class="rounded-lg border-2 border-gray-200 select-none">
                         <div class="rounded-lg border-[16px] border-white relative">
                             <input type="hidden" name="image" value="<?= $article->getImage() ?>">
-                            <img id="article-image" src="/images/articles/<?= $article->id ?>/image/<?= $article->getImage() ?>" alt="<?= $article->title ?>" width="320" height="180" class="bg-gray-200 rounded-lg w-full" decoding="async" loading="lazy">
+                            <img id="article-image" src="<?= $article->getImage() ? "/images/articles/{$article->id}/image/{$article->getImage()} " : "/images/placeholder.svg" ?>" alt="<?= $article->title ?>" width="320" height="180" class="bg-gray-200 rounded-lg w-full" decoding="async" loading="lazy">
                             <div id="delete-image" class="absolute top-0 right-0 p-2 text-white bg-red-600 rounded-md hover:bg-red-500 cursor-pointer transition drop-shadow" title="{{lang=delete}}">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />

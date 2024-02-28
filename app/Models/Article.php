@@ -23,7 +23,6 @@ class Article extends Model
         public ?string $text = null,
         public ?array $tags = [],
         public int $views = 0,
-        public float $rating = 0,
         public bool $visible = true,
         public ?DateTime $created_at = null,
         public ?DateTime $updated_at = null,
@@ -48,7 +47,6 @@ class Article extends Model
 
     public function __init(): self
     {
-
         return $this;
     }
 
@@ -59,7 +57,7 @@ class Article extends Model
 
     public function getImage(): string
     {
-        $src = "/images/placeholder.svg";
+        $src = "";
 
         foreach (glob(getenv('APP_ROOT') . "/public/images/articles/{$this->id}/image/thumb_*.webp") as $file) {
             $filename = basename($file);
