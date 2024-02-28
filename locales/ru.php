@@ -102,7 +102,6 @@ return [
     'article_gallery' => 'Галерея',
     'article_locale' => 'Локаль',
     'article_tags' => 'Теги',
-    'article_views' => 'Просмотры',
     'article_created_at' => 'Создано',
     'article_updated_at' => 'Изменено',
     'article_not_found' => 'Статья не найдена',

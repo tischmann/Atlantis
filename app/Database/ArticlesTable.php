@@ -74,12 +74,6 @@ class ArticlesTable extends Table
                 description: 'Теги',
             ),
             new Column(
-                name: 'views',
-                type: 'bigint',
-                default: null,
-                description: 'Просмотры',
-            ),
-            new Column(
                 name: 'visible',
                 type: 'tinyint',
                 length: 1,

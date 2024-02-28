@@ -22,7 +22,6 @@ class Article extends Model
         public ?string $short_text = null,
         public ?string $text = null,
         public ?array $tags = [],
-        public int $views = 0,
         public bool $visible = true,
         public ?DateTime $created_at = null,
         public ?DateTime $updated_at = null,

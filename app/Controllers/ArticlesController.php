@@ -275,7 +275,6 @@ class ArticlesController extends Controller
             'short_text' => ['required', 'string'],
             'text' => ['required', 'string'],
             'tags' => ['required', 'string'],
-            'views' => ['required', 'string'],
             'created_at' => ['required', 'string'],
         ]);
 
@@ -518,12 +517,6 @@ class ArticlesController extends Controller
             $article->tags = explode(",", $request->request('tags'));
 
             $article->tags = array_map('trim', $article->tags);
-
-            $views = $request->request('views');
-
-            if ($views !== null) {
-                $article->views = intval($views);
-            }
 
             $date = $request->request('created_at');
 
