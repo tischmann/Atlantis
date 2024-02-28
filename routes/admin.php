@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Controllers\{
     ArticlesController,
+    CategoriesController,
     UsersController
 };
 
@@ -72,6 +73,7 @@ if (App::getCurrentUser()->isAdmin()) {
         path: 'edit/articles',
         action: 'showAllArticles',
         method: 'GET',
+        title: get_str('article_list')
     ));
 
     Router::add(new Route(
@@ -121,5 +123,12 @@ if (App::getCurrentUser()->isAdmin()) {
         path: 'article/temp/image',
         action: 'deleteTempImage',
         method: 'DELETE',
+    ));
+
+    Router::add(new Route(
+        controller: new CategoriesController(),
+        path: 'locale/categories/{locale}',
+        action: 'fetchCategories',
+        method: 'GET',
     ));
 }

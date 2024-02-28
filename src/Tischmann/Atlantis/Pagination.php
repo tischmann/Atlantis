@@ -59,7 +59,7 @@ class Pagination
      */
     public function setTotal(int $total): self
     {
-        $this->total = abs($total);
+        $this->total = $total;
 
         return $this;
     }
@@ -73,7 +73,7 @@ class Pagination
      */
     public function setPage(int $page): self
     {
-        $this->page = abs($page) ?: 1;
+        $this->page = $page < 1 ? 1 : $page;
 
         return $this;
     }
@@ -87,7 +87,9 @@ class Pagination
      */
     public function setLimit(int $limit): self
     {
-        $this->limit = abs($limit) ?: $this->total;
+        $limit = $limit < 0 ? static::DEFAULT_LIMIT : $limit;
+
+        $this->limit = $limit ?: $this->total;
 
         return $this;
     }
@@ -101,7 +103,7 @@ class Pagination
      */
     public function setFirst(int $first): self
     {
-        $this->first = abs($first) ?: 1;
+        $this->first = $first < 1 ? 1 : $first;
 
         return $this;
     }
@@ -115,7 +117,7 @@ class Pagination
      */
     public function setPrev(int $prev): self
     {
-        $this->prev = abs($prev) ?: 1;
+        $this->prev = $prev < 1 ? 1 : $prev;
 
         return $this;
     }
@@ -129,7 +131,7 @@ class Pagination
      */
     public function setNext(int $next): self
     {
-        $this->next = abs($next);
+        $this->next = $next;
 
         return $this;
     }
@@ -143,7 +145,7 @@ class Pagination
      */
     public function setLast(int $last): self
     {
-        $this->last = abs($last);
+        $this->last = $last < 1 ? 1 : $last;
 
         return $this;
     }
@@ -157,7 +159,9 @@ class Pagination
      */
     public function setOffset(int $offset): self
     {
-        $this->offset = abs($offset);
+        $offset = $offset < 0 ? 0 : $offset;
+
+        $this->offset = $offset;
 
         return $this;
     }
@@ -194,13 +198,19 @@ class Pagination
 
         $this->setLast($last);
 
-        $this->setPage($this->page > $this->last ? $this->last : $this->page);
+        $page = $this->page > $this->last ? $this->last : $this->page;
+
+        $this->setPage($page);
 
         $next = $this->page + 1 > $this->last ? $this->last : $this->page + 1;
 
-        $this->setPrev($this->page - 1 < 1 ? 1 : $this->page - 1)
+        $offset = intval(($this->page - 1) * $this->limit);
+
+        $prev = $this->page - 1 < 1 ? 1 : $this->page - 1;
+
+        $this->setPrev($prev)
             ->setNext($next)
-            ->setOffset(max(intval(($this->page - 1) * $this->limit),  0));
+            ->setOffset($offset);
 
         $this->prev_pages = $this->computePrevPages();
 
@@ -370,7 +380,7 @@ class Pagination
         $max_pages = intval(ceil($total / $limit));
 
         if ($page < 1) $page = 1;
-        else if ($page > $max_pages) $page = $max_pages;
+        else if ($page > $max_pages && $max_pages > 0) $page = $max_pages;
 
         $offset = ($page - 1) * $limit;
 

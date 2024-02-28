@@ -216,51 +216,95 @@ Document.prototype.upload = function (
 }
 
 Document.prototype.select = function (
-    fieldSelector = '[data-select]',
-    optionsSelector = '[data-options]'
+    selectElement,
+    optionsElement,
+    onchange = function () {}
 ) {
-    document.querySelectorAll(optionsSelector).forEach((ul) => {
-        const parent = ul.parentElement
-
-        const select = parent.querySelector(fieldSelector)
-
-        const input = parent.querySelector('input')
-
-        const options = ul.querySelectorAll('li')
-
-        select.addEventListener('click', function (event) {
-            this.classList.toggle('border-sky-600')
-
-            ul.classList.toggle('hidden')
-
-            event.stopPropagation()
-
-            document.addEventListener(
-                'click',
-                () => {
-                    this.classList.remove('border-sky-600')
-                    ul.classList.add('hidden')
-                },
-                {
-                    once: true
-                }
-            )
+    function selectClickHandler(event) {
+        document.querySelectorAll('[data-select]').forEach((el) => {
+            if (el === this) return
+            el.classList.remove('border-sky-600')
         })
 
-        options.forEach((li) => {
-            li.addEventListener('click', function (event) {
-                input.setAttribute('value', this.dataset.value)
-
-                select.textContent = this.textContent
-
-                options.forEach((li) => {
-                    li.classList.remove('bg-sky-600', 'text-white')
-                })
-
-                li.classList.add('bg-sky-600', 'text-white')
+        document
+            .querySelectorAll('[data-options]:not(.hidden)')
+            .forEach((el) => {
+                if (el === optionsElement) return
+                el.classList.add('hidden')
             })
+
+        this.classList.toggle('border-sky-600')
+
+        optionsElement.classList.toggle('hidden')
+
+        event.stopPropagation()
+
+        document.addEventListener(
+            'click',
+            () => {
+                document.querySelectorAll('[data-select]').forEach((el) => {
+                    el.classList.remove('border-sky-600')
+                })
+                document.querySelectorAll('[data-options]').forEach((el) => {
+                    el.classList.add('hidden')
+                })
+            },
+            {
+                once: true
+            }
+        )
+    }
+
+    function optionClickHandler(event) {
+        const wrapper = optionsElement.parentElement
+
+        const input = wrapper.querySelector('input')
+
+        input.setAttribute('value', this.dataset.value)
+
+        selectElement.textContent = this.textContent
+
+        optionsElement.querySelectorAll('li').forEach((li) => {
+            li.classList.remove('bg-sky-600', 'text-white')
         })
+
+        this.classList.add('bg-sky-600', 'text-white')
+
+        onchange(this.dataset.value)
+    }
+
+    selectElement.addEventListener('click', selectClickHandler)
+
+    optionsElement.querySelectorAll('li').forEach((li) => {
+        li.addEventListener('click', optionClickHandler)
     })
+
+    return {
+        update: (items) => {
+            console.log(optionsElement, selectElement, items)
+            optionsElement.querySelectorAll('li').forEach((li) => {
+                li.removeEventListener('click', optionClickHandler)
+            })
+
+            optionsElement.innerHTML = items
+
+            optionsElement.querySelectorAll('li').forEach((li) => {
+                li.addEventListener('click', optionClickHandler)
+            })
+
+            selectElement.textContent = ''
+
+            const input = selectElement.parentElement.querySelector('input')
+
+            input.setAttribute('value', '')
+        },
+        destroy: () => {
+            selectElement.removeEventListener('click', selectClickHandler)
+            optionsElement.querySelectorAll('li').forEach((li) => {
+                li.removeEventListener('click', optionClickHandler)
+            })
+        }
+    }
 }
 
 window.addEventListener('load', () => {

@@ -2,7 +2,7 @@
 
 use App\Models\{Article, Category};
 
-use Tischmann\Atlantis\{Template};
+use Tischmann\Atlantis\{Locale, Template};
 
 assert($article instanceof Article);
 
@@ -139,13 +139,49 @@ $category = $article->getCategory();
                 </div>
                 <div class="mb-8">
                     <?php
+                    $items = "";
+
+                    foreach (Locale::available() as $value) {
+                        $items .= Template::html(
+                            template: 'assets/option_field',
+                            args: [
+                                'value' => $value,
+                                'title' => get_str("article_locale_{$value}"),
+                                'class' => $article->locale === $value
+                                    ? 'bg-sky-600 text-white'
+                                    : ''
+                            ]
+                        );
+                    }
+
+                    Template::echo(
+                        template: 'assets/select_field',
+                        args: [
+                            'label' => get_str('article_locale'),
+                            'value' => $article->locale,
+                            'name' => "locale",
+                            'title' => get_str("article_locale_{$article->locale}"),
+                            'items' => $items
+                        ]
+                    );
+                    ?>
+                </div>
+                <div class="mb-8">
+                    <?php
 
                     $query = Category::query()
                         ->where('parent_id', null)
                         ->order('locale', 'ASC')
                         ->order('title', 'ASC');
 
-                    $items = "";
+                    $items = Template::html(
+                        template: 'assets/option_field',
+                        args: [
+                            'value' => '',
+                            'title' => '',
+                            'class' => ''
+                        ]
+                    );
 
                     foreach (Category::all($query) as $cat) {
                         assert($cat instanceof Category);
@@ -172,8 +208,8 @@ $category = $article->getCategory();
                                     'value' => $child->id,
                                     'title' => $child->title,
                                     'class' => $child->id === $category->id
-                                        ? 'bg-sky-600 text-white'
-                                        : ''
+                                        ? 'bg-sky-600 text-white pl-8'
+                                        : 'pl-8'
                                 ]
                             );
 
@@ -188,8 +224,8 @@ $category = $article->getCategory();
                                         'value' => $grandchild->id,
                                         'title' => $grandchild->title,
                                         'class' => $grandchild->id === $category->id
-                                            ? 'bg-sky-600 text-white'
-                                            : ''
+                                            ? 'bg-sky-600 text-white pl-12'
+                                            : 'lp-12'
                                     ]
                                 );
                             }
@@ -309,7 +345,24 @@ $category = $article->getCategory();
 
     // Selects
 
-    document.select('[data-select]', '[data-options]')
+    const categorySelect = document.select(
+        document.getElementById(`select_field_category_id`),
+        document.getElementById(`options_list_category_id`)
+    )
+
+    const localeSelect = document.select(
+        document.getElementById(`select_field_locale`),
+        document.getElementById(`options_list_locale`),
+        (value) => {
+            fetch(`/locale/categories/${value}`)
+                .then(response => response.json())
+                .then(({
+                    items
+                }) => {
+                    categorySelect.update(items)
+                })
+        }
+    )
 
     // Image
 
