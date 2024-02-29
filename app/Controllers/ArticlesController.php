@@ -274,39 +274,36 @@ class ArticlesController extends Controller
     {
         $this->adminCheckJson();
 
-        $request = Request::instance();
-
-        $request->validate([
-            'category_id' => ['required', 'string'],
-            'image' => ['required', 'string'],
-            'gallery' => ['required', 'string'],
-            'videos' => ['required', 'string'],
-            'attachements' => ['required', 'string'],
-            'title' => ['required', 'string'],
-            'short_text' => ['required', 'string'],
-            'text' => ['required', 'string'],
-            'tags' => ['required', 'string'],
-            'created_at' => ['required', 'string'],
-            'visible' => ['required', 'string'],
-            'fixed' => ['required', 'string']
-        ]);
-
-        $id = $this->route->args('id');
-
-        $article = new Article();
-
-        if ($id) {
-            $article = Article::find($id);
-
-            if (!$article->exists()) {
-                Response::json([
-                    'title' => get_str('warning'),
-                    'message' => get_str('article_not_found') . ": {$id}"
-                ], 404);
-            }
-        }
-
         try {
+            $request = Request::instance();
+
+            $request->validate([
+                'category_id' => ['required', 'string'],
+                'image' => ['required', 'string'],
+                'gallery' => ['required', 'string'],
+                'videos' => ['required', 'string'],
+                'attachements' => ['required', 'string'],
+                'title' => ['required', 'string'],
+                'short_text' => ['required', 'string'],
+                'text' => ['required', 'string'],
+                'tags' => ['required', 'string'],
+                'created_at' => ['required', 'string'],
+                'visible' => ['required', 'string'],
+                'fixed' => ['required', 'string']
+            ]);
+
+            $id = $this->route->args('id');
+
+            $article = new Article();
+
+            if ($id) {
+                $article = Article::find($id);
+
+                if (!$article->exists()) {
+                    throw new Exception(get_str('article_not_found') . ":{$id}", 404);
+                }
+            }
+
             $article->title = $request->request('title');
 
             if (!$article->title) {
