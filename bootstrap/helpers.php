@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Models\{Category};
+
 use Tischmann\Atlantis\{Date, DateTime, Locale, Time};
 
 /**
@@ -491,4 +493,47 @@ function image_resize(
 function get_str(string $key, ?string $locale = null): string
 {
     return Locale::get($key, $locale);
+}
+
+/**
+ * Возвращает html код с опциями категорий для select
+ *
+ * @param Category $category Категория
+ * @param int $selected_id Выбранная категория
+ * @param int $level Уровень вложенности
+ */
+function fetch_categories_children_options(
+    Category $category,
+    int $selected_id = 0,
+    int $level = 0
+): string {
+    $children = "";
+
+    $selected = $selected_id === $category->id ? 'selected' : '';
+
+    $children .= <<<HTML
+    <option value="{$category->id}" title="{$category->title}" {$selected} data-level="{$level}">{$category->title}</option>
+    HTML;
+
+    $category->children = $category->fetchChildren();
+
+    if ($category->children) $level++;
+
+    foreach ($category->children as $child) {
+        assert($child instanceof Category);
+
+        $selected = $selected_id === $child->id ? 'selected' : '';
+
+        $children .= <<<HTML
+        <option value="{$child->id}" title="{$child->title}" {$selected} data-level="{$level}">{$child->title}</option>
+        HTML;
+
+        $child->children = $child->fetchChildren();
+
+        if ($child->children) {
+            $children .= fetch_categories_children_options($child, $selected_id, ++$level);
+        }
+    }
+
+    return $children;
 }

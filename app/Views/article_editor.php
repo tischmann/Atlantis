@@ -102,15 +102,15 @@ $category = $article->getCategory();
                     <input class="py-2 px-3 outline-none border-2 border-gray-200 rounded-lg w-full focus:border-sky-600 transition" aria-label="created_at" id="created_at" name="created_at" type="datetime-local" value="<?= $article->created_at->format("Y-m-d H:i") ?>">
                 </div>
                 <div class="mb-8 relative">
-                    <label class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=article_visibility}}</label>
+                    <label class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=article_visible}}</label>
                     <div class="grid w-full grid-cols-1 md:grid-cols-2 gap-4 bg-white border-2 border-gray-200 rounded-lg p-4">
                         <div>
                             <input type="radio" name="visible" id="visible_inactive" value="0" class="peer hidden" <?= !$article->visible ? 'checked' : '' ?> />
-                            <label for="visible_inactive" class="block cursor-pointer select-none rounded-md p-2 text-center bg-gray-200 peer-checked:bg-red-600 peer-checked:text-white">{{lang=article_visibility_invisible}}</label>
+                            <label for="visible_inactive" class="block cursor-pointer select-none rounded-md p-2 text-center bg-gray-200 peer-checked:bg-red-600 peer-checked:text-white">{{lang=article_visible_invisible}}</label>
                         </div>
                         <div>
                             <input type="radio" name="visible" id="visible_active" value="1" class="peer hidden" <?= $article->visible ? 'checked' : '' ?> />
-                            <label for="visible_active" class="block cursor-pointer select-none rounded-md p-2 text-center bg-gray-200 peer-checked:bg-green-600 peer-checked:text-white">{{lang=article_visibility_visible}}</label>
+                            <label for="visible_active" class="block cursor-pointer select-none rounded-md p-2 text-center bg-gray-200 peer-checked:bg-green-600 peer-checked:text-white">{{lang=article_visible_visible}}</label>
                         </div>
                     </div>
                 </div>
@@ -138,111 +138,41 @@ $category = $article->getCategory();
                     <input class="py-2 px-3 outline-none border-2 border-gray-200 rounded-lg w-full focus:border-sky-600 transition" aria-label="title" id="title" name="title" value="<?= $article->title ?>" required>
                 </div>
                 <div class="mb-8">
-                    <?php
-                    $items = "";
+                    <select id="locale-select" name="locale" title="{{lang=article_locale}}">
+                        <?php
+                        foreach (Locale::available() as $value) {
+                            $selected = $article->locale === $value
+                                ? 'selected'
+                                : '';
+                            echo <<<HTML
+                            <option value="{$value}" {$selected} title="" data-level="0">{{lang=article_locale_{$value}}}</option>
+                            HTML;
+                        }
 
-                    foreach (Locale::available() as $value) {
-                        $items .= Template::html(
-                            template: 'assets/option_field',
-                            args: [
-                                'value' => $value,
-                                'title' => get_str("article_locale_{$value}"),
-                                'class' => $article->locale === $value
-                                    ? 'bg-sky-600 text-white'
-                                    : ''
-                            ]
-                        );
-                    }
-
-                    Template::echo(
-                        template: 'assets/select_field',
-                        args: [
-                            'label' => get_str('article_locale'),
-                            'value' => $article->locale,
-                            'name' => "locale",
-                            'title' => get_str("article_locale_{$article->locale}"),
-                            'items' => $items
-                        ]
-                    );
-                    ?>
+                        ?>
+                    </select>
                 </div>
                 <div class="mb-8">
-                    <?php
+                    <select id="category-select" name="category_id" title="{{lang=article_category}}">
+                        <?php
 
-                    $query = Category::query()
-                        ->where('parent_id', null)
-                        ->order('locale', 'ASC')
-                        ->order('title', 'ASC');
+                        $query = Category::query()
+                            ->where('parent_id', null)
+                            ->order('locale', 'ASC')
+                            ->order('title', 'ASC');
 
-                    $items = Template::html(
-                        template: 'assets/option_field',
-                        args: [
-                            'value' => '',
-                            'title' => '',
-                            'class' => ''
-                        ]
-                    );
+                        $selected = $category->id === 0 ? 'selected' : '';
 
-                    foreach (Category::all($query) as $cat) {
-                        assert($cat instanceof Category);
+                        echo <<<HTML
+                        <option value="" title="" {$selected} data-level="0"></option>
+                        HTML;
 
-                        $items .= Template::html(
-                            template: 'assets/option_field',
-                            args: [
-                                'value' => $cat->id,
-                                'title' => $cat->title,
-                                'class' => $cat->id === $category->id
-                                    ? 'bg-sky-600 text-white'
-                                    : ''
-                            ]
-                        );
-
-                        $cat->children = $cat->fetchChildren();
-
-                        foreach ($cat->children as $child) {
-                            assert($child instanceof Category);
-
-                            $items .= Template::html(
-                                template: 'assets/option_field',
-                                args: [
-                                    'value' => $child->id,
-                                    'title' => $child->title,
-                                    'class' => $child->id === $category->id
-                                        ? 'bg-sky-600 text-white pl-8'
-                                        : 'pl-8'
-                                ]
-                            );
-
-                            $child->children = $child->fetchChildren();
-
-                            foreach ($child->children as $grandchild) {
-                                assert($grandchild instanceof Category);
-
-                                $items .= Template::html(
-                                    template: 'assets/option_field',
-                                    args: [
-                                        'value' => $grandchild->id,
-                                        'title' => $grandchild->title,
-                                        'class' => $grandchild->id === $category->id
-                                            ? 'bg-sky-600 text-white pl-12'
-                                            : 'lp-12'
-                                    ]
-                                );
-                            }
+                        foreach (Category::all($query) as $value) {
+                            assert($value instanceof Category);
+                            echo fetch_categories_children_options($value, $category->id, 0);
                         }
-                    }
-
-                    Template::echo(
-                        template: 'assets/select_field',
-                        args: [
-                            'label' => get_str('article_category'),
-                            'value' => $category->id,
-                            'name' => "category_id",
-                            'title' => $category->title,
-                            'items' => $items
-                        ]
-                    );
-                    ?>
+                        ?>
+                    </select>
                 </div>
                 <div class="mb-8 relative">
                     <div class="rounded-lg border-2 border-gray-200 select-none">
@@ -345,23 +275,22 @@ $category = $article->getCategory();
 
     // Selects
 
-    const categorySelect = document.select(
-        document.getElementById(`select_field_category_id`),
-        document.getElementById(`options_list_category_id`)
+    const localeSelect = document.select(
+        document.getElementById(`locale-select`), {
+            onchange: (value) => {
+                fetch(`/locale/categories/${value}`)
+                    .then(response => response.json())
+                    .then(({
+                        items
+                    }) => {
+                        categorySelect.update(items)
+                    })
+            }
+        }
     )
 
-    const localeSelect = document.select(
-        document.getElementById(`select_field_locale`),
-        document.getElementById(`options_list_locale`),
-        (value) => {
-            fetch(`/locale/categories/${value}`)
-                .then(response => response.json())
-                .then(({
-                    items
-                }) => {
-                    categorySelect.update(items)
-                })
-        }
+    const categorySelect = document.select(
+        document.getElementById(`category-select`)
     )
 
     // Image
@@ -705,6 +634,41 @@ $category = $article->getCategory();
             document.getElementById('tags-limit').value
         )
     })
-</script>
 
-<?php require "article_update_script.php" ?>
+    document.getElementById('save-article').addEventListener('click', function() {
+        const form = document.getElementById('article-form')
+
+        const formData = new FormData(form)
+
+        fetch(`/article/<?= $article->id ?>`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(Object.fromEntries(formData))
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(json => {
+                        document.dialog({
+                            title: `{{lang=error}}: ${response.status}`,
+                            text: json.message,
+                            onclose: () => {
+                                window.location.reload()
+                            }
+                        })
+                    })
+                }
+
+                response.json().then(json => {
+                    document.dialog({
+                        title: `{{lang=attention}}`,
+                        text: `{{lang=article_saved}}`,
+                        onclose: () => {
+                            window.location.reload()
+                        }
+                    })
+                })
+            })
+    })
+</script>

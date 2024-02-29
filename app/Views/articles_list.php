@@ -39,275 +39,105 @@ if ($category_id === 'all') {
     $category = Category::find($category_id);
 }
 
-
 ?>
 <main class="md:container mx-4 md:mx-auto mb-4">
     <div class="mb-8 flex flex-col sm:flex-row gap-4">
-        <?php
-
-        $items = "";
-
-        foreach ($order_types as $value) {
-            $items .= Template::html(
-                template: 'assets/option_field',
-                args: [
-                    'value' => $value,
-                    'title' => get_str("article_order_{$value}"),
-                    'class' => $order === $value
-                        ? 'bg-sky-600 text-white'
-                        : ''
-                ]
-            );
-        }
-
-        Template::echo(
-            template: 'assets/select_field',
-            args: [
-                'label' => get_str("article_order"),
-                'value' => $order,
-                'name' => "order",
-                'title' => get_str("article_order_{$order}"),
-                'items' => $items
-            ]
-        );
-
-        Template::echo(
-            template: 'assets/select_field',
-            args: [
-                'label' => get_str("article_direction"),
-                'value' => $direction,
-                'name' => "direction",
-                'title' => get_str("article_direction_{$direction}"),
-                'items' =>  Template::html(
-                    template: 'assets/option_field',
-                    args: [
-                        'value' => 'asc',
-                        'title' => get_str("article_direction_asc"),
-                        'class' => $direction === 'asc'
-                            ? 'bg-sky-600 text-white'
-                            : ''
-                    ]
-                ) .  Template::html(
-                    template: 'assets/option_field',
-                    args: [
-                        'value' => 'desc',
-                        'title' => get_str("article_direction_desc"),
-                        'class' => $direction === 'desc'
-                            ? 'bg-sky-600 text-white'
-                            : ''
-                    ]
-                )
-            ]
-        );
-        ?>
+        <select id="select_field_order" name="order" title="{{lang=article_order}}">
+            <?php
+            foreach ($order_types as $value) {
+                $selected = $order === $value ? 'selected' : '';
+                echo <<<HTML
+                <option value="{$value}" {$selected} data-level="0">{{lang=article_order_{$value}}}</option>
+                HTML;
+            }
+            ?>
+        </select>
+        <select id="select_field_direction" name="direction" title="{{lang=article_direction}}">
+            <?php
+            $selected = $direction === 'asc' ? 'selected' : '';
+            echo <<<HTML
+            <option value="asc" {$selected} data-level="0">{{lang=article_direction_asc}}</option>
+            HTML;
+            $selected = $direction === 'desc' ? 'selected' : '';
+            echo <<<HTML
+            <option value="desc" {$selected} data-level="0">{{lang=article_direction_desc}}</option>
+            HTML;
+            ?>
+        </select>
     </div>
     <div class="mb-8 flex flex-col sm:flex-row gap-4">
-        <?php
+        <select id="select_field_locale" name="locale" title="{{lang=article_locale}}">
+            <?php
+            $selected = $locale === '' ? 'selected' : '';
+            echo <<<HTML
+            <option value="" {$selected} data-level="0">{{lang=article_locale_all}}</option>
+            HTML;
 
-        $items = Template::html(
-            template: 'assets/option_field',
-            args: [
-                'value' => "",
-                'title' => get_str('article_locale_all'),
-                'class' => $locale === ""
-                    ? 'bg-sky-600 text-white'
-                    : ''
-            ]
-        );
-
-        foreach (Locale::available() as $value) {
-            $items .= Template::html(
-                template: 'assets/option_field',
-                args: [
-                    'value' => $value,
-                    'title' => get_str("article_locale_" . $value),
-                    'class' => $locale === $value
-                        ? 'bg-sky-600 text-white'
-                        : ''
-                ]
-            );
-        }
-
-        Template::echo(
-            template: 'assets/select_field',
-            args: [
-                'label' => get_str('article_locale'),
-                'value' => $locale,
-                'name' => "locale",
-                'title' => get_str("article_locale_" . ($locale !== "" ? $locale : "all")),
-                'items' => $items
-            ]
-        );
-
-        $query = Category::query()
-            ->where('parent_id', null)
-            ->order('locale', 'ASC')
-            ->order('title', 'ASC');
-
-        $items = Template::html(
-            template: 'assets/option_field',
-            args: [
-                'value' => 'all',
-                'title' => get_str('article_category_all'),
-                'class' => $category !== null && $category?->id === 0
-                    ? 'bg-sky-600 text-white'
-                    : ''
-            ]
-        ) . Template::html(
-            template: 'assets/option_field',
-            args: [
-                'value' => '',
-                'title' => '',
-                'class' => $category === null
-                    ? 'bg-sky-600 text-white'
-                    : ''
-            ]
-        );
-
-        foreach (Category::all($query) as $cat) {
-            assert($cat instanceof Category);
-
-            $items .= Template::html(
-                template: 'assets/option_field',
-                args: [
-                    'value' => $cat->id,
-                    'title' => $cat->title,
-                    'class' => $cat->id === $category?->id
-                        ? 'bg-sky-600 text-white'
-                        : ''
-                ]
-            );
-
-            $cat->children = $cat->fetchChildren();
-
-            foreach ($cat->children as $child) {
-                assert($child instanceof Category);
-
-                $items .= Template::html(
-                    template: 'assets/option_field',
-                    args: [
-                        'value' => $child->id,
-                        'title' => $child->title,
-                        'class' => $child->id === $category?->id
-                            ? 'bg-sky-600 text-white pl-8'
-                            : 'pl-8'
-                    ]
-                );
-
-                $child->children = $child->fetchChildren();
-
-                foreach ($child->children as $grandchild) {
-                    assert($grandchild instanceof Category);
-
-                    $items .= Template::html(
-                        template: 'assets/option_field',
-                        args: [
-                            'value' => $grandchild->id,
-                            'title' => $grandchild->title,
-                            'class' => $grandchild->id === $category?->id
-                                ? 'bg-sky-600 text-white pl-12'
-                                : 'pl-12'
-                        ]
-                    );
-                }
+            foreach (Locale::available() as $value) {
+                $selected = $locale === $value ? 'selected' : '';
+                echo <<<HTML
+                <option value="{$value}" {$selected} data-level="0">{{lang=article_locale_{$value}}}</option>
+                HTML;
             }
-        }
+            ?>
+        </select>
+        <select id="select_field_category_id" name="category_id" title="{{lang=article_category}}">
+            <?php
+            $selected = $category !== null && $category->id === 0 ? 'selected' : '';
 
-        Template::echo(
-            template: 'assets/select_field',
-            args: [
-                'label' => get_str('article_category'),
-                'value' => $category?->id,
-                'name' => "category_id",
-                'title' => $category === null ? "" : ($category?->id ? $category?->title : get_str('article_category_all')),
-                'items' => $items
-            ]
-        );
+            echo <<<HTML
+            <option value="all" {$selected} data-level="0">{{lang=article_category_all}}</option>
+            HTML;
 
-        Template::echo(
-            template: 'assets/select_field',
-            args: [
-                'label' => get_str('article_visibility'),
-                'value' => $visible,
-                'name' => "visible",
-                'title' => match ($visible) {
-                    "0" => get_str('article_visible_invisible'),
-                    "1" => get_str('article_visible_visible'),
-                    default => get_str('article_visible_all')
-                },
-                'items' => Template::html(
-                    template: 'assets/option_field',
-                    args: [
-                        'value' => "",
-                        'title' => get_str('article_visible_all'),
-                        'class' => $visible === ""
-                            ? 'bg-sky-600 text-white'
-                            : ''
-                    ]
-                ) . Template::html(
-                    template: 'assets/option_field',
-                    args: [
-                        'value' => "1",
-                        'title' => get_str('article_visible_visible'),
-                        'class' => $visible === "1"
-                            ? 'bg-sky-600 text-white'
-                            : ''
-                    ]
-                ) . Template::html(
-                    template: 'assets/option_field',
-                    args: [
-                        'value' => "0",
-                        'title' => get_str('article_visible_invisible'),
-                        'class' => $visible === "0"
-                            ? 'bg-sky-600 text-white'
-                            : ''
-                    ]
-                )
-            ]
-        );
+            $selected = $category === null ? 'selected' : '';
 
-        Template::echo(
-            template: 'assets/select_field',
-            args: [
-                'label' => get_str('article_fixed'),
-                'value' => $fixed,
-                'name' => "fixed",
-                'title' => match ($fixed) {
-                    "1" => get_str('article_fixed_on'),
-                    "0" => get_str('article_fixed_off'),
-                    default => get_str('article_fixed_all')
-                },
-                'items' => Template::html(
-                    template: 'assets/option_field',
-                    args: [
-                        'value' => "",
-                        'title' => get_str('article_fixed_all'),
-                        'class' => $fixed === ""
-                            ? 'bg-sky-600 text-white'
-                            : ''
-                    ]
-                ) . Template::html(
-                    template: 'assets/option_field',
-                    args: [
-                        'value' => "1",
-                        'title' => get_str('article_fixed_on'),
-                        'class' => $fixed === "1"
-                            ? 'bg-sky-600 text-white'
-                            : ''
-                    ]
-                ) . Template::html(
-                    template: 'assets/option_field',
-                    args: [
-                        'value' => "0",
-                        'title' => get_str('article_fixed_off'),
-                        'class' => $fixed === "0"
-                            ? 'bg-sky-600 text-white'
-                            : ''
-                    ]
-                )
-            ]
-        );
-        ?>
+            echo <<<HTML
+            <option value="" {$selected} data-level="0"></option>
+            HTML;
+
+            $query = Category::query()
+                ->where('parent_id', null)
+                ->order('locale', 'ASC')
+                ->order('title', 'ASC');
+
+            foreach (Category::all($query) as $value) {
+                assert($value instanceof Category);
+                echo fetch_categories_children_options($value, intval($category?->id), 0);
+            }
+            ?>
+        </select>
+        <select id="select_field_visible" name="visible" title="{{lang=article_visible}}">
+            <?php
+            $options = [
+                "" => "all",
+                "0" => "invisible",
+                "1" => "visible"
+            ];
+
+            foreach ($options as $key => $value) {
+                $selected = $visible == $key ? 'selected' : '';
+                echo <<<HTML
+                <option value="{$key}" {$selected} data-level="0">{{lang=article_visible_{$value}}}</option>
+                HTML;
+            }
+            ?>
+        </select>
+        <select id="select_field_fixed" name="fixed" title="{{lang=article_fixed}}">
+            <?php
+            $options = [
+                "" => "all",
+                "0" => "off",
+                "1" => "on"
+            ];
+
+            foreach ($options as $key => $value) {
+                $selected = $fixed == $key ? 'selected' : '';
+                echo <<<HTML
+                <option value="{$key}" {$selected} data-level="0">{{lang=article_fixed_{$value}}}</option>
+                HTML;
+            }
+            ?>
+        </select>
     </div>
 
     <?php
@@ -846,12 +676,12 @@ if ($category_id === 'all') {
 
     fields.forEach((field) => {
         document.select(
-            document.getElementById(`select_field_${field}`),
-            document.getElementById(`options_list_${field}`),
-            (value) => {
-                const url = new URL(window.location.href);
-                url.searchParams.set(field, value);
-                window.location.href = url.toString();
+            document.getElementById(`select_field_${field}`), {
+                onchange: (value) => {
+                    const url = new URL(window.location.href);
+                    url.searchParams.set(field, value);
+                    window.location.href = url.toString();
+                }
             })
     })
 </script>

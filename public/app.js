@@ -216,92 +216,232 @@ Document.prototype.upload = function (
 }
 
 Document.prototype.select = function (
-    selectElement,
-    optionsElement,
-    onchange = function () {}
+    element,
+    { onchange = function () {} } = {}
 ) {
+    const uuid = self.crypto.randomUUID()
+
+    const wrapper = document.createElement('div')
+
+    wrapper.classList.add('relative', 'grow')
+
+    const label = document.createElement('label')
+
+    label.classList.add(
+        'absolute',
+        'select-none',
+        '-top-3',
+        'left-2',
+        'mb-2',
+        'text-sm',
+        'text-gray-600',
+        'bg-white',
+        'px-1',
+        'text-ellipsis',
+        'overflow-hidden'
+    )
+
+    label.textContent = element.getAttribute('title')
+
+    label.style.maxWidth = '-webkit-fill-available'
+
+    const input = document.createElement('input')
+
+    input.setAttribute('value', element.value)
+
+    input.setAttribute('type', 'hidden')
+
+    input.setAttribute('name', element.name)
+
+    input.setAttribute('required', '')
+
+    const button = document.createElement('button')
+
+    button.setAttribute('type', 'button')
+
+    button.id = `button-${uuid}`
+
+    button.classList.add(
+        'flex',
+        'items-center',
+        'justify-start',
+        'px-3',
+        'py-2',
+        'outline-none',
+        'border-2',
+        'border-gray-200',
+        'rounded-lg',
+        'w-full',
+        'focus:border-sky-600',
+        'transition',
+        'min-h-11'
+    )
+
+    button.setAttribute('data-atlantis-select', '')
+
+    button.addEventListener('click', selectClickHandler)
+
+    const ul = document.createElement('ul')
+
+    ul.id = `ul-${uuid}`
+
+    ul.classList.add(
+        'absolute',
+        'select-none',
+        'mt-1',
+        'hidden',
+        'bg-white',
+        'border-2',
+        'border-gray-200',
+        'rounded-lg',
+        'shadow-lg',
+        'max-h-[50vh]',
+        'overflow-y-auto',
+        'z-20'
+    )
+
+    ul.setAttribute('data-atlantis-options', '')
+
+    function createOption({
+        value = '',
+        label = '',
+        level = 0,
+        selected = false,
+        disabled = false
+    }) {
+        const li = document.createElement('li')
+
+        li.classList.add(
+            'px-4',
+            'py-3',
+            'cursor-pointer',
+            'whitespace-nowrap',
+            'min-h-12',
+            'hover:bg-sky-600',
+            'hover:text-white'
+        )
+
+        if (selected) {
+            li.classList.add('bg-sky-600', 'text-white')
+        }
+
+        if (disabled) {
+            li.classList.add('opacity-50', 'cursor-not-allowed')
+        }
+
+        switch (`${level}`) {
+            case '1':
+                li.classList.add(`pl-8`)
+                break
+            case '2':
+                li.classList.add(`pl-12`)
+                break
+            case '3':
+                li.classList.add('pl-16')
+                break
+            case '4':
+                li.classList.add('pl-20')
+                break
+        }
+
+        li.dataset.value = value
+
+        li.dataset.level = level
+
+        li.innerText = label
+
+        li.addEventListener('click', optionClickHandler)
+
+        return li
+    }
+
+    element.querySelectorAll('option').forEach((option) => {
+        ul.append(
+            createOption({
+                value: option.value,
+                label: option.textContent,
+                level: option.dataset.level,
+                selected: option.selected,
+                disabled: option.disabled
+            })
+        )
+
+        if (option.selected) {
+            button.textContent = option.textContent
+            input.setAttribute('value', option.value)
+        }
+    })
+
+    wrapper.append(label, input, button, ul)
+
+    element.parentElement.replaceChild(wrapper, element)
+
     function selectClickHandler(event) {
-        document.querySelectorAll('[data-select]').forEach((el) => {
-            if (el === this) return
-            el.classList.remove('border-sky-600')
+        document.querySelectorAll('[data-atlantis-select]').forEach((el) => {
+            if (el !== this) el.classList.remove('border-sky-600')
         })
 
         document
-            .querySelectorAll('[data-options]:not(.hidden)')
+            .querySelectorAll('[data-atlantis-options]:not(.hidden)')
             .forEach((el) => {
-                if (el === optionsElement) return
-                el.classList.add('hidden')
+                if (el !== ul) el.classList.add('hidden')
             })
 
         this.classList.toggle('border-sky-600')
 
-        optionsElement.classList.toggle('hidden')
+        ul.classList.toggle('hidden')
 
         event.stopPropagation()
 
-        document.addEventListener(
-            'click',
-            () => {
-                document.querySelectorAll('[data-select]').forEach((el) => {
-                    el.classList.remove('border-sky-600')
-                })
-                document.querySelectorAll('[data-options]').forEach((el) => {
-                    el.classList.add('hidden')
-                })
-            },
-            {
-                once: true
-            }
-        )
+        document.addEventListener('click', documentClickHandler, {
+            once: true
+        })
     }
 
-    function optionClickHandler(event) {
-        const wrapper = optionsElement.parentElement
+    function documentClickHandler() {
+        document.querySelectorAll('[data-atlantis-select]').forEach((el) => {
+            el.classList.remove('border-sky-600')
+        })
+        document.querySelectorAll('[data-atlantis-options]').forEach((el) => {
+            el.classList.add('hidden')
+        })
+    }
 
-        const input = wrapper.querySelector('input')
-
+    function optionClickHandler() {
         input.setAttribute('value', this.dataset.value)
 
-        selectElement.textContent = this.textContent
+        button.textContent = this.textContent
 
-        optionsElement.querySelectorAll('li').forEach((li) => {
-            li.classList.remove('bg-sky-600', 'text-white')
+        ul.querySelectorAll('li').forEach((li) => {
+            if (li === this) this.classList.add('bg-sky-600', 'text-white')
+            else li.classList.remove('bg-sky-600', 'text-white')
         })
-
-        this.classList.add('bg-sky-600', 'text-white')
 
         onchange(this.dataset.value)
     }
 
-    selectElement.addEventListener('click', selectClickHandler)
-
-    optionsElement.querySelectorAll('li').forEach((li) => {
-        li.addEventListener('click', optionClickHandler)
-    })
-
     return {
         update: (items) => {
-            console.log(optionsElement, selectElement, items)
-            optionsElement.querySelectorAll('li').forEach((li) => {
+            ul.querySelectorAll('li').forEach((li) => {
                 li.removeEventListener('click', optionClickHandler)
+                li.remove()
             })
 
-            optionsElement.innerHTML = items
+            items.forEach(({ value, label, level, selected, disabled }) => {
+                ul.append(
+                    createOption({
+                        value,
+                        label,
+                        level,
+                        selected,
+                        disabled
+                    })
+                )
 
-            optionsElement.querySelectorAll('li').forEach((li) => {
-                li.addEventListener('click', optionClickHandler)
-            })
-
-            selectElement.textContent = ''
-
-            const input = selectElement.parentElement.querySelector('input')
-
-            input.setAttribute('value', '')
-        },
-        destroy: () => {
-            selectElement.removeEventListener('click', selectClickHandler)
-            optionsElement.querySelectorAll('li').forEach((li) => {
-                li.removeEventListener('click', optionClickHandler)
+                if (selected) {
+                    button.textContent = label
+                    input.setAttribute('value', value)
+                }
             })
         }
     }
