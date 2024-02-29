@@ -79,11 +79,19 @@ if (App::getCurrentUser()->isAdmin()) {
 
     Router::add(new Route(
         controller: new ArticlesController(),
-        path: 'add/article',
+        path: 'new/article',
         action: 'getArticleEditor',
         method: 'GET',
         args: ['id' => 0],
         title: get_str('article_new')
+    ));
+
+    Router::add(new Route(
+        controller: new ArticlesController(),
+        path: 'article',
+        action: 'insertArticle',
+        method: 'POST',
+        args: ['id' => 0]
     ));
 
     Router::add(new Route(

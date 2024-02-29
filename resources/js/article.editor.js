@@ -469,3 +469,31 @@ saveButton?.addEventListener('click', function () {
         })
     })
 })
+
+// Add
+
+addButton?.addEventListener('click', function () {
+    const form = document.getElementById('article-form')
+
+    fetch(`/article`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(Object.fromEntries(new FormData(form)))
+    }).then((response) => {
+        response.json().then((json) => {
+            document.dialog({
+                title: json.title,
+                text: json.message,
+                onclose: () => {
+                    if (json.id) {
+                        window.location.href = `/edit/article/${json.id}`
+                    } else {
+                        window.location.reload()
+                    }
+                }
+            })
+        })
+    })
+})

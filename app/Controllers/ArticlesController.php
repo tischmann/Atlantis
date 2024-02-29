@@ -267,8 +267,17 @@ class ArticlesController extends Controller
     }
 
     /**
+     * Добавление статьи
+     */
+    public function insertArticle()
+    {
+        $this->adminCheckJson();
+
+        $this->updateArticle();
+    }
+
+    /**
      * Изменение статьи
-     *
      */
     public function updateArticle()
     {
@@ -284,6 +293,7 @@ class ArticlesController extends Controller
                 'videos' => ['required', 'string'],
                 'attachements' => ['required', 'string'],
                 'title' => ['required', 'string'],
+                'locale' => ['required', 'string'],
                 'short_text' => ['required', 'string'],
                 'text' => ['required', 'string'],
                 'tags' => ['required', 'string'],
@@ -308,6 +318,12 @@ class ArticlesController extends Controller
 
             if (!$article->title) {
                 throw new Exception(get_str('article_title_required'), 400);
+            }
+
+            $article->locale = $request->request('locale');
+
+            if (!$article->locale) {
+                throw new Exception(get_str('article_locale_required'), 400);
             }
 
             $article->text = html_entity_decode($request->request('text'));
@@ -390,9 +406,16 @@ class ArticlesController extends Controller
 
             Article::removeOldTempImagesAndUploads();
 
-            Response::json(['title' => get_str('attention'), 'message' => get_str('article_saved')]);
+            Response::json([
+                'title' => get_str('attention'),
+                'message' => get_str('article_saved'),
+                'id' => $article->id
+            ]);
         } catch (Exception $e) {
-            Response::json(['title' => get_str('warning'), 'message' => $e->getMessage()], $e->getCode() ?: 500);
+            Response::json([
+                'title' => get_str('warning'),
+                'message' => $e->getMessage()
+            ], $e->getCode() ?: 500);
         }
     }
 

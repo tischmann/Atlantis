@@ -41,7 +41,7 @@ if ($category_id === 'all') {
 
 ?>
 <main class="md:container mx-4 md:mx-auto mb-4">
-    <div class="mb-8 flex flex-col sm:flex-row gap-4">
+    <div class="mb-4 flex flex-col sm:flex-row gap-4">
         <select id="select_field_order" name="order" title="{{lang=article_order}}">
             <?php
             foreach ($order_types as $value) {
@@ -65,7 +65,7 @@ if ($category_id === 'all') {
             ?>
         </select>
     </div>
-    <div class="mb-8 flex flex-col sm:flex-row gap-4">
+    <div class="mb-4 flex flex-col sm:flex-row gap-4">
         <select id="select_field_locale" name="locale" title="{{lang=article_locale}}">
             <?php
             $selected = $locale === '' ? 'selected' : '';
@@ -178,7 +178,12 @@ if ($category_id === 'all') {
 
     if ($articles) {
         echo <<<HTML
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        <a href="/{{env=APP_LOCALE}}/new/article" title="{{lang=article_new}}" class="mb-4 flex items-center justify-center p-3 rounded-lg bg-gray-200 hover:bg-gray-300">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+        </a>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">        
         HTML;
 
         foreach ($articles as $article) {

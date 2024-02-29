@@ -132,6 +132,7 @@ return [
     'article_not_saved' => 'Статья не сохранена',
     'article_saved' => 'Статья сохранена',
     'article_title_required' => 'Заголовок обязателен',
+    'article_locale_required' => 'Локаль обязательна',
     'article_text_required' => 'Текст статьи обязателен',
     'article_short_text_required' => 'Краткий текст обязателен',
     'article_category_required' => 'Категория обязательна',
