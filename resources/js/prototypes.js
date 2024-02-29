@@ -274,7 +274,8 @@ Document.prototype.select = function (
         'w-full',
         'focus:border-sky-600',
         'transition',
-        'min-h-11'
+        'min-h-11',
+        'z-10'
     )
 
     button.setAttribute('data-atlantis-select', '')
@@ -291,8 +292,6 @@ Document.prototype.select = function (
         'mt-1',
         'hidden',
         'bg-white',
-        'border-2',
-        'border-gray-200',
         'rounded-lg',
         'shadow-lg',
         'max-h-[50vh]',
@@ -331,10 +330,10 @@ Document.prototype.select = function (
 
         switch (`${level}`) {
             case '1':
-                li.classList.add(`pl-8`)
+                li.classList.add('pl-8')
                 break
             case '2':
-                li.classList.add(`pl-12`)
+                li.classList.add('pl-12')
                 break
             case '3':
                 li.classList.add('pl-16')
