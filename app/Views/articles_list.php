@@ -97,8 +97,13 @@ if ($category_id === 'all') {
 
             $query = Category::query()
                 ->where('parent_id', null)
-                ->order('locale', 'ASC')
-                ->order('title', 'ASC');
+                ->order('title', 'ASC')
+                ->order('parent_id', 'ASC')
+                ->order('position', 'ASC');
+
+            if ($locale) {
+                $query->where('locale', $locale);
+            }
 
             foreach (Category::all($query) as $value) {
                 assert($value instanceof Category);
@@ -178,7 +183,7 @@ if ($category_id === 'all') {
 
         foreach ($articles as $article) {
             assert($article instanceof Article);
-            include  'article_main.php';
+            include  'article_list_item.php';
         }
 
         echo <<<HTML

@@ -158,8 +158,10 @@ $category = $article->getCategory();
 
                         $query = Category::query()
                             ->where('parent_id', null)
-                            ->order('locale', 'ASC')
-                            ->order('title', 'ASC');
+                            ->where('locale', $article->locale)
+                            ->order('title', 'ASC')
+                            ->order('parent_id', 'ASC')
+                            ->order('position', 'ASC');
 
                         $selected = $category->id === 0 ? 'selected' : '';
 

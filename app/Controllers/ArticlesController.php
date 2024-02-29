@@ -24,11 +24,33 @@ use Tischmann\Atlantis\{
 class ArticlesController extends Controller
 {
 
-    public function showAllArticles(): void
+    protected function adminCheckJson(): void
+    {
+        if (!App::getCurrentUser()->isAdmin()) {
+            Response::json([
+                'title' => get_str('warning'),
+                'message' => get_str('access_denied')
+            ], 403);
+        }
+    }
+
+    protected function adminCheck(): void
     {
         if (!App::getCurrentUser()->isAdmin()) {
             View::send('403', exit: true);
         }
+    }
+
+    protected function adminCheckException(): void
+    {
+        if (!App::getCurrentUser()->isAdmin()) {
+            throw new Exception(get_str('access_denied'), 403);
+        }
+    }
+
+    public function showAllArticles(): void
+    {
+        $this->adminCheck();
 
         View::send('articles_list');
     }
@@ -47,9 +69,7 @@ class ArticlesController extends Controller
 
     public function getArticleEditor(): void
     {
-        if (!App::getCurrentUser()->isAdmin()) {
-            View::send('403', exit: true);
-        }
+        $this->adminCheck();
 
         $article = Article::find($this->route->args('id'));
 
@@ -62,9 +82,7 @@ class ArticlesController extends Controller
      */
     public function uploadImage()
     {
-        if (!App::getCurrentUser()->isAdmin()) {
-            Response::json(['message' => get_str('access_denied')], 403);
-        }
+        $this->adminCheckJson();
 
         Article::removeOldTempImagesAndUploads();
 
@@ -83,7 +101,7 @@ class ArticlesController extends Controller
 
             Response::json(['image' => reset($images)]);
         } catch (Exception $e) {
-            Response::json(['message' => $e->getMessage()], 500);
+            Response::json(['title' => get_str('warning'), 'message' => $e->getMessage()], 500);
         }
     }
 
@@ -93,9 +111,7 @@ class ArticlesController extends Controller
      */
     public function uploadGalleryImage()
     {
-        if (!App::getCurrentUser()->isAdmin()) {
-            Response::json(['message' => get_str('access_denied')], 403);
-        }
+        $this->adminCheckJson();
 
         Article::removeOldTempImagesAndUploads();
 
@@ -114,7 +130,7 @@ class ArticlesController extends Controller
                 ),
             ]);
         } catch (Exception $e) {
-            Response::json(['message' => $e->getMessage()], 500);
+            Response::json(['title' => get_str('warning'), 'message' => $e->getMessage()], 500);
         }
     }
 
@@ -124,9 +140,7 @@ class ArticlesController extends Controller
      */
     public function uploadVideos()
     {
-        if (!App::getCurrentUser()->isAdmin()) {
-            Response::json(['message' => get_str('access_denied')], 403);
-        }
+        $this->adminCheckJson();
 
         Article::removeOldTempImagesAndUploads();
 
@@ -147,24 +161,7 @@ class ArticlesController extends Controller
 
             foreach ($errors as $index => $error) {
                 if ($error !== UPLOAD_ERR_OK) {
-                    $description = match ($error) {
-                        UPLOAD_ERR_INI_SIZE => 'The uploaded file exceeds the upload_max_filesize directive in php.ini.',
-                        UPLOAD_ERR_FORM_SIZE => 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.',
-                        UPLOAD_ERR_PARTIAL => 'The uploaded file was only partially uploaded.',
-                        UPLOAD_ERR_NO_FILE => 'No file was uploaded.',
-                        UPLOAD_ERR_NO_TMP_DIR => 'Missing a temporary folder.',
-                        UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk.',
-                        UPLOAD_ERR_EXTENSION =>  'A PHP extension stopped the file upload.',
-                        default => 'Unknown upload error.',
-                    };
-
-                    Response::json(
-                        [
-                            'message' => get_str('upload_error')
-                                . ":{$error} - {$description}"
-                        ],
-                        500
-                    );
+                    throw new Exception(get_str('upload_error') . ":{$error}", 500);
                 }
             }
 
@@ -180,7 +177,7 @@ class ArticlesController extends Controller
                 $filename = md5(bin2hex(random_bytes(32))) . ".{$extension}";
 
                 if (!rename($tmp_name, getenv('APP_ROOT') . "/public/uploads/articles/temp/{$filename}")) {
-                    Response::json(['message' => get_str('article_temp_file_not_moved')], 500);
+                    throw new Exception(get_str('article_temp_file_not_moved'), 500);
                 }
 
                 $response['videos'][] = $filename;
@@ -188,7 +185,7 @@ class ArticlesController extends Controller
 
             Response::json($response);
         } catch (Exception $e) {
-            Response::json(['message' => $e->getMessage()], 500);
+            Response::json(['title' => get_str('warning'), 'message' => $e->getMessage()], 500);
         }
     }
 
@@ -198,9 +195,7 @@ class ArticlesController extends Controller
      */
     public function uploadAttachements()
     {
-        if (!App::getCurrentUser()->isAdmin()) {
-            Response::json(['message' => get_str('access_denied')], 403);
-        }
+        $this->adminCheckJson();
 
         Article::removeOldTempImagesAndUploads();
 
@@ -221,24 +216,7 @@ class ArticlesController extends Controller
 
             foreach ($errors as $index => $error) {
                 if ($error !== UPLOAD_ERR_OK) {
-                    $description = match ($error) {
-                        UPLOAD_ERR_INI_SIZE => 'The uploaded file exceeds the upload_max_filesize directive in php.ini.',
-                        UPLOAD_ERR_FORM_SIZE => 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.',
-                        UPLOAD_ERR_PARTIAL => 'The uploaded file was only partially uploaded.',
-                        UPLOAD_ERR_NO_FILE => 'No file was uploaded.',
-                        UPLOAD_ERR_NO_TMP_DIR => 'Missing a temporary folder.',
-                        UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk.',
-                        UPLOAD_ERR_EXTENSION =>  'A PHP extension stopped the file upload.',
-                        default => 'Unknown upload error.',
-                    };
-
-                    Response::json(
-                        [
-                            'message' => get_str('upload_error')
-                                . ":{$error} - {$description}"
-                        ],
-                        500
-                    );
+                    throw new Exception(get_str('upload_error') . ":{$error}", 500);
                 }
             }
 
@@ -250,7 +228,7 @@ class ArticlesController extends Controller
                 $filename = mb_strtolower(preg_replace('/\s/', '_', $filename));
 
                 if (!rename($tmp_name, getenv('APP_ROOT') . "/public/uploads/articles/temp/{$filename}")) {
-                    Response::json(['message' => get_str('article_temp_file_not_moved')], 500);
+                    throw new Exception(get_str('article_temp_file_not_moved'), 500);
                 }
 
                 $response['files'][] = $filename;
@@ -258,7 +236,7 @@ class ArticlesController extends Controller
 
             Response::json($response);
         } catch (Exception $e) {
-            Response::json(['message' => $e->getMessage()], 500);
+            Response::json(['title' => get_str('warning'), 'message' => $e->getMessage()], 500);
         }
     }
 
@@ -268,9 +246,7 @@ class ArticlesController extends Controller
      */
     public function deleteTempImage()
     {
-        if (!App::getCurrentUser()->isAdmin()) {
-            Response::json(['message' => get_str('access_denied')], 403);
-        }
+        $this->adminCheckJson();
 
         $request = Request::instance();
 
@@ -284,7 +260,7 @@ class ArticlesController extends Controller
                 if (file_exists($file)) unlink($file);
             }
         } catch (Exception $e) {
-            Response::json(['message' => $e->getMessage()], 500);
+            Response::json(['title' => get_str('warning'), 'message' => $e->getMessage()], 500);
         }
 
         Response::json();
@@ -296,12 +272,7 @@ class ArticlesController extends Controller
      */
     public function updateArticle()
     {
-        if (!App::getCurrentUser()->isAdmin()) {
-            Response::json([
-                'title' => get_str('warning'),
-                'message' => get_str('access_denied')
-            ], 403);
-        }
+        $this->adminCheckJson();
 
         $request = Request::instance();
 
@@ -576,12 +547,12 @@ class ArticlesController extends Controller
             if (!$article->save()) {
                 throw new Exception(get_str('article_not_saved'));
             }
+
+            Article::removeOldTempImagesAndUploads();
+
+            Response::json(['title' => get_str('attention'), 'message' => get_str('article_saved')]);
         } catch (Exception $e) {
             Response::json(['title' => get_str('warning'), 'message' => $e->getMessage()], $e->getCode() ?: 500);
         }
-
-        Article::removeOldTempImagesAndUploads();
-
-        Response::json(['title' => get_str('attention'), 'message' => get_str('article_saved')]);
     }
 }
