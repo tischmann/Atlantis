@@ -8,7 +8,7 @@ $image = $article->getImage();
 
 ?>
 
-<a href="/{{env=APP_LOCALE}}/edit/article/{$article->id}" title="<?= $article->title ?>" class="group/item block p-4 rounded-xl border-2 border-gray-200 hover:border-gray-300">
+<a href="/{{env=APP_LOCALE}}/edit/article/<?= $article->id ?>" title="<?= $article->title ?>" class="group/item block p-4 rounded-xl border-2 border-gray-200 hover:border-gray-300">
     <article>
         <h2 class="mb-1 font-semibold text-lg line-clamp-1"><?= $article->title ?></h2>
         <h3 class="line-clamp-1 text-gray-600 text-sm mb-2"><?= $article->getCategory()->title ?></h3>

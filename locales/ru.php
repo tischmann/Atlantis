@@ -32,6 +32,8 @@ return [
     'pagination_next' => 'Следующая страница',
     'pagination_last' => 'Последняя страница',
     'pagination_page' => 'Страница',
+    'temp_file_not_moved' => 'Временный файл не перемещен',
+    'temp_file_not_found' => 'Временный файл не найден',
     // Ошибки Json Web Token
     'jwt_missing_public_key' => 'Отсутствует публичный ключ',
     'jwt_wrong_segment_amount' => 'Неверное количество сегментов',
@@ -134,7 +136,6 @@ return [
     'article_short_text_required' => 'Краткий текст обязателен',
     'article_category_required' => 'Категория обязательна',
     'article_created_at_invalid' => 'Неверная дата и время создания',
-    'article_temp_file_not_moved' => 'Временный файл не перемещен',
     'articles_not_found' => 'Статьи не найдены',
     'article_order' => 'Сортировка',
     'article_order_created_at' => 'Дата создания',

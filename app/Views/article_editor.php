@@ -2,9 +2,15 @@
 
 use App\Models\{Article, Category};
 
-use Tischmann\Atlantis\{Locale, Template};
+use Tischmann\Atlantis\{DateTime, Locale, Template};
 
 assert($article instanceof Article);
+
+if (!$article->exists()) {
+    $article->created_at = new DateTime();
+    $article->locale = getenv('APP_LOCALE');
+    $article->category_id = 0;
+}
 
 $category = $article->getCategory();
 
@@ -99,7 +105,7 @@ $category = $article->getCategory();
                 </div>
                 <div class="mb-8 relative">
                     <label for="created_at" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=article_created_at}}</label>
-                    <input class="py-2 px-3 outline-none border-2 border-gray-200 rounded-lg w-full focus:border-sky-600 transition" aria-label="created_at" id="created_at" name="created_at" type="datetime-local" value="<?= $article->created_at->format("Y-m-d H:i") ?>">
+                    <input class="py-2 px-3 outline-none border-2 border-gray-200 rounded-lg w-full focus:border-sky-600 transition" aria-label="created_at" id="created_at" name="created_at" type="datetime-local" value="<?= $article->created_at?->format("Y-m-d H:i") ?>">
                 </div>
                 <div class="mb-8 relative">
                     <label class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=article_visible}}</label>
@@ -128,8 +134,19 @@ $category = $article->getCategory();
                     </div>
                 </div>
                 <div class="flex flex-col gap-4">
-                    <button id="delete-article" class="flex items-center justify-center px-3 py-2 bg-red-600 hover:bg-red-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full" type="button" title="{{lang=delete}}">{{lang=delete}}</button>
-                    <button id="save-article" class="flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full" type="button" title="{{lang=save}}">{{lang=save}}</button>
+                    <?php
+                    if ($article->exists()) {
+                        echo <<<HTML
+                            <button id="delete-article" class="flex items-center justify-center px-3 py-2 bg-red-600 hover:bg-red-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full" type="button" title="{{lang=delete}}">{{lang=delete}}</button>
+                            <button id="save-article" class="flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full" type="button" title="{{lang=save}}">{{lang=save}}</button>
+                            HTML;
+                    } else {
+                        echo <<<HTML
+                            <button id="add-article" class="flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full" type="button" title="{{lang=add}}">{{lang=add}}</button>
+                            HTML;
+                    }
+                    ?>
+
                 </div>
             </div>
             <div class="order-1 xl:order-2 xl:col-span-2">
@@ -204,7 +221,7 @@ $category = $article->getCategory();
                 <div class="flex flex-col relative">
                     <label for="text" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=article_text}}</label>
                     <div class="flex-grow w-full min-h-96 outline-none border-2 border-gray-200 rounded-lg p-4 focus:border-sky-600 transition">
-                        <input type="hidden" name="text" id="text" value="<?= htmlentities($article->text) ?>">
+                        <input type="hidden" name="text" id="text" value="<?= htmlentities(strval($article->text)) ?>">
                         <div id="quill-editor" class="max-h-[85vh] overflow-y-auto"><?= $article->text ?></div>
                     </div>
                 </div>

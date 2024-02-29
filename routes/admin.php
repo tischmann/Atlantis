@@ -62,18 +62,28 @@ if (App::getCurrentUser()->isAdmin()) {
 
     Router::add(new Route(
         controller: new ArticlesController(),
+        path: 'edit/articles',
+        action: 'showAllArticles',
+        method: 'GET',
+        title: get_str('article_list')
+    ));
+
+    Router::add(new Route(
+        controller: new ArticlesController(),
         path: 'edit/article/{id}',
         action: 'getArticleEditor',
         method: 'GET',
         title: get_str('article_edit')
     ));
 
+
     Router::add(new Route(
         controller: new ArticlesController(),
-        path: 'edit/articles',
-        action: 'showAllArticles',
+        path: 'add/article',
+        action: 'getArticleEditor',
         method: 'GET',
-        title: get_str('article_list')
+        args: ['id' => 0],
+        title: get_str('article_new')
     ));
 
     Router::add(new Route(

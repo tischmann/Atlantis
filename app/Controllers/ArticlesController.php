@@ -177,7 +177,7 @@ class ArticlesController extends Controller
                 $filename = md5(bin2hex(random_bytes(32))) . ".{$extension}";
 
                 if (!rename($tmp_name, getenv('APP_ROOT') . "/public/uploads/articles/temp/{$filename}")) {
-                    throw new Exception(get_str('article_temp_file_not_moved'), 500);
+                    throw new Exception(get_str('temp_file_not_moved'), 500);
                 }
 
                 $response['videos'][] = $filename;
@@ -228,7 +228,7 @@ class ArticlesController extends Controller
                 $filename = mb_strtolower(preg_replace('/\s/', '_', $filename));
 
                 if (!rename($tmp_name, getenv('APP_ROOT') . "/public/uploads/articles/temp/{$filename}")) {
-                    throw new Exception(get_str('article_temp_file_not_moved'), 500);
+                    throw new Exception(get_str('temp_file_not_moved'), 500);
                 }
 
                 $response['files'][] = $filename;
@@ -293,13 +293,17 @@ class ArticlesController extends Controller
 
         $id = $this->route->args('id');
 
-        $article = Article::find($id);
+        $article = new Article();
 
-        if (!$article->exists()) {
-            Response::json([
-                'title' => get_str('warning'),
-                'message' => get_str('article_not_found') . ": {$id}"
-            ], 404);
+        if ($id) {
+            $article = Article::find($id);
+
+            if (!$article->exists()) {
+                Response::json([
+                    'title' => get_str('warning'),
+                    'message' => get_str('article_not_found') . ": {$id}"
+                ], 404);
+            }
         }
 
         try {
@@ -327,207 +331,6 @@ class ArticlesController extends Controller
                 throw new Exception(get_str('article_category_required'), 400);
             }
 
-            $image = $request->request('image');
-
-            $article_dir = getenv('APP_ROOT') . "/public/images/articles/{$id}";
-
-            $uploads_dir = getenv('APP_ROOT') . "/public/uploads/articles/{$id}";
-
-            $videos_dir = "{$uploads_dir}/video";
-
-            $attachements_dir = "{$uploads_dir}/attachements";
-
-            $temp_dir = getenv('APP_ROOT') . "/public/images/articles/temp";
-
-            $uploads_temp_dir = getenv('APP_ROOT') . "/public/uploads/articles/temp";
-
-            $image_dir = "{$article_dir}/image";
-
-            if (!$image) {
-                foreach (glob("{$article_dir}/image/*.webp") as $file) {
-                    if (file_exists($file)) unlink($file);
-                }
-            } else if (!file_exists("{$image_dir}/{$image}")) {
-                $old_files = glob("{$image_dir}/*.webp");
-
-                $image_dir = "{$article_dir}/image";
-
-                $paths = [
-                    "{$image_dir}/{$image}" => "{$temp_dir}/{$image}",
-                    "{$image_dir}/thumb_{$image}" => "{$temp_dir}/thumb_{$image}"
-                ];
-
-                if (!is_dir($image_dir)) mkdir($image_dir, 0775, true);
-
-                foreach ($paths as $new_path => $temp_path) {
-                    if (!file_exists($temp_path)) continue;
-
-                    if (!rename($temp_path, $new_path)) {
-                        throw new Exception(get_str('article_temp_image_not_moved'));
-                    }
-                }
-
-                foreach ($old_files as $file) {
-                    if (file_exists($file)) unlink($file);
-                }
-            }
-
-            $old_files = glob("{$article_dir}/gallery/thumb_*.webp");
-
-            $gallery = $request->request('gallery');
-
-            $gallery = $gallery ? explode(";", $gallery) : [];
-
-            if (!$gallery) {
-                foreach (glob("{$article_dir}/gallery/*.webp") as $file) {
-                    if (file_exists($file)) unlink($file);
-                }
-            } else {
-                $gallery_dir = "{$article_dir}/gallery";
-
-                if (!is_dir($gallery_dir)) mkdir($gallery_dir, 0775, true);
-
-                foreach ($gallery as $image) {
-                    $image = str_replace('thumb_', '', $image);
-
-                    if (file_exists("{$gallery_dir}/{$image}")) continue;
-
-                    $temp_path = "{$temp_dir}/{$image}";
-
-                    $new_path = "{$gallery_dir}/{$image}";
-
-                    $thumb_path = "{$gallery_dir}/thumb_{$image}";
-
-                    $paths = [
-                        $new_path => $temp_path,
-                        $thumb_path => "{$temp_dir}/thumb_{$image}"
-                    ];
-
-                    foreach ($paths as $new_path => $temp_path) {
-                        if (!file_exists($temp_path)) continue;
-
-                        if (!rename($temp_path, $new_path)) {
-                            throw new Exception(get_str('article_temp_file_not_moved'));
-                        }
-                    }
-                }
-
-                foreach ($gallery as $key => $image) {
-                    $image = str_replace('thumb_', '', $image);
-                    $timestamp = time() + $key;
-                    touch("{$gallery_dir}/{$image}", $timestamp);
-                    touch("{$gallery_dir}/thumb_{$image}", $timestamp);
-                }
-
-                foreach ($old_files as $image) {
-                    $filename = basename($image);
-
-                    $filename = str_replace('thumb_', '', $filename);
-
-                    if (in_array($filename, $gallery)) continue;
-
-                    if (file_exists($image)) unlink($image);
-
-                    $image = str_replace('thumb_', '', $image);
-
-                    if (file_exists($image)) unlink($image);
-                }
-            }
-
-            $old_videos = glob("{$videos_dir}/*.*");
-
-            $videos = $request->request('videos');
-
-            $videos = $videos ? explode(";", $videos) : [];
-
-            if (!is_dir($videos_dir)) mkdir($videos_dir, 0775, true);
-
-            if (!$videos) {
-                foreach (glob("{$videos_dir}/*.*") as $file) {
-                    if (file_exists($file)) unlink($file);
-                }
-            } else {
-                foreach ($videos as $video) {
-                    if (file_exists("{$videos_dir}/{$video}")) continue;
-
-                    $temp_path = "{$uploads_temp_dir}/{$video}";
-
-                    $new_path = "{$videos_dir}/{$video}";
-
-                    $paths = [
-                        $new_path => $temp_path
-                    ];
-
-                    foreach ($paths as $new_path => $temp_path) {
-                        if (!file_exists($temp_path)) continue;
-
-                        if (!rename($temp_path, $new_path)) {
-                            throw new Exception(get_str('article_temp_file_not_moved'));
-                        }
-                    }
-                }
-
-                foreach ($videos as $key => $video) {
-                    $timestamp = time() + $key;
-                    touch("{$videos_dir}/{$video}", $timestamp);
-                }
-
-                foreach ($old_videos as $video) {
-                    $filename = basename($video);
-
-                    if (in_array($filename, $videos)) continue;
-
-                    if (file_exists($video)) unlink($video);
-                }
-            }
-
-            $old_attachements = glob("{$attachements_dir}/*.*");
-
-            $attachements = $request->request('attachements');
-
-            $attachements = $attachements ? explode(";", $attachements) : [];
-
-            if (!is_dir($attachements_dir)) mkdir($attachements_dir, 0775, true);
-
-            if (!$attachements) {
-                foreach (glob("{$attachements_dir}/*.*") as $file) {
-                    if (file_exists($file)) unlink($file);
-                }
-            } else {
-                foreach ($attachements as $attachement) {
-                    if (file_exists("{$attachements_dir}/{$attachement}")) continue;
-
-                    $temp_path = "{$uploads_temp_dir}/{$attachement}";
-
-                    $new_path = "{$attachements_dir}/{$attachement}";
-
-                    $paths = [
-                        $new_path => $temp_path
-                    ];
-
-                    foreach ($paths as $new_path => $temp_path) {
-                        if (!file_exists($temp_path)) continue;
-
-                        if (!rename($temp_path, $new_path)) {
-                            throw new Exception(get_str('article_temp_file_not_moved'));
-                        }
-                    }
-                }
-
-                foreach ($attachements as $key => $attachement) {
-                    $timestamp = time() + $key;
-                    touch("{$attachements_dir}/{$attachement}", $timestamp);
-                }
-
-                foreach ($old_attachements as $attachement) {
-                    $filename = basename($attachement);
-
-                    if (in_array($filename, $attachements)) continue;
-
-                    if (file_exists($attachement)) unlink($attachement);
-                }
-            }
-
             $article->tags = explode(",", $request->request('tags'));
 
             $article->tags = array_map('trim', $article->tags);
@@ -544,6 +347,46 @@ class ArticlesController extends Controller
 
             $article->created_at = new DateTime($date);
 
+            if (!$article->exists()) {
+                $article->author_id = App::getCurrentUser()->id;
+
+                if (!$article->save()) {
+                    throw new Exception(get_str('article_not_saved'));
+                }
+            }
+
+            $this->updateArticleImage(
+                article: $article,
+                image: $request->request('image')
+            );
+
+            $images = $request->request('gallery');
+
+            $images = $images ? explode(";", $images) : [];
+
+            $this->updateArticleGallery(
+                article: $article,
+                images: $images
+            );
+
+            $videos = $request->request('videos');
+
+            $videos = $videos ? explode(";", $videos) : [];
+
+            $this->updateArticleVideos(
+                article: $article,
+                videos: $videos
+            );
+
+            $attachements = $request->request('attachements');
+
+            $attachements = $attachements ? explode(";", $attachements) : [];
+
+            $this->updateArticleAttachements(
+                article: $article,
+                attachements: $attachements
+            );
+
             if (!$article->save()) {
                 throw new Exception(get_str('article_not_saved'));
             }
@@ -554,5 +397,223 @@ class ArticlesController extends Controller
         } catch (Exception $e) {
             Response::json(['title' => get_str('warning'), 'message' => $e->getMessage()], $e->getCode() ?: 500);
         }
+    }
+
+    protected function updateArticleImage(Article $article, string $image): self
+    {
+        $article_dir = getenv('APP_ROOT') . "/public/images/articles/{$article->id}";
+
+        $temp_dir = getenv('APP_ROOT') . "/public/images/articles/temp";
+
+        $image_dir = "{$article_dir}/image";
+
+        if (!is_dir($image_dir)) mkdir($image_dir, 0775, true);
+
+        $old_files = glob("{$image_dir}/*.webp");
+
+        if (!$image) {
+            foreach (glob("{$article_dir}/image/*.webp") as $file) {
+                if (file_exists($file)) unlink($file);
+            }
+        }
+
+        if (file_exists("{$article_dir}/image/{$image}")) {
+            return $this;
+        }
+
+        $paths = [
+            "{$image_dir}/{$image}" => "{$temp_dir}/{$image}",
+            "{$image_dir}/thumb_{$image}" => "{$temp_dir}/thumb_{$image}"
+        ];
+
+        foreach ($paths as $new_path => $temp_path) {
+            if (!file_exists($temp_path)) {
+                throw new Exception(get_str('temp_file_not_found'));
+            }
+
+            if (!rename($temp_path, $new_path)) {
+                throw new Exception(get_str('temp_file_not_moved'));
+            }
+        }
+
+        foreach ($old_files as $file) {
+            if (file_exists($file)) unlink($file);
+        }
+
+        return $this;
+    }
+
+    protected function updateArticleGallery(Article $article, array $images): self
+    {
+        $article_dir = getenv('APP_ROOT') . "/public/images/articles/{$article->id}";
+
+        $temp_dir = getenv('APP_ROOT') . "/public/images/articles/temp";
+
+        $gallery_dir = "{$article_dir}/gallery";
+
+        if (!is_dir($gallery_dir)) mkdir($gallery_dir, 0775, true);
+
+        $old_files = glob("{$article_dir}/gallery/*.webp");
+
+        if (!$images) { // Удаление всех файлов
+            foreach ($old_files as $file) {
+                if (file_exists($file)) unlink($file);
+            }
+        } else { // Перемещение новых файлов
+            foreach ($images as $image) {
+                if (file_exists("{$gallery_dir}/{$image}")) continue;
+
+                $image = str_replace('thumb_', '', $image);
+
+                $temp_path = "{$temp_dir}/{$image}";
+
+                $new_path = "{$gallery_dir}/{$image}";
+
+                $thumb_path = "{$gallery_dir}/thumb_{$image}";
+
+                $paths = [
+                    $new_path => $temp_path,
+                    $thumb_path => "{$temp_dir}/thumb_{$image}"
+                ];
+
+                foreach ($paths as $new_path => $temp_path) {
+                    if (!file_exists($temp_path)) {
+                        throw new Exception(get_str('temp_file_not_found'));
+                    }
+
+                    if (!rename($temp_path, $new_path)) {
+                        throw new Exception(get_str('temp_file_not_moved'));
+                    }
+                }
+            }
+
+            // Сортировка файлов по времени
+
+            foreach ($images as $key => $image) {
+                $image = str_replace('thumb_', '', $image);
+
+                $timestamp = time() + $key;
+
+                touch("{$gallery_dir}/{$image}", $timestamp);
+
+                touch("{$gallery_dir}/thumb_{$image}", $timestamp);
+            }
+
+            // Удаление старых файлов
+
+            foreach ($old_files as $image) {
+                $image = str_replace('thumb_', '', $image);
+
+                $filename = basename($image);
+
+                if (in_array($filename, $images)) continue;
+
+                if (file_exists($image)) unlink($image);
+
+                $thumb = "thumb_{$filename}";
+
+                if (file_exists($thumb)) unlink($thumb);
+            }
+        }
+
+        return $this;
+    }
+
+    protected function updateArticleVideos(Article $article, array $videos): self
+    {
+        $uploads_dir = getenv('APP_ROOT') . "/public/uploads/articles/{$article->id}";
+
+        $uploads_temp_dir = getenv('APP_ROOT') . "/public/uploads/articles/temp";
+
+        $videos_dir = "{$uploads_dir}/video";
+
+        if (!is_dir($videos_dir)) mkdir($videos_dir, 0775, true);
+
+        $old_videos = glob("{$videos_dir}/*.*");
+
+        if (!$videos) {
+            foreach ($old_videos as $file) {
+                if (file_exists($file)) unlink($file);
+            }
+        } else {
+            foreach ($videos as $video) {
+                if (file_exists("{$videos_dir}/{$video}")) continue;
+
+                $temp_path = "{$uploads_temp_dir}/{$video}";
+
+                $new_path = "{$videos_dir}/{$video}";
+
+                if (!file_exists($temp_path)) {
+                    throw new Exception(get_str('temp_file_not_found'));
+                }
+
+                if (!rename($temp_path, $new_path)) {
+                    throw new Exception(get_str('temp_file_not_moved'));
+                }
+            }
+
+            foreach ($videos as $key => $video) {
+                $timestamp = time() + $key;
+                touch("{$videos_dir}/{$video}", $timestamp);
+            }
+
+            foreach ($old_videos as $video) {
+                $filename = basename($video);
+
+                if (in_array($filename, $videos)) continue;
+
+                if (file_exists($video)) unlink($video);
+            }
+        }
+
+        return $this;
+    }
+
+    protected function updateArticleAttachements(Article $article, array $attachements): self
+    {
+        $uploads_dir = getenv('APP_ROOT') . "/public/uploads/articles/{$article->id}";
+
+        $uploads_temp_dir = getenv('APP_ROOT') . "/public/uploads/articles/temp";
+
+        $attachements_dir = "{$uploads_dir}/attachements";
+
+        if (!is_dir($attachements_dir)) mkdir($attachements_dir, 0775, true);
+
+        $old_attachements = glob("{$attachements_dir}/*.*");
+
+        if (!$attachements) {
+            foreach ($old_attachements as $file) {
+                if (file_exists($file)) unlink($file);
+            }
+        } else {
+            foreach ($attachements as $attachement) {
+                if (file_exists("{$attachements_dir}/{$attachement}")) continue;
+
+                $temp_path = "{$uploads_temp_dir}/{$attachement}";
+
+                $new_path = "{$attachements_dir}/{$attachement}";
+
+                if (!file_exists($temp_path)) continue;
+
+                if (!rename($temp_path, $new_path)) {
+                    throw new Exception(get_str('temp_file_not_moved'));
+                }
+            }
+
+            foreach ($attachements as $key => $attachement) {
+                $timestamp = time() + $key;
+                touch("{$attachements_dir}/{$attachement}", $timestamp);
+            }
+
+            foreach ($old_attachements as $attachement) {
+                $filename = basename($attachement);
+
+                if (in_array($filename, $attachements)) continue;
+
+                if (file_exists($attachement)) unlink($attachement);
+            }
+        }
+
+        return $this;
     }
 }
