@@ -22,11 +22,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" />
     <link rel="stylesheet" href="/app.min.css" media="all">
-    <link rel="stylesheet" href="/swiper-bundle.min.css" />
-    <link rel="stylesheet" href="/quill.min.css">
+    <link rel="stylesheet" href="/css/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="/css/quill.min.css">
     <link rel="preload" as="image" href="/images/placeholder.svg">
     <script src="/app.min.js" nonce="{{nonce}}"></script>
-    <script src="/swiper-bundle.min.js" nonce="{{nonce}}"></script>
+    <script src="/js/swiper-bundle.min.js" nonce="{{nonce}}"></script>
 </head>
 
 <body class="bg-white text-gray-800 antialiased m-0 p-0">

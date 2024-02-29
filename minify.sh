@@ -1,6 +1,14 @@
 #!/bin/bash
 
-cd public;
+cd resources/js;
+
+for file in *; do
+    if [[ -f $file ]]; then
+        uglifyjs "$file" --compress --mangle --warn --output "../../public/js/${file%.js}.min.js";
+    fi
+done
+
+cd ../../public;
 
 uglifyjs app.js --compress --mangle --warn --output app.min.js;
 

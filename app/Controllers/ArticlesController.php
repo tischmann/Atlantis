@@ -297,7 +297,10 @@ class ArticlesController extends Controller
     public function updateArticle()
     {
         if (!App::getCurrentUser()->isAdmin()) {
-            Response::json(['message' => get_str('access_denied')], 403);
+            Response::json([
+                'title' => get_str('warning'),
+                'message' => get_str('access_denied')
+            ], 403);
         }
 
         $request = Request::instance();
@@ -323,6 +326,7 @@ class ArticlesController extends Controller
 
         if (!$article->exists()) {
             Response::json([
+                'title' => get_str('warning'),
                 'message' => get_str('article_not_found') . ": {$id}"
             ], 404);
         }
@@ -573,11 +577,11 @@ class ArticlesController extends Controller
                 throw new Exception(get_str('article_not_saved'));
             }
         } catch (Exception $e) {
-            Response::json(['message' => $e->getMessage()], $e->getCode() ?: 500);
+            Response::json(['title' => get_str('warning'), 'message' => $e->getMessage()], $e->getCode() ?: 500);
         }
 
         Article::removeOldTempImagesAndUploads();
 
-        Response::json();
+        Response::json(['title' => get_str('attention'), 'message' => get_str('article_saved')]);
     }
 }
