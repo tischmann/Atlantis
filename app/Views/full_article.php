@@ -44,6 +44,8 @@ assert($article instanceof Article);
 
             if ($gallery) {
                 echo <<<HTML
+                <link rel="stylesheet" href="/css/swiper-bundle.min.css" />
+                <script src="/js/swiper-bundle.min.js" nonce="{{nonce}}"></script>
                 <div class="gallery-swiper mb-2 relative overflow-hidden select-none">
                     <div class="swiper-wrapper">
                         <div class="swiper-slide">
