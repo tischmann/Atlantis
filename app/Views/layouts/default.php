@@ -24,6 +24,7 @@
     <link rel="stylesheet" href="/app.min.css" media="all">
     <link rel="stylesheet" href="/css/quill.min.css">
     <link rel="preload" as="image" href="/images/placeholder.svg">
+    <script src="/js/prototypes.min.js" nonce="{{nonce}}"></script>
     <script src="/app.min.js" nonce="{{nonce}}"></script>
 </head>
 
