@@ -165,8 +165,10 @@ class Article extends Model
      * @param bool $thumb - если true, то возвращает размеры миниатюры
      * @return array - массив с ключами width и height
      */
-    public function getImageSizes(bool $thumb = false): array
+    public function getImageSizes(bool $thumb = false, ?string $file = null): array
     {
+        if ($file) return getimagesize($file);
+
         $dir = getenv('APP_ROOT') . "/public/images/articles/{$this->id}/image/";
 
         $prefix = $thumb ? 'thumb_' : '';

@@ -43,23 +43,30 @@ assert($article instanceof Article);
             $gallery = $article->getGalleryImages();
 
             if ($gallery) {
+                list($image_width, $image_height) = $article->getImageSizes();
+
                 echo <<<HTML
                 <link rel="stylesheet" href="/css/swiper-bundle.min.css" />
                 <script src="/js/swiper-bundle.min.js" nonce="{{nonce}}"></script>
                 <div class="gallery-swiper mb-2 relative overflow-hidden select-none">
                     <div class="swiper-wrapper">
                         <div class="swiper-slide">
-                            <img src="/images/articles/{$article->id}/image/{$image}" alt="{$article->title}" width="720" height="405" class="w-full rounded-xl mr-4 shadow-lg" decoding="async" loading="lazy">
+                            <img src="/images/articles/{$article->id}/image/{$image}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="w-full rounded-xl mr-4 shadow-lg" decoding="async" loading="lazy">
                         </div>
                 HTML;
 
                 foreach ($gallery as $filename) {
+                    list($image_width, $image_height) = $article->getImageSizes(
+                        file: getenv('APP_ROOT') . "/public/images/articles/{$article->id}/gallery/{$filename}"
+                    );
                     echo <<<HTML
                     <div class="swiper-slide">
-                        <img src="/images/articles/{$article->id}/gallery/{$filename}" width="720" height="405" alt="{$article->title}" decoding="async" loading="lazy" class="w-full rounded-xl">
+                        <img src="/images/articles/{$article->id}/gallery/{$filename}" width="{$image_width}" height="{$image_height}" alt="{$article->title}" decoding="async" loading="lazy" class="w-full rounded-xl">
                     </div>
                     HTML;
                 }
+
+                list($image_width, $image_height) = $article->getImageSizes(true);
 
                 echo <<<HTML
                     </div>
@@ -67,14 +74,18 @@ assert($article instanceof Article);
                 <div thumbsSlider="" class="thumb-gallery-swiper relative overflow-hidden select-none">
                     <div class="swiper-wrapper">
                         <div class="swiper-slide cursor-pointer">
-                            <img src="/images/articles/{$article->id}/image/thumb_{$image}" width="320" height="180" alt="{$article->title}" decoding="async" loading="lazy" class="rounded-xl w-full">
+                            <img src="/images/articles/{$article->id}/image/thumb_{$image}" width="{$image_width}" height="{$image_height}" alt="{$article->title}" decoding="async" loading="lazy" class="rounded-xl w-full">
                         </div>
                 HTML;
 
                 foreach ($gallery as $filename) {
+                    list($image_width, $image_height) = $article->getImageSizes(
+                        file: getenv('APP_ROOT') . "/public/images/articles/{$article->id}/gallery/thumb_{$filename}"
+                    );
+
                     echo <<<HTML
                     <div class="swiper-slide cursor-pointer">
-                        <img src="/images/articles/{$article->id}/gallery/thumb_{$filename}" width="320" height="180" alt="{$article->title}" decoding="async" loading="lazy" class="rounded-xl w-full">
+                        <img src="/images/articles/{$article->id}/gallery/thumb_{$filename}" width="{$image_width}" height="{$image_height}" alt="{$article->title}" decoding="async" loading="lazy" class="rounded-xl w-full">
                     </div>
                     HTML;
                 }
@@ -83,8 +94,10 @@ assert($article instanceof Article);
                 </div>
                 HTML;
             } else {
+                list($image_width, $image_height) = $article->getImageSizes();
+
                 echo <<<HTML
-                <img src="/images/articles/{$article->id}/image/{$image}" alt="{$article->title}" width="720" height="405" class="w-full rounded-xl mr-4 shadow-lg" decoding="async" loading="lazy">
+                <img src="/images/articles/{$article->id}/image/{$image}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="w-full rounded-xl mr-4 shadow-lg" decoding="async" loading="lazy">
                 HTML;
             }
             ?>
