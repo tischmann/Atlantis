@@ -57,7 +57,9 @@ Document.prototype.dialog = function ({
         'mx-4',
         'bg-white',
         'md:mx-auto',
-        'max-w-[90vw]'
+        'max-w-[90vw]',
+        'scale-0',
+        'transition-all'
     )
 
     dialogElement.append(titleElement, containerElement, closeElement)
@@ -65,6 +67,8 @@ Document.prototype.dialog = function ({
     document.body.append(dialogElement)
 
     dialogElement.showModal()
+
+    dialogElement.classList.remove('scale-0')
 }
 
 Document.prototype.sortable = function (
@@ -295,6 +299,8 @@ Document.prototype.select = function (
         'hidden',
         'bg-white',
         'rounded-lg',
+        'border',
+        'border-gray-200',
         'shadow-lg',
         'max-h-[50vh]',
         'overflow-y-auto',

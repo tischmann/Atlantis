@@ -195,7 +195,7 @@ class Request
             $variable = $this->request($key);
 
             if ($variable === null) {
-                throw new InvalidArgumentException(get_str('variable_required') . ": {$key}");
+                throw new InvalidArgumentException(get_str('variable_required') . ": {$key}", 400);
             }
 
             foreach (array_diff($types, ['required']) as $assert) {
@@ -208,7 +208,8 @@ class Request
                 if ($type === $assert) continue;
 
                 throw new InvalidArgumentException(
-                    get_str('invalid_type') . ": {$key} [{$type} != {$assert}]"
+                    get_str('invalid_type') . ": {$key} [{$type} != {$assert}]",
+                    400
                 );
             }
         }

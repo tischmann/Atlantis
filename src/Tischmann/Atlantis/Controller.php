@@ -34,20 +34,32 @@ class Controller
 
     /**
      * Проверка прав доступа администратора
-     * 
-     * В случае отсутствия прав доступа отправляет 403 ошибку
-     * 
+     *
+     * @param string $type Тип ответа
      * @return void
      */
-    protected function checkAdminHtml(): void
+    protected function checkAdmin(string $type = 'html'): void
     {
         if (!App::getCurrentUser()->isAdmin()) {
-            View::send(
-                view: '403',
-                layout: 'default',
-                exit: true,
-                code: 403
-            );
+            switch (mb_strtolower($type)) {
+                case 'json':
+                    Response::json(
+                        response: [
+                            'title' => get_str('warning'),
+                            'message' => get_str('access_denied')
+                        ],
+                        code: 403
+                    );
+                    break;
+                default:
+                    View::send(
+                        view: '403',
+                        layout: 'default',
+                        exit: true,
+                        code: 403
+                    );
+                    break;
+            }
         }
     }
 }

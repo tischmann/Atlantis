@@ -93,24 +93,4 @@ use Tischmann\Atlantis\{Template};
     ?>
     <div class="my-4"><?php include 'pagination.php'; ?></div>
 </main>
-<script nonce="{{nonce}}">
-    const fields = [
-        'category_id',
-        'visible',
-        'locale',
-        'fixed',
-        'order',
-        'direction'
-    ]
-
-    fields.forEach((field) => {
-        document.select(
-            document.getElementById(`select_field_${field}`), {
-                onchange: (value) => {
-                    const url = new URL(window.location.href);
-                    url.searchParams.set(field, value);
-                    window.location.href = url.toString();
-                }
-            })
-    })
-</script>
+<script src="/js/articles.list.min.js" nonce="{{nonce}}"></script>

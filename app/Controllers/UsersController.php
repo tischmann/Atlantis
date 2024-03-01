@@ -8,8 +8,6 @@ use App\Models\{User};
 
 use Exception;
 
-use InvalidArgumentException;
-
 use Tischmann\Atlantis\{
     App,
     Auth,
@@ -27,7 +25,7 @@ class UsersController extends Controller
 {
     public function showAllUsers(): void
     {
-        $this->checkAdminHtml();
+        $this->checkAdmin(type: 'html');
 
         $reqest = Request::instance();
 
@@ -90,7 +88,7 @@ class UsersController extends Controller
         }
 
         View::send(
-            view: 'user_list',
+            view: 'users_list',
             args: [
                 'pagination' => $pagination,
                 'order_options' => $order_options,
@@ -173,51 +171,6 @@ class UsersController extends Controller
         Response::redirect('/');
     }
 
-
-    /**
-     * Вывод страницы добавления пользователя
-     *
-     * @return void
-     */
-    public function addUserForm(): void
-    {
-        $this->checkAdminHtml();
-
-        View::send(
-            view: 'user',
-            layout: 'default',
-            args: ['user' => User::instance()]
-        );
-    }
-
-    /**
-     * Добавление пользователя
-     *
-     * @return void
-     */
-    public function addUser(): void
-    {
-        $this->checkAdminJson();
-
-        $user = User::instance();
-
-        $this->fillUserFromRequest($user);
-
-        if (!$user->save()) {
-            Response::json(
-                response: [
-                    'text' => get_str('user_save_error')
-                ],
-                code: 500
-            );
-        }
-
-        Response::json(
-            response: ['ok' => true, 'redirect' => '/users'],
-            code: 200
-        );
-    }
-
     /**
      * Вывод страницы пользователя
      *
@@ -225,23 +178,36 @@ class UsersController extends Controller
      */
     public function getUser(): void
     {
-        $this->checkAdminHtml();
+        $this->checkAdmin(type: 'html');
 
         $id = intval($this->route->args('id'));
 
-        $user = User::find($id);
+        $user = new User();
 
-        if (!$user->exists()) {
-            View::send(
-                view: '404',
-                layout: 'default',
-                args: ['exception' => new Exception(get_str('user_not_found'))],
-                exit: true,
-                code: 404
-            );
+        if ($id) {
+            $user = User::find($id);
+
+            if (!$user->exists()) {
+                View::send(
+                    view: '404',
+                    layout: 'default',
+                    args: [
+                        'exception' => new Exception(
+                            message: get_str('user_not_found'),
+                            code: 404
+                        )
+                    ],
+                    exit: true,
+                    code: 404
+                );
+            }
         }
 
-        View::send(view: 'user', layout: 'default', args: ['user' => $user]);
+        View::send(
+            view: 'user_editor',
+            layout: 'default',
+            args: ['user' => $user]
+        );
     }
 
     /**
@@ -251,172 +217,109 @@ class UsersController extends Controller
      */
     public function deleteUser(): void
     {
-        $this->checkAdminJson();
+        $this->checkAdmin(type: 'json');
 
-        $id = intval($this->route->args('id'));
+        try {
+            $id = intval($this->route->args('id'));
 
-        $user = User::find($id);
+            $user = User::find($id);
 
-        if (!$user->exists()) {
+            if (!$user->exists()) {
+                throw new Exception(get_str('user_not_found'), 404);
+            }
+
+            if ($user->isLastAdmin()) {
+                throw new Exception(get_str('user_last_admin'), 403);
+            }
+
+            if (!$user->delete()) {
+                throw new Exception(get_str('user_delete_error'), 500);
+            }
+
             Response::json(
                 response: [
-                    'title' => get_str('error'),
-                    'text' => get_str('user_not_found'),
-                    'redirect' => '/users'
+                    'title' => get_str('attention'),
+                    'message' => get_str('user_deleted'),
                 ],
-                code: 404
+                code: 200
             );
+        } catch (Exception $e) {
+            Response::json([
+                'title' => get_str('warning'),
+                'message' => $e->getMessage()
+            ], 500);
         }
-
-        if ($user->isLastAdmin()) {
-            Response::json(
-                response: [
-                    'title' => get_str('error'),
-                    'text' => get_str('user_last_admin')
-                ],
-                code: 403
-            );
-        }
-
-        if (!$user->delete()) {
-            Response::json(
-                response: [
-                    'title' => get_str('error'),
-                    'text' => get_str('user_delete_error')
-                ],
-                code: 500
-            );
-        }
-
-        Response::json(
-            response: ['redirect' => '/users'],
-            code: 200
-        );
     }
 
     /**
-     * Обновление пользователя
+     * Обновление/добавление пользователя
      *
      * @return void
      */
     public function updateUser(): void
     {
-        $this->checkAdminJson();
+        $this->checkAdmin(type: 'json');
 
-        $id = intval($this->route->args('id'));
-
-        $user = User::find($id);
-
-        if (!$user->exists()) {
-            Response::json(
-                response: [
-                    'title' => get_str('error'),
-                    'text' => get_str('user_not_found')
-                ],
-                code: 404
-            );
-        }
-
-        $this->fillUserFromRequest($user);
-
-        if (!$user->save()) {
-            Response::json(
-                response: [
-                    'title' => get_str('error'),
-                    'text' => get_str('user_save_error')
-                ],
-                code: 500
-            );
-        }
-
-        Response::json(
-            response: ['ok' => true, 'redirect' => '/users'],
-            code: 200
-        );
-    }
-
-    /**
-     * Заполнение пользователя данными из запроса
-     *
-     * @return User 
-     */
-    protected function fillUserFromRequest(User &$user): User
-    {
         try {
+            $id = intval($this->route->args('id'));
+
+            $user = new User();
+
+            $new_user = false;
+
+            if ($id) {
+                $user = User::find($id);
+
+                if (!$user->exists()) {
+                    throw new Exception(get_str('user_not_found'), 404);
+                }
+            } else {
+                $new_user = true;
+            }
+
             $request = Request::instance();
 
-            try {
-                $request->validate([
-                    'name' => ['required', 'string'],
-                    'login' => ['required', 'string'],
-                    'password' => ['required', 'string'],
-                    'password_repeat' => ['required', 'string'],
-                    'remarks' => ['required', 'string'],
-                    'role' => ['required', 'string'],
-                    'status' => ['required', 'string']
-                ]);
-            } catch (InvalidArgumentException $exception) {
-                Response::text(response: $exception->getMessage(), code: 400);
-            }
+            $request->validate([
+                'name' => ['required', 'string'],
+                'login' => ['required', 'string'],
+                'password' => ['required', 'string'],
+                'password_repeat' => ['required', 'string'],
+                'remarks' => ['required', 'string'],
+                'role' => ['required', 'string'],
+                'status' => ['required', 'string']
+            ]);
 
             $user->name = strval($request->request('name'));
 
             if (!User::checkUserName($user->name)) {
-                Response::json(
-                    response: [
-                        'title' => get_str('error'),
-                        'text' => get_str('user_name_format')
-                    ],
-                    code: 400
-                );
+                throw new Exception(get_str('user_name_format'), 400);
             }
 
-            $user->login = strval($request->request('login'));
+            $login = strval($request->request('login'));
 
-            if (!User::checkUserLogin($user->login)) {
-                Response::json(
-                    response: [
-                        'title' => get_str('error'),
-                        'text' => get_str('user_login_format')
-                    ],
-                    code: 400
-                );
+            if (!User::checkUserLogin($login)) {
+                throw new Exception(get_str('user_login_format'), 400);
             }
 
-            if (!$user->exists()) {
+            if ($login !== $user->login) {
                 if (!User::checkUserLoginExists($user->login)) {
-                    Response::json(
-                        response: [
-                            'title' => get_str('error'),
-                            'text' => get_str('user_login_exists')
-                        ],
-                        code: 400
-                    );
+                    throw new Exception(get_str('user_login_exists'), 400);
                 }
             }
+
+            $user->login = $login;
 
             $password = strval($request->request('password'));
 
             $password_repeat = strval($request->request('password_repeat'));
 
-            if ($password || $password_repeat || !$user->exists()) {
+            if ($password || $password_repeat || $new_user) {
                 if ($password !== $password_repeat) {
-                    Response::json(
-                        response: [
-                            'text' => get_str('user_passwords_not_match')
-                        ],
-                        code: 400
-                    );
+                    throw new Exception(get_str('user_passwords_not_match'), 400);
                 }
 
                 if (!User::checkPasswordComplexity($password)) {
-                    Response::json(
-                        response: [
-                            'title' => get_str('error'),
-                            'text' => get_str('user_password_complexity')
-                        ],
-                        code: 400
-                    );
+                    throw new Exception(get_str('user_password_complexity'), 400);
                 }
 
                 $user->password = password_hash($password, PASSWORD_DEFAULT);
@@ -428,36 +331,20 @@ class UsersController extends Controller
 
             $user->status = boolval($request->request('status'));
 
-            return $user;
-        } catch (Exception $exception) {
-            Response::json(
-                response: [
-                    'title' => get_str('error'),
-                    'text' => $exception->getMessage()
-                ],
-                code: 500
-            );
-        }
-    }
+            if (!$user->save()) {
+                throw new Exception(get_str('user_save_error'), 500);
+            }
 
-    /**
-     * Проверка прав доступа администратора
-     *
-     * В случае отсутствия прав доступа отправляет JSON
-     *
-     * @return void
-     */
-    protected function checkAdminJson(): void
-    {
-        if (!App::getCurrentUser()->isAdmin()) {
             Response::json(
                 response: [
-                    'title' => get_str('error'),
-                    'text' => get_str('access_denied'),
-                    'redirect' => '/'
+                    'title' => get_str('attention'),
+                    'message' => get_str('user_saved'),
+                    'id' => $user->id,
                 ],
-                code: 403
+                code: 200
             );
+        } catch (Exception $e) {
+            Response::json(['title' => get_str('warning'), 'message' => $e->getMessage()], 500);
         }
     }
 }

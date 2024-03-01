@@ -25,34 +25,9 @@ use Tischmann\Atlantis\{
  */
 class ArticlesController extends Controller
 {
-
-    protected function adminCheckJson(): void
-    {
-        if (!App::getCurrentUser()->isAdmin()) {
-            Response::json([
-                'title' => get_str('warning'),
-                'message' => get_str('access_denied')
-            ], 403);
-        }
-    }
-
-    protected function adminCheck(): void
-    {
-        if (!App::getCurrentUser()->isAdmin()) {
-            View::send('403', exit: true);
-        }
-    }
-
-    protected function adminCheckException(): void
-    {
-        if (!App::getCurrentUser()->isAdmin()) {
-            throw new Exception(get_str('access_denied'), 403);
-        }
-    }
-
     public function showAllArticles(): void
     {
-        $this->adminCheck();
+        $this->checkAdmin(type: 'html');
 
         $reqest = Request::instance();
 
@@ -247,7 +222,7 @@ class ArticlesController extends Controller
 
     public function getArticleEditor(): void
     {
-        $this->adminCheck();
+        $this->checkAdmin(type: 'html');
 
         $article = Article::find($this->route->args('id'));
 
@@ -291,7 +266,7 @@ class ArticlesController extends Controller
      */
     public function uploadImage()
     {
-        $this->adminCheckJson();
+        $this->checkAdmin(type: 'json');
 
         Article::removeOldTempImagesAndUploads();
 
@@ -320,7 +295,7 @@ class ArticlesController extends Controller
      */
     public function uploadGalleryImage()
     {
-        $this->adminCheckJson();
+        $this->checkAdmin(type: 'json');
 
         Article::removeOldTempImagesAndUploads();
 
@@ -349,7 +324,7 @@ class ArticlesController extends Controller
      */
     public function uploadVideos()
     {
-        $this->adminCheckJson();
+        $this->checkAdmin(type: 'json');
 
         Article::removeOldTempImagesAndUploads();
 
@@ -404,7 +379,7 @@ class ArticlesController extends Controller
      */
     public function uploadAttachements()
     {
-        $this->adminCheckJson();
+        $this->checkAdmin(type: 'json');
 
         Article::removeOldTempImagesAndUploads();
 
@@ -455,7 +430,7 @@ class ArticlesController extends Controller
      */
     public function deleteTempImage()
     {
-        $this->adminCheckJson();
+        $this->checkAdmin(type: 'json');
 
         $request = Request::instance();
 
@@ -480,7 +455,7 @@ class ArticlesController extends Controller
      */
     public function insertArticle()
     {
-        $this->adminCheckJson();
+        $this->checkAdmin(type: 'json');
 
         $this->updateArticle();
     }
@@ -490,7 +465,7 @@ class ArticlesController extends Controller
      */
     public function updateArticle()
     {
-        $this->adminCheckJson();
+        $this->checkAdmin(type: 'json');
 
         try {
             $request = Request::instance();

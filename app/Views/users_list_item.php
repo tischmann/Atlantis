@@ -5,7 +5,7 @@ use App\Models\User;
 assert($user instanceof User);
 
 ?>
-<a href="/{{env=APP_LOCALE}}/edit/user/<?= $user->id ?>" title="{{lang=edit}}" class="group/item group/label block">
+<a href="/{{env=APP_LOCALE}}/user/<?= $user->id ?>" title="{{lang=edit}}" class="group/item group/label block">
     <article>
         <div class="px-4 py-3 border-2 border-gray-200 rounded-xl hover:border-gray-300 transition">
             <div class="flex justify-between items-center gap-4">

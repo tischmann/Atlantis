@@ -17,16 +17,17 @@ use Tischmann\Atlantis\{
 if (App::getCurrentUser()->isAdmin()) {
     Router::add(new Route(
         controller: new UsersController(),
-        path: 'edit/users',
+        path: 'users',
         action: 'showAllUsers',
         method: 'GET',
-        title: get_str('user_list')
+        title: get_str('users_list')
     ));
 
     Router::add(new Route(
         controller: new UsersController(),
         path: 'user',
-        action: 'addUserForm',
+        action: 'getUser',
+        args: ['id' => 0],
         method: 'GET',
         title: get_str('user_new')
     ));
@@ -34,8 +35,9 @@ if (App::getCurrentUser()->isAdmin()) {
     Router::add(new Route(
         controller: new UsersController(),
         path: 'user',
-        action: 'addUser',
+        action: 'updateUser',
         method: 'POST',
+        args: ['id' => 0]
     ));
 
     Router::add(new Route(

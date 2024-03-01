@@ -209,7 +209,6 @@ $category = $article->getCategory();
                             HTML;
                     }
                     ?>
-
                 </div>
             </div>
 
