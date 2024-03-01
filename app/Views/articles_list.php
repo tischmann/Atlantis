@@ -14,14 +14,14 @@ $locale = strval($reqest->request('locale'));
 
 $fixed = strval($reqest->request('fixed'));
 
-$order = strval($reqest->request('order') ?? 'created_at');
-
 $order_types = [
     'created_at',
     'title',
     'visible',
     'fixed'
 ];
+
+$order = strval($reqest->request('order') ?? 'created_at');
 
 $order = in_array($order, $order_types) ? $order : 'created_at';
 
@@ -42,7 +42,7 @@ if ($category_id === 'all') {
 ?>
 <main class="md:container mx-4 md:mx-auto mb-4">
     <div class="mb-4 flex flex-col sm:flex-row gap-4">
-        <select id="select_field_order" name="order" title="{{lang=article_order}}">
+        <select id="select_field_order" name="order" title="{{lang=order}}">
             <?php
             foreach ($order_types as $value) {
                 $selected = $order === $value ? 'selected' : '';
@@ -52,15 +52,15 @@ if ($category_id === 'all') {
             }
             ?>
         </select>
-        <select id="select_field_direction" name="direction" title="{{lang=article_direction}}">
+        <select id="select_field_direction" name="direction" title="{{lang=direction}}">
             <?php
             $selected = $direction === 'asc' ? 'selected' : '';
             echo <<<HTML
-            <option value="asc" {$selected} data-level="0">{{lang=article_direction_asc}}</option>
+            <option value="asc" {$selected} data-level="0">{{lang=direction_asc}}</option>
             HTML;
             $selected = $direction === 'desc' ? 'selected' : '';
             echo <<<HTML
-            <option value="desc" {$selected} data-level="0">{{lang=article_direction_desc}}</option>
+            <option value="desc" {$selected} data-level="0">{{lang=direction_desc}}</option>
             HTML;
             ?>
         </select>

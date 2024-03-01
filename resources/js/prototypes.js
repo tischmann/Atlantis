@@ -219,6 +219,8 @@ Document.prototype.select = function (
     element,
     { onchange = function () {} } = {}
 ) {
+    if (!element) return
+
     const uuid = self.crypto.randomUUID()
 
     const wrapper = document.createElement('div')

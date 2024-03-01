@@ -34,6 +34,10 @@ return [
     'pagination_page' => 'Страница',
     'temp_file_not_moved' => 'Временный файл не перемещен',
     'temp_file_not_found' => 'Временный файл не найден',
+    'order' => 'Сортировка',
+    'direction' => 'Порядок сортировки',
+    'direction_asc' => 'По возрастанию',
+    'direction_desc' => 'По убыванию',
     // Ошибки Json Web Token
     'jwt_missing_public_key' => 'Отсутствует публичный ключ',
     'jwt_wrong_segment_amount' => 'Неверное количество сегментов',
@@ -78,6 +82,10 @@ return [
     'user_role_user' => 'Пользователь',
     'user_role_admin' => 'Администратор',
     'user_remarks' => 'Примечание',
+    'user_order_created_at' => 'Дата создания',
+    'user_order_login' => 'Логин',
+    'user_order_name' => 'Имя',
+    'user_order_role' => 'Роль',
     // Даты
     'year_ago' => 'год назад',
     'years_ago' => 'лет назад',

@@ -29,7 +29,30 @@ class UsersController extends Controller
     {
         $this->checkAdminHtml();
 
+        $reqest = Request::instance();
+
+        $order_types = [
+            'created_at',
+            'login',
+            'name',
+            'role'
+        ];
+
+        $order = strval($reqest->request('order') ?? 'login');
+
+        $order = in_array($order, $order_types) ? $order : 'login';
+
+        $direction = strval($reqest->request('direction') ?? 'asc');
+
+        $direction = mb_strtolower($direction);
+
+        $direction = in_array($direction, ['asc', 'desc']) ? $direction : 'asc';
+
+        // Query
+
         $query = User::query();
+
+        $query->order($order, $direction);
 
         $pagination = new Pagination(query: $query);
 
@@ -41,10 +64,51 @@ class UsersController extends Controller
 
         View::send(
             view: 'user_list',
-            layout: 'default',
             args: [
+                'pagination' => $pagination,
+                'order_options' => [
+                    [
+                        'value' => 'created_at',
+                        'text' => get_str('user_order_created_at'),
+                        'selected' => $order === 'created_at',
+                        'level' => '0'
+                    ],
+                    [
+                        'value' => 'login',
+                        'text' => get_str('user_order_login'),
+                        'selected' => $order === 'login',
+                        'level' => '0'
+                    ],
+                    [
+                        'value' => 'name',
+                        'text' => get_str('user_order_name'),
+                        'selected' => $order === 'name',
+                        'level' => '0'
+                    ],
+                    [
+                        'value' => 'role',
+                        'text' => get_str('user_order_role'),
+                        'selected' => $order === 'role',
+                        'level' => '0'
+                    ]
+                ],
+                'direction_options' => [
+                    [
+                        'value' => 'asc',
+                        'text' => get_str('direction_asc'),
+                        'selected' => $direction === 'asc',
+                        'level' => '0'
+                    ],
+                    [
+                        'value' => 'desc',
+                        'text' => get_str('direction_desc'),
+                        'selected' => $direction === 'desc',
+                        'level' => '0'
+                    ]
+                ],
                 'users' => $users,
-                'pagination' => $pagination
+                'order' => $order,
+                'direction' => $direction,
             ]
         );
     }
