@@ -82,6 +82,10 @@ textEditor.on('text-change', () => {
 
 // Selects
 
+const categorySelect = document.select(
+    document.getElementById(`select_field_category_id`)
+)
+
 const localeSelect = document.select(document.getElementById(`locale-select`), {
     onchange: (value) => {
         fetch(`/locale/categories/${value}`)
@@ -91,10 +95,6 @@ const localeSelect = document.select(document.getElementById(`locale-select`), {
             })
     }
 })
-
-const categorySelect = document.select(
-    document.getElementById(`category-select`)
-)
 
 // Image
 

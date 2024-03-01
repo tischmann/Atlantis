@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Models\Article;
-
+use App\Models\Category;
 use Exception;
 
 use Tischmann\Atlantis\{
@@ -13,6 +13,8 @@ use Tischmann\Atlantis\{
     Controller,
     DateTime,
     Image,
+    Locale,
+    Pagination,
     Request,
     Response,
     View
@@ -52,7 +54,183 @@ class ArticlesController extends Controller
     {
         $this->adminCheck();
 
-        View::send('articles_list');
+        $reqest = Request::instance();
+
+        $category_id = mb_strtolower(strval($reqest->request('category_id') ?? 'all'));
+
+        $visible = strval($reqest->request('visible'));
+
+        $locale = strval($reqest->request('locale'));
+
+        $fixed = strval($reqest->request('fixed'));
+
+        $order_types = [
+            'created_at',
+            'title',
+            'visible',
+            'fixed'
+        ];
+
+        $order = strval($reqest->request('order') ?? 'created_at');
+
+        $order = in_array($order, $order_types) ? $order : 'created_at';
+
+        $direction_types = [
+            'asc',
+            'desc'
+        ];
+
+        $direction = strval($reqest->request('direction') ?? 'desc');
+
+        $direction = mb_strtolower($direction);
+
+        $direction = in_array($direction, ['asc', 'desc']) ? $direction : 'desc';
+
+        $category = null;
+
+        if ($category_id === 'all') {
+            $category = new Category();
+        } else if ($category_id !== "") {
+            $category = Category::find($category_id);
+        }
+
+        $order_options = [];
+
+        foreach ($order_types as $type) {
+            $order_options[] = [
+                'value' => $type,
+                'text' => get_str("article_order_{$type}"),
+                'selected' => $order === $type,
+                'level' => '0'
+            ];
+        }
+
+        $direction_options = [];
+
+        foreach ($direction_types as $type) {
+            $direction_options[] = [
+                'value' => $type,
+                'text' => get_str("direction_{$type}"),
+                'selected' => $direction === $type,
+                'level' => '0'
+            ];
+        }
+
+        $locale_options = [];
+
+        foreach (['', ...Locale::available()] as $value) {
+            $locale_options[] = [
+                'value' => $value,
+                'text' => get_str("article_locale_{$value}"),
+                'selected' => $locale === $value,
+                'level' => '0'
+            ];
+        }
+
+        $category_options = [
+            [
+                'value' => 'all',
+                'text' => get_str('article_category_all'),
+                'selected' => $category !== null && $category?->id === 0,
+                'level' => 0
+            ],
+            [
+                'value' => '',
+                'text' => '',
+                'selected' => $category === null,
+                'level' => 0
+            ]
+        ];
+
+        foreach (Category::getAllCategories(locale: $locale, recursive: true) as $value) {
+            assert($value instanceof Category);
+            $category_options = [
+                ...$category_options,
+                ...get_category_options($value, intval($category?->id))
+            ];
+        }
+
+        $visible_types = [
+            "" => "all",
+            "0" => "invisible",
+            "1" => "visible"
+        ];
+
+        $visible_options = [];
+
+        foreach ($visible_types as $key => $value) {
+            $visible_options[] = [
+                'value' => $key,
+                'text' => get_str("article_visible_{$value}"),
+                'selected' => $visible === $key,
+                'level' => 0
+            ];
+        }
+
+        $fixed_types = [
+            "" => "all",
+            "0" => "off",
+            "1" => "on"
+        ];
+
+        $fixed_options = [];
+
+        foreach ($fixed_types as $key => $value) {
+            $fixed_options[] = [
+                'value' => $key,
+                'text' => get_str("article_fixed_{$value}"),
+                'selected' => $fixed === $key,
+                'level' => 0
+            ];
+        }
+
+        // Query
+
+        $query = Article::query()
+            ->order($order, $direction);
+
+        if ($category === null) {
+            $query->where('category_id', null);
+        } else if ($category?->id) {
+            $query->where('category_id', $category?->id);
+        }
+
+        if ($visible !== "") {
+            $query->where('visible', $visible);
+        }
+
+        if ($locale !== "") {
+            $query->where('locale', $locale);
+        }
+
+        if ($fixed !== "") {
+            $query->where('fixed', $fixed);
+        }
+
+        $pagination = new Pagination(query: $query, limit: 10);
+
+        $articles = Article::all($query);
+
+        View::send(
+            view: 'articles_list',
+            args: [
+                'pagination' => $pagination,
+                'articles' => $articles,
+                'category_id' => $category_id,
+                'category' => $category,
+                'order' => $order,
+                'direction' => $direction,
+                'visible' => $visible,
+                'locale' => $locale,
+                'fixed' => $fixed,
+                'order_options' => $order_options,
+                'direction_options' => $direction_options,
+                'locale_options' => $locale_options,
+                'category_options' => $category_options,
+                'visible_options' => $visible_options,
+                'fixed_options' => $fixed_options
+            ]
+        );
     }
 
     /**
@@ -73,7 +251,38 @@ class ArticlesController extends Controller
 
         $article = Article::find($this->route->args('id'));
 
-        View::send('article_editor', ['article' => $article], 'default');
+        $category = $article->getCategory();
+
+        $category_options = [
+            [
+                'value' => '',
+                'text' => '',
+                'selected' => !$category->id,
+                'level' => 0
+            ]
+        ];
+
+        $categories = Category::getAllCategories(
+            locale: $article->locale,
+            recursive: true
+        );
+
+        foreach ($categories as $value) {
+            assert($value instanceof Category);
+            $category_options = [
+                ...$category_options,
+                ...get_category_options($value, $category->id)
+            ];
+        }
+
+        View::send(
+            view: 'article_editor',
+            args: [
+                'article' => $article,
+                'category_options' => $category_options
+            ],
+            layout: 'default'
+        );
     }
 
     /**

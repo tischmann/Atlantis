@@ -123,7 +123,7 @@ return [
     'article_visible_all' => 'Все',
     'article_visible_visible' => 'Показывать',
     'article_visible_invisible' => 'Скрыть',
-    'article_locale_all' => 'Все',
+    'article_locale_' => 'Все',
     'article_locale_ru' => 'Русский',
     'article_fixed' => 'Закрепить',
     'article_fixed_all' => 'Все',

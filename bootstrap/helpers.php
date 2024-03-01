@@ -496,44 +496,42 @@ function get_str(string $key, ?string $locale = null): string
 }
 
 /**
- * Возвращает html код с опциями категорий для select
+ * Возвращает опции категорий для select
  *
  * @param Category $category Категория
- * @param int $selected_id Выбранная категория
- * @param int $level Уровень вложенности
+ * @param int $selected Выбранная категория
+ * @return array 
  */
-function fetch_categories_children_options(
+function get_category_options(
     Category $category,
-    int $selected_id = 0,
-    int $level = 0
-): string {
-    $children = "";
-
-    $selected = $selected_id === $category->id ? 'selected' : '';
-
-    $children .= <<<HTML
-    <option value="{$category->id}" title="{$category->title}" {$selected} data-level="{$level}">{$category->title}</option>
-    HTML;
-
-    $category->children = $category->fetchChildren();
-
-    if ($category->children) $level++;
+    int $selected = 0
+): array {
+    $options = [
+        [
+            'value' => $category->id,
+            'text' => $category->title,
+            'selected' => $category->id === $selected,
+            'level' => $category->level
+        ]
+    ];
 
     foreach ($category->children as $child) {
         assert($child instanceof Category);
 
-        $selected = $selected_id === $child->id ? 'selected' : '';
-
-        $children .= <<<HTML
-        <option value="{$child->id}" title="{$child->title}" {$selected} data-level="{$level}">{$child->title}</option>
-        HTML;
-
-        $child->children = $child->fetchChildren();
+        $options[] = [
+            'value' => $child->id,
+            'text' => $child->title,
+            'selected' => $child->id === $selected,
+            'level' => $child->level
+        ];
 
         if ($child->children) {
-            $children .= fetch_categories_children_options($child, $selected_id, ++$level);
+            $options = [
+                ...$options,
+                ...get_category_options($child, $selected)
+            ];
         }
     }
 
-    return $children;
+    return $options;
 }

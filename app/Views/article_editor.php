@@ -39,28 +39,16 @@ $category = $article->getCategory();
                     </select>
                 </div>
                 <div class="mb-8">
-                    <select id="category-select" name="category_id" title="{{lang=article_category}}">
-                        <?php
-
-                        $query = Category::query()
-                            ->where('parent_id', null)
-                            ->where('locale', $article->locale)
-                            ->order('title', 'ASC')
-                            ->order('parent_id', 'ASC')
-                            ->order('position', 'ASC');
-
-                        $selected = $category->id === 0 ? 'selected' : '';
-
-                        echo <<<HTML
-                        <option value="" title="" {$selected} data-level="0"></option>
-                        HTML;
-
-                        foreach (Category::all($query) as $value) {
-                            assert($value instanceof Category);
-                            echo fetch_categories_children_options($value, $category->id, 0);
-                        }
-                        ?>
-                    </select>
+                    <?php
+                    Template::echo(
+                        template: 'select_field',
+                        args: [
+                            'name' => 'category_id',
+                            'title' => get_str('article_category'),
+                            'options' => $category_options
+                        ]
+                    );
+                    ?>
                 </div>
                 <div class="mb-8 relative">
                     <div class="rounded-lg border-2 border-gray-200 select-none">

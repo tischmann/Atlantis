@@ -48,6 +48,33 @@ class UsersController extends Controller
 
         $direction = in_array($direction, ['asc', 'desc']) ? $direction : 'asc';
 
+        $order_options = [];
+
+        foreach ($order_types as $type) {
+            $order_options[] = [
+                'value' => $type,
+                'text' => get_str("user_order_{$type}"),
+                'selected' => $order === $type,
+                'level' => '0'
+            ];
+        }
+
+        $direction_types = [
+            'asc',
+            'desc'
+        ];
+
+        $direction_options = [];
+
+        foreach ($direction_types as $type) {
+            $direction_options[] = [
+                'value' => $type,
+                'text' => get_str("direction_{$type}"),
+                'selected' => $direction === $type,
+                'level' => '0'
+            ];
+        }
+
         // Query
 
         $query = User::query();
@@ -66,46 +93,8 @@ class UsersController extends Controller
             view: 'user_list',
             args: [
                 'pagination' => $pagination,
-                'order_options' => [
-                    [
-                        'value' => 'created_at',
-                        'text' => get_str('user_order_created_at'),
-                        'selected' => $order === 'created_at',
-                        'level' => '0'
-                    ],
-                    [
-                        'value' => 'login',
-                        'text' => get_str('user_order_login'),
-                        'selected' => $order === 'login',
-                        'level' => '0'
-                    ],
-                    [
-                        'value' => 'name',
-                        'text' => get_str('user_order_name'),
-                        'selected' => $order === 'name',
-                        'level' => '0'
-                    ],
-                    [
-                        'value' => 'role',
-                        'text' => get_str('user_order_role'),
-                        'selected' => $order === 'role',
-                        'level' => '0'
-                    ]
-                ],
-                'direction_options' => [
-                    [
-                        'value' => 'asc',
-                        'text' => get_str('direction_asc'),
-                        'selected' => $direction === 'asc',
-                        'level' => '0'
-                    ],
-                    [
-                        'value' => 'desc',
-                        'text' => get_str('direction_desc'),
-                        'selected' => $direction === 'desc',
-                        'level' => '0'
-                    ]
-                ],
+                'order_options' => $order_options,
+                'direction_options' => $direction_options,
                 'users' => $users,
                 'order' => $order,
                 'direction' => $direction,
