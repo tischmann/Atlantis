@@ -244,6 +244,7 @@ Document.prototype.select = function (
         'bg-white',
         'px-1',
         'text-ellipsis',
+        'whitespace-nowrap',
         'overflow-hidden'
     )
 
@@ -428,6 +429,9 @@ Document.prototype.select = function (
     }
 
     return {
+        value: () => {
+            return input.value
+        },
         update: (items) => {
             ul.querySelectorAll('li').forEach((li) => {
                 li.removeEventListener('click', optionClickHandler)

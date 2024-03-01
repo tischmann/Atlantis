@@ -119,6 +119,7 @@ return [
     'article_category' => 'Категория',
     'article_category_all' => 'Все',
     'article_image' => 'Изображение',
+    'article_image_size' => 'Пропорции',
     'article_gallery' => 'Галерея',
     'article_locale' => 'Локаль',
     'article_visible' => 'Видимость',

@@ -224,6 +224,8 @@ class ArticlesController extends Controller
     {
         $this->checkAdmin(type: 'html');
 
+        $request = Request::instance();
+
         $article = Article::find($this->route->args('id'));
 
         $category = $article->getCategory();
@@ -250,11 +252,33 @@ class ArticlesController extends Controller
             ];
         }
 
+        $image_sizes_options = [
+            [
+                'value' => '16_9',
+                'text' => "16:9",
+                'selected' => true,
+                'level' => 0
+            ],
+            [
+                'value' => '4_3',
+                'text' => "4:3",
+                'selected' => false,
+                'level' => 0
+            ],
+            [
+                'value' => '1_1',
+                'text' => "1:1",
+                'selected' => false,
+                'level' => 0
+            ]
+        ];
+
         View::send(
             view: 'article_editor',
             args: [
                 'article' => $article,
-                'category_options' => $category_options
+                'category_options' => $category_options,
+                'image_sizes_options' => $image_sizes_options
             ],
             layout: 'default'
         );
@@ -271,15 +295,35 @@ class ArticlesController extends Controller
         Article::removeOldTempImagesAndUploads();
 
         try {
+            $request = Request::instance();
+
+            $size = $request->request('size') ?? '16_9';
+
+            $width = Article::IMAGE_WIDTH;
+
+            $height = match ($size) {
+                '4_3' => intval($width / 4 * 3),
+                '1_1' => $width,
+                default => intval($width / 16 * 9)
+            };
+
+            $thumb_width = Article::IMAGE_THUMB_WIDTH;
+
+            $thumb_height = match ($size) {
+                '4_3' => intval($thumb_width / 4 * 3),
+                '1_1' => $thumb_width,
+                default => intval($thumb_width / 16 * 9)
+            };
+
             $images = Image::upload(
                 files: $_FILES,
                 path: getenv('APP_ROOT') . "/public/images/articles/temp",
-                min_width: 1280,
-                min_height: 720,
-                max_width: 1280,
-                max_height: 720,
-                thumb_width: 320,
-                thumb_height: 180,
+                min_width: $width,
+                min_height: $height,
+                max_width: $width,
+                max_height: $height,
+                thumb_width: $thumb_width,
+                thumb_height: $thumb_height,
                 quality: 80
             );
 
@@ -300,16 +344,36 @@ class ArticlesController extends Controller
         Article::removeOldTempImagesAndUploads();
 
         try {
+            $request = Request::instance();
+
+            $size = $request->request('size') ?? '16_9';
+
+            $width = Article::IMAGE_WIDTH;
+
+            $height = match ($size) {
+                '4_3' => intval($width / 4 * 3),
+                '1_1' => $width,
+                default => intval($width / 16 * 9)
+            };
+
+            $thumb_width = Article::IMAGE_THUMB_WIDTH;
+
+            $thumb_height = match ($size) {
+                '4_3' => intval($thumb_width / 4 * 3),
+                '1_1' => $thumb_width,
+                default => intval($thumb_width / 16 * 9)
+            };
+
             Response::json([
                 'images' => Image::upload(
                     files: $_FILES,
                     path: getenv('APP_ROOT') . "/public/images/articles/temp",
-                    min_width: 1280,
-                    min_height: 720,
-                    max_width: 1280,
-                    max_height: 720,
-                    thumb_width: 320,
-                    thumb_height: 180,
+                    min_width: $width,
+                    min_height: $height,
+                    max_width: $width,
+                    max_height: $height,
+                    thumb_width: $thumb_width,
+                    thumb_height: $thumb_height,
                     quality: 80
                 ),
             ]);
@@ -657,10 +721,10 @@ class ArticlesController extends Controller
 
         if (!is_dir($gallery_dir)) mkdir($gallery_dir, 0775, true);
 
-        $old_files = glob("{$article_dir}/gallery/*.webp");
+        $old_files = glob("{$article_dir}/gallery/thumb_*.webp");
 
         if (!$images) { // Удаление всех файлов
-            foreach ($old_files as $file) {
+            foreach (glob("{$article_dir}/gallery/*.webp") as $file) {
                 if (file_exists($file)) unlink($file);
             }
         } else { // Перемещение новых файлов
@@ -706,17 +770,15 @@ class ArticlesController extends Controller
             // Удаление старых файлов
 
             foreach ($old_files as $image) {
-                $image = str_replace('thumb_', '', $image);
-
                 $filename = basename($image);
+
+                $filename = str_replace('thumb_', '', $filename);
 
                 if (in_array($filename, $images)) continue;
 
-                if (file_exists($image)) unlink($image);
+                unlink($image);
 
-                $thumb = "thumb_{$filename}";
-
-                if (file_exists($thumb)) unlink($thumb);
+                unlink(str_replace('thumb_', '', $image));
             }
         }
 

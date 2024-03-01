@@ -11,6 +11,14 @@ use Tischmann\Atlantis\{DateTime, Model, Table};
 
 class Article extends Model
 {
+    public const IMAGE_WIDTH = 1280;
+
+    public const IMAGE_HEIGHT = 720;
+
+    public const IMAGE_THUMB_WIDTH = 320;
+
+    public const IMAGE_THUMB_HEIGHT = 180;
+
     public function __construct(
         public int $id = 0,
         public ?int $author_id = null,
@@ -149,5 +157,27 @@ class Article extends Model
                 unlink($file);
             }
         }
+    }
+
+    /**
+     * Возвращает размеры изображения статьи
+     * 
+     * @param bool $thumb - если true, то возвращает размеры миниатюры
+     * @return array - массив с ключами width и height
+     */
+    public function getImageSizes(bool $thumb = false): array
+    {
+        $dir = getenv('APP_ROOT') . "/public/images/articles/{$this->id}/image/";
+
+        $prefix = $thumb ? 'thumb_' : '';
+
+        foreach (glob("{$dir}/{$prefix}*.webp") as $file) {
+            return getimagesize($file);
+        }
+
+        return [
+            $thumb ? static::IMAGE_THUMB_WIDTH : static::IMAGE_WIDTH,
+            $thumb ? static::IMAGE_THUMB_HEIGHT : static::IMAGE_HEIGHT
+        ];
     }
 }

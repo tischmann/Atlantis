@@ -6,6 +6,8 @@ assert($article instanceof Article);
 
 $image = $article->getImage();
 
+list($image_width, $image_height) = $article->getImageSizes(true);
+
 ?>
 
 <a href="/{{env=APP_LOCALE}}/edit/article/<?= $article->id ?>" title="<?= $article->title ?>" class="group/item group/label block">
@@ -19,7 +21,7 @@ $image = $article->getImage();
                     {{lang=edit}}
                 </div>
             </div>
-            <img src="<?= $image ? "/images/articles/{$article->id}/image/thumb_{$image} " : "/images/placeholder.svg" ?>" alt="<?= $article->title ?>" width="400" height="300" class="bg-gray-200 w-full rounded-t-xl" decoding="async" loading="lazy">
+            <img src="<?= $image ? "/images/articles/{$article->id}/image/thumb_{$image} " : "/images/placeholder.svg" ?>" alt="<?= $article->title ?>" width="<?= $image_width ?>" height="<?= $image_height ?>" class="bg-gray-200 w-full rounded-t-xl" decoding="async" loading="lazy">
         </div>
         <div class="px-4 py-3 border-2 border-gray-200 rounded-xl rounded-t-none border-t-0 group-hover/label:border-gray-300 transition">
             <h2 class="font-semibold text-base line-clamp-1"><?= $article->title ?></h2>

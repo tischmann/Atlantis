@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\{Article, Category};
+use App\Models\{Article};
 
 use Tischmann\Atlantis\{DateTime, Locale, Template};
 
@@ -13,6 +13,8 @@ if (!$article->exists()) {
 }
 
 $category = $article->getCategory();
+
+list($image_width, $image_height) = $article->getImageSizes();
 
 ?>
 <main class="md:container mx-8 md:mx-auto">
@@ -54,15 +56,24 @@ $category = $article->getCategory();
                     <div class="rounded-lg border-2 border-gray-200 select-none">
                         <div class="rounded-lg border-[16px] border-white relative">
                             <input type="hidden" id="image" name="image" value="<?= $article->getImage() ?>">
-                            <img id="article-image" src="<?= $article->getImage() ? "/images/articles/{$article->id}/image/{$article->getImage()} " : "/images/placeholder.svg" ?>" alt="<?= $article->title ?>" width="320" height="180" class="bg-gray-200 rounded-lg w-full" decoding="async" loading="lazy">
+                            <img id="article-image" src="<?= $article->getImage() ? "/images/articles/{$article->id}/image/{$article->getImage()} " : "/images/placeholder.svg" ?>" alt="<?= $article->title ?>" width="<?= $image_width ?>" height="<?= $image_height ?>" class="bg-gray-200 rounded-lg w-full" decoding="async" loading="lazy">
+                            <div id="pre-upload-image" class="w-full mt-4 flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg" title="{{lang=upload}}">{{lang=upload}}</div>
+                            <div id="upload-image-container" class="mt-8 grid grid-cols-3 gap-4 hidden">
+                                <?php
+                                Template::echo(
+                                    template: 'select_field',
+                                    args: [
+                                        'name' => 'image_size',
+                                        'title' => get_str('article_image_size'),
+                                        'options' => $image_sizes_options
+                                    ]
+                                );
+                                ?>
+                                <div id="upload-image" class="col-span-2 w-full flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg" title="{{lang=upload}}">{{lang=upload}}</div>
+                            </div>
                             <div id="delete-image" class="absolute top-0 right-0 p-2 text-white bg-red-600 rounded-md hover:bg-red-500 cursor-pointer transition drop-shadow" title="{{lang=delete}}">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                </svg>
-                            </div>
-                            <div id="upload-image" class="absolute top-0 left-0 p-2 text-white bg-sky-600 rounded-md hover:bg-sky-500 cursor-pointer transition drop-shadow" title="{{lang=upload}}">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
                                 </svg>
                             </div>
                         </div>
@@ -89,10 +100,23 @@ $category = $article->getCategory();
                     <input type="hidden" name="gallery" id="gallery" value="<?= implode(";", $article->getGalleryImages()) ?>">
                     <div class="rounded-lg border-2 border-gray-200">
                         <div class="rounded-lg border-[16px] border-white">
-                            <div id="upload-gallery" class="mb-4 w-full p-3 rounded-lg bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition cursor-pointer">
+                            <div id="pre-upload-gallery" class="mb-4 w-full p-3 rounded-lg bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition cursor-pointer">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                                 </svg>
+                            </div>
+                            <div id="upload-gallery-container" class="my-4 grid grid-cols-3 gap-4 hidden">
+                                <?php
+                                Template::echo(
+                                    template: 'select_field',
+                                    args: [
+                                        'name' => 'gallery_image_size',
+                                        'title' => get_str('article_image_size'),
+                                        'options' => $image_sizes_options
+                                    ]
+                                );
+                                ?>
+                                <div id="upload-gallery" class="col-span-2 w-full flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg" title="{{lang=upload}}">{{lang=upload}}</div>
                             </div>
                             <ul class="gallery-container grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-2 gap-4">
                                 <?php

@@ -1,11 +1,17 @@
 const textElement = document.querySelector('input[name="text"]')
 const galleryContainer = document.querySelector('.gallery-container')
 const galleryInput = document.querySelector('input[name="gallery"]')
+const preUploadGalleryButton = document.getElementById('pre-upload-gallery')
 const uploadGalleryButton = document.getElementById('upload-gallery')
+const uploadGalleryContainer = document.getElementById(
+    'upload-gallery-container'
+)
 const videosContainer = document.querySelector('.videos-container')
 const videosInput = document.querySelector('input[name="videos"]')
 const uploadVideoButton = document.getElementById('upload-video')
 const uploadImageButton = document.getElementById('upload-image')
+const preUploadImage = document.getElementById('pre-upload-image')
+const uploadImageContainer = document.getElementById('upload-image-container')
 const deleteImageButton = document.getElementById('delete-image')
 const articleImage = document.getElementById('article-image')
 const articleImageInput = document.querySelector('input[name="image"]')
@@ -96,7 +102,42 @@ const localeSelect = document.select(document.getElementById(`locale-select`), {
     }
 })
 
+const imageSizeSelect = document.select(
+    document.getElementById(`select_field_image_size`),
+    {
+        onchange: (value) => {
+            articleImage.src = `/images/placeholder_${value}.svg`
+            switch (value) {
+                case '16_9':
+                    articleImage.setAttribute('height', '180')
+                    break
+                case '4_3':
+                    articleImage.setAttribute('height', '240')
+                    break
+                case '1_1':
+                    articleImage.setAttribute('height', '320')
+                    break
+            }
+        }
+    }
+)
+
+const gallerySizeSelect = document.select(
+    document.getElementById(`select_field_gallery_image_size`)
+)
+
 // Image
+
+preUploadImage.addEventListener(
+    'click',
+    function () {
+        this.remove()
+        uploadImageContainer.classList.remove('hidden')
+    },
+    {
+        once: true
+    }
+)
 
 uploadImageButton.addEventListener('click', function () {
     const file = document.createElement('input')
@@ -107,9 +148,11 @@ uploadImageButton.addEventListener('click', function () {
     file.addEventListener(
         'change',
         (event) => {
+            const size = imageSizeSelect.value()
             const data = new FormData()
             data.append('image', event.target.files[0])
-            articleImage.src = `/images/placeholder.svg`
+            data.append('size', size)
+            articleImage.src = `/images/placeholder_${size}.svg`
             document.upload('/article/image', data).then(({ image }) => {
                 articleImage.src = `/images/articles/temp/${image}`
                 articleImageInput.setAttribute('value', image)
@@ -172,6 +215,17 @@ function initGalleryItem(li) {
 
 galleryContainer.querySelectorAll(`li`).forEach(initGalleryItem)
 
+preUploadGalleryButton.addEventListener(
+    'click',
+    function () {
+        this.remove()
+        uploadGalleryContainer.classList.remove('hidden')
+    },
+    {
+        once: true
+    }
+)
+
 uploadGalleryButton.addEventListener('click', () => {
     const file = document.createElement('input')
     file.hidden = true
@@ -184,6 +238,26 @@ uploadGalleryButton.addEventListener('click', () => {
                 const data = new FormData()
 
                 data.append('image[]', file)
+
+                const size = gallerySizeSelect.value()
+
+                data.append('size', size)
+
+                let width = 320
+
+                let height = 180
+
+                switch (size) {
+                    case '16_9':
+                        height = 180
+                        break
+                    case '4_3':
+                        height = 240
+                        break
+                    case '1_1':
+                        height = 320
+                        break
+                }
 
                 const progress = document.progress(0, galleryContainer)
 
@@ -203,7 +277,7 @@ uploadGalleryButton.addEventListener('click', () => {
 
                             wrapper.insertAdjacentHTML(
                                 'beforeend',
-                                `<li class="text-sm select-none relative"><img src="/images/placeholder.svg" width="320" height="180" alt="..." decoding="async" loading="lazy" class="block w-full rounded-md"><div class="delete-gallery-image-button absolute top-0 right-0 p-2 text-white bg-red-600 rounded-md hover:bg-red-500 cursor-pointer transition drop-shadow">${svgBin}</div></li>`
+                                `<li class="text-sm select-none relative"><img src="/images/placeholder_${size}.svg" width="${width}" height="${height}" alt="..." decoding="async" loading="lazy" class="block w-full rounded-md"><div class="delete-gallery-image-button absolute top-0 right-0 p-2 text-white bg-red-600 rounded-md hover:bg-red-500 cursor-pointer transition drop-shadow">${svgBin}</div></li>`
                             )
 
                             const li = wrapper.querySelector('li')
