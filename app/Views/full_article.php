@@ -51,7 +51,7 @@ assert($article instanceof Article);
                 <div class="gallery-swiper mb-2 relative overflow-hidden select-none">
                     <div class="swiper-wrapper">
                         <div class="swiper-slide">
-                            <img src="/images/articles/{$article->id}/image/{$image}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="w-full rounded-xl mr-4 shadow-lg" decoding="async" loading="lazy">
+                            <img src="/images/articles/{$article->id}/image/{$image}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="w-full rounded-xl mr-4 shadow-lg" decoding="async" loading="auto">
                         </div>
                 HTML;
 
@@ -61,7 +61,7 @@ assert($article instanceof Article);
                     );
                     echo <<<HTML
                     <div class="swiper-slide">
-                        <img src="/images/articles/{$article->id}/gallery/{$filename}" width="{$image_width}" height="{$image_height}" alt="{$article->title}" decoding="async" loading="lazy" class="w-full rounded-xl">
+                        <img src="/images/articles/{$article->id}/gallery/{$filename}" width="{$image_width}" height="{$image_height}" alt="{$article->title}" decoding="async" loading="auto" class="w-full rounded-xl">
                     </div>
                     HTML;
                 }
@@ -74,7 +74,7 @@ assert($article instanceof Article);
                 <div thumbsSlider="" class="thumb-gallery-swiper relative overflow-hidden select-none">
                     <div class="swiper-wrapper">
                         <div class="swiper-slide cursor-pointer">
-                            <img src="/images/articles/{$article->id}/image/thumb_{$image}" width="{$image_width}" height="{$image_height}" alt="{$article->title}" decoding="async" loading="lazy" class="rounded-xl w-full">
+                            <img src="/images/articles/{$article->id}/image/thumb_{$image}" width="{$image_width}" height="{$image_height}" alt="{$article->title}" decoding="async" loading="auto" class="rounded-xl w-full">
                         </div>
                 HTML;
 
@@ -85,7 +85,7 @@ assert($article instanceof Article);
 
                     echo <<<HTML
                     <div class="swiper-slide cursor-pointer">
-                        <img src="/images/articles/{$article->id}/gallery/thumb_{$filename}" width="{$image_width}" height="{$image_height}" alt="{$article->title}" decoding="async" loading="lazy" class="rounded-xl w-full">
+                        <img src="/images/articles/{$article->id}/gallery/thumb_{$filename}" width="{$image_width}" height="{$image_height}" alt="{$article->title}" decoding="async" loading="auto" class="rounded-xl w-full">
                     </div>
                     HTML;
                 }
@@ -97,7 +97,7 @@ assert($article instanceof Article);
                 list($image_width, $image_height) = $article->getImageSizes();
 
                 echo <<<HTML
-                <img src="/images/articles/{$article->id}/image/{$image}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="w-full rounded-xl mr-4 shadow-lg" decoding="async" loading="lazy">
+                <img src="/images/articles/{$article->id}/image/{$image}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="w-full rounded-xl mr-4 shadow-lg" decoding="async" loading="auto">
                 HTML;
             }
             ?>

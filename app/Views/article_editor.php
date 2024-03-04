@@ -18,7 +18,7 @@ list($image_width, $image_height) = $article->getImageSizes();
 
 ?>
 <main class="md:container mx-8 md:mx-auto">
-    <form id="article-form" data-id="<?= $article->id ?>" data-confirm="{{lang=confirm_delete}}">
+    <form data-article="<?= $article->id ?>">
         <div class="mb-8 grid grid-cols-1 xl:grid-cols-3 gap-8">
             <div class="col-span-1 xl:col-span-2">
                 <div class="mb-8 relative">
@@ -224,7 +224,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                     <?php
                     if ($article->exists()) {
                         echo <<<HTML
-                            <button id="delete-article" class="flex items-center justify-center px-3 py-2 bg-red-600 hover:bg-red-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full" type="button" title="{{lang=delete}}">{{lang=delete}}</button>
+                            <button id="delete-article" class="flex items-center justify-center px-3 py-2 bg-red-600 hover:bg-red-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full" type="button" title="{{lang=delete}}"  data-confirm="{{lang=confirm_delete}}">{{lang=delete}}</button>
                             <button id="save-article" class="flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full" type="button" title="{{lang=save}}">{{lang=save}}</button>
                             HTML;
                     } else {
