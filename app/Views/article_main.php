@@ -6,6 +6,10 @@ assert($article instanceof Article);
 
 $image = $article->getImage();
 
+$src_low = $image ? "/images/articles/{$article->id}/image/thumb_{$image} " : "/images/placeholder.svg";
+
+$src = $image ? "/images/articles/{$article->id}/image/{$image} " : "/images/placeholder.svg";
+
 list($image_width, $image_height) = $article->getImageSizes(true);
 
 ?>
@@ -21,7 +25,7 @@ list($image_width, $image_height) = $article->getImageSizes(true);
                     {{lang=read}}
                 </div>
             </div>
-            <img src="<?= $image ? "/images/articles/{$article->id}/image/thumb_{$image} " : "/images/placeholder.svg" ?>" alt="<?= $article->title ?>" width="<?= $image_width ?>" height="<?= $image_height ?>" class="bg-gray-200 w-full rounded-t-xl" decoding="async" loading="lazy">
+            <img srcset="<?= $src_low ?> 320w, <?= $src ?> 1280w" sizes="(max-width: 600px) 1280px, 320px" alt="<?= $article->title ?>" width="<?= $image_width ?>" height="<?= $image_height ?>" class="bg-gray-200 w-full rounded-t-xl" decoding="async" loading="auto">
         </div>
         <div class="px-4 py-3 border-2 border-gray-200 rounded-xl rounded-t-none border-t-0 group-hover/label:border-gray-300 transition">
             <h2 class="font-semibold text-base line-clamp-1"><?= $article->title ?></h2>
