@@ -114,7 +114,7 @@ export default class Article {
             }
         )
 
-        const gallerySizeSelect = new Select(
+        this.gallerySizeSelect = new Select(
             document.getElementById(`select_field_gallery_image_size`)
         )
 
@@ -143,30 +143,46 @@ export default class Article {
                 this.deleteImage()
             })
 
+        new Sortable(this.getGalleryContainer(), {
+            ondragend: () => {
+                this.updateGalleryInput()
+            }
+        })
+
+        this.getGalleryContainer()
+            .querySelectorAll(`li`)
+            .forEach((li) => {
+                this.initGalleryItem(li)
+            })
+
+        document.getElementById('pre-upload-gallery').addEventListener(
+            'click',
+            function () {
+                this.remove()
+                document
+                    .getElementById('upload-gallery-container')
+                    .classList.remove('hidden')
+            },
+            {
+                once: true
+            }
+        )
+
+        document
+            .getElementById('upload-gallery')
+            .addEventListener('click', () => {
+                this.#uploadGalleryImageHandler()
+            })
+
+        new Sortable(this.getVideosContainer(), {
+            ondragend: () => {
+                this.updateGalleryInput()
+            }
+        })
+
         /////////////////////////////////////
         //////////////////////////////////////
         ////////////////////////////////////
-
-        const articleGalleryContainer =
-            document.querySelector('.gallery-container')
-
-        const articleGalleryInput = document.querySelector(
-            'input[name="gallery"]'
-        )
-
-        const preUploadGalleryButton =
-            document.getElementById('pre-upload-gallery')
-
-        const uploadGalleryButton = document.getElementById('upload-gallery')
-
-        const uploadGalleryContainer = document.getElementById(
-            'upload-gallery-container'
-        )
-        const videosContainer = document.querySelector('.videos-container')
-
-        const videosInput = document.querySelector('input[name="videos"]')
-
-        const uploadVideoButton = document.getElementById('upload-video')
 
         const attachementsContainer = document.querySelector(
             '.attachements-container'
@@ -179,256 +195,17 @@ export default class Article {
         const uploadAttachementButton =
             document.getElementById('upload-attachement')
 
-        // Gallery
-
-        new Sortable(articleGalleryContainer, {
-            ondragend: () => {
-                articleGalleryInput.setAttribute(
-                    'value',
-                    Array.from(
-                        articleGalleryContainer.querySelectorAll('li > img')
-                    )
-                        .map((img) => img.src.split('/').pop())
-                        .filter((src) => src !== '')
-                        .join(';')
-                )
-            }
-        })
-
-        function initGalleryItem(li) {
-            const deleteButton = li.querySelector(
-                '.delete-gallery-image-button'
-            )
-
-            deleteButton.addEventListener(
-                'click',
-                function () {
-                    li.classList.add('transition', 'scale-0')
-                    setTimeout(() => {
-                        li.remove()
-                        const values = []
-                        articleGalleryContainer
-                            .querySelectorAll('li')
-                            .forEach((li) => {
-                                values.push(
-                                    li
-                                        .querySelector('img')
-                                        .src.split('/')
-                                        .pop()
-                                        .replace('thumb_', '')
-                                )
-                            })
-                        articleGalleryInput.setAttribute(
-                            'value',
-                            values.join(';')
-                        )
-                    }, 200)
-                },
-                {
-                    once: true
-                }
-            )
-        }
-
-        articleGalleryContainer.querySelectorAll(`li`).forEach(initGalleryItem)
-
-        preUploadGalleryButton.addEventListener(
-            'click',
-            function () {
-                this.remove()
-                uploadGalleryContainer.classList.remove('hidden')
-            },
-            {
-                once: true
-            }
-        )
-
-        uploadGalleryButton.addEventListener('click', () => {
-            const file = document.createElement('input')
-            file.hidden = true
-            file.type = 'file'
-            file.accept = '.jpg,.jpeg,.png,.webp,.gif,.bmp'
-            file.multiple = true
-            file.addEventListener('change', (event) => {
-                Array.from(event.target.files).forEach((file) => {
-                    new Promise((resolve, reject) => {
-                        const data = new FormData()
-
-                        data.append('image[]', file)
-
-                        const size = gallerySizeSelect.getValue()
-
-                        data.append('size', size)
-
-                        let width = 320
-
-                        let height = 180
-
-                        switch (size) {
-                            case '16_9':
-                                height = 180
-                                break
-                            case '4_3':
-                                height = 240
-                                break
-                            case '1_1':
-                                height = 320
-                                break
-                        }
-
-                        const progress = new Progress(articleGalleryContainer)
-
-                        new Upload({
-                            url: '/article/gallery',
-                            data,
-                            progress: function (value) {
-                                progress.update(value)
-                            },
-                            success: ({ images }) => {
-                                progress.destroy()
-
-                                const values = articleGalleryInput.value
-                                    .split(';')
-                                    .filter((src) => src !== '')
-
-                                images.forEach((src) => {
-                                    const wrapper =
-                                        document.createElement('div')
-
-                                    wrapper.insertAdjacentHTML(
-                                        'beforeend',
-                                        `<li class="text-sm select-none relative bg-gray-200 rounded-md"><img src="/images/articles/temp/thumb_${src}" width="${width}" height="${height}" alt="..." decoding="async" loading="auto" class="block w-full rounded-md"><div class="delete-gallery-image-button absolute top-0 right-0 p-2 text-white bg-red-600 rounded-md hover:bg-red-500 cursor-pointer transition drop-shadow">${this.svgDelete}</div></li>`
-                                    )
-
-                                    const li = wrapper.querySelector('li')
-
-                                    articleGalleryContainer.append(li)
-
-                                    values.push(src)
-
-                                    initGalleryItem(li)
-                                })
-
-                                articleGalleryInput.setAttribute(
-                                    'value',
-                                    values.join(';')
-                                )
-                            }
-                        })
-
-                        resolve()
-                    })
-                })
+        this.getVideosContainer()
+            .querySelectorAll(`li`)
+            .forEach((li) => {
+                this.initVideosItem(li)
             })
 
-            file.click()
-        })
-
-        // Videos
-
-        new Sortable(videosContainer, {
-            ondragend: () => {
-                videosInput.setAttribute(
-                    'value',
-                    Array.from(videosContainer.querySelectorAll('li > video'))
-                        .map((video) => video.src.split('/').pop())
-                        .filter((src) => src !== '')
-                        .join(';')
-                )
-            }
-        })
-
-        function initVideosItem(li) {
-            const deleteButton = li.querySelector('.delete-videos-button')
-
-            deleteButton.addEventListener(
-                'click',
-                function () {
-                    li.classList.add('transition', 'scale-0')
-                    setTimeout(() => {
-                        li.remove()
-                        const values = []
-                        videosContainer.querySelectorAll('li').forEach((li) => {
-                            values.push(
-                                li.querySelector('video').src.split('/').pop()
-                            )
-                        })
-                        videosInput.setAttribute('value', values.join(';'))
-                    }, 200)
-                },
-                {
-                    once: true
-                }
-            )
-        }
-
-        videosContainer.querySelectorAll(`li`).forEach(initVideosItem)
-
-        uploadVideoButton.addEventListener('click', () => {
-            const file = document.createElement('input')
-
-            file.hidden = true
-            file.type = 'file'
-            file.accept = 'video/*'
-            file.multiple = true
-
-            file.addEventListener('change', (event) => {
-                Array.from(event.target.files).forEach((file) => {
-                    new Promise((resolve, reject) => {
-                        const data = new FormData()
-
-                        data.append('video[]', file)
-
-                        const progress = new Progress(videosContainer)
-
-                        new Upload({
-                            url: '/article/videos',
-                            data,
-                            progress: function (value) {
-                                progress.update(value)
-                            },
-                            success: ({ videos }) => {
-                                progress.destroy()
-
-                                const values = videosInput.value
-                                    .split(';')
-                                    .filter((src) => src !== '')
-
-                                videos.forEach((src) => {
-                                    const div = document.createElement('div')
-
-                                    div.insertAdjacentHTML(
-                                        'beforeend',
-                                        `<li class="text-sm select-none relative"><video src="" class="block w-full rounded-md" controls></video><div class="delete-videos-button absolute top-0 right-0 p-2 text-white bg-red-600 rounded-md hover:bg-red-500 cursor-pointer transition drop-shadow" title="{{lang=delete}}">${this.svgDelete}</div></li>`
-                                    )
-
-                                    const li = div.querySelector('li')
-
-                                    const video = li.querySelector('video')
-
-                                    initVideosItem(li)
-
-                                    video.src = `/uploads/articles/temp/${src}`
-
-                                    videosContainer.append(li)
-
-                                    values.push(src)
-                                })
-
-                                videosInput.setAttribute(
-                                    'value',
-                                    values.join(';')
-                                )
-                            }
-                        })
-
-                        resolve()
-                    })
-                })
+        document
+            .getElementById('upload-video')
+            ?.addEventListener('click', () => {
+                this.#uploadVideoHandler()
             })
-
-            file.click()
-        })
 
         // Attachements
 
@@ -549,29 +326,27 @@ export default class Article {
             file.click()
         })
 
-        // Tags
-
         document
             .getElementById('generate-tags')
-            .addEventListener('click', function () {
+            .addEventListener('click', () => {
                 this.generateTags()
             })
 
         document
             .getElementById('save-article')
-            .addEventListener('click', function () {
+            ?.addEventListener('click', () => {
                 this.save()
             })
 
         document
             .getElementById('add-article')
-            .addEventListener('click', function () {
+            ?.addEventListener('click', () => {
                 this.add()
             })
 
         document
             .getElementById('delete-article')
-            .addEventListener('click', function () {
+            ?.addEventListener('click', () => {
                 this.delete()
             })
     }
@@ -615,7 +390,23 @@ export default class Article {
     }
 
     getImageInput() {
-        return document.querySelector('input[name="image"]')
+        return this.form.querySelector('input[name="image"]')
+    }
+
+    getGalleryContainer() {
+        return this.form.querySelector('.gallery-container')
+    }
+
+    getGalleryInput() {
+        return this.form.querySelector('input[name="gallery"]')
+    }
+
+    getVideosContainer() {
+        return this.form.querySelector('.videos-container')
+    }
+
+    getVideosInput() {
+        return this.form.querySelector('input[name="videos"]')
     }
 
     save() {
@@ -732,7 +523,7 @@ export default class Article {
     }
 
     uploadImage({ image, size = '16_9', success = function () {} } = {}) {
-        if (!image || !size) return conseole.error('Image or size is missing')
+        if (!image) return conseole.error('Image is missing')
 
         const data = new FormData()
 
@@ -775,5 +566,270 @@ export default class Article {
         }
 
         imageElement.setAttribute('height', height)
+    }
+
+    initGalleryItem(li) {
+        const deleteButton = li.querySelector('.delete-gallery-image-button')
+
+        deleteButton.addEventListener(
+            'click',
+            () => {
+                li.classList.add('transition', 'scale-0')
+                setTimeout(() => {
+                    li.remove()
+                    this.updateGalleryInput()
+                }, 200)
+            },
+            {
+                once: true
+            }
+        )
+    }
+
+    updateGalleryInput() {
+        const values = []
+
+        this.getGalleryContainer()
+            .querySelectorAll('li')
+            .forEach((li) => {
+                values.push(
+                    li
+                        .querySelector('img')
+                        .src.split('/')
+                        .pop()
+                        .replace('thumb_', '')
+                )
+            })
+
+        this.getGalleryInput().setAttribute('value', values.join(';'))
+    }
+
+    uploadGalleryImage({
+        image,
+        size = '16_9',
+        success = function () {},
+        progress = function () {}
+    } = {}) {
+        if (!image) return conseole.error('Image is missing')
+
+        return new Promise((resolve, reject) => {
+            const data = new FormData()
+
+            data.append('image[]', image)
+
+            data.append('size', size)
+
+            new Upload({
+                url: '/article/gallery',
+                data,
+                progress,
+                success
+            })
+
+            resolve()
+        })
+    }
+
+    #uploadGalleryImageHandler({
+        image = null,
+        size = null,
+        success = function () {},
+        progress = function () {}
+    } = {}) {
+        if (image === null) {
+            const file = document.createElement('input')
+
+            file.hidden = true
+
+            file.type = 'file'
+
+            file.accept = '.jpg,.jpeg,.png,.webp,.gif,.bmp'
+
+            file.multiple = true
+
+            file.addEventListener('change', (event) => {
+                Array.from(event.target.files).forEach((file) => {
+                    const galleryContainer = this.getGalleryContainer()
+
+                    const progress = new Progress(galleryContainer)
+
+                    const size = this.gallerySizeSelect.getValue()
+
+                    let width = 320
+
+                    let height = 180
+
+                    switch (size) {
+                        case '16_9':
+                            height = 180
+                            break
+                        case '4_3':
+                            height = 240
+                            break
+                        case '1_1':
+                            height = 320
+                            break
+                    }
+
+                    this.uploadGalleryImage({
+                        image: file,
+                        size,
+                        progress: function (value) {
+                            progress.update(value)
+                        },
+                        success: ({ images }) => {
+                            progress.destroy()
+
+                            images.forEach((src) => {
+                                const wrapper = document.createElement('div')
+
+                                wrapper.insertAdjacentHTML(
+                                    'beforeend',
+                                    this.getGalleryItemHtml({
+                                        src,
+                                        width,
+                                        height
+                                    })
+                                )
+
+                                const li = wrapper.querySelector('li')
+
+                                galleryContainer.append(li)
+
+                                this.initGalleryItem(li)
+                            })
+
+                            this.updateGalleryInput()
+                        }
+                    })
+                })
+            })
+
+            file.click()
+        } else {
+            this.uploadGalleryImage({
+                image,
+                size,
+                success,
+                progress
+            })
+        }
+    }
+
+    getGalleryItemHtml({ src, width, height }) {
+        return `<li class="text-sm select-none relative bg-gray-200 rounded-md"><img src="/images/articles/temp/thumb_${src}" width="${width}" height="${height}" alt="..." decoding="async" loading="auto" class="block w-full rounded-md"><div class="delete-gallery-image-button absolute top-0 right-0 p-2 text-white bg-red-600 rounded-md hover:bg-red-500 cursor-pointer transition drop-shadow">${this.svgDelete}</div></li>`
+    }
+
+    updateVideosInput() {
+        this.getVideosInput().setAttribute(
+            'value',
+            Array.from(this.getVideosContainer().querySelectorAll('li > video'))
+                .map((video) => video.src.split('/').pop())
+                .filter((src) => src !== '')
+                .join(';')
+        )
+    }
+
+    initVideosItem(li) {
+        const deleteButton = li.querySelector('.delete-videos-button')
+
+        deleteButton.addEventListener(
+            'click',
+            () => {
+                li.classList.add('transition', 'scale-0')
+                setTimeout(() => {
+                    li.remove()
+                    this.updateVideosInput()
+                }, 200)
+            },
+            {
+                once: true
+            }
+        )
+    }
+
+    #uploadVideoHandler({
+        file = null,
+        progress = function () {},
+        success = function () {}
+    } = {}) {
+        if (file === null) {
+            const file = document.createElement('input')
+
+            file.hidden = true
+            file.type = 'file'
+            file.accept = 'video/*'
+            file.multiple = true
+
+            file.addEventListener('change', (event) => {
+                Array.from(event.target.files).forEach((file) => {
+                    const videosContainer = this.getVideosContainer()
+
+                    const progress = new Progress(videosContainer)
+
+                    this.uploadVideo({
+                        file: file,
+                        progress: function (value) {
+                            progress.update(value)
+                        },
+                        success: ({ videos }) => {
+                            progress.destroy()
+
+                            videos.forEach((src) => {
+                                const div = document.createElement('div')
+
+                                div.insertAdjacentHTML(
+                                    'beforeend',
+                                    this.getVideoItemHtml({ src })
+                                )
+
+                                const li = div.querySelector('li')
+
+                                this.initVideosItem(li)
+
+                                videosContainer.append(li)
+                            })
+
+                            this.updateVideosInput()
+                        }
+                    })
+                })
+            })
+
+            file.click()
+        } else {
+            this.uploadVideo({
+                file,
+                progress,
+                success
+            })
+        }
+    }
+
+    uploadVideo({
+        file = null,
+        progress = function () {},
+        success = function () {}
+    }) {
+        if (!file) return conseole.error('File is missing')
+
+        new Promise((resolve, reject) => {
+            const data = new FormData()
+
+            data.append('video[]', file)
+
+            new Upload({
+                url: '/article/videos',
+                data,
+                progress,
+                success
+            })
+
+            resolve()
+        })
+    }
+
+    getVideoItemHtml({ src }) {
+        return `<li class="text-sm select-none relative"><video src="/uploads/articles/temp/${src}" class="block w-full rounded-md" controls></video><div class="delete-videos-button absolute top-0 right-0 p-2 text-white bg-red-600 rounded-md hover:bg-red-500 cursor-pointer transition drop-shadow" title="{{lang=delete}}">${this.svgDelete}</div></li>`
     }
 }
