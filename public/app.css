@@ -1170,18 +1170,6 @@ video {
   padding-left: 5rem;
 }
 
-.pl-8 {
-  padding-left: 2rem;
-}
-
-.pr-12 {
-  padding-right: 3rem;
-}
-
-.pr-4 {
-  padding-right: 1rem;
-}
-
 .pl-24 {
   padding-left: 6rem;
 }
@@ -1204,6 +1192,18 @@ video {
 
 .pl-44 {
   padding-left: 11rem;
+}
+
+.pl-8 {
+  padding-left: 2rem;
+}
+
+.pr-12 {
+  padding-right: 3rem;
+}
+
+.pr-4 {
+  padding-right: 1rem;
 }
 
 .text-center {
