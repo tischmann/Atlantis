@@ -93,4 +93,4 @@ use Tischmann\Atlantis\{Template};
     ?>
     <div class="my-4"><?php include 'pagination.php'; ?></div>
 </main>
-<script src="/js/articles.list.min.js" nonce="{{nonce}}"></script>
+<script src="/js/articles.list.min.js" nonce="{{nonce}}" type="module"></script>

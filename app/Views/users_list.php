@@ -39,4 +39,4 @@ use Tischmann\Atlantis\{Template};
         <?php require 'pagination.php'; ?>
     </div>
 </main>
-<script src="/js/users.list.min.js" nonce="{{nonce}}"></script>
+<script src="/js/users.list.min.js" nonce="{{nonce}}" type="module"></script>

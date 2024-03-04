@@ -74,4 +74,4 @@ assert($user instanceof User);
         </div>
     </form>
 </main>
-<script src="/js/user.editor.min.js" nonce="{{nonce}}"></script>
+<script src="/js/user.editor.min.js" nonce="{{nonce}}" type="module"></script>

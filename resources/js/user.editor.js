@@ -1,3 +1,5 @@
+import Dialog from './atlantis.dialog.min.js'
+
 const form = document.getElementById('user-form')
 
 const saveButton = document.getElementById('save-user')
@@ -21,7 +23,7 @@ function sendRequest(url, method, body = null, onclose = null) {
         body
     }).then((response) => {
         response.json().then((json) => {
-            document.dialog({
+            new Dialog({
                 title: json.title,
                 text: json.message,
                 onclose: () => {

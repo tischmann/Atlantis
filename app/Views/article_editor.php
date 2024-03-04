@@ -18,7 +18,7 @@ list($image_width, $image_height) = $article->getImageSizes();
 
 ?>
 <main class="md:container mx-8 md:mx-auto">
-    <form id="article-form" data-id="<?= $article->id ?>">
+    <form id="article-form" data-id="<?= $article->id ?>" data-confirm="{{lang=confirm_delete}}">
         <div class="mb-8 grid grid-cols-1 xl:grid-cols-3 gap-8">
             <div class="col-span-1 xl:col-span-2">
                 <div class="mb-8 relative">
@@ -56,7 +56,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                     <div class="rounded-lg border-2 border-gray-200 select-none">
                         <div class="rounded-lg border-[16px] border-white relative">
                             <input type="hidden" id="image" name="image" value="<?= $article->getImage() ?>">
-                            <img id="article-image" src="<?= $article->getImage() ? "/images/articles/{$article->id}/image/{$article->getImage()} " : "/images/placeholder.svg" ?>" alt="<?= $article->title ?>" width="<?= $image_width ?>" height="<?= $image_height ?>" class="bg-gray-200 rounded-lg w-full" decoding="async" loading="lazy">
+                            <img id="article-image" src="<?= $article->getImage() ? "/images/articles/{$article->id}/image/{$article->getImage()} " : "/images/placeholder.svg" ?>" alt="<?= $article->title ?>" width="<?= $image_width ?>" height="<?= $image_height ?>" class="bg-gray-200 rounded-lg w-full" decoding="async" loading="auto">
                             <div id="pre-upload-image" class="w-full mt-4 flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg" title="{{lang=upload}}">{{lang=upload}}</div>
                             <div id="upload-image-container" class="mt-8 grid grid-cols-3 gap-4 hidden">
                                 <?php
@@ -240,4 +240,4 @@ list($image_width, $image_height) = $article->getImageSizes();
     </form>
 </main>
 <script src="/js/quill.min.js" nonce="{{nonce}}"></script>
-<script src="/js/article.editor.min.js" nonce="{{nonce}}"></script>
+<script src="/js/article.editor.min.js" nonce="{{nonce}}" type="module"></script>
