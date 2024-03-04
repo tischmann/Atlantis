@@ -108,10 +108,11 @@ return [
     'seconds_ago' => 'секунд назад',
     'seconds_ago_2_4' => 'секунды назад',
     // Категории
+    'catgories_list' => 'Список категорий',
     // Статьи
     'article_edit' => 'Редактирование статьи',
     'article_new' => 'Новая статья',
-    'article_list' => 'Список статей',
+    'articles_list' => 'Список статей',
     'article_title' => 'Заголовок',
     'article_text' => 'Текст статьи',
     'article_short_text' => 'Краткий текст статьи',

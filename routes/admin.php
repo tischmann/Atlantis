@@ -67,7 +67,7 @@ if (App::getCurrentUser()->isAdmin()) {
         path: 'edit/articles',
         action: 'showAllArticles',
         method: 'GET',
-        title: get_str('article_list')
+        title: get_str('articles_list')
     ));
 
     Router::add(new Route(
