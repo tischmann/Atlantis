@@ -504,28 +504,37 @@ function get_str(string $key, ?string $locale = null): string
  */
 function get_category_options(
     Category $category,
-    int $selected = 0
+    int $selected = 0,
+    ?int $exclude = null
 ): array {
-    $options = [
-        [
-            'value' => $category->id,
-            'text' => $category->title,
-            'selected' => $category->id === $selected,
-            'level' => $category->level
-        ]
-    ];
+    $options = [];
+
+    if ($exclude !== null) {
+        if ($category->id !== $exclude) {
+            $options[] = [
+                'value' => $category->id,
+                'text' => $category->title,
+                'selected' => $category->id === $selected,
+                'level' => $category->level
+            ];
+        }
+    }
 
     $category->children = $category->fetchChildren();
 
     foreach ($category->children as $child) {
         assert($child instanceof Category);
 
-        $options[] = [
-            'value' => $child->id,
-            'text' => $child->title,
-            'selected' => $child->id === $selected,
-            'level' => $child->level
-        ];
+        if ($exclude !== null) {
+            if ($child->id !== $exclude) {
+                $options[] = [
+                    'value' => $child->id,
+                    'text' => $child->title,
+                    'selected' => $child->id === $selected,
+                    'level' => $child->level
+                ];
+            }
+        }
 
         $child->children = $child->fetchChildren();
 

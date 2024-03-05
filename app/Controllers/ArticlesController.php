@@ -515,6 +515,38 @@ class ArticlesController extends Controller
     }
 
     /**
+     * Удаление категории
+     */
+    public function deleteArticle()
+    {
+        $this->checkAdmin(type: 'json');
+
+        try {
+            $id = $this->route->args('id');
+
+            $article = Article::find($id);
+
+            if (!$article->exists()) {
+                throw new Exception(get_str('article_not_found'), 404);
+            }
+
+            if (!$article->delete()) {
+                throw new Exception(get_str('not_deleted'), 500);
+            }
+
+            Response::json([
+                'title' => get_str('attention'),
+                'message' => get_str('deleted')
+            ]);
+        } catch (Exception $e) {
+            Response::json([
+                'title' => get_str('warning'),
+                'message' => $e->getMessage()
+            ], $e->getCode() ?: 500);
+        }
+    }
+
+    /**
      * Добавление статьи
      */
     public function insertArticle()
@@ -565,31 +597,31 @@ class ArticlesController extends Controller
             $article->title = $request->request('title');
 
             if (!$article->title) {
-                throw new Exception(get_str('article_title_required'), 400);
+                throw new Exception(get_str('field_required') . ": title", 400);
             }
 
             $article->locale = $request->request('locale');
 
             if (!$article->locale) {
-                throw new Exception(get_str('locale_required'), 400);
+                throw new Exception(get_str('field_required') . ": locale", 400);
             }
 
             $article->text = html_entity_decode($request->request('text'));
 
             if (!$article->text) {
-                throw new Exception(get_str('article_text_required'), 400);
+                throw new Exception(get_str('field_required') . ": text", 400);
             }
 
             $article->short_text = $request->request('short_text');
 
             if (!$article->short_text) {
-                throw new Exception(get_str('article_short_text_required'), 400);
+                throw new Exception(get_str('field_required') . ": short_text", 400);
             }
 
             $article->category_id = intval($request->request('category_id'));
 
             if (!$article->category_id) {
-                throw new Exception(get_str('article_category_required'), 400);
+                throw new Exception(get_str('field_required') . ": category_id", 400);
             }
 
             $article->tags = explode(",", $request->request('tags'));
@@ -612,7 +644,7 @@ class ArticlesController extends Controller
                 $article->author_id = App::getCurrentUser()->id;
 
                 if (!$article->save()) {
-                    throw new Exception(get_str('article_not_saved'));
+                    throw new Exception(get_str('not_saved'));
                 }
             }
 
@@ -649,14 +681,14 @@ class ArticlesController extends Controller
             );
 
             if (!$article->save()) {
-                throw new Exception(get_str('article_not_saved'));
+                throw new Exception(get_str('not_saved'));
             }
 
             Article::removeOldTempImagesAndUploads();
 
             Response::json([
                 'title' => get_str('attention'),
-                'message' => get_str('article_saved'),
+                'message' => get_str('saved'),
                 'id' => $article->id
             ]);
         } catch (Exception $e) {

@@ -89,7 +89,7 @@ $category->children = $category->fetchChildren();
             <?php
             if ($category->exists()) {
                 echo <<<HTML
-                <button id="delete-category" class="flex items-center justify-center px-3 py-2 bg-red-600 hover:bg-red-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full" type="button" title="{{lang=delete}}"  data-confirm="{{lang=confirm_delete}}">{{lang=delete}}</button>
+                <button id="delete-category" class="flex items-center justify-center px-3 py-2 bg-red-600 hover:bg-red-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full" type="button" title="{{lang=delete}}" data-confirm="{{lang=confirm_delete_category}}">{{lang=delete}}</button>
                 <button id="save-category" class="flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full" type="button" title="{{lang=save}}">{{lang=save}}</button>
                 HTML;
             } else {

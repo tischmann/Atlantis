@@ -239,7 +239,7 @@ class UsersController extends Controller
             Response::json(
                 response: [
                     'title' => get_str('attention'),
-                    'message' => get_str('user_deleted'),
+                    'message' => get_str('deleted'),
                 ],
                 code: 200
             );
@@ -338,7 +338,7 @@ class UsersController extends Controller
             Response::json(
                 response: [
                     'title' => get_str('attention'),
-                    'message' => get_str('user_saved'),
+                    'message' => get_str('saved'),
                     'id' => $user->id,
                 ],
                 code: 200

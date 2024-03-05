@@ -94,7 +94,7 @@ export default class Select {
         this.element.querySelectorAll('option').forEach((option) => {
             const li = this.createOption({
                 value: option.value,
-                label: option.textContent,
+                text: option.textContent,
                 level: option.dataset.level,
                 selected: option.selected,
                 disabled: option.disabled
@@ -187,7 +187,7 @@ export default class Select {
 
     createOption({
         value = '',
-        label = '',
+        text = '',
         level = 0,
         selected = false,
         disabled = false
@@ -198,7 +198,7 @@ export default class Select {
 
         li.dataset.level = level
 
-        li.innerText = label
+        li.innerText = text
 
         li.classList.add(
             'px-4',
@@ -258,8 +258,8 @@ export default class Select {
         return this.input.value
     }
 
-    setValue(value, label) {
-        this.button.textContent = label
+    setValue(value, text) {
+        this.button.textContent = text
         this.input.setAttribute('value', value)
     }
 
@@ -268,20 +268,28 @@ export default class Select {
 
         this.options.clear()
 
-        items.forEach(({ value, label, level, selected, disabled }) => {
-            const li = this.createOption({
-                value,
-                label,
-                level,
-                selected,
-                disabled
-            })
+        items.forEach(
+            ({
+                value = '',
+                text = '',
+                level = 0,
+                selected = false,
+                disabled = false
+            } = {}) => {
+                const li = this.createOption({
+                    value,
+                    text,
+                    level,
+                    selected,
+                    disabled
+                })
 
-            this.ul.append(li)
+                this.ul.append(li)
 
-            this.options.add(li)
+                this.options.add(li)
 
-            if (selected) this.setValue(value, label)
-        })
+                if (selected) this.setValue(value, text)
+            }
+        )
     }
 }

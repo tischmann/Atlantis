@@ -64,7 +64,7 @@ export default class Category {
     }
 
     delete({
-        message = 'Вы уверены, что хотите удалить категорию?',
+        message = 'Вы уверены, что хотите удалить категорию и все дочерние категории? Это действие нельзя отменить!',
         confirmation = true
     } = {}) {
         if (confirmation) {

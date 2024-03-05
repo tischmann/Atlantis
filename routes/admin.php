@@ -78,7 +78,6 @@ if (App::getCurrentUser()->isAdmin()) {
         title: get_str('article_edit')
     ));
 
-
     Router::add(new Route(
         controller: new ArticlesController(),
         path: 'new/article',
@@ -101,6 +100,13 @@ if (App::getCurrentUser()->isAdmin()) {
         path: 'article/{id}',
         action: 'updateArticle',
         method: 'PUT',
+    ));
+
+    Router::add(new Route(
+        controller: new ArticlesController(),
+        path: 'article/{id}',
+        action: 'deleteArticle',
+        method: 'DELETE'
     ));
 
     Router::add(new Route(
@@ -175,7 +181,6 @@ if (App::getCurrentUser()->isAdmin()) {
         title: get_str('category_edit')
     ));
 
-
     Router::add(new Route(
         controller: new CategoriesController(),
         path: 'new/category',
@@ -183,5 +188,27 @@ if (App::getCurrentUser()->isAdmin()) {
         method: 'GET',
         args: ['id' => 0],
         title: get_str('category_new')
+    ));
+
+    Router::add(new Route(
+        controller: new CategoriesController(),
+        path: 'category',
+        action: 'insertCategory',
+        method: 'POST',
+        args: ['id' => 0]
+    ));
+
+    Router::add(new Route(
+        controller: new CategoriesController(),
+        path: 'category/{id}',
+        action: 'updateCategory',
+        method: 'PUT',
+    ));
+
+    Router::add(new Route(
+        controller: new CategoriesController(),
+        path: 'category/{id}',
+        action: 'deleteCategory',
+        method: 'DELETE'
     ));
 }

@@ -21,6 +21,9 @@ use Tischmann\Atlantis\{
  */
 class CategoriesController extends Controller
 {
+    /**
+     * Форма редактирования/создания категории
+     */
     public function getCategoryEditor(): void
     {
         $this->checkAdmin();
@@ -56,6 +59,7 @@ class CategoriesController extends Controller
         $all_query = Category::query()
             ->where('locale', $locale)
             ->where('parent_id', null)
+            ->where('id', '!=', $category->id)
             ->order('position', 'ASC');
 
         foreach (Category::all($all_query) as $cat) {
@@ -63,7 +67,7 @@ class CategoriesController extends Controller
 
             $parent_options = [
                 ...$parent_options,
-                ...get_category_options($cat, $parent_id)
+                ...get_category_options($cat, $parent_id, $category->id)
             ];
         }
 
@@ -80,6 +84,9 @@ class CategoriesController extends Controller
         );
     }
 
+    /**
+     * Сортировка категорий
+     */
     public function sortCategories()
     {
         $this->checkAdmin(type: 'json');
@@ -111,18 +118,20 @@ class CategoriesController extends Controller
         }
     }
 
-
+    /**
+     * Вывод всех категорий в админпанели
+     */
     public function showAllCategories(): void
     {
         $this->checkAdmin();
 
         $request = Request::instance();
 
-        $locale = strval($request->request('locale'));
+        $locale = strval($request->request('locale') ?? getenv('APP_LOCALE'));
 
         $locale_options = [];
 
-        foreach (['', ...Locale::available()] as $value) {
+        foreach (Locale::available() as $value) {
             $locale_options[] = [
                 'value' => $value,
                 'text' => get_str("locale_{$value}"),
@@ -155,86 +164,175 @@ class CategoriesController extends Controller
      */
     public function fetchCategories(): void
     {
-        $items = [];
+        $this->checkAdmin(type: 'json');
 
-        $locale = mb_strtolower($this->route->args('locale'));
+        try {
+            $locale = mb_strtolower($this->route->args('locale') ?? getenv('APP_LOCALE'));
 
-        $selected = intval($this->route->args('category_id'));
-
-        $query = Category::query()
-            ->where('parent_id', null)
-            ->where('locale', $locale)
-            ->order('locale', 'ASC')
-            ->order('title', 'ASC');
-
-        $items[] = [
-            'value' => '',
-            'label' => '',
-            'level' => 0,
-            'selected' => $selected === 0 ? true : false,
-            'disabled' => false
-        ];
-
-        foreach (Category::all($query) as $category) {
-            assert($category instanceof Category);
+            $selected = intval($this->route->args('category_id') ?? 0);
 
             $items = [
-                ...$items,
-                ...$this->fetchChildren(
-                    category: $category,
-                    selected: $selected,
-                    level: 0
-                )
+                [
+                    'value' => '',
+                    'text' => '',
+                    'level' => 0,
+                    'selected' => $selected === 0 ? true : false
+                ]
             ];
-        }
 
-        Response::json(['items' => $items]);
+            $query = Category::query()
+                ->where('parent_id', null)
+                ->where('locale', $locale)
+                ->order('locale', 'ASC')
+                ->order('title', 'ASC');
+
+            foreach (Category::all($query) as $category) {
+                assert($category instanceof Category);
+
+                $items = [
+                    ...$items,
+                    ...get_category_options($category, $selected)
+                ];
+            }
+
+            Response::json(['items' => $items]);
+        } catch (Exception $e) {
+            Response::json([
+                'title' => get_str('warning'),
+                'message' => $e->getMessage()
+            ], $e->getCode() ?: 500);
+        }
     }
 
     /**
-     * Получение дочерних категорий
+     * Удаление категории
      */
-    protected function fetchChildren(
-        Category $category,
-        int $selected = 0,
-        int $level = 0
-    ): array {
-        $children = [
-            [
-                'value' => $category->id,
-                'label' => $category->title,
-                'level' => $level,
-                'selected' => $selected === $category->id ? true : false,
-                'disabled' => false
-            ]
-        ];
+    public function deleteCategory()
+    {
+        $this->checkAdmin(type: 'json');
 
-        $category->children = $category->fetchChildren();
+        try {
+            $id = $this->route->args('id');
 
-        if ($category->children) $level++;
+            $category = Category::find($id);
 
-        foreach ($category->children as $child) {
-            assert($child instanceof Category);
-
-            $children[] = [
-                'value' => $child->id,
-                'label' => $child->title,
-                'level' => $level,
-                'selected' => $selected === $child->id ? true : false,
-                'disabled' => false
-            ];
-
-            $child->children = $child->fetchChildren();
-
-
-            if ($child->children) {
-                $children = [
-                    ...$children,
-                    ...$this->fetchChildren($child, $selected, ++$level)
-                ];
+            if (!$category->exists()) {
+                throw new Exception(get_str('category_not_found'), 404);
             }
-        }
 
-        return $children;
+            if (!$category->delete()) {
+                throw new Exception(get_str('not_deleted'), 500);
+            }
+
+            // Удаление дочерних категорий
+
+            $parent_id = [$category->id];
+
+            while (true) {
+                if (!$parent_id) break;
+
+                $query = Category::query()
+                    ->where('parent_id', '()', $parent_id);
+
+                $categories = Category::all($query);
+
+                if (!$categories) break;
+
+                $parent_id = [];
+
+                foreach ($categories as $child) {
+                    assert($child instanceof Category);
+                    if ($child->delete()) $parent_id[] = $child->id;
+                }
+            }
+
+            Response::json([
+                'title' => get_str('attention'),
+                'message' => get_str('deleted')
+            ]);
+        } catch (Exception $e) {
+            Response::json([
+                'title' => get_str('warning'),
+                'message' => $e->getMessage()
+            ], $e->getCode() ?: 500);
+        }
+    }
+
+    /**
+     * Создание категории
+     */
+    public function insertCategory()
+    {
+        $this->checkAdmin(type: 'json');
+
+        $this->updateCategory();
+    }
+
+    /**
+     * Изменение/создание категории
+     */
+    public function updateCategory()
+    {
+        $this->checkAdmin(type: 'json');
+
+        try {
+            $request = Request::instance();
+
+            $request->validate([
+                'parent_id' => ['required', 'string'],
+                'title' => ['required', 'string'],
+                'locale' => ['required', 'string'],
+                'slug' => ['required', 'string'],
+            ]);
+
+            $id = $this->route->args('id');
+
+            $category = new Category();
+
+            if ($id) {
+                $category = Category::find($id);
+
+                if (!$category->exists()) {
+                    throw new Exception(get_str('acategory_not_found') . ":{$id}", 404);
+                }
+            }
+
+            $category->title = $request->request('title');
+
+            if (!$category->title) {
+                throw new Exception(get_str('field_required') . ": title", 400);
+            }
+
+            $category->locale = $request->request('locale');
+
+            if (!$category->locale) {
+                throw new Exception(get_str('field_required') . ": locale", 400);
+            }
+
+            $category->parent_id = intval($request->request('parent_id'));
+
+            $category->parent_id = $category->parent_id ?: null;
+
+            $category->slug = $request->request('slug');
+
+            if (!$category->slug) {
+                throw new Exception(get_str('field_required') . ": slug", 400);
+            }
+
+            if (!$category->save()) {
+                throw new Exception(get_str('not_saved'));
+            }
+
+            Response::json([
+                'title' => get_str('attention'),
+                'message' => get_str('saved'),
+                'id' => $category->id
+            ]);
+        } catch (Exception $e) {
+            Response::json([
+                'title' => get_str('warning'),
+                'message' => $e->getMessage()
+            ], $e->getCode() ?: 500);
+        }
     }
 }
