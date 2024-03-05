@@ -16,6 +16,10 @@ class User extends Model
 {
     public const ROLE_ADMIN = 255;
 
+    public const ROLE_MODERATOR = 3;
+
+    public const ROLE_AUTHOR = 2;
+
     public const ROLE_USER = 1;
 
     public const ROLE_GUEST = 0;
@@ -83,6 +87,26 @@ class User extends Model
     public function isGuest(): bool
     {
         return $this->role === self::ROLE_GUEST;
+    }
+
+    /**
+     * Проверка на модератора
+     *
+     * @return bool Возвращает true, если пользователь модератор
+     */
+    public function isModerator(): bool
+    {
+        return $this->role === self::ROLE_MODERATOR;
+    }
+
+    /**
+     * Проверка на автора
+     *
+     * @return bool Возвращает true, если пользователь автор
+     */
+    public function isAuthor(): bool
+    {
+        return $this->role === self::ROLE_AUTHOR;
     }
 
     /**
@@ -182,6 +206,8 @@ class User extends Model
             self::ROLE_ADMIN => get_str('user_role_admin'),
             self::ROLE_USER => get_str('user_role_user'),
             self::ROLE_GUEST => get_str('user_role_guest'),
+            self::ROLE_MODERATOR => get_str('user_role_moderator'),
+            self::ROLE_AUTHOR => get_str('user_role_author'),
             default => get_str('unknown'),
         };
     }

@@ -302,7 +302,7 @@ class UsersController extends Controller
             }
 
             if ($login !== $user->login) {
-                if (!User::checkUserLoginExists($user->login)) {
+                if (!User::checkUserLoginExists($login)) {
                     throw new Exception(get_str('user_login_exists'), 400);
                 }
             }

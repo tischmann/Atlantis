@@ -90,6 +90,8 @@ return [
     'user_role_guest' => 'Гость',
     'user_role_user' => 'Пользователь',
     'user_role_admin' => 'Администратор',
+    'user_role_moderator' => 'Модератор',
+    'user_role_author' => 'Автор',
     'user_remarks' => 'Примечание',
     'user_order_created_at' => 'Дата создания',
     'user_order_login' => 'Логин',

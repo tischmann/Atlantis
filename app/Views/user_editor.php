@@ -30,7 +30,7 @@ assert($user instanceof User);
         </div>
         <div class="mb-8 relative">
             <label for="role_guest" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=user_role}}</label>
-            <div class="grid w-full grid-cols-1 sm:grid-cols-3 gap-4 bg-white border-2 border-gray-200 rounded-lg p-4">
+            <div class="grid w-full grid-cols-1 lg:grid-cols-5 gap-4 bg-white border-2 border-gray-200 rounded-lg p-4">
                 <div>
                     <input type="radio" name="role" id="role_guest" value="0" class="peer hidden" <?= $user?->isGuest() ? 'checked' : '' ?> />
                     <label for="role_guest" class="block cursor-pointer select-none rounded-md p-2 text-center bg-gray-200 peer-checked:bg-gray-600 peer-checked:text-white">{{lang=user_role_guest}}</label>
@@ -38,6 +38,14 @@ assert($user instanceof User);
                 <div>
                     <input type="radio" name="role" id="role_user" value="1" class="peer hidden" <?= $user?->isUser() ? 'checked' : '' ?> />
                     <label for="role_user" class="block cursor-pointer select-none rounded-md p-2 text-center bg-gray-200 peer-checked:bg-gray-600 peer-checked:text-white">{{lang=user_role_user}}</label>
+                </div>
+                <div>
+                    <input type="radio" name="role" id="role_author" value="2" class="peer hidden" <?= $user?->isAuthor() ? 'checked' : '' ?> />
+                    <label for="role_author" class="block cursor-pointer select-none rounded-md p-2 text-center bg-gray-200 peer-checked:bg-gray-600 peer-checked:text-white">{{lang=user_role_author}}</label>
+                </div>
+                <div>
+                    <input type="radio" name="role" id="role_moderator" value="3" class="peer hidden" <?= $user?->isModerator() ? 'checked' : '' ?> />
+                    <label for="role_moderator" class="block cursor-pointer select-none rounded-md p-2 text-center bg-gray-200 peer-checked:bg-gray-600 peer-checked:text-white">{{lang=user_role_moderator}}</label>
                 </div>
                 <div>
                     <input type="radio" name="role" id="role_admin" value="255" class="peer hidden" <?= $user?->isAdmin() ? 'checked' : '' ?> />
