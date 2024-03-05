@@ -18,66 +18,38 @@ export default class Article {
 
         this.id = parseInt(this.form.dataset.article)
 
-        const textEditor = new Quill('#quill-editor', {
-            modules: {
-                toolbar: [
-                    [
-                        {
-                            header: 1
-                        },
-                        {
-                            header: 2
-                        }
-                    ],
-                    [
-                        {
-                            align: []
-                        }
-                    ],
-                    ['bold', 'italic', 'underline', 'strike'],
-                    [
-                        {
-                            color: []
-                        },
-                        {
-                            background: []
-                        }
-                    ],
-                    [
-                        {
-                            list: 'ordered'
-                        },
-                        {
-                            list: 'bullet'
-                        }
-                    ],
-                    [
-                        {
-                            script: 'sub'
-                        },
-                        {
-                            script: 'super'
-                        }
-                    ],
-                    [
-                        {
-                            indent: '-1'
-                        },
-                        {
-                            indent: '+1'
-                        }
-                    ],
-                    ['link', 'video', 'code-block'],
-                    ['clean']
-                ]
-            },
-            theme: 'snow'
-        })
-
-        textEditor.on('text-change', () => {
-            this.form
-                .querySelector('input[name="text"]')
-                .setAttribute('value', textEditor.root.innerHTML)
+        this.textEditor = tinymce.init({
+            language: 'ru',
+            target: this.form.querySelector('textarea[name="text"]'),
+            paste_as_text: true,
+            autosave_ask_before_unload: false,
+            plugins:
+                'preview importcss searchreplace autolink directionality code visualblocks visualchars fullscreen image link media template codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons',
+            editimage_cors_hosts: ['picsum.photos'],
+            menubar: 'file edit view insert format tools table help',
+            toolbar:
+                'undo redo | bold italic underline strikethrough | fontsize blocks | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample',
+            height: 600,
+            quickbars_selection_toolbar:
+                'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
+            noneditable_class: 'mceNonEditable',
+            toolbar_mode: 'wrap',
+            contextmenu: 'link image table',
+            image_caption: true,
+            skin: 'oxide',
+            content_css: '/app.min.css',
+            font_css:
+                'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap',
+            image_advtab: true,
+            image_class_list: [{ title: 'rounded-xl', value: 'rounded-xl' }],
+            templates: [
+                {
+                    title: 'New Table',
+                    description: 'creates a new table',
+                    content:
+                        '<div class="mceTmpl"><table width="98%%"  border="0" cellspacing="0" cellpadding="0"><tr><th scope="col"> </th><th scope="col"> </th></tr><tr><td> </td><td> </td></tr></table></div>'
+                }
+            ]
         })
 
         const galleryContainer = this.getGalleryContainer()
@@ -195,12 +167,14 @@ export default class Article {
         document
             .getElementById('save-article')
             ?.addEventListener('click', () => {
+                this.getTextTextarea().innerHTML = this.getTextEditorContent()
                 this.save()
             })
 
         document
             .getElementById('add-article')
             ?.addEventListener('click', () => {
+                this.getTextTextarea().innerHTML = this.getTextEditorContent()
                 this.add()
             })
 
@@ -305,6 +279,14 @@ export default class Article {
 
     gettAttachementsInput() {
         return this.form.querySelector('input[name="attachements"]')
+    }
+
+    getTextTextarea() {
+        return this.form.querySelector('textarea[name="text"]')
+    }
+
+    getTextEditorContent() {
+        return tinymce.activeEditor.getContent()
     }
 
     save() {

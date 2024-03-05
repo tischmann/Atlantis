@@ -91,8 +91,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                 <div class="flex flex-col relative">
                     <label for="text" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=article_text}}</label>
                     <div class="flex-grow w-full min-h-96 outline-none border-2 border-gray-200 rounded-lg p-4 focus:border-sky-600 transition">
-                        <input type="hidden" name="text" id="text" value="<?= htmlentities(strval($article->text)) ?>">
-                        <div id="quill-editor" class="max-h-[85vh] overflow-y-auto"><?= $article->text ?></div>
+                        <textarea name="text" id="text" class="" id="text"><?= htmlentities(strval($article->text)) ?></textarea>
                     </div>
                 </div>
             </div>
@@ -264,5 +263,5 @@ list($image_width, $image_height) = $article->getImageSizes();
         </div>
     </form>
 </main>
-<script src="/js/quill.min.js" nonce="{{nonce}}"></script>
+<script src="/tinymce/tinymce.min.js" nonce="{{nonce}}"></script>
 <script src="/js/article.editor.min.js" nonce="{{nonce}}" type="module"></script>

@@ -10,7 +10,7 @@ $user = App::getCurrentUser();
 
 ?>
 <main class="mx-8 lg:mx-auto lg:max-w-screen-lg">
-    <article>
+    <article class="full-article">
         <h2 class="mb-1 font-bold text-2xl flex items-center w-full line-clamp-1"><?= $article->title ?>
             <?php
 
