@@ -15,7 +15,7 @@ $category->children = $category->fetchChildren();
 
 ?>
 <main class="md:container mx-8 md:mx-auto">
-    <form data-category="<?= $category->id ?>">
+    <form class="mb-8" data-category="<?= $category->id ?>">
         <div class="mb-8 relative">
             <label for="title" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=category_title}}</label>
             <input class="py-2 px-3 outline-none border-2 border-gray-200 rounded-lg w-full focus:border-sky-600 transition" aria-label="title" id="title" name="title" value="<?= $category->title ?>" required>

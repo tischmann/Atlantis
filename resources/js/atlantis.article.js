@@ -333,9 +333,9 @@ export default class Article {
 
     delete({
         message = 'Вы уверены, что хотите удалить статью?',
-        confirm = true
+        confirmation = true
     } = {}) {
-        if (confirm) {
+        if (confirmation) {
             if (!confirm(message)) return
         }
 
