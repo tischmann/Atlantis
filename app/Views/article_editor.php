@@ -26,14 +26,14 @@ list($image_width, $image_height) = $article->getImageSizes();
                     <input class="py-2 px-3 outline-none border-2 border-gray-200 rounded-lg w-full focus:border-sky-600 transition" aria-label="title" id="title" name="title" value="<?= $article->title ?>" required>
                 </div>
                 <div class="mb-8">
-                    <select id="locale-select" name="locale" title="{{lang=article_locale}}">
+                    <select id="locale-select" name="locale" title="{{lang=locale}}">
                         <?php
                         foreach (Locale::available() as $value) {
                             $selected = $article->locale === $value
                                 ? 'selected'
                                 : '';
                             echo <<<HTML
-                            <option value="{$value}" {$selected} title="" data-level="0">{{lang=article_locale_{$value}}}</option>
+                            <option value="{$value}" {$selected} title="" data-level="0">{{lang=locale_{$value}}}</option>
                             HTML;
                         }
 

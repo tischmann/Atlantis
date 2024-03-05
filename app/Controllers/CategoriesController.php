@@ -5,10 +5,14 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Models\{Category};
-
+use Exception;
 use Tischmann\Atlantis\{
     Controller,
-    Response
+    Locale,
+    Pagination,
+    Request,
+    Response,
+    View
 };
 
 /**
@@ -16,6 +20,76 @@ use Tischmann\Atlantis\{
  */
 class CategoriesController extends Controller
 {
+    public function sortCategories()
+    {
+        $this->checkAdmin(type: 'json');
+
+        try {
+            $request = Request::instance();
+
+            $request->validate([
+                'categories' => ['required', 'array']
+            ]);
+
+            $categories = $request->request('categories') ?? [];
+
+            foreach ($categories as $index => $id) {
+                $category = Category::find($id);
+
+                if ($category->exists()) {
+                    $category->position = $index;
+                    $category->save();
+                }
+            }
+
+            Response::json();
+        } catch (Exception $e) {
+            Response::json([
+                'title' => get_str('warning'),
+                'message' => $e->getMessage()
+            ], $e->getCode() ?: 500);
+        }
+    }
+
+
+    public function showAllCategories(): void
+    {
+        $this->checkAdmin();
+
+        $reqest = Request::instance();
+
+        $locale = strval($reqest->request('locale'));
+
+        $locale_options = [];
+
+        foreach (['', ...Locale::available()] as $value) {
+            $locale_options[] = [
+                'value' => $value,
+                'text' => get_str("locale_{$value}"),
+                'selected' => $locale === $value,
+                'level' => '0'
+            ];
+        }
+
+        $query = Category::query()
+            ->where('parent_id', null)
+            ->order('position', 'ASC');
+
+        if ($locale !== "") {
+            $query->where('locale', $locale);
+        }
+
+        $categories = Category::all($query);
+
+        View::send(
+            view: 'categories_list',
+            args: [
+                'categories' => $categories,
+                'locale_options' => $locale_options
+            ]
+        );
+    }
+
     /**
      * Получение списка категорий
      */

@@ -96,7 +96,7 @@ class ArticlesController extends Controller
         foreach (['', ...Locale::available()] as $value) {
             $locale_options[] = [
                 'value' => $value,
-                'text' => get_str("article_locale_{$value}"),
+                'text' => get_str("locale_{$value}"),
                 'selected' => $locale === $value,
                 'level' => '0'
             ];
@@ -571,7 +571,7 @@ class ArticlesController extends Controller
             $article->locale = $request->request('locale');
 
             if (!$article->locale) {
-                throw new Exception(get_str('article_locale_required'), 400);
+                throw new Exception(get_str('locale_required'), 400);
             }
 
             $article->text = html_entity_decode($request->request('text'));

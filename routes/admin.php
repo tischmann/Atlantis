@@ -151,4 +151,19 @@ if (App::getCurrentUser()->isAdmin()) {
         action: 'fetchCategories',
         method: 'GET',
     ));
+
+    Router::add(new Route(
+        controller: new CategoriesController(),
+        path: 'edit/categories',
+        action: 'showAllCategories',
+        method: 'GET',
+        title: get_str('categories_list')
+    ));
+
+    Router::add(new Route(
+        controller: new CategoriesController(),
+        path: 'sort/categories',
+        action: 'sortCategories',
+        method: 'PUT',
+    ));
 }
