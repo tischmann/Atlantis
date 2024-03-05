@@ -53,8 +53,8 @@ document.querySelectorAll('[data-sort="down"]').forEach((el) => {
 
         parent.classList.remove('!border-red-600', '!border-green-600')
         next.classList.remove('!border-red-600', '!border-green-600')
-        parent.classList.add('border-red-600')
-        next.classList.add('border-green-600')
+        parent.classList.add('!border-red-600')
+        next.classList.add('!border-green-600')
 
         setTimeout(() => {
             parent.classList.remove('!border-red-600')
