@@ -25,19 +25,71 @@ use Tischmann\Atlantis\{
  */
 class ArticlesController extends Controller
 {
+    protected function checkEditRights(
+        string $type = 'html',
+        ?Article $article = null
+    ): mixed {
+        $user = App::getCurrentUser();
+
+        $is_admin = $user->isAdmin();
+
+        $is_author = $user->isAuthor();
+
+        $is_moderator = $user->isModerator();
+
+        $result = match (true) {
+            $is_admin => true,
+            $is_author => $article->exists() ? $article->author_id === $user->id : true,
+            $is_moderator => true,
+            default => false
+        };
+
+        switch (mb_strtolower($type)) {
+            case 'json':
+                if (!$result) {
+                    Response::json(
+                        response: [
+                            'title' => get_str('warning'),
+                            'message' => get_str('access_denied')
+                        ],
+                        code: 403
+                    );
+                }
+                break;
+            case 'bool':
+                return $result;
+            default:
+                if (!$result) {
+                    View::send(
+                        view: '403',
+                        layout: 'default',
+                        exit: true,
+                        code: 403
+                    );
+                }
+                break;
+        }
+
+        return null;
+    }
+
     public function showAllArticles(): void
     {
-        $this->checkAdmin(type: 'html');
+        $this->checkEditRights(type: 'html');
 
-        $reqest = Request::instance();
+        $user = App::getCurrentUser();
 
-        $category_id = mb_strtolower(strval($reqest->request('category_id') ?? 'all'));
+        $request = Request::instance();
 
-        $visible = strval($reqest->request('visible'));
+        $category_id = mb_strtolower(strval($request->request('category_id') ?? 'all'));
 
-        $locale = strval($reqest->request('locale'));
+        $visible = strval($request->request('visible'));
 
-        $fixed = strval($reqest->request('fixed'));
+        $locale = strval($request->request('locale'));
+
+        $fixed = strval($request->request('fixed'));
+
+        $moderated = strval($request->request('moderated'));
 
         $order_types = [
             'created_at',
@@ -46,7 +98,7 @@ class ArticlesController extends Controller
             'fixed'
         ];
 
-        $order = strval($reqest->request('order') ?? 'created_at');
+        $order = strval($request->request('order') ?? 'created_at');
 
         $order = in_array($order, $order_types) ? $order : 'created_at';
 
@@ -55,7 +107,7 @@ class ArticlesController extends Controller
             'desc'
         ];
 
-        $direction = strval($reqest->request('direction') ?? 'desc');
+        $direction = strval($request->request('direction') ?? 'desc');
 
         $direction = mb_strtolower($direction);
 
@@ -117,7 +169,7 @@ class ArticlesController extends Controller
             ]
         ];
 
-        foreach (Category::getAllCategories(locale: $locale, recursive: true) as $value) {
+        foreach (Category::getAllCategories(locale: $locale, recursive: false) as $value) {
             assert($value instanceof Category);
             $category_options = [
                 ...$category_options,
@@ -137,7 +189,7 @@ class ArticlesController extends Controller
             $visible_options[] = [
                 'value' => $key,
                 'text' => get_str("article_visible_{$value}"),
-                'selected' => $visible === $key,
+                'selected' => $visible == $key,
                 'level' => 0
             ];
         }
@@ -154,7 +206,24 @@ class ArticlesController extends Controller
             $fixed_options[] = [
                 'value' => $key,
                 'text' => get_str("article_fixed_{$value}"),
-                'selected' => $fixed === $key,
+                'selected' => $fixed == $key,
+                'level' => 0
+            ];
+        }
+
+        $moderated_types = [
+            "" => "all",
+            "0" => "no",
+            "1" => "yes"
+        ];
+
+        $moderated_options = [];
+
+        foreach ($moderated_types as $key => $value) {
+            $moderated_options[] = [
+                'value' => $key,
+                'text' => get_str("article_moderated_{$value}"),
+                'selected' => $moderated == $key,
                 'level' => 0
             ];
         }
@@ -163,6 +232,10 @@ class ArticlesController extends Controller
 
         $query = Article::query()
             ->order($order, $direction);
+
+        if ($user->isAuthor()) {
+            $query->where('author_id', $user->id);
+        }
 
         if ($category === null) {
             $query->where('category_id', null);
@@ -180,6 +253,10 @@ class ArticlesController extends Controller
 
         if ($fixed !== "") {
             $query->where('fixed', $fixed);
+        }
+
+        if ($moderated !== "") {
+            $query->where('moderated', $moderated);
         }
 
         $pagination = new Pagination(query: $query, limit: 10);
@@ -203,7 +280,8 @@ class ArticlesController extends Controller
                 'locale_options' => $locale_options,
                 'category_options' => $category_options,
                 'visible_options' => $visible_options,
-                'fixed_options' => $fixed_options
+                'fixed_options' => $fixed_options,
+                'moderated_options' => $moderated_options,
             ]
         );
     }
@@ -222,11 +300,9 @@ class ArticlesController extends Controller
 
     public function getArticleEditor(): void
     {
-        $this->checkAdmin(type: 'html');
-
-        $request = Request::instance();
-
         $article = Article::find($this->route->args('id'));
+
+        $this->checkEditRights(type: 'html', article: $article);
 
         $category = $article->getCategory();
 
@@ -239,12 +315,7 @@ class ArticlesController extends Controller
             ]
         ];
 
-        $categories = Category::getAllCategories(
-            locale: $article->locale,
-            recursive: true
-        );
-
-        foreach ($categories as $value) {
+        foreach (Category::getAllCategories(locale: $article->locale, recursive: false) as $value) {
             assert($value instanceof Category);
             $category_options = [
                 ...$category_options,
@@ -561,9 +632,9 @@ class ArticlesController extends Controller
      */
     public function updateArticle()
     {
-        $this->checkAdmin(type: 'json');
-
         try {
+            $user = App::getCurrentUser();
+
             $request = Request::instance();
 
             $request->validate([
@@ -593,6 +664,8 @@ class ArticlesController extends Controller
                     throw new Exception(get_str('article_not_found') . ":{$id}", 404);
                 }
             }
+
+            $this->checkEditRights(type: 'json', article: $article);
 
             $article->title = $request->request('title');
 
@@ -631,6 +704,10 @@ class ArticlesController extends Controller
             $article->visible = boolval($request->request('visible'));
 
             $article->fixed = boolval($request->request('fixed'));
+
+            if ($user->canModerate()) {
+                $article->moderated = boolval($request->request('moderated') ?? false);
+            }
 
             $date = $request->request('created_at');
 

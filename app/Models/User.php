@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Database\{UsersTable};
-
+use ReturnTypeWillChange;
 use Tischmann\Atlantis\{
     DateTime,
     Table,
@@ -224,5 +224,31 @@ class User extends Model
         $query = self::query()->where('role', self::ROLE_ADMIN);
 
         return $query->count() === 1;
+    }
+
+    /**
+     * Проверка на возможность модерирования
+     *
+     * @return bool Возвращает true, если пользователь может модерировать
+     */
+    public function canModerate(): bool
+    {
+        return $this->isAdmin() || $this->isModerator();
+    }
+
+    /**
+     * Проверка на возможность авторства
+     *
+     * @return bool Возвращает true, если пользователь может авторствовать
+     */
+    public function canAuthor(?Article $article = null): bool
+    {
+        if ($this->isAdmin()) return true;
+
+        if ($this->isModerator()) return true;
+
+        if ($this->isAuthor()) return $article?->author_id === $this->id;
+
+        return false;
     }
 }

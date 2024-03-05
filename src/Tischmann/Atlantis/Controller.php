@@ -38,11 +38,13 @@ class Controller
      * @param string $type Тип ответа
      * @return void
      */
-    protected function checkAdmin(string $type = 'html'): void
+    protected function checkAdmin(string $type = 'html'): mixed
     {
-        if (!App::getCurrentUser()->isAdmin()) {
-            switch (mb_strtolower($type)) {
-                case 'json':
+        $is_admin = App::getCurrentUser()->isAdmin();
+
+        switch (mb_strtolower($type)) {
+            case 'json':
+                if (!$is_admin) {
                     Response::json(
                         response: [
                             'title' => get_str('warning'),
@@ -50,16 +52,22 @@ class Controller
                         ],
                         code: 403
                     );
-                    break;
-                default:
+                }
+                break;
+            case 'bool':
+                return $is_admin;
+            default:
+                if (!$is_admin) {
                     View::send(
                         view: '403',
                         layout: 'default',
                         exit: true,
                         code: 403
                     );
-                    break;
-            }
+                }
+                break;
         }
+
+        return null;
     }
 }

@@ -6,6 +6,7 @@
 
         $query = Article::query()
             ->where('visible', '1')
+            ->where('moderated', '1')
             ->order('fixed', 'DESC')
             ->order('created_at', 'DESC');
 

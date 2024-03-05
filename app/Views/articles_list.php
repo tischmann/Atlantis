@@ -64,6 +64,15 @@ use Tischmann\Atlantis\{Template};
                 'options' => $fixed_options
             ]
         );
+
+        Template::echo(
+            template: 'select_field',
+            args: [
+                'name' => 'moderated',
+                'title' => get_str('article_moderated'),
+                'options' => $moderated_options
+            ]
+        );
         ?>
     </div>
     <?php

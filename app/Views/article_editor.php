@@ -2,9 +2,11 @@
 
 use App\Models\{Article};
 
-use Tischmann\Atlantis\{DateTime, Locale, Template};
+use Tischmann\Atlantis\{App, DateTime, Locale, Template};
 
 assert($article instanceof Article);
+
+$user = App::getCurrentUser();
 
 if (!$article->exists()) {
     $article->created_at = new DateTime();
@@ -220,6 +222,29 @@ list($image_width, $image_height) = $article->getImageSizes();
                         </div>
                     </div>
                 </div>
+                <?php
+                if ($user->canModerate()) {
+                    $is_moderated = $article->moderated ? 'checked' : '';
+
+                    $is_not_moderated = $article->moderated ? '' : 'checked';
+
+                    echo <<<HTML
+                    <div class="mb-8 relative">
+                        <label for="moderated_yes" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=article_moderated}}</label>
+                        <div class="grid w-full grid-cols-1 md:grid-cols-2 gap-4 bg-white border-2 border-gray-200 rounded-lg p-4">
+                            <div>
+                                <input type="radio" name="moderated" id="moderated_no" value="0" class="peer hidden" {$is_not_moderated} />
+                                <label for="moderated_no" class="block cursor-pointer select-none rounded-md p-2 text-center bg-gray-200 peer-checked:bg-red-600 peer-checked:text-white">{{lang=article_moderated_no}}</label>
+                            </div>
+                            <div>
+                                <input type="radio" name="moderated" id="moderated_yes" value="1" class="peer hidden" {$is_moderated} />
+                                <label for="moderated_yes" class="block cursor-pointer select-none rounded-md p-2 text-center bg-gray-200 peer-checked:bg-green-600 peer-checked:text-white">{{lang=article_moderated_yes}}</label>
+                            </div>
+                        </div>
+                    </div>
+                    HTML;
+                }
+                ?>
                 <div class="flex flex-col gap-4">
                     <?php
                     if ($article->exists()) {

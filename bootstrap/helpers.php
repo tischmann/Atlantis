@@ -509,15 +509,16 @@ function get_category_options(
 ): array {
     $options = [];
 
-    if ($exclude !== null) {
-        if ($category->id !== $exclude) {
-            $options[] = [
-                'value' => $category->id,
-                'text' => $category->title,
-                'selected' => $category->id === $selected,
-                'level' => $category->level
-            ];
-        }
+    if (
+        ($exclude !== null && $category->id !== $exclude)
+        || $exclude === null
+    ) {
+        $options[] = [
+            'value' => $category->id,
+            'text' => $category->title,
+            'selected' => $category->id === $selected,
+            'level' => $category->level
+        ];
     }
 
     $category->children = $category->fetchChildren();
@@ -525,15 +526,16 @@ function get_category_options(
     foreach ($category->children as $child) {
         assert($child instanceof Category);
 
-        if ($exclude !== null) {
-            if ($child->id !== $exclude) {
-                $options[] = [
-                    'value' => $child->id,
-                    'text' => $child->title,
-                    'selected' => $child->id === $selected,
-                    'level' => $child->level
-                ];
-            }
+        if (
+            ($exclude !== null && $child->id !== $exclude)
+            || $exclude === null
+        ) {
+            $options[] = [
+                'value' => $child->id,
+                'text' => $child->title,
+                'selected' => $child->id === $selected,
+                'level' => $child->level
+            ];
         }
 
         $child->children = $child->fetchChildren();

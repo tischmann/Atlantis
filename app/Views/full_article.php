@@ -6,13 +6,15 @@ use Tischmann\Atlantis\{App};
 
 assert($article instanceof Article);
 
+$user = App::getCurrentUser();
+
 ?>
-<main class="md:container mx-8 md:mx-auto">
+<main class="mx-8 lg:mx-auto lg:max-w-screen-lg">
     <article>
         <h2 class="mb-1 font-bold text-2xl flex items-center w-full line-clamp-1"><?= $article->title ?>
             <?php
 
-            if (App::getCurrentUser()->isAdmin()) {
+            if ($user->canAuthor($article)) {
                 echo <<<HTML
                 <a href="/{{env=APP_LOCALE}}/edit/article/{$article->id}" title="{{lang=edit}}" class="mx-4 hover:text-sky-800">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -46,8 +48,6 @@ assert($article instanceof Article);
                 list($image_width, $image_height) = $article->getImageSizes();
 
                 echo <<<HTML
-                <link rel="stylesheet" href="/css/swiper-bundle.min.css" />
-                <script src="/js/swiper-bundle.min.js" nonce="{{nonce}}"></script>
                 <div class="gallery-swiper mb-2 relative overflow-hidden select-none">
                     <div class="swiper-wrapper">
                         <div class="swiper-slide">
@@ -96,17 +96,27 @@ assert($article instanceof Article);
             } else {
                 list($image_width, $image_height) = $article->getImageSizes();
 
+                $src = $image
+                    ? "/images/articles/{$article->id}/image/{$image}"
+                    : '/images/placeholder_16_9.svg';
+
                 echo <<<HTML
-                <img src="/images/articles/{$article->id}/image/{$image}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="w-full rounded-xl mr-4 shadow-lg" decoding="async" loading="auto">
+                <img src="{$src}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="w-full rounded-xl mr-4 shadow-lg" decoding="async" loading="auto">
                 HTML;
             }
             ?>
         </div>
-        <div class="mb-4 ql-editor">
+        <div class="mb-4">
             <?= html_entity_decode($article->text) ?>
         </div>
-        <div class="mb-8 flex flex-col sm:flex-row gap-4">
-            <?php
+        <?php
+        $article_attachements = $article->getAttachements();
+
+        if ($article_attachements) {
+            echo <<<HTML
+            <div class="mb-8 flex flex-col sm:flex-row gap-4">
+            HTML;
+
             foreach ($article->getAttachements() as $file) {
                 echo <<<HTML
                 <a href="/uploads/articles/{$article->id}/attachements/{$file}" class="grow sm:grow-0 flex flex-nowrap gap-2 w-full sm:w-auto rounded-xl bg-gray-200 p-4 hover:bg-gray-300 hover:underline" download>
@@ -117,49 +127,33 @@ assert($article instanceof Article);
                 </a>
                 HTML;
             }
-            ?>
-        </div>
-        <div class="mb-4 grid grid-cols-1 gap-4">
-            <?php
-            foreach ($article->getVideos() as $video) {
+
+            echo <<<HTML
+            </div>
+            HTML;
+        }
+
+        $article_videos = $article->getVideos();
+
+        if ($article_videos) {
+            echo <<<HTML
+            <div class="mb-4 grid grid-cols-1 gap-4">
+            HTML;
+
+            foreach ($article_videos as $video) {
                 echo <<<HTML
                 <video src="/uploads/articles/{$article->id}/video/{$video}" class="block w-full rounded-xl" controls ></video>
                 HTML;
             }
-            ?>
-        </div>
-    </article>
-</main>
-<script nonce="{{nonce}}">
-    window.addEventListener('load', () => {
-        const thumbs = new Swiper('.thumb-gallery-swiper', {
-            spaceBetween: 8,
-            slidesPerView: getTabAmount(),
-            freeMode: true,
-            watchSlidesProgress: true,
-        })
 
-        new Swiper('.gallery-swiper', {
-            autoplay: {
-                delay: 2500,
-                disableOnInteraction: true,
-            },
-            spaceBetween: 8,
-            thumbs: {
-                swiper: thumbs
-            },
-            effect: 'fade',
-        })
-
-        function getTabAmount() {
-            if (window.innerWidth <= 768) return 4
-            if (window.innerWidth <= 1280) return 6
-            return 8
+            echo <<<HTML
+            </div>
+            HTML;
         }
 
-        window.addEventListener('resize', () => {
-            thumbs.params.slidesPerView = getTabAmount()
-            thumbs.update()
-        })
-    })
-</script>
+        ?>
+    </article>
+</main>
+<link rel="stylesheet" href="/css/swiper-bundle.min.css" />
+<script src="/js/swiper-bundle.min.js" nonce="{{nonce}}"></script>
+<script src="/js/full.article.min.js" nonce="{{nonce}}"></script>

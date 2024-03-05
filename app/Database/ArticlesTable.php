@@ -87,6 +87,13 @@ class ArticlesTable extends Table
                 default: 0,
                 description: 'Закреплена',
             ),
+            new Column(
+                name: 'moderated',
+                type: 'tinyint',
+                length: 1,
+                default: 0,
+                description: 'Модерация',
+            ),
         ]);
     }
 }
