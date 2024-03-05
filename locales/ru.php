@@ -118,10 +118,11 @@ return [
     'category_new' => 'Новая категория',
     'category_edit' => 'Редактирование категории',
     'category_title' => 'Заголовок',
-    'category_slug' => 'Слаг',
+    'category_slug' => 'URL',
     'category_locale' => 'Локаль',
     'category_children' => 'Дочерние категории',
     'category_actions' => 'Действия',
+    'category_parent_id' => 'Родительская категория',
     // Статьи
     'article_edit' => 'Редактирование статьи',
     'article_new' => 'Новая статья',

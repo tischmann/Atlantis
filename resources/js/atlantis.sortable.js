@@ -8,6 +8,8 @@ export default class Sortable {
     ) {
         this.container = container
 
+        if (!this.container) return
+
         this.ondragstart = ondragstart
 
         this.ondragend = ondragend

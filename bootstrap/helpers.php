@@ -515,6 +515,8 @@ function get_category_options(
         ]
     ];
 
+    $category->children = $category->fetchChildren();
+
     foreach ($category->children as $child) {
         assert($child instanceof Category);
 
@@ -524,6 +526,8 @@ function get_category_options(
             'selected' => $child->id === $selected,
             'level' => $child->level
         ];
+
+        $child->children = $child->fetchChildren();
 
         if ($child->children) {
             $options = [

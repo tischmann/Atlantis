@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Models\{Category};
+
 use Exception;
+
 use Tischmann\Atlantis\{
     Controller,
     Locale,
-    Pagination,
     Request,
     Response,
     View
@@ -20,6 +21,65 @@ use Tischmann\Atlantis\{
  */
 class CategoriesController extends Controller
 {
+    public function getCategoryEditor(): void
+    {
+        $this->checkAdmin();
+
+        $request = Request::instance();
+
+        $locale = strval($request->request('locale') ?? getenv('APP_LOCALE'));
+
+        $category = Category::find($this->route->args('id'));
+
+        $parent_id = intval($category->parent_id);
+
+        $locale_options = [];
+
+        foreach (Locale::available() as $value) {
+            $locale_options[] = [
+                'value' => $value,
+                'text' => get_str("locale_{$value}"),
+                'selected' => $locale === $value,
+                'level' => '0'
+            ];
+        }
+
+        $parent_options = [
+            [
+                'value' => '',
+                'text' => '',
+                'selected' => $parent_id === 0,
+                'level' => 0
+            ]
+        ];
+
+        $all_query = Category::query()
+            ->where('locale', $locale)
+            ->where('parent_id', null)
+            ->order('position', 'ASC');
+
+        foreach (Category::all($all_query) as $cat) {
+            assert($cat instanceof Category);
+
+            $parent_options = [
+                ...$parent_options,
+                ...get_category_options($cat, $parent_id)
+            ];
+        }
+
+        $category = Category::find($this->route->args('id'));
+
+        View::send(
+            view: 'category_editor',
+            args: [
+                'category' => $category,
+                'locale_options' => $locale_options,
+                'parent_options' => $parent_options
+            ],
+            layout: 'default'
+        );
+    }
+
     public function sortCategories()
     {
         $this->checkAdmin(type: 'json');
@@ -56,9 +116,9 @@ class CategoriesController extends Controller
     {
         $this->checkAdmin();
 
-        $reqest = Request::instance();
+        $request = Request::instance();
 
-        $locale = strval($reqest->request('locale'));
+        $locale = strval($request->request('locale'));
 
         $locale_options = [];
 

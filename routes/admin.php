@@ -166,4 +166,22 @@ if (App::getCurrentUser()->isAdmin()) {
         action: 'sortCategories',
         method: 'PUT',
     ));
+
+    Router::add(new Route(
+        controller: new CategoriesController(),
+        path: 'edit/category/{id}',
+        action: 'getCategoryEditor',
+        method: 'GET',
+        title: get_str('category_edit')
+    ));
+
+
+    Router::add(new Route(
+        controller: new CategoriesController(),
+        path: 'new/category',
+        action: 'getCategoryEditor',
+        method: 'GET',
+        args: ['id' => 0],
+        title: get_str('category_new')
+    ));
 }

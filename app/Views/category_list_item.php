@@ -7,7 +7,7 @@ assert($category instanceof Category);
 $category->children = $category->fetchChildren();
 
 ?>
-<li class="block transition border-2 border-gray-200 rounded-lg hover:border-gray-300" data-id="<?= $category->id ?>">
+<li class="block grow transition border-2 border-gray-200 rounded-lg hover:border-gray-300" data-id="<?= $category->id ?>">
     <article class="grid grid-cols-1 sm:grid-cols-6 gap-2 p-2">
         <h2 class="flex flex-nowrap items-center gap-2 col-span-1 sm:col-span-2 font-semibold text-base line-clamp-1">
             <span class="block px-0 sm:px-2"><?= $category->title ?></span>

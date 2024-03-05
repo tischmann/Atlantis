@@ -28,7 +28,7 @@ use Tischmann\Atlantis\{Template};
         <div class="col-span-1 sm:col-span-2 text-ellipsis overflow-hidden">{{lang=category_children}}</div>
         <div class="text-ellipsis overflow-hidden text-right">{{lang=category_actions}}</div>
     </div>
-    <ul id="categories-list" class="grid grid-cols-1 gap-4 order-container">
+    <ul id="categories-list" class="grid grid-cols-1 gap-4">
         <?php
 
         foreach ($categories as $category) {
@@ -45,4 +45,5 @@ use Tischmann\Atlantis\{Template};
         ?>
     </ul>
 </main>
+<script src="/js/atlantis.categories.min.js" nonce="{{nonce}}" type="module"></script>
 <script src="/js/categories.list.min.js" nonce="{{nonce}}" type="module"></script>
