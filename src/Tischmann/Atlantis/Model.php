@@ -8,12 +8,64 @@ use Tischmann\Atlantis\{Table};
 
 abstract class Model
 {
+    public static $cache = [];
     /**
      * Таблица модели
      * 
      * @return Table Таблица
      */
     abstract public static function table(): Table;
+
+
+    /**
+     * Проверяет, существует ли кеш
+     *
+     * @param string $key Ключ
+     * @return boolean true если существует, false если нет
+     */
+    public static function hasCache(string $key): bool
+    {
+        return isset(static::$cache[$key]);
+    }
+
+    /**
+     * Возвращает кеш
+     *
+     * @param string $key Ключ
+     * @param callable|null $setter Функция для установки значения
+     * @return mixed Значение кеша или null если его нет
+     */
+    public static function getCache(string $key, ?callable $setter = null): mixed
+    {
+        if (static::hasCache($key)) return static::$cache[$key];
+
+        if (is_callable($setter)) static::setCache($key, $setter());
+
+        return static::$cache[$key] ?? null;
+    }
+
+    /**
+     * Устанавливает кеш
+     *
+     * @param string $key Ключ
+     * @param mixed $value Значение кеша
+     * @return mixed Значение кеша
+     */
+    public static function setCache(string $key, mixed $value): mixed
+    {
+        return static::$cache[$key] = $value;
+    }
+
+    /**
+     * Удаляет кеш
+     *
+     * @param string $key Ключ
+     * @return void
+     */
+    public static function delCache(string $key): void
+    {
+        unset(static::$cache[$key]);
+    }
 
     public function __construct(
         public int $id = 0,

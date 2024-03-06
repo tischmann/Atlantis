@@ -22,14 +22,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" />
     <link rel="stylesheet" href="/app.min.css" media="all">
-    <link rel="stylesheet" href="/css/quill.min.css">
-    <script src="/app.min.js" nonce="{{nonce}}"></script>
 </head>
 
 <body class="bg-white text-gray-800 antialiased m-0 p-0">
     <?php include __DIR__ . "/../header.php" ?>
 
     {{body}}
+    <script src="/app.min.js" nonce="{{nonce}}"></script>
 </body>
 
 </html>

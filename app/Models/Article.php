@@ -33,6 +33,7 @@ class Article extends Model
         public bool $visible = true,
         public bool $fixed = false,
         public bool $moderated = false,
+        protected int $views = 0,
         public ?DateTime $created_at = null,
         public ?DateTime $updated_at = null,
     ) {
@@ -182,5 +183,37 @@ class Article extends Model
             $thumb ? static::IMAGE_THUMB_WIDTH : static::IMAGE_WIDTH,
             $thumb ? static::IMAGE_THUMB_HEIGHT : static::IMAGE_HEIGHT
         ];
+    }
+
+    /**
+     * Возвращает количество просмотров статьи
+     * 
+     * @return int - количество просмотров
+     */
+    public function getViews(): int
+    {
+        $this->views = static::getCache(
+            "article_{$this->id}_views",
+            function () {
+                return View::getArticleViews($this->id);
+            }
+        );
+
+        return $this->views;
+    }
+
+    /**
+     * Устанавливает просмотр статьи
+     * 
+     * @param string $uuid - UUID
+     * @return void
+     */
+    public function setView(string $uuid): void
+    {
+        if ($uuid) {
+            if (View::setArticleView($this->id, $uuid)) {
+                $this->views = View::getArticleViews($this->id);
+            }
+        }
     }
 }

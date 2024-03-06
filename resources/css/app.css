@@ -8,6 +8,18 @@ body {
     padding: 0;
 }
 
+@media print {
+    .no-print,
+    .no-print * {
+        display: none !important;
+    }
+
+    .print,
+    .print * {
+        display: block !important;
+    }
+}
+
 [thumbsSlider] .swiper-slide {
     opacity: 0.5;
 }

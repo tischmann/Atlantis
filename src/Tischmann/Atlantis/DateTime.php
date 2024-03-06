@@ -91,11 +91,15 @@ class DateTime extends \DateTime
         } else if ($diff->d > 0) {
             $elapsed .= $diff->d . ' ';
 
-            $elapsed .= match (abs($diff->d % 10)) {
-                1 => get_str('day_ago', $locale),
-                2, 3, 4 => get_str('days_ago_2_4', $locale),
-                default => get_str('days_ago', $locale),
-            };
+            if ($diff->d > 10 && $diff->d < 20) {
+                $elapsed .= get_str('days_ago', $locale);
+            } else if ($diff->d % 10 == 1) {
+                $elapsed .= get_str('day_ago', $locale);
+            } else if ($diff->d % 10 > 1 && $diff->d % 10 < 5) {
+                $elapsed .= get_str('days_ago_2_4', $locale);
+            } else {
+                $elapsed .= get_str('days_ago', $locale);
+            }
         } else if ($diff->h > 0) {
             $elapsed .= $diff->h . ' ';
 
