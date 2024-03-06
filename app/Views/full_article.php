@@ -70,11 +70,12 @@ $image_src = $image
             <?= $article->short_text ?>
         </div>
         <div class="mb-4">
-            <img src="<?= $image_src ?>" alt="<?= $article->title ?>" width="{$image_width}" height="{$image_height}" class="hidden print w-full rounded-xl mr-4 shadow-lg" decoding="async" loading="auto">
             <?php
 
             if ($gallery) {
-                list($image_width, $image_height) = $article->getImageSizes();
+                echo <<<HTML
+                <img src="{$image_src}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="hidden print w-full rounded-xl mr-4 shadow-lg" decoding="async" loading="auto">
+                HTML;
 
                 echo <<<HTML
                 <div class="gallery-swiper mb-2 relative overflow-hidden select-none no-print">
