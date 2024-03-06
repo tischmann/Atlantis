@@ -858,11 +858,15 @@ class ArticlesController extends Controller
         $images = [];
 
         foreach ($matches[0] as $match) {
-            if (preg_match('/src="([^"]+)"/i', $match, $src)) {
+            if (preg_match('/src="([^"]+)"([^>]+)>/i', $match, $src)) {
                 $image = basename($src[1]);
+
                 $all_images[] = $image;
+
                 if (in_array($image, $old_images)) continue;
+
                 $images[] = $image;
+
                 $article->text = str_replace($src[1], "/images/articles/{$article->id}/images/{$image}", $article->text);
             }
         }
