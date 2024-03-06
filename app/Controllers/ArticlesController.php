@@ -405,6 +405,53 @@ class ArticlesController extends Controller
     }
 
     /**
+     * Загрузка изображениий для статьи
+     * 
+     */
+    public function uploadImages()
+    {
+        $this->checkAdmin(type: 'json');
+
+        Article::removeOldTempImagesAndUploads();
+
+        try {
+            $request = Request::instance();
+
+            $size = $request->request('size') ?? '16_9';
+
+            $image = $_FILES['image'];
+
+            $sizes = getimagesize($image['tmp_name']);
+
+            $width = $sizes[0];
+
+            $height = $sizes[1];
+
+            $ratio = $width / $height;
+
+            $thumb_width = Article::IMAGE_THUMB_WIDTH;
+
+            $thumb_height = intval($thumb_width / $ratio);
+
+            $images = Image::upload(
+                files: $_FILES,
+                path: getenv('APP_ROOT') . "/public/images/articles/temp",
+                min_width: $width,
+                min_height: $height,
+                max_width: $width,
+                max_height: $height,
+                thumb_width: $thumb_width,
+                thumb_height: $thumb_height,
+                quality: 80
+            );
+
+            Response::json(['src' => "/images/articles/temp/" . reset($images)]);
+        } catch (Exception $e) {
+            Response::json(['title' => get_str('warning'), 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
      * Загрузка изображения галереи для статьи
      * 
      */
@@ -725,6 +772,10 @@ class ArticlesController extends Controller
                 }
             }
 
+            $this->updateArticleImages(
+                article: $article
+            );
+
             $this->updateArticleImage(
                 article: $article,
                 image: $request->request('image')
@@ -774,6 +825,88 @@ class ArticlesController extends Controller
                 'message' => $e->getMessage()
             ], $e->getCode() ?: 500);
         }
+    }
+
+    protected function updateArticleImages(Article $article): self
+    {
+        if (!preg_match_all('/<img[^>]+>/i', $article->text, $matches)) {
+            return $this;
+        }
+
+        $article_dir = getenv('APP_ROOT') . "/public/images/articles/{$article->id}";
+
+        $temp_dir = getenv('APP_ROOT') . "/public/images/articles/temp";
+
+        $images_dir = "{$article_dir}/images";
+
+        if (!is_dir($images_dir)) mkdir($images_dir, 0775, true);
+
+        $old_article = Article::find($article->id);
+
+        preg_match_all('/<img[^>]+>/i', $old_article->text, $old_matches);
+
+        $old_images = [];
+
+        foreach ($old_matches[0] as $match) {
+            if (preg_match('/src="([^"]+)"/i', $match, $src)) {
+                $old_images[] = basename($src[1]);
+            }
+        }
+
+        $all_images = [];
+
+        $images = [];
+
+        foreach ($matches[0] as $match) {
+            if (preg_match('/src="([^"]+)"/i', $match, $src)) {
+                $image = basename($src[1]);
+                $all_images[] = $image;
+                if (in_array($image, $old_images)) continue;
+                $images[] = $image;
+                $article->text = str_replace($src[1], "/images/articles/{$article->id}/images/{$image}", $article->text);
+            }
+        }
+
+        // Перемещение новых изображений
+
+        foreach ($images as $image) {
+            $temp_path = "{$temp_dir}/{$image}";
+
+            $new_path = "{$images_dir}/{$image}";
+
+            $thumb_path = "{$images_dir}/thumb_{$image}";
+
+            $paths = [
+                $new_path => $temp_path,
+                $thumb_path => "{$temp_dir}/thumb_{$image}"
+            ];
+
+            foreach ($paths as $new_path => $temp_path) {
+                if (!file_exists($temp_path)) {
+                    throw new Exception(get_str('temp_file_not_found') . ":{$temp_path}");
+                }
+
+                if (!rename($temp_path, $new_path)) {
+                    throw new Exception(get_str('temp_file_not_moved') . ":{$temp_path}");
+                }
+            }
+        }
+
+        // Удаление старых изображений
+
+        foreach (array_diff($old_images, $all_images) as $image) {
+            $thumb = "thumb_{$image}";
+
+            if (file_exists("{$images_dir}/{$image}")) {
+                unlink("{$images_dir}/{$image}");
+            }
+
+            if (file_exists("{$images_dir}/{$thumb}")) {
+                unlink("{$images_dir}/{$thumb}");
+            }
+        }
+
+        return $this;
     }
 
     protected function updateArticleImage(Article $article, string $image): self

@@ -26,7 +26,7 @@ $image_src = $image
 
 ?>
 <main class="mx-8 lg:mx-auto lg:max-w-screen-lg">
-    <article class="full-article">
+    <article class="full-article gallery-container">
         <h2 class="mb-1 font-bold text-2xl flex items-center w-full line-clamp-1"><?= $article->title ?>
             <?php
 
@@ -80,7 +80,7 @@ $image_src = $image
                 <div class="gallery-swiper mb-2 relative overflow-hidden select-none no-print">
                     <div class="swiper-wrapper">
                         <div class="swiper-slide">
-                            <img src="/images/articles/{$article->id}/image/{$image}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="w-full rounded-xl mr-4 shadow-lg" decoding="async" loading="auto">
+                            <img src="/images/articles/{$article->id}/image/{$image}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="w-full rounded-xl mr-4 shadow-lg gallery-item" decoding="async" loading="auto">
                         </div>
                 HTML;
 
@@ -90,7 +90,7 @@ $image_src = $image
                     );
                     echo <<<HTML
                     <div class="swiper-slide">
-                        <img src="/images/articles/{$article->id}/gallery/{$filename}" width="{$image_width}" height="{$image_height}" alt="{$article->title}" decoding="async" loading="auto" class="w-full rounded-xl">
+                        <img src="/images/articles/{$article->id}/gallery/{$filename}" width="{$image_width}" height="{$image_height}" alt="{$article->title}" decoding="async" loading="auto" class="w-full rounded-xl gallery-item">
                     </div>
                     HTML;
                 }
@@ -124,7 +124,7 @@ $image_src = $image
                 HTML;
             } else {
                 echo <<<HTML
-                <img src="{$image_src}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="w-full rounded-xl mr-4 shadow-lg" decoding="async" loading="auto">
+                <img src="{$image_src}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="w-full rounded-xl mr-4 shadow-lg gallery-item" decoding="async" loading="auto">
                 HTML;
             }
             ?>
@@ -179,4 +179,4 @@ $image_src = $image
 </main>
 <link rel="stylesheet" href="/css/swiper-bundle.min.css" />
 <script src="/js/swiper-bundle.min.js" nonce="{{nonce}}"></script>
-<script src="/js/full.article.min.js" nonce="{{nonce}}"></script>
+<script src="/js/full.article.min.js" nonce="{{nonce}}" type="module"></script>

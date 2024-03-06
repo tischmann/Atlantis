@@ -1,3 +1,5 @@
+import Gallery from './atlantis.gallery.min.js'
+
 const thumbsSwiper = new Swiper('.thumb-gallery-swiper', {
     spaceBetween: 8,
     slidesPerView: getTabAmount(),
@@ -26,4 +28,8 @@ function getTabAmount() {
 window.addEventListener('resize', () => {
     thumbsSwiper.params.slidesPerView = getTabAmount()
     thumbsSwiper.update()
+})
+
+document.querySelectorAll('.gallery-container').forEach((container) => {
+    new Gallery(container)
 })

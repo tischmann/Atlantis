@@ -41,15 +41,66 @@ export default class Article {
             font_css:
                 'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap',
             image_advtab: true,
-            image_class_list: [{ title: 'rounded-xl', value: 'rounded-xl' }],
-            templates: [
-                {
-                    title: 'New Table',
-                    description: 'creates a new table',
-                    content:
-                        '<div class="mceTmpl"><table width="98%%"  border="0" cellspacing="0" cellpadding="0"><tr><th scope="col"> </th><th scope="col"> </th></tr><tr><td> </td><td> </td></tr></table></div>'
-                }
-            ]
+            image_class_list: [
+                { title: 'Нет', value: 'gallery-item' },
+                { title: 'rounded', value: 'rounded gallery-item' },
+                { title: 'rounded-md', value: 'rounded-md gallery-item' },
+                { title: 'rounded-lg', value: 'rounded-lg gallery-item' },
+                { title: 'rounded-xl', value: 'rounded-xl gallery-item' }
+            ],
+            relative_urls: false,
+            images_upload_handler: (blobInfo, progress) => {
+                return new Promise((resolve, reject) => {
+                    const formData = new FormData()
+
+                    formData.append(
+                        'image',
+                        blobInfo.blob(),
+                        blobInfo.filename()
+                    )
+
+                    const xhr = new XMLHttpRequest()
+
+                    xhr.withCredentials = true
+
+                    xhr.open('POST', `/article/images`)
+
+                    xhr.setRequestHeader('Accept', 'application/json')
+
+                    xhr.upload.onprogress = (e) => {
+                        progress((e.loaded / e.total) * 100)
+                    }
+
+                    xhr.onload = () => {
+                        if (xhr.status === 403) {
+                            return reject({
+                                message: 'HTTP Ошибка: ' + xhr.status,
+                                remove: true
+                            })
+                        }
+
+                        if (xhr.status < 200 || xhr.status >= 300) {
+                            return reject('HTTP Ошибка: ' + xhr.status)
+                        }
+
+                        const json = JSON.parse(xhr.responseText)
+
+                        if (!json?.src) {
+                            return reject(
+                                'Некорректный ответ: ' + xhr.responseText
+                            )
+                        }
+
+                        resolve(json.src)
+                    }
+
+                    xhr.onerror = () => {
+                        reject(`Ошибка загрузки изображения: ${xhr.status}`)
+                    }
+
+                    xhr.send(formData)
+                })
+            }
         })
 
         const galleryContainer = this.getGalleryContainer()

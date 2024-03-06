@@ -20,6 +20,18 @@ body {
     }
 }
 
+figcaption {
+    padding: 0.25rem 0;
+    font-size: 1rem;
+    font-style: italic;
+    text-align: center;
+    color: #4a5568;
+}
+
+.gallery-item {
+    cursor: zoom-in;
+}
+
 [thumbsSlider] .swiper-slide {
     opacity: 0.5;
 }
