@@ -50,3 +50,10 @@ Router::add(new Route(
     action: 'showFullArticle',
     method: 'GET',
 ));
+
+Router::add(new Route(
+    controller: new IndexController(),
+    path: 'sitemap',
+    action: 'sitemap',
+    method: 'GET',
+));

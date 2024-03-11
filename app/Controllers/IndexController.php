@@ -23,4 +23,14 @@ class IndexController extends Controller
     {
         View::send('index');
     }
+
+    /**
+     * Вывод карты сайта
+     *
+     * @return void
+     */
+    public function sitemap(): void
+    {
+        View::send('sitemap');
+    }
 }

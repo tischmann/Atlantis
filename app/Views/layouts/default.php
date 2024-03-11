@@ -24,7 +24,7 @@
     <link rel="stylesheet" href="/app.min.css" media="all">
 </head>
 
-<body class="bg-white text-gray-800 antialiased m-0 p-0">
+<body class="bg-white text-gray-800 dark:bg-gray-800 dark:text-white antialiased m-0 p-0">
     <?php include __DIR__ . "/../header.php" ?>
 
     {{body}}
