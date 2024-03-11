@@ -14,7 +14,7 @@ list($image_width, $image_height) = $article->getImageSizes(true);
 
 ?>
 
-<a href="/{{env=APP_LOCALE}}/article/<?= $article->url ?>.html" title="<?= $article->title ?>" class="group/item group/label block">
+<a href="/{{env=APP_LOCALE}}/articles/<?= $article->url ?>.html" title="<?= $article->title ?>" class="group/item group/label block">
     <article>
         <div class="relative">
             <div class="group-hover/item:opacity-100 absolute opacity-0 inset-0 bg-black bg-opacity-50 rounded-t-xl flex items-center justify-center transition-opacity">

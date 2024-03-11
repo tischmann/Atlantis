@@ -46,7 +46,7 @@ Router::add(new Route(
  */
 Router::add(new Route(
     controller: new ArticlesController(),
-    path: 'article/{url}',
+    path: 'articles/{url}',
     action: 'showFullArticle',
     method: 'GET',
 ));
