@@ -293,7 +293,15 @@ class ArticlesController extends Controller
      */
     public function showFullArticle(): void
     {
-        $article = Article::find($this->route->args('id'));
+        $url = $this->route->args('url');
+
+        $url = rtrim($url, '.html');
+
+        $article = Article::find($url, 'url');
+
+        if (!$article->exists()) {
+            View::send(view: '404', layout: 'default', code: 404);
+        }
 
         View::send('full_article', ['article' => $article]);
     }
@@ -807,6 +815,8 @@ class ArticlesController extends Controller
                 article: $article,
                 attachements: $attachements
             );
+
+            $article->url = $article->createUrl($article->title);
 
             if (!$article->save()) {
                 throw new Exception(get_str('not_saved'));

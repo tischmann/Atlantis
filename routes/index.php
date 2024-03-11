@@ -41,9 +41,12 @@ Router::add(new Route(
     method: 'POST',
 ));
 
+/**
+ * Статьи
+ */
 Router::add(new Route(
     controller: new ArticlesController(),
-    path: 'article/{id}',
+    path: 'article/{url}',
     action: 'showFullArticle',
     method: 'GET',
 ));

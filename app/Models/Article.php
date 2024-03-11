@@ -33,6 +33,7 @@ class Article extends Model
         public bool $visible = true,
         public bool $fixed = false,
         public bool $moderated = false,
+        public string $url = '',
         protected int $views = 0,
         public ?DateTime $created_at = null,
         public ?DateTime $updated_at = null,
@@ -215,5 +216,102 @@ class Article extends Model
                 $this->views = View::getArticleViews($this->id);
             }
         }
+    }
+
+    /**
+     * Возвращает URL статьи
+     * 
+     * @param string $input - строка для преобразования
+     * @param int $limit - максимальная длина строки
+     * @param string $separator - разделитель
+     * 
+     * @return string - URL статьи
+     */
+    public static function createUrl(
+        string $input,
+        int $limit = 255,
+        string $separator = '-'
+    ): string {
+        $output = '';
+
+        $input = mb_strtolower($input);
+
+        $input = trim($input);
+
+        foreach (mb_str_split($input) as $char) {
+            $output .= match ($char) {
+                '0' => '0',
+                '1' => '1',
+                '2' => '2',
+                '3' => '3',
+                '4' => '4',
+                '5' => '5',
+                '6' => '6',
+                '7' => '7',
+                '8' => '8',
+                '9' => '9',
+                'а' => 'a',
+                'б' => 'b',
+                'в' => 'v',
+                'г' => 'g',
+                'ғ' => 'g',
+                'д' => 'd',
+                'е' => 'e',
+                'ё' => 'e',
+                'ж' => 'zh',
+                'з' => 'z',
+                'и' => 'i',
+                'ӣ' => 'i',
+                'й' => 'j',
+                'к' => 'k',
+                'қ' => 'k',
+                'л' => 'l',
+                'м' => 'm',
+                'н' => 'n',
+                'о' => 'o',
+                'п' => 'p',
+                'р' => 'r',
+                'с' => 's',
+                'т' => 't',
+                'у' => 'u',
+                'ӯ' => 'u',
+                'ф' => 'f',
+                'х' => 'h',
+                'ҳ' => 'h',
+                'ц' => 'c',
+                'ч' => 'ch',
+                'ҷ' => 'j',
+                'ш' => 'sh',
+                'щ' => 'shch',
+                'ъ' => '',
+                'ы' => 'y',
+                'ь' => '',
+                'э' => 'eh',
+                'ю' => 'yu',
+                'я' => 'ya',
+                default => $separator
+            };
+        }
+
+        $output = trim($output, $separator);
+
+        if ($limit) {
+            $output = mb_substr($output, 0, $limit);
+            $output = trim($output, $separator);
+        }
+
+        $i = 0;
+
+        while (true) {
+            $exist = static::query()
+                ->where('url', $output)
+                ->exist();
+
+            if (!$exist) break;
+
+            $output .= $separator . $i++;
+        }
+
+        return $output;
     }
 }

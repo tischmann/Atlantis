@@ -94,6 +94,14 @@ class ArticlesTable extends Table
                 default: 0,
                 description: 'Модерация',
             ),
+            new Column(
+                name: 'url',
+                type: 'varchar',
+                length: 255,
+                default: null,
+                index: true,
+                description: 'URL статьи',
+            ),
         ]);
     }
 }
