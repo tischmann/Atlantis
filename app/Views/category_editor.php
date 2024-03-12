@@ -17,12 +17,12 @@ $category->children = $category->fetchChildren();
 <main class="md:container mx-8 md:mx-auto">
     <form class="mb-8" data-category="<?= $category->id ?>">
         <div class="mb-8 relative">
-            <label for="title" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=category_title}}</label>
-            <input class="py-2 px-3 outline-none border-2 border-gray-200 rounded-lg w-full focus:border-sky-600 transition" aria-label="title" id="title" name="title" value="<?= $category->title ?>" required>
+            <label for="title" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 px-1">{{lang=category_title}}</label>
+            <input class="py-2 px-3 outline-none border-2 border-gray-200 dark:border-gray-600 rounded-lg w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:border-sky-600 transition" aria-label="title" id="title" name="title" value="<?= $category->title ?>" required>
         </div>
         <div class="mb-8 relative">
-            <label for="slug" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=category_slug}}</label>
-            <input class="py-2 px-3 outline-none border-2 border-gray-200 rounded-lg w-full focus:border-sky-600 transition" aria-label="slug" id="slug" name="slug" value="<?= $category->slug ?>" required>
+            <label for="slug" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 px-1">{{lang=category_slug}}</label>
+            <input class="py-2 px-3 outline-none border-2 border-gray-200 dark:border-gray-600 rounded-lg w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:border-sky-600 transition" aria-label="slug" id="slug" name="slug" value="<?= $category->slug ?>" required>
         </div>
         <div class="mb-8 relative">
             <?php
@@ -53,33 +53,18 @@ $category->children = $category->fetchChildren();
         if ($category->children) {
             echo <<<HTML
             <div class="mb-8 relative">
-                <div class="rounded-lg border-2 border-gray-200 select-none">
-                    <div class="rounded-lg border-[16px] border-white relative">
-                            <div class="hidden sm:grid grid-cols-1 sm:grid-cols-6 gap-2 px-4 py-3 text-gray-600 bg-gray-100 rounded-lg transition mb-4 text-sm font-semibold">
-                                <div class="col-span-1 sm:col-span-2 text-ellipsis overflow-hidden">{{lang=category_title}}</div>
-                                <div class="text-ellipsis overflow-hidden">{{lang=category_slug}}</div>
-                                <div class="col-span-1 sm:col-span-2 text-ellipsis overflow-hidden">{{lang=category_children}}</div>
-                                <div class="text-ellipsis overflow-hidden text-right">{{lang=category_actions}}</div>
-                            </div>
-                            <ul id="categories-list" class="flex flex-wrap gap-4 font-semibold text-gray-600">
+                <div class="rounded-lg border-2 border-gray-200 dark:border-gray-600 select-none">
+                    <div class="rounded-lg border-[16px] border-white dark:border-gray-800 relative">
             HTML;
 
-            foreach ($category->children as $child) {
-                assert($child instanceof Category);
+            $categories = $category->children;
 
-                Template::echo(
-                    template: 'category_list_item',
-                    args: [
-                        'category' => $child
-                    ]
-                );
-            }
+            include 'categories_list_list.php';
 
             echo <<<HTML
-                        </ul>
                     </div>
                 </div>
-                <label class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=category_children}}</label>
+                <label class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 px-1">{{lang=category_children}}</label>
             </div>
             HTML;
         }
