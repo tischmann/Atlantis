@@ -31,11 +31,10 @@ $category->children = $category->fetchChildren();
                 template: 'input_field',
                 args: [
                     'type' => 'text',
-                    'id' => 'title',
                     'name' => 'title',
                     'label' => get_str('category_title'),
                     'value' => $category->title,
-                    'required' => 'required',
+                    'required' => true,
                     'autocomplete' => 'off'
                 ]
             );
@@ -47,11 +46,10 @@ $category->children = $category->fetchChildren();
                 template: 'input_field',
                 args: [
                     'type' => 'text',
-                    'id' => 'slug',
                     'name' => 'slug',
                     'label' => get_str('category_slug'),
                     'value' => $category->slug,
-                    'required' => 'required',
+                    'required' => true,
                     'autocomplete' => 'off'
                 ]
             );
