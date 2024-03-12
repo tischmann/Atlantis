@@ -79,12 +79,12 @@ use Tischmann\Atlantis\{Template};
 
     if ($articles) {
         echo <<<HTML
-        <a href="/{{env=APP_LOCALE}}/new/article" title="{{lang=article_new}}" class="mb-4 flex items-center justify-center p-3 rounded-lg bg-gray-200 hover:bg-gray-300">
+        <a href="/{{env=APP_LOCALE}}/new/article" title="{{lang=article_new}}" class="mb-4 flex items-center justify-center p-3 rounded-lg bg-sky-600 hover:bg-sky-500 shadow hover:shadow-lg transition">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
         </a>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
         HTML;
 
         foreach ($articles as $article) {

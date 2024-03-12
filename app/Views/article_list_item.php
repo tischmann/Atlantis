@@ -14,7 +14,7 @@ list($image_width, $image_height) = $article->getImageSizes(true);
 
 ?>
 
-<a href="/{{env=APP_LOCALE}}/edit/article/<?= $article->id ?>" title="<?= $article->title ?>" class="group/item group/label block">
+<a href="/{{env=APP_LOCALE}}/edit/article/<?= $article->id ?>" title="<?= $article->title ?>" class="group/item block shadow-md hover:shadow-xl">
     <article>
         <div class="relative">
             <div class="group-hover/item:opacity-100 absolute opacity-0 inset-0 bg-black bg-opacity-50 rounded-t-xl flex items-center justify-center transition-opacity">
@@ -27,10 +27,10 @@ list($image_width, $image_height) = $article->getImageSizes(true);
             </div>
             <img srcset="<?= $src_low ?> 320w, <?= $src ?> 1280w" sizes="(max-width: 600px) 1280px, 320px" alt="<?= $article->title ?>" width="<?= $image_width ?>" height="<?= $image_height ?>" class="bg-gray-200 w-full rounded-t-xl" decoding="async" loading="auto">
         </div>
-        <div class="px-4 py-3 border-2 border-gray-200 rounded-xl rounded-t-none border-t-0 group-hover/label:border-gray-300 transition">
-            <h2 class="font-semibold text-base line-clamp-1"><?= $article->title ?></h2>
-            <h3 class="line-clamp-1 text-gray-600 text-xs mb-1"><?= $article->getCategory()->title ?></h3>
-            <div class="mb-2 text-gray-600 text-xs flex justify-between items-center flex-nowrap gap-2">
+        <div class="px-4 py-3 bg-gray-100 dark:bg-gray-700 rounded-xl rounded-t-none">
+            <h2 class="m-0 mb-1 font-medium text-sm line-clamp-1"><?= $article->title ?></h2>
+            <h3 class="m-0 mb-1 line-clamp-1 text-gray-600 dark:text-gray-400 text-xs"><?= $article->getCategory()->title ?></h3>
+            <div class="mb-2 text-gray-600 dark:text-gray-400 text-xs flex justify-between items-center flex-nowrap gap-2">
                 <span class="grow"><?= $article->created_at->getElapsedTime(getenv('APP_LOCALE')) ?></span>
                 <?php
                 if ($article->fixed) {
@@ -64,7 +64,7 @@ list($image_width, $image_height) = $article->getImageSizes(true);
                 }
                 ?>
             </div>
-            <p class="line-clamp-3 text-sm"><?= mb_substr($article->short_text, 0, 500) ?></p>
+            <p class="m-0 line-clamp-3 text-xs"><?= mb_substr($article->short_text, 0, 500) ?></p>
         </div>
     </article>
 </a>
