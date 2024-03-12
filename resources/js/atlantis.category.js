@@ -17,7 +17,7 @@ export default class Category {
 
         this.id = parseInt(this.form.dataset.category)
         ;['locale', 'parent_id'].forEach((field) => {
-            new Select(document.getElementById(`select_field_${field}`))
+            new Select(document.querySelector(`select[name="${field}"]`))
         })
 
         document

@@ -1,4 +1,4 @@
-<select id="select_field_{{name}}" name="{{name}}" title="{{title}}">
+<select name="{{name}}" title="{{title}}">
     <?php
     foreach ($options as $option) {
         $text = $option['text'] ?? null;

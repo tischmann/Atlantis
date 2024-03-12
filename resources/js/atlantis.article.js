@@ -109,7 +109,7 @@ export default class Article {
         const attachementsContainer = this.getAttachementsContainer()
 
         const categorySelect = new Select(
-            document.getElementById(`select_field_category_id`)
+            document.querySelector(`select[name="category_id"]`)
         )
 
         new Select(document.getElementById('locale-select'), {

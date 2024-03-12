@@ -1,20 +1,21 @@
-$('#categories-list').sortable({
-    placeholder: 'ui-state-highlight',
-    update: function () {
-        fetch('/categories/sort', {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                categories: Array.from(
-                    document
-                        .getElementById('categories-list')
-                        .querySelectorAll('li')
-                ).map((el) => el.dataset.id)
+$('[data-categories]').each(function () {
+    $(this).sortable({
+        placeholder: 'ui-state-highlight',
+        handle: '.handle',
+        update: function (event, ui) {
+            fetch('/categories/sort', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    categories: Array.from(
+                        ui.item.closest('ul').children('li')
+                    ).map((el) => el.dataset.id)
+                })
             })
-        })
-    }
-})
+        }
+    })
 
-$('#categories-list').disableSelection()
+    $(this).disableSelection()
+})

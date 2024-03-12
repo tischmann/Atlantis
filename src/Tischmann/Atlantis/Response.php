@@ -33,12 +33,13 @@ final class Response
 
         header("Content-Security-Policy: "
             . "default-src 'none'; "
-            . "base-uri 'self'; "
+            . "base-uri 'none'; "
             . "connect-src 'self'; "
             . "manifest-src 'self'; "
             . "img-src 'self' data: blob: https:; "
             . "child-src 'self' https:;"
-            . "script-src https: http: 'strict-dynamic' 'nonce-" . getenv('APP_NONCE') . "'; "
+            . "script-src https: http: 'strict-dynamic' 'nonce-" . getenv('APP_NONCE') . "' 'unsafe-inline'; "
+            . "object-src 'self'; "
             . "style-src 'unsafe-inline' https:; "
             . "frame-src 'self' https:;"
             . "font-src 'self' https: data:; ");

@@ -7,7 +7,7 @@ use Tischmann\Atlantis\{Template};
 <link rel="stylesheet" href="/css/jquery-ui.min.css" media="screen">
 <style>
     .ui-state-highlight {
-        min-height: 3.75rem;
+        min-height: 3.5rem;
         border-radius: .5rem;
     }
 </style>
@@ -33,5 +33,16 @@ use Tischmann\Atlantis\{Template};
     </a>
     <?php include 'categories_list_list.php' ?>
 </main>
-<script src="/js/atlantis.categories.min.js" nonce="{{nonce}}" type="module"></script>
-<script src="/js/categories.list.min.js" nonce="{{nonce}}" type="module"></script>
+<script src="/js/atlantis.categories.min.js" nonce="{{nonce}}"></script>
+<script nonce="{{nonce}}" type="module">
+    import Select from '/js/atlantis.select.min.js';
+    ['locale'].forEach((field) => {
+        new Select(document.querySelector(`select[name="${field}"]`), {
+            onchange: (value) => {
+                const url = new URL(window.location.href)
+                url.searchParams.set(field, value)
+                window.location.href = url.toString()
+            }
+        })
+    })
+</script>

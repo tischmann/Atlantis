@@ -14,17 +14,50 @@ if (!$category->exists()) {
 $category->children = $category->fetchChildren();
 
 ?>
+<link rel="stylesheet" href="/css/jquery-ui.min.css" media="screen">
+<style>
+    .ui-state-highlight {
+        min-height: 3.5rem;
+        border-radius: .5rem;
+    }
+</style>
+<script src="/js/jquery.min.js" nonce="{{nonce}}"></script>
+<script src="/js/jquery-ui.min.js" nonce="{{nonce}}"></script>
 <main class="md:container mx-8 md:mx-auto">
     <form class="mb-8" data-category="<?= $category->id ?>">
-        <div class="mb-8 relative">
-            <label for="title" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 px-1">{{lang=category_title}}</label>
-            <input class="py-2 px-3 outline-none border-2 border-gray-200 dark:border-gray-600 rounded-lg w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:border-sky-600 transition" aria-label="title" id="title" name="title" value="<?= $category->title ?>" required>
+        <div class="mb-8">
+            <?php
+            Template::echo(
+                template: 'input_field',
+                args: [
+                    'type' => 'text',
+                    'id' => 'title',
+                    'name' => 'title',
+                    'label' => get_str('category_title'),
+                    'value' => $category->title,
+                    'required' => 'required',
+                    'autocomplete' => 'off'
+                ]
+            );
+            ?>
         </div>
-        <div class="mb-8 relative">
-            <label for="slug" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 px-1">{{lang=category_slug}}</label>
-            <input class="py-2 px-3 outline-none border-2 border-gray-200 dark:border-gray-600 rounded-lg w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:border-sky-600 transition" aria-label="slug" id="slug" name="slug" value="<?= $category->slug ?>" required>
+        <div class="mb-8">
+            <?php
+            Template::echo(
+                template: 'input_field',
+                args: [
+                    'type' => 'text',
+                    'id' => 'slug',
+                    'name' => 'slug',
+                    'label' => get_str('category_slug'),
+                    'value' => $category->slug,
+                    'required' => 'required',
+                    'autocomplete' => 'off'
+                ]
+            );
+            ?>
         </div>
-        <div class="mb-8 relative">
+        <div class="mb-8">
             <?php
             Template::echo(
                 template: 'select_field',
@@ -36,7 +69,7 @@ $category->children = $category->fetchChildren();
             );
             ?>
         </div>
-        <div class="mb-8 relative">
+        <div class="mb-8">
             <?php
             Template::echo(
                 template: 'select_field',
@@ -52,19 +85,23 @@ $category->children = $category->fetchChildren();
         <?php
         if ($category->children) {
             echo <<<HTML
-            <div class="mb-8 relative">
-                <div class="rounded-lg border-2 border-gray-200 dark:border-gray-600 select-none">
-                    <div class="rounded-lg border-[16px] border-white dark:border-gray-800 relative">
+            <div class="mb-8">
             HTML;
 
-            $categories = $category->children;
-
-            include 'categories_list_list.php';
+            Template::echo(
+                template: 'container_field',
+                args: [
+                    'label' => get_str('category_children'),
+                    'content' => Template::html(
+                        template: 'categories_list_list',
+                        args: [
+                            'categories' => $category->children
+                        ]
+                    ),
+                ]
+            );
 
             echo <<<HTML
-                    </div>
-                </div>
-                <label class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 px-1">{{lang=category_children}}</label>
             </div>
             HTML;
         }
@@ -86,8 +123,5 @@ $category->children = $category->fetchChildren();
         </div>
     </form>
 </main>
-<link rel="stylesheet" href="/css/jquery-ui.min.css" media="screen">
-<script src="/js/jquery.min.js" nonce="{{nonce}}"></script>
-<script src="/js/jquery-ui.min.js" nonce="{{nonce}}"></script>
 <script src="/js/atlantis.categories.min.js" nonce="{{nonce}}" type="module"></script>
 <script src="/js/category.editor.min.js" nonce="{{nonce}}" type="module"></script>
