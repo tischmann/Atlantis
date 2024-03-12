@@ -83,7 +83,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                     <input type="hidden" id="image" name="image" value="{$article->getImage()}">
                             <img id="article-image" src="{$src}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="bg-gray-200 rounded-lg w-full" decoding="async" loading="auto">
                             <div id="pre-upload-image" class="w-full mt-4 flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg" title="{{lang=upload}}">{{lang=upload}}</div>
-                            <div id="upload-image-container" class="mt-4 grid grid-cols-3 gap-4 hidden">
+                            <div id="upload-image-container" class="mt-4 grid-cols-3 gap-4 hidden">
                     HTML;
 
                     $content .= Template::html(
