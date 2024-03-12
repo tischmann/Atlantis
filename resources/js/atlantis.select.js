@@ -85,7 +85,7 @@ export default class Select {
             'bg-white',
             'dark:bg-gray-800',
             'rounded-lg',
-            'border',
+            'border-2',
             'border-gray-200',
             'dark:border-gray-600',
             'shadow-xl',
