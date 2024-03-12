@@ -28,7 +28,7 @@ export default class Article {
             menubar: 'file edit view insert format tools table help',
             toolbar:
                 'undo redo | bold italic underline strikethrough | fontsize blocks | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample',
-            height: 600,
+            height: 800,
             quickbars_selection_toolbar:
                 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
             noneditable_class: 'mceNonEditable',
@@ -257,6 +257,7 @@ export default class Article {
 
         $(attachementsContainer).sortable({
             placeholder: 'ui-state-highlight',
+            handle: '.handle',
             update: () => {
                 this.updateAttachementsInput()
             }
@@ -275,7 +276,11 @@ export default class Article {
     }
 
     generateTags() {
-        const limit = parseInt(this.getTagsLimitElement().value)
+        let limit = parseInt(this.getTagsLimitElement().value)
+
+        limit = limit > 20 ? 20 : limit
+
+        limit = limit < 1 ? 1 : limit
 
         const tags = {}
 
@@ -305,7 +310,7 @@ export default class Article {
     }
 
     getTextElement() {
-        return this.form.querySelector('input[name="text"]')
+        return this.form.querySelector('textarea[name="text"]')
     }
 
     getTagsElement() {
@@ -874,11 +879,56 @@ export default class Article {
             'items-center',
             'justify-between',
             'text-gray-800',
+            'dark:text-white',
             'w-full',
             'bg-gray-200',
+            'dark:bg-gray-700',
             'hover:bg-gray-300',
+            'dark:hover:bg-gray-600',
             'rounded-lg'
         )
+
+        const svg = document.createElementNS(
+            'http://www.w3.org/2000/svg',
+            'svg'
+        )
+
+        svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+
+        svg.setAttribute('fill', 'none')
+
+        svg.setAttribute('viewBox', '0 0 24 24')
+
+        svg.setAttribute('stroke-width', '1.5')
+
+        svg.setAttribute('stroke', 'currentColor')
+
+        svg.classList.add(
+            'handle',
+            'ml-2',
+            'w-6',
+            'h-6',
+            'cursor-grab',
+            'hover:text-sky-500'
+        )
+
+        const path = document.createElementNS(
+            'http://www.w3.org/2000/svg',
+            'path'
+        )
+
+        path.setAttribute('stroke-linecap', 'round')
+
+        path.setAttribute('stroke-linejoin', 'round')
+
+        path.setAttribute(
+            'd',
+            'M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9'
+        )
+
+        svg.append(path)
+
+        li.append(svg)
 
         const a = document.createElement('a')
 
@@ -890,7 +940,7 @@ export default class Article {
             'overflow-hidden',
             'whitespace-nowrap',
             'grow',
-            'px-3',
+            'pr-3',
             'py-2'
         )
 

@@ -150,7 +150,7 @@ return [
     'article_visible_all' => 'Все',
     'article_visible_visible' => 'Видно',
     'article_visible_invisible' => 'Скрыто',
-    'article_fixed' => 'Закрепить',
+    'article_fixed' => 'Закрепление',
     'article_fixed_all' => 'Все',
     'article_fixed_on' => 'Да',
     'article_fixed_off' => 'Нет',
