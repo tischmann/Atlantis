@@ -29,7 +29,7 @@ list($image_width, $image_height) = $article->getImageSizes();
     }
 </style>
 <main class="md:container mx-8 md:mx-auto">
-    <a href="/{{env=APP_LOCALE}}/article/<?= $article->url ?>.html" class="w-full mt-4 flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg mb-8" title="{{lang=show}}">{{lang=show}}</a>
+    <a href="/{{env=APP_LOCALE}}/articles/<?= $article->url ?>.html" class="w-full mt-4 flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg mb-8" title="{{lang=show}}">{{lang=show}}</a>
     <form data-article="<?= $article->id ?>">
         <div class="mb-8 grid grid-cols-1 xl:grid-cols-3 gap-8">
             <div class="col-span-1 xl:col-span-2">
