@@ -259,7 +259,7 @@ class ArticlesController extends Controller
             $query->where('moderated', $moderated);
         }
 
-        $pagination = new Pagination(query: $query, limit: 10);
+        $pagination = new Pagination(query: $query, limit: 12);
 
         $articles = Article::all($query);
 

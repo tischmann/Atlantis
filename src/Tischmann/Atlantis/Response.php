@@ -41,6 +41,7 @@ final class Response
             . "script-src https: http: 'strict-dynamic' 'nonce-" . getenv('APP_NONCE') . "' 'unsafe-inline'; "
             . "object-src 'self'; "
             . "style-src 'unsafe-inline' https:; "
+            . "media-src 'self' https:; "
             . "frame-src 'self' https:;"
             . "font-src 'self' https: data:; ");
 
