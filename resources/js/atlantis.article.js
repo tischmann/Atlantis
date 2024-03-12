@@ -1,7 +1,6 @@
 import Dialog from './atlantis.dialog.min.js'
 import Upload from './atlantis.upload.min.js'
 import Progress from './atlantis.progress.min.js'
-import Sortable from './atlantis.sortable.min.js'
 import Select from './atlantis.select.min.js'
 
 export default class Article {
@@ -33,7 +32,7 @@ export default class Article {
             quickbars_selection_toolbar:
                 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
             noneditable_class: 'mceNonEditable',
-            toolbar_mode: 'wrap',
+            toolbar_mode: 'sliding',
             contextmenu: 'link image table',
             image_caption: true,
             skin: 'oxide',
@@ -247,23 +246,32 @@ export default class Article {
             this.initAttachementItem(li)
         })
 
-        new Sortable(galleryContainer, {
-            ondragend: () => {
+        $(galleryContainer).sortable({
+            placeholder: 'ui-state-highlight',
+            update: () => {
                 this.updateGalleryInput()
             }
         })
 
-        new Sortable(attachementsContainer, {
-            ondragend: () => {
+        $(galleryContainer).disableSelection()
+
+        $(attachementsContainer).sortable({
+            placeholder: 'ui-state-highlight',
+            update: () => {
                 this.updateAttachementsInput()
             }
         })
 
-        new Sortable(videosContainer, {
-            ondragend: () => {
-                this.updateGalleryInput()
+        $(attachementsContainer).disableSelection()
+
+        $(videosContainer).sortable({
+            placeholder: 'ui-state-highlight',
+            update: () => {
+                this.updateVideosInput()
             }
         })
+
+        $(videosContainer).disableSelection()
     }
 
     generateTags() {
@@ -524,7 +532,7 @@ export default class Article {
         const values = []
 
         this.getGalleryContainer()
-            .querySelectorAll('li')
+            .querySelectorAll('li:not(.ui-state-highlight)')
             .forEach((li) => {
                 values.push(
                     li

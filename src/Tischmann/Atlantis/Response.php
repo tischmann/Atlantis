@@ -27,15 +27,15 @@ final class Response
 
         header("Cache-Control: public, max-age=31536000, no-transform");
 
-        header("X-XSS-Protection: 1; mode=block");
-
         header("Access-Control-Expose-Headers: Content-Encoding");
 
         header("Access-Control-Allow-Methods: POST, GET, PUT, DELETE");
 
         header("Content-Security-Policy: "
+            . "default-src 'none'; "
             . "base-uri 'self'; "
-            . "default-src 'self'; "
+            . "connect-src 'self'; "
+            . "manifest-src 'self'; "
             . "img-src 'self' data: blob: https:; "
             . "child-src 'self' https:;"
             . "script-src https: http: 'strict-dynamic' 'nonce-" . getenv('APP_NONCE') . "'; "
@@ -50,8 +50,6 @@ final class Response
         header("Cross-Origin-Opener-Policy: same-origin");
 
         header("X-Content-Type-Options: nosniff");
-
-        header("X-Frame-Options: SAMEORIGIN");
     }
 
     /**

@@ -101,5 +101,8 @@ $category->children = $category->fetchChildren();
         </div>
     </form>
 </main>
+<link rel="stylesheet" href="/css/jquery-ui.min.css" media="screen">
+<script src="/js/jquery.min.js" nonce="{{nonce}}"></script>
+<script src="/js/jquery-ui.min.js" nonce="{{nonce}}"></script>
 <script src="/js/atlantis.categories.min.js" nonce="{{nonce}}" type="module"></script>
 <script src="/js/category.editor.min.js" nonce="{{nonce}}" type="module"></script>

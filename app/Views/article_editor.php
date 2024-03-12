@@ -19,6 +19,15 @@ $category = $article->getCategory();
 list($image_width, $image_height) = $article->getImageSizes();
 
 ?>
+<link rel="stylesheet" href="/css/jquery-ui.min.css" media="screen">
+<script src="/js/jquery.min.js" nonce="{{nonce}}"></script>
+<script src="/js/jquery-ui.min.js" nonce="{{nonce}}"></script>
+<style>
+    .ui-state-highlight {
+        min-height: 2rem;
+        border-radius: .375rem;
+    }
+</style>
 <main class="md:container mx-8 md:mx-auto">
     <a href="/{{env=APP_LOCALE}}/article/<?= $article->url ?>.html" class="w-full mt-4 flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg mb-8" title="{{lang=show}}">{{lang=show}}</a>
     <form data-article="<?= $article->id ?>">
@@ -120,7 +129,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                                 ?>
                                 <div id="upload-gallery" class="col-span-2 w-full flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg" title="{{lang=upload}}">{{lang=upload}}</div>
                             </div>
-                            <ul class="gallery-container grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-2 gap-4">
+                            <ul class="gallery-container grid grid-cols-2 gap-4">
                                 <?php
                                 foreach ($article->getGalleryImages() as $src) {
                                     Template::echo(
@@ -147,10 +156,19 @@ list($image_width, $image_height) = $article->getImageSizes();
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                                 </svg>
                             </div>
-                            <ul class="videos-container grid grid-cols-1 gap-4">
+                            <ul class="videos-container grid grid-cols-2 gap-4">
                                 <?php
                                 foreach ($article->getVideos() as $video) {
-                                    require "article_video_item.php";
+                                    echo <<<HTML
+                                    <li class="text-sm select-none relative">
+                                        <video src="/uploads/articles/{$article->id}/video/{$video}" class="block w-full rounded-md" controls></video>
+                                        <button type="button" class="block outline-none absolute top-0 right-0 p-2 text-white bg-red-600 rounded-md hover:bg-red-500 cursor-pointer transition drop-shadow" title="{{lang=delete}}" data-delete>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                            </svg>
+                                        </button>
+                                    </li>
+                                    HTML;
                                 }
                                 ?>
                             </ul>
@@ -166,7 +184,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                             </svg>
                         </div>
-                        <ul class="attachements-container flex flex-col gap-4" aria-label="attachement" name="attachement">
+                        <ul class="attachements-container grid grid-cols-1 gap-4" aria-label="attachement" name="attachement">
                             <?php
 
                             foreach ($article->getAttachements() as $attachement) {
