@@ -25,6 +25,18 @@ $image_src = $image
     : '/images/placeholder_16_9.svg';
 
 ?>
+<link rel="stylesheet" href="/css/fancybox.min.css" />
+<link rel="stylesheet" href="/css/carousel.min.css" />
+<style>
+    .f-carousel {
+        --f-carousel-spacing: 0.5rem;
+        --f-button-color: #fff;
+    }
+
+    .f-carousel__thumbs {
+        --f-thumb-border-radius: 0.5rem;
+    }
+</style>
 <main class="mx-8 lg:mx-auto lg:max-w-screen-lg">
     <article class="full-article gallery-container">
         <h2 class="mb-1 font-bold text-2xl flex items-center w-full line-clamp-1"><?= $article->title ?>
@@ -74,14 +86,14 @@ $image_src = $image
 
             if ($gallery) {
                 echo <<<HTML
-                <img src="{$image_src}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="hidden print w-full rounded-xl mr-4 shadow-lg" decoding="async" loading="auto">
+                <img src="{$image_src}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="hidden print w-full rounded-md shadow-lg" decoding="async" loading="lazy">
                 HTML;
 
                 echo <<<HTML
-                <div class="gallery-swiper mb-2 relative overflow-hidden select-none no-print">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide">
-                            <img src="/images/articles/{$article->id}/image/{$image}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="w-full rounded-xl mr-4 shadow-lg gallery-item" decoding="async" loading="auto">
+                <div class="select-none no-print">
+                    <div class="f-carousel" data-carousel>
+                        <div class="f-carousel__slide" data-fancybox="carousel" data-src="/images/articles/{$article->id}/image/{$image}" data-thumb-src="/images/articles/{$article->id}/image/thumb_{$image}">
+                            <img src="/images/articles/{$article->id}/image/{$image}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="rounded-md" decoding="async" loading="auto">
                         </div>
                 HTML;
 
@@ -89,43 +101,21 @@ $image_src = $image
                     list($image_width, $image_height) = $article->getImageSizes(
                         file: getenv('APP_ROOT') . "/public/images/articles/{$article->id}/gallery/{$filename}"
                     );
+
                     echo <<<HTML
-                    <div class="swiper-slide">
-                        <img src="/images/articles/{$article->id}/gallery/{$filename}" width="{$image_width}" height="{$image_height}" alt="{$article->title}" decoding="async" loading="auto" class="w-full rounded-xl gallery-item">
+                     <div class="f-carousel__slide" data-fancybox="carousel" data-src="/images/articles/{$article->id}/gallery/{$filename}" data-thumb-src="/images/articles/{$article->id}/gallery/thumb_{$filename}">
+                        <img src="/images/articles/{$article->id}/gallery/{$filename}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="rounded-md" decoding="async" loading="lazy">
                     </div>
                     HTML;
                 }
 
-                list($image_width, $image_height) = $article->getImageSizes(true);
-
-                echo <<<HTML
-                    </div>
-                </div>
-                <div thumbsSlider="" class="thumb-gallery-swiper relative overflow-hidden select-none no-print">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide cursor-pointer">
-                            <img src="/images/articles/{$article->id}/image/thumb_{$image}" width="{$image_width}" height="{$image_height}" alt="{$article->title}" decoding="async" loading="auto" class="rounded-xl w-full">
-                        </div>
-                HTML;
-
-                foreach ($gallery as $filename) {
-                    list($image_width, $image_height) = $article->getImageSizes(
-                        file: getenv('APP_ROOT') . "/public/images/articles/{$article->id}/gallery/thumb_{$filename}"
-                    );
-
-                    echo <<<HTML
-                    <div class="swiper-slide cursor-pointer">
-                        <img src="/images/articles/{$article->id}/gallery/thumb_{$filename}" width="{$image_width}" height="{$image_height}" alt="{$article->title}" decoding="async" loading="auto" class="rounded-xl w-full">
-                    </div>
-                    HTML;
-                }
                 echo <<<HTML
                     </div>
                 </div>
                 HTML;
             } else {
                 echo <<<HTML
-                <img src="{$image_src}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="w-full rounded-xl mr-4 shadow-lg gallery-item" decoding="async" loading="auto">
+                <img src="{$image_src}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="w-full rounded-md shadow-lg" decoding="async" loading="auto" data-fancybox="carousel" data-src="{$image_src}">
                 HTML;
             }
             ?>
@@ -178,6 +168,4 @@ $image_src = $image
         ?>
     </article>
 </main>
-<link rel="stylesheet" href="/css/swiper-bundle.min.css" />
-<script src="/js/swiper-bundle.min.js" nonce="{{nonce}}"></script>
 <script src="/js/full.article.min.js" nonce="{{nonce}}" type="module"></script>

@@ -28,18 +28,6 @@ figcaption {
     color: #4a5568;
 }
 
-.gallery-item {
-    cursor: zoom-in;
-}
-
-[thumbsSlider] .swiper-slide {
-    opacity: 0.5;
-}
-
-[thumbsSlider] .swiper-slide-thumb-active {
-    opacity: 1;
-}
-
 p {
     margin: 1rem 0;
 }
