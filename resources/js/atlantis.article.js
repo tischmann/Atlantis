@@ -156,9 +156,11 @@ export default class Article {
             'click',
             function () {
                 this.remove()
-                document
-                    .getElementById('upload-image-container')
-                    .classList.remove('hidden')
+                const container = document.getElementById(
+                    'upload-image-container'
+                )
+                container.classList.remove('hidden')
+                container.classList.add('grid')
             },
             {
                 once: true
@@ -181,9 +183,11 @@ export default class Article {
             'click',
             function () {
                 this.remove()
-                document
-                    .getElementById('upload-gallery-container')
-                    .classList.remove('hidden')
+                const container = document.getElementById(
+                    'upload-gallery-container'
+                )
+                container.classList.remove('hidden')
+                container.classList.add('grid')
             },
             {
                 once: true

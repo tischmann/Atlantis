@@ -157,7 +157,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>
                     </div>
-                    <div id="upload-gallery-container" class="my-4 grid grid-cols-3 gap-4 hidden">
+                    <div id="upload-gallery-container" class="mb-4 grid-cols-3 gap-4 hidden">
                     HTML;
 
                     $content .= Template::html(
