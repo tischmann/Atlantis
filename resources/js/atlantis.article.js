@@ -112,7 +112,7 @@ export default class Article {
             document.querySelector(`select[name="category_id"]`)
         )
 
-        new Select(document.getElementById('locale-select'), {
+        new Select(document.querySelector('select[name="locale"]'), {
             onchange: (value) => {
                 fetch(`/locale/categories/${value}`)
                     .then((response) => response.json())
@@ -123,7 +123,7 @@ export default class Article {
         })
 
         this.imageSizeSelect = new Select(
-            document.getElementById(`select_field_image_size`),
+            document.querySelector(`select[name="image_size"]`),
             {
                 onchange: (value) => {
                     const img = this.getImageElement()
@@ -149,7 +149,7 @@ export default class Article {
         )
 
         this.gallerySizeSelect = new Select(
-            document.getElementById(`select_field_gallery_image_size`)
+            document.querySelector(`select[name="gallery_image_size"]`)
         )
 
         document.getElementById('pre-upload-image').addEventListener(

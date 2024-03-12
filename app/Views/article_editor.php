@@ -33,9 +33,20 @@ list($image_width, $image_height) = $article->getImageSizes();
     <form data-article="<?= $article->id ?>">
         <div class="mb-8 grid grid-cols-1 xl:grid-cols-3 gap-8">
             <div class="col-span-1 xl:col-span-2">
-                <div class="mb-8 relative">
-                    <label for="title" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=article_title}}</label>
-                    <input class="py-2 px-3 outline-none border-2 border-gray-200 rounded-lg w-full focus:border-sky-600 transition" aria-label="title" id="title" name="title" value="<?= $article->title ?>" required>
+                <div class="mb-8">
+                    <?php
+                    Template::echo(
+                        template: 'input_field',
+                        args: [
+                            'type' => 'text',
+                            'name' => 'title',
+                            'label' => get_str('article_title'),
+                            'value' => $article->title,
+                            'required' => true,
+                            'autocomplete' => 'off'
+                        ]
+                    );
+                    ?>
                 </div>
                 <div class="mb-8">
                     <select id="locale-select" name="locale" title="{{lang=locale}}">
@@ -64,33 +75,44 @@ list($image_width, $image_height) = $article->getImageSizes();
                     );
                     ?>
                 </div>
-                <div class="mb-8 relative">
-                    <div class="rounded-lg border-2 border-gray-200 select-none">
-                        <div class="rounded-lg border-[16px] border-white relative">
-                            <input type="hidden" id="image" name="image" value="<?= $article->getImage() ?>">
-                            <img id="article-image" src="<?= $article->getImage() ? "/images/articles/{$article->id}/image/{$article->getImage()} " : "/images/placeholder.svg" ?>" alt="<?= $article->title ?>" width="<?= $image_width ?>" height="<?= $image_height ?>" class="bg-gray-200 rounded-lg w-full" decoding="async" loading="auto">
+                <div class="mb-8">
+                    <?php
+                    $src = $article->getImage() ? "/images/articles/{$article->id}/image/{$article->getImage()} " : "/images/placeholder.svg";
+
+                    $content = <<<HTML
+                    <input type="hidden" id="image" name="image" value="{$article->getImage()}">
+                            <img id="article-image" src="{$src}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="bg-gray-200 rounded-lg w-full" decoding="async" loading="auto">
                             <div id="pre-upload-image" class="w-full mt-4 flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg" title="{{lang=upload}}">{{lang=upload}}</div>
-                            <div id="upload-image-container" class="mt-8 grid grid-cols-3 gap-4 hidden">
-                                <?php
-                                Template::echo(
-                                    template: 'select_field',
-                                    args: [
-                                        'name' => 'image_size',
-                                        'title' => get_str('article_image_size'),
-                                        'options' => $image_sizes_options
-                                    ]
-                                );
-                                ?>
-                                <div id="upload-image" class="col-span-2 w-full flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg" title="{{lang=upload}}">{{lang=upload}}</div>
-                            </div>
-                            <div id="delete-image" class="absolute top-0 right-0 p-2 text-white bg-red-600 rounded-md hover:bg-red-500 cursor-pointer transition drop-shadow" title="{{lang=delete}}">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                </svg>
-                            </div>
-                        </div>
+                            <div id="upload-image-container" class="mt-4 grid grid-cols-3 gap-4 hidden">
+                    HTML;
+
+                    $content .= Template::html(
+                        template: 'select_field',
+                        args: [
+                            'name' => 'image_size',
+                            'title' => get_str('article_image_size'),
+                            'options' => $image_sizes_options
+                        ]
+                    );
+
+                    $content .= <<<HTML
+                        <div id="upload-image" class="col-span-2 w-full flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg" title="{{lang=upload}}">{{lang=upload}}</div>
                     </div>
-                    <label for="image" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=article_image}}</label>
+                    <div id="delete-image" class="absolute top-0 right-0 p-2 text-white bg-red-600 rounded-md hover:bg-red-500 cursor-pointer transition drop-shadow" title="{{lang=delete}}">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                        </svg>
+                    </div>
+                    HTML;
+
+                    Template::echo(
+                        template: 'container_field',
+                        args: [
+                            'label' => get_str('article_image'),
+                            'content' => $content,
+                        ]
+                    );
+                    ?>
                 </div>
                 <div class="mb-8 flex flex-col relative">
                     <label for="short_text" class="absolute select-none -top-3 left-2 mb-2 text-sm text-gray-600 bg-white px-1">{{lang=article_short_text}}</label>
