@@ -50,8 +50,6 @@ Document.prototype.deleteCookie = function (name, options = {}) {
 }
 
 HTMLElement.prototype.progress = function (value = 0) {
-    if (this.dataset.progress) return this.dataset.progress
-
     const wrapper = document.createElement('div')
 
     wrapper.classList.add('w-full', 'h-8', 'rounded-lg', 'bg-gray-200')
@@ -64,24 +62,22 @@ HTMLElement.prototype.progress = function (value = 0) {
 
     this.append(wrapper)
 
-    const obj = {
-        update: function (value) {
-            value = parseInt(value)
-            if (value < 0) value = 0
-            else if (value > 100) value = 100
-            bar.style.width = `${value}%`
-        },
+    function update(value) {
+        value = parseInt(value)
+        if (value < 0) value = 0
+        else if (value > 100) value = 100
+        bar.style.width = `${value}%`
+    }
+
+    update(value)
+
+    return {
+        update,
         destroy: () => {
             wrapper.remove()
             delete this.dataset.progress
         }
     }
-
-    obj.update(value)
-
-    this.dataset.progress = obj
-
-    return obj
 }
 
 HTMLSelectElement.prototype.select = function ({

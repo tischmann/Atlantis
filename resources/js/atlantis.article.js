@@ -12,7 +12,7 @@ export default class Article {
             '(prefers-color-scheme: dark)'
         ).matches
 
-        this.textEditor = tinymce.init({
+        tinymce.init({
             language: 'ru',
             target: this.form.querySelector('textarea[name="text"]'),
             paste_as_text: true,
@@ -273,7 +273,13 @@ export default class Article {
         $(videosContainer).disableSelection()
     }
 
-    generateTags() {
+    stripHtml(html) {
+        let tmp = document.createElement('div')
+        tmp.innerHTML = html
+        return tmp.textContent || tmp.innerText || ''
+    }
+
+    generateTags(threshold = 3) {
         let limit = parseInt(this.getTagsLimitElement().value)
 
         limit = limit > 20 ? 20 : limit
@@ -282,10 +288,11 @@ export default class Article {
 
         const tags = {}
 
-        this.getTextElement()
-            .value.split(/[\s,]+/)
+        this.stripHtml(tinymce.activeEditor.getContent())
+            .split(/[\s,]+/)
             .forEach((tag, index) => {
                 tag = tag.toLowerCase()
+                if (tag.length < threshold) return
                 if (tags[tag] === undefined) tags[tag] = 1
                 else tags[tag]++
             })
@@ -614,7 +621,7 @@ export default class Article {
                     this.uploadGalleryImage({
                         image: file,
                         size,
-                        progress: function (value) {
+                        progress: (value) => {
                             progress.update(value)
                         },
                         success: ({ images }) => {

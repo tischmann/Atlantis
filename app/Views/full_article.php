@@ -39,7 +39,7 @@ $image_src = $image
 </style>
 <main class="mx-8 lg:mx-auto lg:max-w-screen-lg">
     <article class="full-article gallery-container">
-        <h2 class="mb-1 font-bold text-2xl flex items-center w-full line-clamp-1"><?= $article->title ?>
+        <h2 class="mb-1 font-semibold text-2xl flex items-center w-full line-clamp-1"><?= $article->title ?>
             <?php
 
             if ($user->canAuthor($article)) {
@@ -174,7 +174,7 @@ $image_src = $image
 
         if ($article->tags) {
             echo <<<HTML
-            <div class="mb-4 flex flex-wrap gap-2 text-sm">
+            <div class="mb-4 flex flex-wrap gap-2 text-sm no-print">
             HTML;
 
             foreach ($article->tags as $tag) {

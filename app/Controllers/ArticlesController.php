@@ -27,7 +27,7 @@ class ArticlesController extends Controller
 {
     public function showArticlesByTag(): void
     {
-        $tag = $this->route->args('tag');
+        $tag = urldecode($this->route->args('tag'));
 
         if (!$tag) {
             View::send(
