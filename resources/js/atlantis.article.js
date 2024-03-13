@@ -103,7 +103,9 @@ export default class Article {
 
         const attachementsContainer = this.getAttachementsContainer()
 
-        document.querySelector(`select[name="category_id"]`).select()
+        const categorySelect = document
+            .querySelector(`select[name="category_id"]`)
+            .select()
 
         document.querySelector('select[name="locale"]').select({
             onchange: (value) => {
