@@ -50,6 +50,7 @@ return [
     'not_deleted' => 'Не удалено',
     'print_page' => 'Версия для печати',
     'updated_at' => 'Изменено',
+    'articles_by_tag' => 'Статьи по тегу',
     // Ошибки Json Web Token
     'jwt_missing_public_key' => 'Отсутствует публичный ключ',
     'jwt_wrong_segment_amount' => 'Неверное количество сегментов',

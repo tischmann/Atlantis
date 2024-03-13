@@ -119,7 +119,16 @@ class UsersController extends Controller
     public function signIn(): void
     {
         if (csrf_failed()) {
-            View::send(view: '403', layout: 'default', exit: true, code: 403);
+            View::send(
+                view: 'error',
+                layout: 'default',
+                exit: true,
+                code: 403,
+                args: [
+                    'title' => get_str('access_denied'),
+                    'code' => '403'
+                ],
+            );
         }
 
         $request = Request::instance();
@@ -131,15 +140,42 @@ class UsersController extends Controller
         $user = User::find($login, 'login');
 
         if (!$user->exists()) {
-            View::send(view: '403', layout: 'default', exit: true, code: 403);
+            View::send(
+                view: 'error',
+                layout: 'default',
+                exit: true,
+                code: 403,
+                args: [
+                    'title' => get_str('access_denied'),
+                    'code' => '403'
+                ],
+            );
         }
 
         if (!$user->status) {
-            View::send(view: '403', layout: 'default', exit: true, code: 403);
+            View::send(
+                view: 'error',
+                layout: 'default',
+                exit: true,
+                code: 403,
+                args: [
+                    'title' => get_str('access_denied'),
+                    'code' => '403'
+                ],
+            );
         }
 
         if (!password_verify($password, $user->password)) {
-            View::send(view: '403', layout: 'default', exit: true, code: 403);
+            View::send(
+                view: 'error',
+                layout: 'default',
+                exit: true,
+                code: 403,
+                args: [
+                    'title' => get_str('access_denied'),
+                    'code' => '403'
+                ],
+            );
         }
 
         $auth = new Auth($user);
@@ -189,13 +225,15 @@ class UsersController extends Controller
 
             if (!$user->exists()) {
                 View::send(
-                    view: '404',
+                    view: 'error',
                     layout: 'default',
                     args: [
                         'exception' => new Exception(
                             message: get_str('user_not_found'),
                             code: 404
-                        )
+                        ),
+                        'title' => get_str('not_found'),
+                        'code' => '404'
                     ],
                     exit: true,
                     code: 404

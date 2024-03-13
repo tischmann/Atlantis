@@ -172,6 +172,22 @@ $image_src = $image
             HTML;
         }
 
+        if ($article->tags) {
+            echo <<<HTML
+            <div class="mb-4 flex flex-wrap gap-2 text-sm">
+            HTML;
+
+            foreach ($article->tags as $tag) {
+                echo <<<HTML
+                <a href="/{{env=APP_LOCALE}}/tags/{$tag}" class="rounded-xl bg-gray-200 dark:bg-gray-700 px-3 py-2 hover:bg-gray-300 dark:hover:bg-gray-600 hover:underline" title="{$tag}">#{$tag}</a>
+                HTML;
+            }
+
+            echo <<<HTML
+            </div>
+            HTML;
+        }
+
         ?>
     </article>
 </main>

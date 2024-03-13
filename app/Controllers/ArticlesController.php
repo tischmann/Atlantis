@@ -25,6 +25,38 @@ use Tischmann\Atlantis\{
  */
 class ArticlesController extends Controller
 {
+    public function showArticlesByTag(): void
+    {
+        $tag = $this->route->args('tag');
+
+        if (!$tag) {
+            View::send(
+                view: 'error',
+                args: [
+                    'title' => get_str('not_found'),
+                    'code' => '404'
+                ],
+                code: 404,
+                exit: true
+            );
+        }
+
+        $query = Article::query()
+            ->where('tags', '[]', $tag)
+            ->order('created_at', 'DESC');
+
+        $pagination = new Pagination(query: $query, limit: 12);
+
+        View::send(
+            view: 'articles_by_tag',
+            args: [
+                'tag' => $tag,
+                'pagination' => $pagination,
+                'articles' => Article::all($query)
+            ]
+        );
+    }
+
     protected function checkEditRights(
         string $type = 'html',
         ?Article $article = null
@@ -61,10 +93,14 @@ class ArticlesController extends Controller
             default:
                 if (!$result) {
                     View::send(
-                        view: '403',
+                        view: 'error',
                         layout: 'default',
                         exit: true,
-                        code: 403
+                        code: 403,
+                        args: [
+                            'title' => get_str('access_denied'),
+                            'code' => '403'
+                        ],
                     );
                 }
                 break;
@@ -300,7 +336,15 @@ class ArticlesController extends Controller
         $article = Article::find($url, 'url');
 
         if (!$article->exists()) {
-            View::send(view: '404', layout: 'default', code: 404);
+            View::send(
+                view: 'error',
+                layout: 'default',
+                code: 404,
+                args: [
+                    'title' => get_str('not_found'),
+                    'code' => '404'
+                ]
+            );
         }
 
         View::send('full_article', ['article' => $article]);

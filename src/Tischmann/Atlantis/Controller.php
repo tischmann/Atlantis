@@ -20,12 +20,14 @@ class Controller
         $class = get_class($this);
 
         View::send(
-            view: '404',
+            view: 'error',
             layout: 'default',
             args: [
                 'exception' => new Exception(
                     message: "Метод '{$class}\\{$name}()' не найден"
-                )
+                ),
+                'title' => get_str('not_found'),
+                'code' => '404'
             ],
             exit: true,
             code: 404
@@ -59,8 +61,12 @@ class Controller
             default:
                 if (!$is_admin) {
                     View::send(
-                        view: '403',
+                        view: 'error',
                         layout: 'default',
+                        args: [
+                            'title' => get_str('access_denied'),
+                            'code' => '403'
+                        ],
                         exit: true,
                         code: 403
                     );

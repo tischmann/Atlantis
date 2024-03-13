@@ -77,12 +77,14 @@ final class Router
     protected function routeNotFound(): void
     {
         View::send(
-            view: '404',
+            view: 'error',
             layout: 'default',
             args: [
                 'exception' => new Exception(
                     get_str('route_not_found') . ": '{$_SERVER['REQUEST_URI']}'"
-                )
+                ),
+                'title' => get_str('not_found'),
+                'code' => '404'
             ],
             exit: true,
             code: 404

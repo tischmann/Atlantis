@@ -1,12 +1,12 @@
-<main class="md:container mx-8 md:mx-auto h-[calc(100vh-104px)] flex flex-col items-center justify-center">
-    <h1 class="text-center text-3xl font-bold mt-8">404</h1>
-    <p class="text-center mt-4">{{lang=not_found}}</p>
+<main class="md:container mx-8 md:mx-auto flex flex-col items-center justify-center">
+    <h1 class="text-center text-3xl font-bold mt-8">{{code}}</h1>
+    <p class="text-center mt-4">{{title}}</p>
     <?php
 
     if (isset($exception)) {
         echo <<<HTML
         <p class="text-center mt-4">
-            <div class="bg-gray-100 p-4 rounded-xl">
+            <div class="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white p-4 rounded-xl">
                 {$exception->getMessage()}
             </div>
         </p>
@@ -14,7 +14,7 @@
     }
 
     ?>
-    <div class="flex flex-col items-center justify-center m-8 h-[70vh]">
+    <div class="flex flex-col items-center justify-center m-8 h-96">
         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 500 500" class="block w-full h-full" xml:space="preserve">
             <g id="Floor">
                 <ellipse id="Floor_7_" style="fill:#F5F5F5;" cx="253.742" cy="341.762" rx="235.295" ry="135.848" />
@@ -483,6 +483,6 @@
         </svg>
     </div>
     <div class="flex justify-center mb-8">
-        <a href="/{{env=APP_LOCALE}}/" class="bg-gray-500 hover:bg-sky-800 text-white font-bold py-2 px-4 rounded-xl">{{lang=back}}</a>
+        <a href="/{{env=APP_LOCALE}}/" class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-medium py-2 px-4 rounded-md">{{lang=back}}</a>
     </div>
 </main>

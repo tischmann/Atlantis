@@ -36,7 +36,7 @@ use Tischmann\Atlantis\{Template};
             include "users_list_item.php";
         }
         ?>
-        <?php require 'pagination.php'; ?>
     </ul>
+    <div class="my-4"><?php include 'pagination.php'; ?></div>
 </main>
 <script src="/js/users.list.min.js" nonce="{{nonce}}" type="module"></script>

@@ -11,6 +11,7 @@ use Exception;
 use Tischmann\Atlantis\{
     Controller,
     Locale,
+    Pagination,
     Request,
     Response,
     View
@@ -27,8 +28,13 @@ class CategoriesController extends Controller
 
         if (!$category->exists()) {
             View::send(
-                view: '404',
-                exit: true
+                view: 'error',
+                exit: true,
+                args: [
+                    'title' => get_str('not_found'),
+                    'code' => '404'
+                ],
+                code: 404
             );
         }
 
@@ -37,9 +43,12 @@ class CategoriesController extends Controller
             ->where('locale', getenv('APP_LOCALE'))
             ->order('created_at', 'DESC');
 
+        $pagination = new Pagination(query: $query, limit: 12);
+
         View::send(
             view: 'articles_in_category',
             args: [
+                'pagination' => $pagination,
                 'articles' => Article::all($query)
             ]
         );

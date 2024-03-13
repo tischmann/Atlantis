@@ -65,3 +65,10 @@ Router::add(new Route(
     action: 'showCategory',
     method: 'GET',
 ));
+
+Router::add(new Route(
+    controller: new ArticlesController(),
+    path: 'tags/{tag}',
+    action: 'showArticlesByTag',
+    method: 'GET',
+));
