@@ -33,7 +33,6 @@ use Tischmann\Atlantis\{Template};
     </a>
     <?php include 'categories_list_list.php' ?>
 </main>
-<script src="/js/atlantis.categories.min.js" nonce="{{nonce}}"></script>
 <script nonce="{{nonce}}">
     (function() {
         ['locale'].forEach((name) => {

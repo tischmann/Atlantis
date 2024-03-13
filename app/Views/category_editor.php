@@ -121,10 +121,7 @@ $category->children = $category->fetchChildren();
         </div>
     </form>
 </main>
-<script src="/js/atlantis.categories.min.js" nonce="{{nonce}}" type="module"></script>
-<script nonce="{{nonce}}" type="module">
-    import Select from '/js/atlantis.select.min.js'
-
+<script nonce="{{nonce}}">
     (function() {
         const form = document.querySelector('form[data-category]')
 

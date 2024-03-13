@@ -137,14 +137,43 @@ assert($user instanceof User);
     (function() {
         const form = document.getElementById('user-form')
 
-        const request = function({
-            url,
-            method,
-            body = null,
-            after = function() {}
-        } = {}) {
-            fetch(url, {
-                method,
+        document.querySelector('button[data-save]')?.addEventListener('click', () => {
+            fetch(`/user/${form.dataset.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(Object.fromEntries(new FormData(form)))
+            }).then((response) => {
+                response.json().then((json) => {
+                    alert(`${json.message}`)
+                    window.location.reload()
+                })
+            })
+        })
+
+        document.querySelector('button[data-add]')?.addEventListener('click', () => {
+            fetch(`/user`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(Object.fromEntries(new FormData(form)))
+            }).then((response) => {
+                response.json().then((json) => {
+                    alert(`${json.message}`)
+                    window.location.href = `/user/${json.id}`
+                })
+            })
+        })
+
+        document.querySelector('button[data-delete]')?.addEventListener('click', () => {
+            if (!confirm(`{{lang=confirm_delete}}`)) return
+
+            fetch(`/user/${form.dataset.id}`, {
+                method: 'DELETE',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
@@ -153,43 +182,8 @@ assert($user instanceof User);
             }).then((response) => {
                 response.json().then((json) => {
                     alert(`${json.message}`)
-                    after(json)
-                })
-            })
-        }
-
-        document.querySelector('button[data-save]')?.addEventListener('click', () => {
-            request({
-                url: `/user/${form.dataset.id}`,
-                method: 'PUT',
-                body: JSON.stringify(Object.fromEntries(new FormData(form))),
-                after: () => {
-                    window.location.reload()
-                }
-            })
-        })
-
-        document.querySelector('button[data-add]')?.addEventListener('click', () => {
-            request({
-                url: `/user`,
-                method: 'POST',
-                body: JSON.stringify(Object.fromEntries(new FormData(form))),
-                after: ({
-                    id
-                }) => {
-                    window.location.href = `/user/${id}`
-                }
-            })
-        })
-
-        document.querySelector('button[data-delete]')?.addEventListener('click', () => {
-            if (!confirm(`{{lang=confirm_delete}}`)) return
-            request({
-                url: `/user/${form.dataset.id}`,
-                method: 'DELETE',
-                after: () => {
                     window.location.href = '/users'
-                }
+                })
             })
         })
     })()
