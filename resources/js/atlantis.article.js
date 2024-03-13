@@ -8,6 +8,10 @@ export default class Article {
 
         this.id = parseInt(this.form.dataset.article)
 
+        const useDarkMode = window.matchMedia(
+            '(prefers-color-scheme: dark)'
+        ).matches
+
         this.textEditor = tinymce.init({
             language: 'ru',
             target: this.form.querySelector('textarea[name="text"]'),
@@ -26,7 +30,7 @@ export default class Article {
             toolbar_mode: 'sliding',
             contextmenu: 'link image table',
             image_caption: true,
-            skin: 'oxide',
+            skin: useDarkMode ? 'oxide-dark' : 'oxide',
             content_css: '/app.min.css',
             font_css:
                 'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap',

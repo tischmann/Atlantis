@@ -137,7 +137,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                         args: [
                             'label' => get_str('article_text'),
                             'content' => <<<HTML
-                            <textarea name="text" id="text" id="text">{$article_text}</textarea>
+                            <textarea name="text" id="text" id="text" class="bg-white text-gray-800 dark:bg-gray-800 dark:text-white">{$article_text}</textarea>
                             HTML,
                         ]
                     );
