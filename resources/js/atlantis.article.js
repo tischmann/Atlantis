@@ -6,10 +6,6 @@ export default class Article {
             this.form = document.querySelector('[data-article]')
         }
 
-        if (!this.form) {
-            return console.error('Форма с атрибутом [data-article] не найдена!')
-        }
-
         this.id = parseInt(this.form.dataset.article)
 
         this.textEditor = tinymce.init({
