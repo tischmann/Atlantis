@@ -1,4 +1,3 @@
-import Progress from './atlantis.progress.min.js'
 import Select from './atlantis.select.min.js'
 
 export default class Article {
@@ -595,7 +594,7 @@ export default class Article {
                 Array.from(event.target.files).forEach((file) => {
                     const container = this.getGalleryContainer()
 
-                    const progress = new Progress(container)
+                    const progress = container.progress()
 
                     const size = this.gallerySizeSelect.getValue()
 
@@ -755,7 +754,7 @@ export default class Article {
                 Array.from(event.target.files).forEach((file) => {
                     const container = this.getVideosContainer()
 
-                    const progress = new Progress(container)
+                    const progress = container.progress()
 
                     this.uploadVideo({
                         file: file,
@@ -1031,7 +1030,7 @@ export default class Article {
                 Array.from(event.target.files).forEach((file) => {
                     const container = this.getAttachementsContainer()
 
-                    const progress = new Progress(container)
+                    const progress = container.progress()
 
                     this.uploadAttachement({
                         file: file,

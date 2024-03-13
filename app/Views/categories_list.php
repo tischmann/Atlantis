@@ -34,15 +34,16 @@ use Tischmann\Atlantis\{Template};
     <?php include 'categories_list_list.php' ?>
 </main>
 <script src="/js/atlantis.categories.min.js" nonce="{{nonce}}"></script>
-<script nonce="{{nonce}}" type="module">
-    import Select from '/js/atlantis.select.min.js';
-    ['locale'].forEach((field) => {
-        new Select(document.querySelector(`select[name="${field}"]`), {
-            onchange: (value) => {
-                const url = new URL(window.location.href)
-                url.searchParams.set(field, value)
-                window.location.href = url.toString()
-            }
+<script nonce="{{nonce}}">
+    (function() {
+        ['locale'].forEach((field) => {
+            document.querySelector(`select[name="${field}"]`).select({
+                onchange: (value) => {
+                    const url = new URL(window.location.href)
+                    url.searchParams.set(field, value)
+                    window.location.href = url.toString()
+                }
+            })
         })
-    })
+    })()
 </script>

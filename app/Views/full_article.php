@@ -223,4 +223,10 @@ $image_src = $image
             }
         )
     })
+
+    document.querySelectorAll('.print-page').forEach((el) => {
+        el.addEventListener('click', (event) => {
+            window.print()
+        })
+    })
 </script>
