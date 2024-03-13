@@ -1,4 +1,3 @@
-import upload from './atlantis.upload.min.js'
 import Progress from './atlantis.progress.min.js'
 import Select from './atlantis.select.min.js'
 
@@ -478,7 +477,7 @@ export default class Article {
 
         data.append('size', size)
 
-        upload({
+        this.upload({
             url: '/article/image',
             data,
             success: (json) => {
@@ -564,7 +563,7 @@ export default class Article {
 
             data.append('size', size)
 
-            upload({
+            this.upload({
                 url: '/article/gallery',
                 data,
                 progress,
@@ -802,7 +801,7 @@ export default class Article {
 
             data.append('video[]', file)
 
-            upload({
+            this.upload({
                 url: '/article/videos',
                 data,
                 progress,
@@ -1001,7 +1000,7 @@ export default class Article {
 
             data.append('file[]', file)
 
-            upload({
+            this.upload({
                 url: '/article/attachements',
                 data,
                 progress,
@@ -1101,5 +1100,46 @@ export default class Article {
         svg.append(path)
 
         return svg
+    }
+
+    upload({
+        url = '/',
+        data = null,
+        progress = function () {},
+        success = function () {},
+        failure = function () {},
+        method = 'POST'
+    } = {}) {
+        new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest()
+
+            xhr.open(method.toUpperCase(), url)
+
+            xhr.upload.addEventListener('progress', (event) => {
+                if (event.lengthComputable) {
+                    const percent = (event.loaded / event.total) * 100
+                    progress(percent)
+                }
+            })
+
+            xhr.onload = () => {
+                const json = JSON.parse(xhr.response)
+
+                if (xhr.status === 200) {
+                    resolve(json)
+                } else {
+                    alert(json.message)
+                    reject(json)
+                }
+            }
+
+            xhr.onerror = () => {
+                reject(new Error('Network error'))
+            }
+
+            xhr.send(data)
+        })
+            .then(success)
+            .catch(failure)
     }
 }
