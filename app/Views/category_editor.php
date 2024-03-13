@@ -109,12 +109,12 @@ $category->children = $category->fetchChildren();
             <?php
             if ($category->exists()) {
                 echo <<<HTML
-                <button id="delete-category" class="flex items-center justify-center px-3 py-2 bg-red-600 hover:bg-red-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full" type="button" title="{{lang=delete}}" data-confirm="{{lang=confirm_delete_category}}">{{lang=delete}}</button>
-                <button id="save-category" class="flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full" type="button" title="{{lang=save}}">{{lang=save}}</button>
+                <button class="flex items-center justify-center px-3 py-2 bg-red-600 hover:bg-red-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full" type="button" title="{{lang=delete}}" data-delete>{{lang=delete}}</button>
+                <button class="flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full" type="button" title="{{lang=save}}" data-save>{{lang=save}}</button>
                 HTML;
             } else {
                 echo <<<HTML
-                <button id="add-category" class="flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full" type="button" title="{{lang=add}}">{{lang=add}}</button>
+                <button class="flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full" type="button" title="{{lang=add}}" data-add>{{lang=add}}</button>
                 HTML;
             }
             ?>
@@ -123,6 +123,69 @@ $category->children = $category->fetchChildren();
 </main>
 <script src="/js/atlantis.categories.min.js" nonce="{{nonce}}" type="module"></script>
 <script nonce="{{nonce}}" type="module">
-    import Category from '/js/atlantis.category.min.js'
-    new Category()
+    import Select from '/js/atlantis.select.min.js'
+
+    (function() {
+        const form = document.querySelector('form[data-category]')
+
+        ;
+        ['locale', 'parent_id'].forEach((field) => {
+            new Select(document.querySelector(`select[name="${field}"]`))
+        })
+
+        document
+            .querySelector('button[data-save]')
+            ?.addEventListener('click', () => {
+                fetch(`/category/${form.dataset.category}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(Object.fromEntries(new FormData(form)))
+                }).then((response) => {
+                    response.json().then((json) => {
+                        alert(json.message)
+                        window.location.reload()
+                    })
+                })
+            })
+
+        document
+            .querySelector('button[data-add]')
+            ?.addEventListener('click', () => {
+                fetch(`/category`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(Object.fromEntries(new FormData(form)))
+                }).then((response) => {
+                    response.json().then((json) => {
+                        alert(json.message)
+                        window.location.href = `/edit/category/${json.id}`
+                    })
+                })
+            })
+
+        document
+            .querySelector('button[data-delete]')
+            ?.addEventListener('click', (event) => {
+                if (!confirm(`{{lang=confirm_delete_category}}`)) return
+
+                fetch(`/category/${form.dataset.category}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                }).then((response) => {
+                    response.json().then((json) => {
+                        alert(json.message)
+                        window.location.href = '/edit/categories'
+                    })
+                })
+            })
+    })()
 </script>

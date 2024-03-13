@@ -134,61 +134,63 @@ assert($user instanceof User);
     </form>
 </main>
 <script nonce="{{nonce}}">
-    const form = document.getElementById('user-form')
+    (function() {
+        const form = document.getElementById('user-form')
 
-    const request = function({
-        url,
-        method,
-        body = null,
-        after = function() {}
-    } = {}) {
-        fetch(url, {
+        const request = function({
+            url,
             method,
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body
-        }).then((response) => {
-            response.json().then((json) => {
-                alert(`${json.message}`)
-                after(json)
+            body = null,
+            after = function() {}
+        } = {}) {
+            fetch(url, {
+                method,
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body
+            }).then((response) => {
+                response.json().then((json) => {
+                    alert(`${json.message}`)
+                    after(json)
+                })
+            })
+        }
+
+        document.querySelector('button[data-save]')?.addEventListener('click', () => {
+            request({
+                url: `/user/${form.dataset.id}`,
+                method: 'PUT',
+                body: JSON.stringify(Object.fromEntries(new FormData(form))),
+                after: () => {
+                    window.location.reload()
+                }
             })
         })
-    }
 
-    document.querySelector('button[data-save]')?.addEventListener('click', () => {
-        request({
-            url: `/user/${form.dataset.id}`,
-            method: 'PUT',
-            body: JSON.stringify(Object.fromEntries(new FormData(form))),
-            after: () => {
-                window.location.reload()
-            }
+        document.querySelector('button[data-add]')?.addEventListener('click', () => {
+            request({
+                url: `/user`,
+                method: 'POST',
+                body: JSON.stringify(Object.fromEntries(new FormData(form))),
+                after: ({
+                    id
+                }) => {
+                    window.location.href = `/user/${id}`
+                }
+            })
         })
-    })
 
-    document.querySelector('button[data-add]')?.addEventListener('click', () => {
-        request({
-            url: `/user`,
-            method: 'POST',
-            body: JSON.stringify(Object.fromEntries(new FormData(form))),
-            after: ({
-                id
-            }) => {
-                window.location.href = `/user/${id}`
-            }
+        document.querySelector('button[data-delete]')?.addEventListener('click', () => {
+            if (!confirm(`{{lang=confirm_delete}}`)) return
+            request({
+                url: `/user/${form.dataset.id}`,
+                method: 'DELETE',
+                after: () => {
+                    window.location.href = '/users'
+                }
+            })
         })
-    })
-
-    document.querySelector('button[data-delete]')?.addEventListener('click', () => {
-        if (!confirm(`{{lang=confirm_delete}}`)) return
-        request({
-            url: `/user/${form.dataset.id}`,
-            method: 'DELETE',
-            after: () => {
-                window.location.href = '/users'
-            }
-        })
-    })
+    })()
 </script>
