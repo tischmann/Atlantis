@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Models\{Category};
+use App\Models\{Article, Category};
 
 use Exception;
 
@@ -21,6 +21,29 @@ use Tischmann\Atlantis\{
  */
 class CategoriesController extends Controller
 {
+    public function showCategory(): void
+    {
+        $category = Category::find($this->route->args('slug'), 'slug');
+
+        if (!$category->exists()) {
+            View::send(
+                view: '404',
+                exit: true
+            );
+        }
+
+        $query = Article::query()
+            ->where('category_id', $category->id)
+            ->where('locale', getenv('APP_LOCALE'))
+            ->order('created_at', 'DESC');
+
+        View::send(
+            view: 'articles_in_category',
+            args: [
+                'articles' => Article::all($query)
+            ]
+        );
+    }
     /**
      * Форма редактирования/создания категории
      */

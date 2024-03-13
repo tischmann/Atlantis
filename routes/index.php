@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Controllers\{
     ArticlesController,
+    CategoriesController,
     IndexController,
     UsersController
 };
@@ -55,5 +56,12 @@ Router::add(new Route(
     controller: new IndexController(),
     path: 'sitemap',
     action: 'sitemap',
+    method: 'GET',
+));
+
+Router::add(new Route(
+    controller: new CategoriesController(),
+    path: 'category/{slug}',
+    action: 'showCategory',
     method: 'GET',
 ));
