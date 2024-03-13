@@ -191,4 +191,36 @@ $image_src = $image
         ?>
     </article>
 </main>
-<script src="/js/full.article.min.js" nonce="{{nonce}}" type="module"></script>
+<script nonce="{{nonce}}" type="module">
+    import {
+        Fancybox
+    } from '/js/fancybox.min.js'
+    import {
+        Carousel
+    } from '/js/carousel.min.js'
+    import {
+        Thumbs
+    } from '/js/carousel.thumbs.min.js'
+
+    document.querySelectorAll('[data-carousel]').forEach((element) => {
+        new Carousel(
+            element, {
+                on: {
+                    ready: function() {
+                        Fancybox.bind('[data-fancybox="carousel"]', {
+                            Thumbs: {
+                                type: 'classic'
+                            }
+                        })
+                    }
+                },
+                Dots: false,
+                Thumbs: {
+                    type: 'classic'
+                }
+            }, {
+                Thumbs
+            }
+        )
+    })
+</script>

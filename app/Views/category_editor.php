@@ -122,4 +122,7 @@ $category->children = $category->fetchChildren();
     </form>
 </main>
 <script src="/js/atlantis.categories.min.js" nonce="{{nonce}}" type="module"></script>
-<script src="/js/category.editor.min.js" nonce="{{nonce}}" type="module"></script>
+<script nonce="{{nonce}}" type="module">
+    import Category from '/js/atlantis.category.min.js'
+    new Category()
+</script>

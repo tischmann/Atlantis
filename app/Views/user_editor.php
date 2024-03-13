@@ -133,4 +133,69 @@ assert($user instanceof User);
         </div>
     </form>
 </main>
-<script src="/js/user.editor.min.js" nonce="{{nonce}}" type="module"></script>
+<script nonce="{{nonce}}" type="module">
+    import Dialog from '/js/atlantis.dialog.min.js'
+
+    const form = document.getElementById('user-form')
+
+    const request = function({
+        url,
+        method,
+        body = null,
+        onclose = function() {}
+    } = {}) {
+        fetch(url, {
+            method,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body
+        }).then((response) => {
+            response.json().then((json) => {
+                new Dialog({
+                    title: json.title,
+                    text: json.message,
+                    onclose: () => {
+                        onclose(json)
+                    }
+                })
+            })
+        })
+    }
+
+    document.getElementById('save-user').addEventListener('click', () => {
+        request({
+            url: `/user/${form.dataset.id}`,
+            method: 'PUT',
+            body: JSON.stringify(Object.fromEntries(new FormData(form))),
+            onclose: () => {
+                window.location.reload()
+            }
+        })
+    })
+
+    document.getElementById('add-user').addEventListener('click', () => {
+        request({
+            url: `/user`,
+            method: 'POST',
+            body: JSON.stringify(Object.fromEntries(new FormData(form))),
+            onclose: ({
+                id
+            }) => {
+                window.location.href = `/user/${id}`
+            }
+        })
+    })
+
+    document.getElementById('delete-user').addEventListener('click', () => {
+        if (!confirm(form.dataset.confirm)) return
+        request({
+            url: `/user/${form.dataset.id}`,
+            method: 'DELETE',
+            onclose: () => {
+                window.location.href = '/users'
+            }
+        })
+    })
+</script>

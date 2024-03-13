@@ -1,6 +1,7 @@
 export default class Progress {
+    value = 0
     constructor(container, { value = 0 } = {}) {
-        this.value = value
+        this.value = parseInt(value)
 
         this.container = container
 
@@ -25,6 +26,8 @@ export default class Progress {
     }
 
     update(value) {
+        if (value < 0) value = 0
+        else if (value > 100) value = 100
         this.bar.style.width = `${value}%`
     }
 

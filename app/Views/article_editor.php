@@ -394,4 +394,7 @@ list($image_width, $image_height) = $article->getImageSizes();
     </form>
 </main>
 <script src="/tinymce/tinymce.min.js" nonce="{{nonce}}"></script>
-<script src="/js/article.editor.min.js" nonce="{{nonce}}" type="module"></script>
+<script nonce="{{nonce}}" type="module">
+    import Article from '/js/atlantis.article.min.js'
+    new Article()
+</script>

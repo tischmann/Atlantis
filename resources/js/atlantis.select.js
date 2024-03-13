@@ -2,8 +2,6 @@ export default class Select {
     options = new Set()
 
     constructor(element, { onchange = function () {} } = {}) {
-        if (!element) return
-
         this.element = element
 
         this.onchange = onchange
