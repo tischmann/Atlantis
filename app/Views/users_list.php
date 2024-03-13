@@ -40,14 +40,15 @@ use Tischmann\Atlantis\{Template};
     <div class="my-4"><?php include 'pagination.php'; ?></div>
 </main>
 <script nonce="{{nonce}}" type="module">
-    import Select from '/js/atlantis.select.min.js';
-    ['role', 'status', 'order', 'direction'].forEach((field) => {
-        new Select(document.querySelector(`select[name="${field}"]`), {
-            onchange: (value) => {
-                const url = new URL(window.location.href)
-                url.searchParams.set(field, value)
-                window.location.href = url.toString()
-            }
+    (function() {
+        ['role', 'status', 'order', 'direction'].forEach((name) => {
+            document.querySelector(`select[name="${name}"]`).select({
+                onchange: (value) => {
+                    const url = new URL(window.location.href)
+                    url.searchParams.set(name, value)
+                    window.location.href = url.toString()
+                }
+            })
         })
-    })
+    })()
 </script>

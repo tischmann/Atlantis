@@ -1,5 +1,3 @@
-import Select from './atlantis.select.min.js'
-
 export default class Article {
     constructor({ form = null } = {}) {
         this.form = form
@@ -105,11 +103,9 @@ export default class Article {
 
         const attachementsContainer = this.getAttachementsContainer()
 
-        const categorySelect = new Select(
-            document.querySelector(`select[name="category_id"]`)
-        )
+        document.querySelector(`select[name="category_id"]`).select()
 
-        new Select(document.querySelector('select[name="locale"]'), {
+        document.querySelector('select[name="locale"]').select({
             onchange: (value) => {
                 fetch(`/locale/categories/${value}`)
                     .then((response) => response.json())
@@ -119,9 +115,9 @@ export default class Article {
             }
         })
 
-        this.imageSizeSelect = new Select(
-            document.querySelector(`select[name="image_size"]`),
-            {
+        this.imageSizeSelect = document
+            .querySelector(`select[name="image_size"]`)
+            .select({
                 onchange: (value) => {
                     const img = this.getImageElement()
 
@@ -142,12 +138,11 @@ export default class Article {
 
                     img.setAttribute('height', height)
                 }
-            }
-        )
+            })
 
-        this.gallerySizeSelect = new Select(
-            document.querySelector(`select[name="gallery_image_size"]`)
-        )
+        this.gallerySizeSelect = document
+            .querySelector(`select[name="gallery_image_size"]`)
+            .select()
 
         document.getElementById('pre-upload-image').addEventListener(
             'click',

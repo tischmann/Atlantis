@@ -129,8 +129,8 @@ $category->children = $category->fetchChildren();
         const form = document.querySelector('form[data-category]')
 
         ;
-        ['locale', 'parent_id'].forEach((field) => {
-            new Select(document.querySelector(`select[name="${field}"]`))
+        ['locale', 'parent_id'].forEach((name) => {
+            document.querySelector(`select[name="${name}"]`).select()
         })
 
         document
