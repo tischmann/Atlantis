@@ -36,11 +36,11 @@ use Tischmann\Atlantis\{Template};
 <script src="/js/atlantis.categories.min.js" nonce="{{nonce}}"></script>
 <script nonce="{{nonce}}">
     (function() {
-        ['locale'].forEach((field) => {
-            document.querySelector(`select[name="${field}"]`).select({
+        ['locale'].forEach((name) => {
+            document.querySelector(`select[name="${name}"]`).select({
                 onchange: (value) => {
                     const url = new URL(window.location.href)
-                    url.searchParams.set(field, value)
+                    url.searchParams.set(name, value)
                     window.location.href = url.toString()
                 }
             })

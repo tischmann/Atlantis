@@ -112,11 +112,11 @@ use Tischmann\Atlantis\{Template};
             'order',
             'direction',
             'moderated'
-        ].forEach((field) => {
-            document.querySelector(`select[name="${field}"]`).select({
+        ].forEach((name) => {
+            document.querySelector(`select[name="${name}"]`).select({
                 onchange: (value) => {
                     const url = new URL(window.location.href)
-                    url.searchParams.set(field, value)
+                    url.searchParams.set(name, value)
                     window.location.href = url.toString()
                 }
             })
