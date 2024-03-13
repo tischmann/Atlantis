@@ -1,5 +1,5 @@
 import Dialog from './atlantis.dialog.min.js'
-import Upload from './atlantis.upload.min.js'
+import upload from './atlantis.upload.min.js'
 import Progress from './atlantis.progress.min.js'
 import Select from './atlantis.select.min.js'
 
@@ -484,7 +484,7 @@ export default class Article {
 
         data.append('size', size)
 
-        new Upload({
+        upload({
             url: '/article/image',
             data,
             success: (json) => {
@@ -570,7 +570,7 @@ export default class Article {
 
             data.append('size', size)
 
-            new Upload({
+            upload({
                 url: '/article/gallery',
                 data,
                 progress,
@@ -808,7 +808,7 @@ export default class Article {
 
             data.append('video[]', file)
 
-            new Upload({
+            upload({
                 url: '/article/videos',
                 data,
                 progress,
@@ -1007,7 +1007,7 @@ export default class Article {
 
             data.append('file[]', file)
 
-            new Upload({
+            upload({
                 url: '/article/attachements',
                 data,
                 progress,

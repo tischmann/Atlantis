@@ -816,7 +816,7 @@ class ArticlesController extends Controller
                 attachements: $attachements
             );
 
-            $article->url = $article->createUrl($article->title);
+            $article->url = $article->createUrl();
 
             if (!$article->save()) {
                 throw new Exception(get_str('not_saved'));

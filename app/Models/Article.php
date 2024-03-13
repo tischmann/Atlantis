@@ -221,20 +221,18 @@ class Article extends Model
     /**
      * Возвращает URL статьи
      * 
-     * @param string $input - строка для преобразования
      * @param int $limit - максимальная длина строки
      * @param string $separator - разделитель
      * 
      * @return string - URL статьи
      */
-    public static function createUrl(
-        string $input,
+    public function createUrl(
         int $limit = 255,
         string $separator = '-'
     ): string {
         $output = '';
 
-        $input = mb_strtolower($input);
+        $input = mb_strtolower($this->title);
 
         $input = trim($input);
 
@@ -300,17 +298,7 @@ class Article extends Model
             $output = trim($output, $separator);
         }
 
-        $i = 0;
-
-        while (true) {
-            $exist = static::query()
-                ->where('url', $output)
-                ->exist();
-
-            if (!$exist) break;
-
-            $output .= $separator . $i++;
-        }
+        $output .= $separator . bin2hex(random_bytes(4));
 
         return $output;
     }
