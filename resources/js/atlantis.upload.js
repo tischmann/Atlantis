@@ -1,5 +1,3 @@
-import Dialog from './atlantis.dialog.min.js'
-
 export default function upload({
     url = '/',
     data = null,
@@ -26,11 +24,7 @@ export default function upload({
             if (xhr.status === 200) {
                 resolve(json)
             } else {
-                new Dialog({
-                    title: json.title,
-                    text: json.message
-                })
-
+                alert(json.message)
                 reject(json)
             }
         }

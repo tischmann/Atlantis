@@ -8,7 +8,7 @@ assert($user instanceof User);
 ?>
 
 <main class="md:container mx-4 md:mx-auto">
-    <form autocomplete="new-password" id="user-form" data-id="<?= $user?->id ?>" data-confirm="{{lang=confirm_delete}}">
+    <form autocomplete="new-password" id="user-form" data-id="<?= $user?->id ?>">
         {{csrf}}
         <div class="mb-8">
             <?php
@@ -121,28 +121,26 @@ assert($user instanceof User);
             <?php
             if ($user->exists()) {
                 echo <<<HTML
-                <button id="delete-user" class="flex items-center justify-center px-3 py-2 bg-red-600 hover:bg-red-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full font-medium" type="button" title="{{lang=delete}}">{{lang=delete}}</button>
-                <button id="save-user" class="flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full font-medium" type="button" title="{{lang=save}}">{{lang=save}}</button>
+                <button class="flex items-center justify-center px-3 py-2 bg-red-600 hover:bg-red-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full font-medium" type="button" title="{{lang=delete}}" data-delete>{{lang=delete}}</button>
+                <button class="flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full font-medium" type="button" title="{{lang=save}}" data-save>{{lang=save}}</button>
                 HTML;
             } else {
                 echo <<<HTML
-                <button id="add-user" class="flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full font-medium" type="button" title="{{lang=add}}">{{lang=add}}</button>
+                <button class="flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full font-medium" type="button" title="{{lang=add}}" data-add>{{lang=add}}</button>
                 HTML;
             }
             ?>
         </div>
     </form>
 </main>
-<script nonce="{{nonce}}" type="module">
-    import Dialog from '/js/atlantis.dialog.min.js'
-
+<script nonce="{{nonce}}">
     const form = document.getElementById('user-form')
 
     const request = function({
         url,
         method,
         body = null,
-        onclose = function() {}
+        after = function() {}
     } = {}) {
         fetch(url, {
             method,
@@ -153,34 +151,29 @@ assert($user instanceof User);
             body
         }).then((response) => {
             response.json().then((json) => {
-                new Dialog({
-                    title: json.title,
-                    text: json.message,
-                    onclose: () => {
-                        onclose(json)
-                    }
-                })
+                alert(`${json.message}`)
+                after(json)
             })
         })
     }
 
-    document.getElementById('save-user').addEventListener('click', () => {
+    document.querySelector('button[data-save]')?.addEventListener('click', () => {
         request({
             url: `/user/${form.dataset.id}`,
             method: 'PUT',
             body: JSON.stringify(Object.fromEntries(new FormData(form))),
-            onclose: () => {
+            after: () => {
                 window.location.reload()
             }
         })
     })
 
-    document.getElementById('add-user').addEventListener('click', () => {
+    document.querySelector('button[data-add]')?.addEventListener('click', () => {
         request({
             url: `/user`,
             method: 'POST',
             body: JSON.stringify(Object.fromEntries(new FormData(form))),
-            onclose: ({
+            after: ({
                 id
             }) => {
                 window.location.href = `/user/${id}`
@@ -188,12 +181,12 @@ assert($user instanceof User);
         })
     })
 
-    document.getElementById('delete-user').addEventListener('click', () => {
-        if (!confirm(form.dataset.confirm)) return
+    document.querySelector('button[data-delete]')?.addEventListener('click', () => {
+        if (!confirm(`{{lang=confirm_delete}}`)) return
         request({
             url: `/user/${form.dataset.id}`,
             method: 'DELETE',
-            onclose: () => {
+            after: () => {
                 window.location.href = '/users'
             }
         })

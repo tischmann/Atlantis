@@ -1,5 +1,4 @@
 import Select from './atlantis.select.min.js'
-import Dialog from './atlantis.dialog.min.js'
 
 export default class Category {
     constructor({ form = null } = {}) {
@@ -95,13 +94,8 @@ export default class Category {
             body
         }).then((response) => {
             response.json().then((json) => {
-                new Dialog({
-                    title: json.title,
-                    text: json.message,
-                    onclose: () => {
-                        onclose(json)
-                    }
-                })
+                alert(json.message)
+                onclose(json)
             })
         })
     }

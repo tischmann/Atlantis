@@ -1,4 +1,3 @@
-import Dialog from './atlantis.dialog.min.js'
 import upload from './atlantis.upload.min.js'
 import Progress from './atlantis.progress.min.js'
 import Select from './atlantis.select.min.js'
@@ -413,13 +412,8 @@ export default class Article {
             body
         }).then((response) => {
             response.json().then((json) => {
-                new Dialog({
-                    title: json.title,
-                    text: json.message,
-                    onclose: () => {
-                        onclose(json)
-                    }
-                })
+                alert(json.message)
+                onclose(json)
             })
         })
     }
