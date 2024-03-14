@@ -7,7 +7,7 @@
 
         foreach ($articles as $article) {
             assert($article instanceof Article);
-            include 'article_in_category.php';
+            include 'article_main.php';
         }
 
         ?>

@@ -52,6 +52,7 @@ return [
     'print_page' => 'Версия для печати',
     'updated_at' => 'Изменено',
     'articles_by_tag' => 'Статьи по тегу',
+    'articles_in_category' => 'Статьи в категории',
     'none' => 'Нет',
     'dashboard' => 'Админпанель',
     // Ошибки Json Web Token

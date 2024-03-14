@@ -48,6 +48,7 @@ class CategoriesController extends Controller
         View::send(
             view: 'articles_in_category',
             args: [
+                'category' => $category->title,
                 'pagination' => $pagination,
                 'articles' => Article::all($query)
             ]
