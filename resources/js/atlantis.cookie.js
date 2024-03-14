@@ -1,9 +1,8 @@
 export default class Cookie {
-    name
-    value
-    constructor(name, value) {
+    constructor(name, value, options = {}) {
         this.name = name
         this.value = value
+        this.options = options
     }
 
     get(name) {
@@ -27,6 +26,8 @@ export default class Cookie {
         this.name = name ? name : this.name
 
         this.value = value ? value : this.value
+
+        this.options = options ? options : this.options
 
         if (!this.name) return undefined
 
