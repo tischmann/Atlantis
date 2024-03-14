@@ -1038,6 +1038,11 @@ video {
   border-top-right-radius: 0.75rem;
 }
 
+.rounded-l-none {
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+}
+
 .rounded-bl-lg {
   border-bottom-left-radius: 0.5rem;
 }
