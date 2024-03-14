@@ -30,7 +30,7 @@ list($image_width, $image_height) = $article->getImageSizes();
 </style>
 <main class="md:container mx-8 md:mx-auto">
     <a href="/{{env=APP_LOCALE}}/articles/<?= $article->url ?>.html" class="w-full mt-4 flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg mb-8" title="{{lang=show}}">{{lang=show}}</a>
-    <form data-article="<?= $article->id ?>">
+    <form data-article>
         <div class="mb-8 grid grid-cols-1 xl:grid-cols-3 gap-8">
             <div class="col-span-1 xl:col-span-2">
                 <div class="mb-8">
@@ -81,9 +81,9 @@ list($image_width, $image_height) = $article->getImageSizes();
 
                     $content = <<<HTML
                     <input type="hidden" id="image" name="image" value="{$article->getImage()}">
-                            <img id="article-image" src="{$src}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="bg-gray-200 rounded-lg w-full" decoding="async" loading="auto">
-                            <div id="pre-upload-image" class="w-full mt-4 flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg" title="{{lang=upload}}">{{lang=upload}}</div>
-                            <div id="upload-image-container" class="mt-4 grid-cols-3 gap-4 hidden">
+                        <img id="article-image" src="{$src}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="bg-gray-200 rounded-lg w-full" decoding="async" loading="auto">                    
+                        <div id="upload-image-container" class="mt-4 flex flex-nowrap gap-4">
+                            <div class="w-40">
                     HTML;
 
                     $content .= Template::html(
@@ -96,7 +96,8 @@ list($image_width, $image_height) = $article->getImageSizes();
                     );
 
                     $content .= <<<HTML
-                        <div id="upload-image" class="col-span-2 w-full flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg font-medium" title="{{lang=upload}}">{{lang=upload}}</div>
+                        </div>
+                        <div id="upload-image" class="grow w-full flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg font-medium" title="{{lang=upload}}">{{lang=upload}}</div>
                     </div>
                     <div id="delete-image" class="absolute top-0 right-0 p-2 text-white bg-red-600 rounded-md hover:bg-red-500 cursor-pointer transition drop-shadow" title="{{lang=delete}}">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -152,12 +153,8 @@ list($image_width, $image_height) = $article->getImageSizes();
 
                     $content = <<<HTML
                     <input type="hidden" name="gallery" id="gallery" value="{$gallery_images}">
-                    <div id="pre-upload-gallery" class="mb-4 w-full p-3 rounded-lg bg-sky-600 text-white flex items-center justify-center hover:bg-sky-500 shadow hovr:shadow-lg transition cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                        </svg>
-                    </div>
-                    <div id="upload-gallery-container" class="mb-4 grid-cols-3 gap-4 hidden">
+                    <div id="upload-gallery-container" class="mb-4 flex flex-nowrap gap-4">
+                        <div class="w-40">
                     HTML;
 
                     $content .= Template::html(
@@ -170,26 +167,31 @@ list($image_width, $image_height) = $article->getImageSizes();
                     );
 
                     $content .= <<<HTML
-                        <div id="upload-gallery" class="col-span-2 w-full flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg font-medium" title="{{lang=upload}}">{{lang=upload}}</div>
+                        </div>
+                        <div id="upload-gallery" class="grow w-full flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg font-medium" title="{{lang=upload}}">{{lang=upload}}</div>
                     </div>
-                    <ul class="gallery-container grid grid-cols-2 gap-4">
+                    <ul id="gallery-container" class="grid grid-cols-2 gap-4">
                     HTML;
 
                     foreach ($article->getGalleryImages() as $src) {
-                        $src = $article->id
-                            ? "/images/articles/{$article->id}/gallery/thumb_{$src}"
-                            : "/images/articles/temp/thumb_{$src}";
+                        $gallery_thumb_width = 320;
 
-                        $content .= <<<HTML
-                        <li class="text-sm select-none relative">
-                            <img src="{$src}" width="320" height="180" alt="..." decoding="async" loading="lazy" class="block w-full rounded-md">
-                            <button type="button" class="block outline-none absolute top-0 right-0 p-2 text-white bg-red-600 rounded-md hover:bg-red-500 cursor-pointer transition drop-shadow" title="{{lang=delete}}" data-delete>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                </svg>
-                            </button>
-                        </li>
-                        HTML;
+                        $gallery_thumb_height = 180;
+
+                        if ($article->id) {
+                            list($gallery_thumb_width, $gallery_thumb_height) = $article->getImageSizes(
+                                file: getenv('APP_ROOT') . "/public/images/articles/{$article->id}/gallery/thumb_{$src}"
+                            );
+                        }
+
+                        $content .= Template::html(
+                            template: 'article_gallery_item',
+                            args: [
+                                'gallery_thumb_width' => $gallery_thumb_width,
+                                'gallery_thumb_height' => $gallery_thumb_height,
+                                'gallery_thumb_src' => "/images/articles/{$article->id}/gallery/thumb_{$src}"
+                            ]
+                        );
                     }
 
                     $content .= <<<HTML
@@ -217,20 +219,16 @@ list($image_width, $image_height) = $article->getImageSizes();
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>
                     </div>
-                    <ul class="videos-container grid grid-cols-2 gap-4">
+                    <ul id="videos-container" class="grid grid-cols-2 gap-4">
                     HTML;
 
                     foreach ($article->getVideos() as $video) {
-                        $content .= <<<HTML
-                        <li class="text-sm select-none relative">
-                            <video src="/uploads/articles/{$article->id}/video/{$video}" class="block w-full rounded-md" controls></video>
-                            <button type="button" class="block outline-none absolute top-0 right-0 p-2 text-white bg-red-600 rounded-md hover:bg-red-500 cursor-pointer transition drop-shadow" title="{{lang=delete}}" data-delete>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                </svg>
-                            </button>
-                        </li>
-                        HTML;
+                        $content .= Template::html(
+                            template: 'article_video_item',
+                            args: [
+                                'gallery_video_src' => "/uploads/articles/{$article->id}/video/{$video}"
+                            ]
+                        );
                     }
 
                     $content .= <<<HTML
@@ -258,27 +256,17 @@ list($image_width, $image_height) = $article->getImageSizes();
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>
                     </div>
-                    <ul class="attachements-container grid grid-cols-1 gap-4" aria-label="attachement" name="attachement">
+                    <ul id="attachements-container" class="grid grid-cols-1 gap-4" aria-label="attachement" name="attachement">
                     HTML;
 
                     foreach ($article->getAttachements() as $attachement) {
-                        $href = $article->id
-                            ? "/uploads/articles/{$article->id}/attachements/{$attachement}"
-                            : "/uploads/articles/temp/{$attachement}";
-
-                        $content .= <<<HTML
-                       <li class="flex flex-nowrap gap-2 items-center justify-between text-gray-800 dark:text-white w-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="handle w-6 h-6 cursor-grab hover:text-sky-500 ml-2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
-                            </svg>
-                            <a href="{$href}" class="text-ellipsis hover:underline overflow-hidden whitespace-nowrap grow pr-3 py-2" target="_blank" title="{{lang=delete}}">{$attachement}</a>
-                            <button type="button" class="block outline-none cursor-pointer text-white hover:bg-red-500 transition bg-red-600 rounded-lg p-3" title="{{lang=delete}}" data-delete>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                </svg>
-                            </button>
-                        </li>
-                       HTML;
+                        $content .= Template::html(
+                            template: 'article_attachements_item',
+                            args: [
+                                'attachement_label' => $attachement,
+                                'attachement_href' => "/uploads/articles/{$article->id}/attachements/{$attachement}"
+                            ]
+                        );
                     }
 
                     $content .= <<<HTML
@@ -378,12 +366,12 @@ list($image_width, $image_height) = $article->getImageSizes();
                     <?php
                     if ($article->exists()) {
                         echo <<<HTML
-                            <button id="delete-article" class="flex items-center justify-center px-3 py-2 bg-red-600 hover:bg-red-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full font-medium" type="button" title="{{lang=delete}}"  data-confirm="{{lang=confirm_delete}}">{{lang=delete}}</button>
-                            <button id="save-article" class="flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full font-medium" type="button" title="{{lang=save}}">{{lang=save}}</button>
+                            <button class="flex items-center justify-center px-3 py-2 bg-red-600 hover:bg-red-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full font-medium" type="button" title="{{lang=delete}}" data-delete>{{lang=delete}}</button>
+                            <button class="flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full font-medium" type="button" title="{{lang=save}}" data-save>{{lang=save}}</button>
                             HTML;
                     } else {
                         echo <<<HTML
-                            <button id="add-article" class="flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full font-medium" type="button" title="{{lang=add}}">{{lang=add}}</button>
+                            <button class="flex items-center justify-center px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white cursor-pointer transition shadow hover:shadow-lg rounded-lg w-full font-medium" type="button" title="{{lang=add}}" data-add>{{lang=add}}</button>
                             HTML;
                     }
                     ?>
@@ -395,6 +383,825 @@ list($image_width, $image_height) = $article->getImageSizes();
 </main>
 <script src="/tinymce/tinymce.min.js" nonce="{{nonce}}"></script>
 <script nonce="{{nonce}}" type="module">
-    import Article from '/js/atlantis.article.min.js'
-    new Article()
+    import Progress from '/js/atlantis.progress.min.js'
+    import Select from '/js/atlantis.select.min.js'
+
+    (function() {
+        const form = document.querySelector('[data-article]')
+
+        const articleImageElement = document.getElementById('article-image')
+
+        const articleImageInput = form.querySelector('input[name="image"]')
+
+        const tagsLimitElement = document.getElementById('tags-limit')
+
+        const galleryContainer = document.getElementById('gallery-container')
+
+        const articleGalleryInput = form.querySelector('input[name="gallery"]')
+
+        const videosContainer = document.getElementById('videos-container')
+
+        const articleVideosInput = form.querySelector('input[name="videos"]')
+
+        const attachementsContainer = document.getElementById('attachements-container')
+
+        const articleAttachementsInput = form.querySelector('input[name="attachements"]')
+
+        const categorySelect = new Select(form.querySelector(`select[name="category_id"]`))
+
+        const articleTagsElement = form.querySelector('textarea[name="tags"]')
+
+        const articleTextElement = form.querySelector('textarea[name="text"]')
+
+        tinymce.init({
+            language: 'ru',
+            target: articleTextElement,
+            paste_as_text: true,
+            autosave_ask_before_unload: false,
+            plugins: 'preview importcss searchreplace autolink directionality code visualblocks visualchars fullscreen image link media template codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons',
+            editimage_cors_hosts: ['picsum.photos'],
+            menubar: 'file edit view insert format tools table help',
+            toolbar: 'undo redo | bold italic underline strikethrough | fontsize blocks | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample',
+            height: 800,
+            quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
+            noneditable_class: 'mceNonEditable',
+            toolbar_mode: 'sliding',
+            contextmenu: 'link image table',
+            image_caption: true,
+            skin: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oxide-dark' : 'oxide',
+            content_css: '/app.min.css',
+            font_css: 'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap',
+            image_advtab: true,
+            image_class_list: [{
+                    title: '{{lang=none}}',
+                    value: 'gallery-item'
+                },
+                {
+                    title: 'rounded',
+                    value: 'rounded gallery-item'
+                },
+                {
+                    title: 'rounded-md',
+                    value: 'rounded-md gallery-item'
+                },
+                {
+                    title: 'rounded-lg',
+                    value: 'rounded-lg gallery-item'
+                },
+                {
+                    title: 'rounded-xl',
+                    value: 'rounded-xl gallery-item'
+                }
+            ],
+            relative_urls: false,
+            images_upload_handler: (blobInfo, progress) => {
+                return new Promise((resolve, reject) => {
+                    const formData = new FormData()
+
+                    formData.append(
+                        'image',
+                        blobInfo.blob(),
+                        blobInfo.filename()
+                    )
+
+                    const xhr = new XMLHttpRequest()
+
+                    xhr.withCredentials = true
+
+                    xhr.open('POST', `/article/images`)
+
+                    xhr.setRequestHeader('Accept', 'application/json')
+
+                    xhr.upload.onprogress = (e) => {
+                        progress((e.loaded / e.total) * 100)
+                    }
+
+                    xhr.onload = () => {
+                        if (xhr.status === 403) {
+                            return reject({
+                                message: '{{lang=error}}: ' + xhr.status,
+                                remove: true
+                            })
+                        }
+
+                        if (xhr.status < 200 || xhr.status >= 300) {
+                            return reject('{{lang=error}}: ' + xhr.status)
+                        }
+
+                        const json = JSON.parse(xhr.responseText)
+
+                        if (!json?.src) {
+                            return reject(
+                                '{{lang=incorrect_response}}: ' + xhr.responseText
+                            )
+                        }
+
+                        resolve(json.src)
+                    }
+
+                    xhr.onerror = () => {
+                        reject(`{{lang=error}}: ${xhr.status}`)
+                    }
+
+                    xhr.send(formData)
+                })
+            }
+        })
+
+        function upload({
+            url = '/',
+            data = null,
+            progress = function() {},
+            success = function() {},
+            failure = function() {},
+            method = 'POST'
+        } = {}) {
+            new Promise((resolve, reject) => {
+                    const xhr = new XMLHttpRequest()
+
+                    xhr.open(method.toUpperCase(), url)
+
+                    xhr.upload.addEventListener('progress', (event) => {
+                        if (event.lengthComputable) {
+                            const percent = (event.loaded / event.total) * 100
+                            progress(percent)
+                        }
+                    })
+
+                    xhr.onload = () => {
+                        const json = JSON.parse(xhr.response)
+
+                        if (xhr.status === 200) {
+                            resolve(json)
+                        } else {
+                            alert(json.message)
+                            reject(json)
+                        }
+                    }
+
+                    xhr.onerror = () => {
+                        reject(new Error('{{lang=error}}'))
+                    }
+
+                    xhr.send(data)
+                })
+                .then(success)
+                .catch(failure)
+        }
+
+        const localeSelect = new Select(
+            form.querySelector('select[name="locale"]'), {
+                onchange: (value) => {
+                    fetch(`/locale/categories/${value}`)
+                        .then((response) => response.json())
+                        .then(({
+                            items
+                        }) => {
+                            categorySelect.update(items)
+                        })
+                }
+            })
+
+        function getProportionalHeight(width, proportion = '16_9') {
+            width = parseInt(width)
+
+            switch (proportion) {
+                case '16_9':
+                    return Math.round((width / 16) * 9)
+                case '4_3':
+                    return Math.round((width / 4) * 3)
+            }
+
+            return width
+        }
+
+        const imageSizeSelect = new Select(
+            form.querySelector(`select[name="image_size"]`), {
+                onchange: (proportion) => {
+                    const height = getProportionalHeight(articleImageElement.getAttribute('width'), proportion)
+
+                    articleImageElement.src = `/images/placeholder_${proportion}.svg`
+
+                    articleImageElement.setAttribute('height', height)
+                }
+            }
+        )
+
+        document.getElementById('upload-image').addEventListener('click', () => {
+            uploadImageHandler()
+        })
+
+        function uploadImageHandler({
+            image = null,
+            size = null,
+            accept = '.jpg,.jpeg,.png,.webp,.gif,.bmp',
+            multiple = false,
+            success = function() {}
+        } = {}) {
+            if (image !== null) {
+                return uploadImage({
+                    image,
+                    size,
+                    success
+                })
+            }
+
+            const input = document.createElement('input')
+
+            input.hidden = true
+
+            input.type = 'file'
+
+            input.accept = accept
+
+            input.multiple = multiple
+
+            size = size || imageSizeSelect.getValue()
+
+            input.addEventListener('change', (event) => {
+                articleImageElement.src = `/images/placeholder_${size}.svg`
+
+                uploadImage({
+                    image: event.target.files[0],
+                    size,
+                    success: ({
+                        image
+                    }) => {
+                        articleImageElement.src = `/images/articles/temp/${image}`
+
+                        articleImageInput.setAttribute('value', image)
+
+                        changeImageProportions(size)
+
+                        input.remove()
+                    }
+                })
+            }, {
+                once: true
+            })
+
+            input.click()
+        }
+
+        function uploadImage({
+            image,
+            size = '16_9',
+            success = function() {}
+        } = {}) {
+            const data = new FormData()
+
+            data.append('image', image)
+
+            data.append('size', size)
+
+            upload({
+                url: '/article/image',
+                data,
+                success
+            })
+        }
+
+        function deleteImage() {
+            articleImageElement.src = `/images/placeholder_16_9.svg`
+            articleImageInput.setAttribute('value', '')
+            changeImageProportions('16_9')
+        }
+
+        function changeImageProportions(size = '16_9') {
+            articleImageElement.setAttribute('height', getProportionalHeight(articleImageElement.getAttribute('width'), size))
+        }
+
+        document.getElementById('delete-image').addEventListener('click', () => {
+            deleteImage()
+        })
+
+        const gallerySizeSelect = new Select(form.querySelector(`select[name="gallery_image_size"]`))
+
+        function initGalleryItem(li) {
+            li.querySelector('[data-delete]').addEventListener('click', () => {
+                li.classList.add('transition', 'scale-0')
+                setTimeout(() => {
+                    li.remove()
+                    updateGalleryInput()
+                }, 200)
+            }, {
+                once: true
+            })
+        }
+
+        function createGalleryItem({
+            src,
+            width,
+            height
+        }) {
+            const wrapper = document.createElement('div')
+
+            wrapper.innerHTML = `<?= Template::html(template: 'article_gallery_item') ?>`
+
+            const li = wrapper.querySelector('li')
+
+            const img = li.querySelector('img')
+
+            img.src = `/images/articles/temp/thumb_${src}`
+
+            img.setAttribute('width', width)
+
+            img.setAttribute('height', height)
+
+            initGalleryItem(li)
+
+            return li
+        }
+
+        function updateGalleryInput() {
+            const values = []
+
+            galleryContainer.querySelectorAll('li:not(.ui-state-highlight)').forEach((li) => {
+                values.push(li.querySelector('img').src.split('/').pop().replace('thumb_', ''))
+            })
+
+            articleGalleryInput.setAttribute('value', values.join(';'))
+        }
+
+        function uploadGalleryImage({
+            image,
+            size = '16_9',
+            success = function() {},
+            progress = function() {}
+        } = {}) {
+            return new Promise((resolve, reject) => {
+                const data = new FormData()
+
+                data.append('image[]', image)
+
+                data.append('size', size)
+
+                upload({
+                    url: '/article/gallery',
+                    data,
+                    progress,
+                    success
+                })
+
+                resolve()
+            })
+        }
+
+        function uploadGalleryImageHandler({
+            image = null,
+            size = null,
+            accept = '.jpg,.jpeg,.png,.webp,.gif,.bmp',
+            multiple = true,
+            success = function() {},
+            progress = function() {}
+        } = {}) {
+            if (image !== null) {
+                return uploadGalleryImage({
+                    image,
+                    size,
+                    success,
+                    progress
+                })
+            }
+
+            size = size || gallerySizeSelect.getValue()
+
+            const input = document.createElement('input')
+
+            input.hidden = true
+
+            input.type = 'file'
+
+            input.accept = accept
+
+            input.multiple = multiple
+
+            const width = 320
+
+            const height = getProportionalHeight(width, size)
+
+            input.addEventListener('change', (event) => {
+                Array.from(event.target.files).forEach((file) => {
+                    const progress = new Progress(galleryContainer)
+
+                    uploadGalleryImage({
+                        image: file,
+                        size,
+                        progress: (value) => {
+                            progress.update(value)
+                        },
+                        success: ({
+                            images
+                        }) => {
+                            progress.destroy()
+
+                            images.forEach((src) => {
+                                galleryContainer.append(
+                                    createGalleryItem({
+                                        src,
+                                        width,
+                                        height
+                                    })
+                                )
+
+                            })
+
+                            updateGalleryInput()
+                        }
+                    })
+                })
+
+                input.remove()
+            })
+
+            input.click()
+        }
+
+        document.getElementById('upload-gallery').addEventListener('click', () => {
+            uploadGalleryImageHandler()
+        })
+
+        function updateVideosInput() {
+            articleVideosInput.setAttribute(
+                'value',
+                Array.from(videosContainer.querySelectorAll('li > video'))
+                .map((video) => video.src.split('/').pop())
+                .filter((src) => src !== '')
+                .join(';')
+            )
+        }
+
+        function initVideosItem(li) {
+            li.querySelector('[data-delete]')?.addEventListener('click', () => {
+                li.classList.add('transition', 'scale-0')
+                setTimeout(() => {
+                    li.remove()
+                    updateVideosInput()
+                }, 200)
+            }, {
+                once: true
+            })
+        }
+
+        function createVideoItem({
+            src
+        }) {
+            const wrapper = document.createElement('div')
+
+            wrapper.innerHTML = `<?= Template::html(template: 'article_video_item') ?>`
+
+            const li = wrapper.querySelector('li')
+
+            const video = li.querySelector('video')
+
+            video.src = `/uploads/articles/temp/${src}`
+
+            initVideosItem(li)
+
+            return li
+        }
+
+        function uploadVideoHandler({
+            file = null,
+            accept = 'video/*',
+            multiple = true,
+            progress = function() {},
+            success = function() {}
+        } = {}) {
+            if (file !== null) {
+                return uploadVideo({
+                    file,
+                    progress,
+                    success
+                })
+            }
+
+            const input = document.createElement('input')
+
+            input.hidden = true
+
+            input.type = 'file'
+
+            input.accept = accept
+
+            input.multiple = multiple
+
+            input.addEventListener('change', (event) => {
+                Array.from(event.target.files).forEach((file) => {
+                    const progress = new Progress(videosContainer)
+
+                    uploadVideo({
+                        file: file,
+                        progress: function(value) {
+                            progress.update(value)
+                        },
+                        success: ({
+                            videos
+                        }) => {
+                            progress.destroy()
+
+                            videos.forEach((src) => {
+                                videosContainer.append(createVideoItem({
+                                    src
+                                }))
+                            })
+
+                            updateVideosInput()
+                        }
+                    })
+                })
+
+                input.remove()
+            })
+
+            input.click()
+        }
+
+        function uploadVideo({
+            file = null,
+            progress = function() {},
+            success = function() {}
+        }) {
+            new Promise((resolve, reject) => {
+                const data = new FormData()
+
+                data.append('video[]', file)
+
+                upload({
+                    url: '/article/videos',
+                    data,
+                    progress,
+                    success
+                })
+
+                resolve()
+            })
+        }
+
+        document.getElementById('upload-video').addEventListener('click', () => {
+            uploadVideoHandler()
+        })
+
+        function updateAttachementsInput() {
+            articleAttachementsInput.setAttribute(
+                'value',
+                Array.from(
+                    attachementsContainer.querySelectorAll('li > a')
+                )
+                .map((a) => a.getAttribute('href').split('/').pop())
+                .filter((src) => src !== '')
+                .join(';')
+            )
+        }
+
+        function createAttachementItem({
+            file
+        }) {
+            const wrapper = document.createElement('div')
+
+            wrapper.innerHTML = `<?= Template::html(template: 'article_attachements_item') ?>`
+
+            const li = wrapper.querySelector('li')
+
+            const a = li.querySelector('a')
+
+            a.setAttribute('href', `/uploads/articles/temp/${file}`)
+
+            a.textContent = file
+
+            initAttachementItem(li)
+
+            return li
+        }
+
+        function initAttachementItem(li) {
+            li.querySelector('[data-delete]').addEventListener('click',
+                () => {
+                    li.classList.add('transition', 'scale-0')
+                    setTimeout(() => {
+                        li.remove()
+                        updateAttachementsInput()
+                    }, 200)
+                }, {
+                    once: true
+                }
+            )
+        }
+
+        function uploadAttachement({
+            file = null,
+            progress = function() {},
+            success = function() {}
+        }) {
+            new Promise((resolve, reject) => {
+                const data = new FormData()
+
+                data.append('file[]', file)
+
+                upload({
+                    url: '/article/attachements',
+                    data,
+                    progress,
+                    success
+                })
+
+                resolve()
+            })
+        }
+
+        function uploadAttachementHandler({
+            file = null,
+            accept = '*',
+            multiple = true,
+            progress = function() {},
+            success = function() {}
+        } = {}) {
+            if (file !== null) {
+                return uploadAttachement({
+                    file,
+                    progress,
+                    success
+                })
+            }
+
+            const input = document.createElement('input')
+
+            input.hidden = true
+
+            input.type = 'file'
+
+            input.accept = accept
+
+            input.multiple = multiple
+
+            input.addEventListener('change', (event) => {
+                Array.from(event.target.files).forEach((file) => {
+                    const progress = new Progress(attachementsContainer)
+
+                    uploadAttachement({
+                        file: file,
+                        progress: function(value) {
+                            progress.update(value)
+                        },
+                        success: ({
+                            files
+                        }) => {
+                            progress.destroy()
+
+                            files.forEach((file) => {
+                                attachementsContainer.append(createAttachementItem({
+                                    file
+                                }))
+                            })
+
+                            updateAttachementsInput()
+                        }
+                    })
+                })
+
+                input.remove()
+            })
+
+            input.click()
+        }
+
+        document.getElementById('upload-attachement').addEventListener('click', () => {
+            uploadAttachementHandler()
+        })
+
+        document.getElementById('generate-tags').addEventListener('click', () => {
+            const threshold = 3
+
+            let limit = parseInt(tagsLimitElement.value)
+
+            limit = limit > 20 ? 20 : limit
+
+            limit = limit < 1 ? 1 : limit
+
+            const tags = {}
+
+            let text = tinymce.activeEditor.getContent()
+
+            const wrapper = document.createElement('div')
+
+            wrapper.innerHTML = text
+
+            text = wrapper.textContent || wrapper.innerText || ''
+
+            text.split(/[\s,]+/)
+                .forEach((tag, index) => {
+                    tag = tag.toLowerCase()
+                    if (tag.length < threshold) return
+                    if (tags[tag] === undefined) tags[tag] = 1
+                    else tags[tag]++
+                })
+
+            if (!Object.entries(tags).length) return ''
+
+            articleTagsElement.value = Object.entries(tags)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, limit)
+                .map((tag) => tag[0])
+                .join(', ')
+        })
+
+        form.querySelector('button[data-save]')?.addEventListener('click', () => {
+            articleTextElement.innerHTML = tinymce.activeEditor.getContent()
+
+            fetch(`/article/<?= $article->id ?>`, {
+                method: 'PUT',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(Object.fromEntries(new FormData(form)))
+            }).then((response) => {
+                response.json().then((json) => {
+                    alert(json.message)
+                    window.location.reload()
+                })
+            })
+        })
+
+        form.querySelector('button[data-add]')?.addEventListener('click', () => {
+            articleTextElement.innerHTML = tinymce.activeEditor.getContent()
+
+            fetch(`/article`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(Object.fromEntries(new FormData(form)))
+            }).then((response) => {
+                response.json().then((json) => {
+                    alert(json.message)
+
+                    if (json.id) {
+                        window.location.href = `/edit/article/${json.id}`
+                    } else {
+                        window.location.reload()
+                    }
+                })
+            })
+        })
+
+        form.querySelector('button[data-delete]')?.addEventListener('click', (event) => {
+            if (!confirm(`{{lang=confirm_delete}}`)) return
+
+            fetch(`/article/<?= $article->id ?>`, {
+                method: 'DELETE',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body
+            }).then((response) => {
+                response.json().then((json) => {
+                    alert(json.message)
+                    window.location.href = '/edit/articles'
+                })
+            })
+        })
+
+        galleryContainer.querySelectorAll(`li`).forEach((li) => {
+            initGalleryItem(li)
+        })
+
+        videosContainer.querySelectorAll(`li`).forEach((li) => {
+            initVideosItem(li)
+        })
+
+        attachementsContainer.querySelectorAll(`li`).forEach((li) => {
+            initAttachementItem(li)
+        })
+
+        $(galleryContainer).sortable({
+            placeholder: 'ui-state-highlight',
+            update: () => {
+                updateGalleryInput()
+            }
+        })
+
+        $(galleryContainer).disableSelection()
+
+        $(attachementsContainer).sortable({
+            placeholder: 'ui-state-highlight',
+            handle: '.handle',
+            update: () => {
+                updateAttachementsInput()
+            }
+        })
+
+        $(attachementsContainer).disableSelection()
+
+        $(videosContainer).sortable({
+            placeholder: 'ui-state-highlight',
+            update: () => {
+                updateVideosInput()
+            }
+        })
+
+        $(videosContainer).disableSelection()
+    })()
 </script>

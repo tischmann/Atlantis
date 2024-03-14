@@ -16,6 +16,7 @@ return [
     'error' => 'Ошибка',
     'read' => 'Читать',
     'show' => 'Показать',
+    'incorrect_response' => 'Некорректный ответ',
     'json_error' => 'Ошибка JSON',
     'not_found' => 'Запрашиваемый ресурс не найден',
     'route_not_found' => 'Маршрут не найден',
@@ -51,6 +52,7 @@ return [
     'print_page' => 'Версия для печати',
     'updated_at' => 'Изменено',
     'articles_by_tag' => 'Статьи по тегу',
+    'none' => 'Нет',
     // Ошибки Json Web Token
     'jwt_missing_public_key' => 'Отсутствует публичный ключ',
     'jwt_wrong_segment_amount' => 'Неверное количество сегментов',
