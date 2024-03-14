@@ -9,8 +9,9 @@ use Tischmann\Atlantis\{
 };
 
 /**
- * Контроллер для работы с проспотрами
- */
-class ViewsxController extends Controller
+ * Контроллер для работы с просмотрами
+ * 
+ *  */
+class ViewsController extends Controller
 {
 }

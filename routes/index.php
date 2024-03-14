@@ -72,3 +72,17 @@ Router::add(new Route(
     action: 'showArticlesByTag',
     method: 'GET',
 ));
+
+Router::add(new Route(
+    controller: new ArticlesController(),
+    path: 'like/article/{id}',
+    action: 'likeArticle',
+    method: 'POST',
+));
+
+Router::add(new Route(
+    controller: new ArticlesController(),
+    path: 'like/article/{id}',
+    action: 'dislikeArticle',
+    method: 'DELETE',
+));

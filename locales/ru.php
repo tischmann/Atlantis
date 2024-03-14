@@ -55,6 +55,8 @@ return [
     'articles_in_category' => 'Статьи в категории',
     'none' => 'Нет',
     'dashboard' => 'Админпанель',
+    'like' => 'Нравится',
+    'dislike' => 'Не нравится',
     // Ошибки Json Web Token
     'jwt_missing_public_key' => 'Отсутствует публичный ключ',
     'jwt_wrong_segment_amount' => 'Неверное количество сегментов',

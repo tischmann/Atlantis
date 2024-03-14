@@ -14,6 +14,10 @@ list($image_width, $image_height) = $article->getImageSizes(true);
 
 $category = $article->getCategory();
 
+$is_liked = $article->isLikedByUuid(strval(cookies_get('uuid')));
+
+$is_viewed = $article->isViewedByUuid(strval(cookies_get('uuid')));
+
 ?>
 <article class="relative group/item group/label">
     <a href="/{{env=APP_LOCALE}}/articles/<?= $article->url ?>.html" title="<?= $article->title ?>" class="absolute inset-0 z-10"></a>
@@ -33,12 +37,27 @@ $category = $article->getCategory();
         <a href="/{{env=APP_LOCALE}}/category/<?= $category->slug ?>" class="relative inline-block line-clamp-1 text-gray-600 dark:text-gray-400 text-xs font-medium z-20 hover:underline" title="<?= $category->title ?>"><?= $category->title ?></a>
         <div class="mb-2 text-gray-600 dark:text-gray-400 text-xs flex justify-between items-center flex-nowrap gap-4">
             <span class="grow block"><?= $article->created_at?->getElapsedTime(getenv('APP_LOCALE')) ?></span>
-            <div class="flex flex-nowrap items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                </svg>
-                <span><?= $article->getViews() ?></span>
+            <div class="flex gap-4">
+                <div class="flex flex-nowrap items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 <?= $is_liked ? "hidden" : "" ?>">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 <?= $is_liked ? "" : "hidden" ?>">
+                        <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
+                    </svg>
+                    <span><?= $article->getLikes() ?></span>
+                </div>
+                <div class="flex flex-nowrap items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 <?= $is_viewed ? "hidden" : "" ?>">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 <?= $is_viewed ? "" : "hidden" ?>">
+                        <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                        <path fill-rule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z" clip-rule="evenodd" />
+                    </svg>
+                    <span><?= $article->getViews() ?></span>
+                </div>
             </div>
         </div>
         <p class="line-clamp-3 text-sm my-0 mb-2"><?= mb_substr($article->short_text, 0, 500) ?></p>

@@ -35,6 +35,7 @@ class Article extends Model
         public bool $moderated = false,
         public string $url = '',
         protected int $views = 0,
+        protected int $likes = 0,
         public ?DateTime $created_at = null,
         public ?DateTime $updated_at = null,
     ) {
@@ -216,6 +217,85 @@ class Article extends Model
                 $this->views = View::getArticleViews($this->id);
             }
         }
+    }
+
+    /**
+     * Проверяет, просмотрел ли пользователь статью
+     * 
+     * @param string $uuid - UUID
+     * @return bool - true, если просмотрел
+     */
+    public function isViewedByUuid(string $uuid): bool
+    {
+        if (!$uuid) return false;
+
+        return View::query()
+            ->where('article_id', $this->id)
+            ->where('uuid', $uuid)
+            ->exist();
+    }
+
+    /**
+     * Возвращает количество лайков статьи
+     * 
+     * @return int - количество лайков
+     */
+    public function getLikes(): int
+    {
+        $this->likes = static::getCache(
+            "article_{$this->id}_likes",
+            function () {
+                return Like::getArticleLikes($this->id);
+            }
+        );
+
+        return $this->likes;
+    }
+
+    /**
+     * Устанавливает лайк статьи
+     * 
+     * @param string $uuid - UUID
+     * @return void
+     */
+    public function setLike(string $uuid): void
+    {
+        if ($uuid) {
+            if (Like::setArticleLike($this->id, $uuid)) {
+                $this->likes = Like::getArticleLikes($this->id);
+            }
+        }
+    }
+
+    /**
+     * Удаляет лайк статьи
+     * 
+     * @param string $uuid - UUID
+     * @return void
+     */
+    public function deleteLike(string $uuid): void
+    {
+        if ($uuid) {
+            if (Like::deleteArticleLike($this->id, $uuid)) {
+                $this->likes = Like::getArticleLikes($this->id);
+            }
+        }
+    }
+
+    /**
+     * Проверяет, лайкнул ли пользователь статью
+     * 
+     * @param string $uuid - UUID
+     * @return bool - true, если лайкнул
+     */
+    public function isLikedByUuid(string $uuid): bool
+    {
+        if (!$uuid) return false;
+
+        return Like::query()
+            ->where('article_id', $this->id)
+            ->where('uuid', $uuid)
+            ->exist();
     }
 
     /**

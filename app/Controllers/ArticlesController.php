@@ -25,6 +25,42 @@ use Tischmann\Atlantis\{
  */
 class ArticlesController extends Controller
 {
+    public function likeArticle(): void
+    {
+        $id = $this->route->args('id');
+
+        $article = Article::find($id);
+
+        if (!$article->exists()) {
+            Response::json([
+                'title' => get_str('warning'),
+                'message' => get_str('article_not_found')
+            ], 404);
+        }
+
+        $article->setLike(strval(cookies_get('uuid')));
+
+        Response::json(['likes' => $article->getLikes()]);
+    }
+
+    public function dislikeArticle(): void
+    {
+        $id = $this->route->args('id');
+
+        $article = Article::find($id);
+
+        if (!$article->exists()) {
+            Response::json([
+                'title' => get_str('warning'),
+                'message' => get_str('article_not_found')
+            ], 404);
+        }
+
+        $article->deleteLike(strval(cookies_get('uuid')));
+
+        Response::json(['likes' => $article->getLikes()]);
+    }
+
     public function showArticlesByTag(): void
     {
         $tag = urldecode($this->route->args('tag'));
