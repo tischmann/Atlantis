@@ -413,6 +413,8 @@ list($image_width, $image_height) = $article->getImageSizes();
 
         const articleTextElement = form.querySelector('textarea[name="text"]')
 
+        const darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+
         tinymce.init({
             language: 'ru',
             target: articleTextElement,
@@ -428,8 +430,8 @@ list($image_width, $image_height) = $article->getImageSizes();
             toolbar_mode: 'sliding',
             contextmenu: 'link image table',
             image_caption: true,
-            skin: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oxide-dark' : 'oxide',
-            content_css: '/app.min.css',
+            skin: darkMode ? 'oxide-dark' : 'oxide',
+            content_css: darkMode ? ['/app.min.css', '/dark.css'] : '/app.min.css',
             font_css: 'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap',
             image_advtab: true,
             image_class_list: [{
