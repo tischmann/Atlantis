@@ -15,49 +15,41 @@ export default class Progress {
 
         this.wrapper = document.createElement('div')
 
-        this.wrapper.style.position = 'relative'
-
-        this.wrapper.style.width = '100%'
-
-        this.wrapper.style.height = '2rem'
-
-        this.wrapper.style.borderRadius = '0.5rem'
-
-        this.wrapper.style.backgroundColor = '#f3f4f6'
+        this.wrapper.classList.add(
+            'relative',
+            'w-full',
+            'h-8',
+            'rounded-lg',
+            'bg-gray-200',
+            'dark:bg-gray-700'
+        )
 
         this.bar = document.createElement('div')
 
+        this.bar.classList.add(
+            'h-full',
+            'rounded-lg',
+            'bg-sky-600',
+            'transition-all'
+        )
+
         this.bar.style.width = '0%'
-
-        this.bar.style.height = '100%'
-
-        this.bar.style.borderRadius = '0.5rem'
-
-        this.bar.style.backgroundColor = '#0284c7'
-
-        this.bar.style.transition = 'all 0.2s ease-in-out'
 
         this.percent = document.createElement('div')
 
-        this.percent.style.position = 'absolute'
-
-        this.percent.style.top = '50%'
-
-        this.percent.style.left = '50%'
-
-        this.percent.style.transform = 'translate(-50%, -50%)'
-
-        this.percent.style.color = '#1f2937'
-
-        this.percent.style.fontWeight = 'bold'
-
-        this.percent.style.fontSize = '1rem'
-
-        this.percent.style.lineHeight = '1.5rem'
-
-        this.percent.style.textAlign = 'center'
-
-        this.percent.style.textShadow = '0 0 0.5rem rgba(0, 0, 0, 0.5)'
+        this.percent.classList.add(
+            'absolute',
+            'top-1/2',
+            'left-1/2',
+            '-translate-x-1/2',
+            '-translate-y-1/2',
+            'text-gray-800',
+            'dark:text-white',
+            'font-bold',
+            'text-base',
+            'text-center',
+            'shadow-sm'
+        )
 
         this.percent.innerText = '0%'
 
@@ -80,7 +72,9 @@ export default class Progress {
 
         this.bar.style.width = `${value}%`
 
-        if (value >= 50) this.percent.style.color = '#fff'
+        if (value >= 50) {
+            this.percent.classList.add('text-white')
+        }
 
         this.percent.innerText = `${value}%`
 

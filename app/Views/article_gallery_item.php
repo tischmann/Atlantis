@@ -8,7 +8,7 @@ $gallery_thumb_height ??= 180;
 
 ?>
 
-<li class="text-sm select-none relative">
+<li class="text-sm select-none relative bg-gray-100 dark:bg-gray-700 rounded-md">
     <img src="<?= $gallery_thumb_src ?>" width="<?= $gallery_thumb_width ?>" height="<?= $gallery_thumb_height ?>" alt="..." decoding="async" loading="auto" class="block w-full rounded-md">
     <div class="block outline-none absolute top-0 right-0 p-2 text-white bg-red-600 rounded-md rounded-tl-none rounded-br-none hover:bg-red-500 cursor-pointer transition drop-shadow" title="{{lang=delete}}" data-delete>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
