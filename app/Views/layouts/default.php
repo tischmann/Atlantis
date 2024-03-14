@@ -22,7 +22,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" />
     <link rel="stylesheet" href="/app.min.css" media="all">
-    <script src="/js/prototypes.min.js" nonce="{{nonce}}"></script>
     <script src="/app.min.js" nonce="{{nonce}}" type="module"></script>
 </head>
 
