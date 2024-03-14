@@ -57,6 +57,7 @@ return [
     'dashboard' => 'Админпанель',
     'like' => 'Нравится',
     'dislike' => 'Не нравится',
+    'alticle_liked' => 'Вам понравилась эта статья',
     // Ошибки Json Web Token
     'jwt_missing_public_key' => 'Отсутствует публичный ключ',
     'jwt_wrong_segment_amount' => 'Неверное количество сегментов',

@@ -63,7 +63,7 @@ $is_viewed = $article->isViewedByUuid(strval(cookies_get('uuid')));
 
             ?>
         </h2>
-        <div class="mb-4 text-gray-600 dark:text-gray-400 text-sm flex sm:items-center flex-col sm:flex-row gap-4">
+        <div class="text-gray-600 dark:text-gray-400 text-sm flex sm:items-center flex-col sm:flex-row gap-4">
             <h3 class="text-sm my-0 hover:underline"><a href="/{{env=APP_LOCALE}}/category/<?= $category->slug ?>"><?= $category->title ?></a></h3>
             <div class="flex flex-nowrap items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -80,10 +80,10 @@ $is_viewed = $article->isViewedByUuid(strval(cookies_get('uuid')));
             ?>
             <div class="flex items-center gap-4">
                 <div class="flex flex-nowrap items-center gap-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 <?= $is_liked ? "hidden" : "" ?>">
+                    <svg id="liked-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 <?= $is_liked ? "hidden" : "" ?>">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
                     </svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 <?= $is_liked ? "" : "hidden" ?>">
+                    <svg id="like-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 <?= $is_liked ? "" : "hidden" ?>">
                         <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
                     </svg>
                     <span id="likes-counter"><?= $article->getLikes() ?></span>
@@ -100,22 +100,23 @@ $is_viewed = $article->isViewedByUuid(strval(cookies_get('uuid')));
                     <span><?= $article->getViews() ?></span>
                 </div>
             </div>
+            <div id="article-liked-label" class="flex no-print justify-normal sm:justify-end text-gray-600 dark:text-gray-400 whitespace-nowrap text-sm <?= $is_liked ? "" : "hidden" ?>">{{lang=alticle_liked}}</div>
         </div>
-        <div class="flex justify-normal sm:justify-between gap-4">
-            <div class="my-4 flex flex-nowrap items-center gap-2 print-page no-print cursor-pointer font-semibold hover:underline text-gray-600 dark:text-gray-400" title="{{lang=print_page}}">
+        <div class="my-4 flex flex-wrap sm:flex-nowrap justify-normal sm:justify-between gap-4">
+            <div class="flex flex-nowrap items-center gap-2 no-print cursor-pointer font-semibold hover:underline text-gray-600 dark:text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 <?= $is_liked ? "" : "hidden" ?>">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.498 15.25H4.372c-1.026 0-1.945-.694-2.054-1.715a12.137 12.137 0 0 1-.068-1.285c0-2.848.992-5.464 2.649-7.521C5.287 4.247 5.886 4 6.504 4h4.016a4.5 4.5 0 0 1 1.423.23l3.114 1.04a4.5 4.5 0 0 0 1.423.23h1.294M7.498 15.25c.618 0 .991.724.725 1.282A7.471 7.471 0 0 0 7.5 19.75 2.25 2.25 0 0 0 9.75 22a.75.75 0 0 0 .75-.75v-.633c0-.573.11-1.14.322-1.672.304-.76.93-1.33 1.653-1.715a9.04 9.04 0 0 0 2.86-2.4c.498-.634 1.226-1.08 2.032-1.08h.384m-10.253 1.5H9.7m8.075-9.75c.01.05.027.1.05.148.593 1.2.925 2.55.925 3.977 0 1.487-.36 2.89-.999 4.125m.023-8.25c-.076-.365.183-.75.575-.75h.908c.889 0 1.713.518 1.972 1.368.339 1.11.521 2.287.521 3.507 0 1.553-.295 3.036-.831 4.398-.306.774-1.086 1.227-1.918 1.227h-1.053c-.472 0-.745-.556-.5-.96a8.95 8.95 0 0 0 .303-.54" />
+                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 <?= $is_liked ? "hidden" : "" ?>">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.633 10.25c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 0 1 2.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 0 0 .322-1.672V2.75a.75.75 0 0 1 .75-.75 2.25 2.25 0 0 1 2.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282m0 0h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 0 1-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 0 0-1.423-.23H5.904m10.598-9.75H14.25M5.904 18.5c.083.205.173.405.27.602.197.4-.078.898-.523.898h-.908c-.889 0-1.713-.518-1.972-1.368a12 12 0 0 1-.521-3.507c0-1.553.295-3.036.831-4.398C3.387 9.953 4.167 9.5 5 9.5h1.053c.472 0 .745.556.5.96a8.958 8.958 0 0 0-1.302 4.665c0 1.194.232 2.333.654 3.375Z" />
+                </svg>
+                <span id="like-article" class="whitespace-nowrap" data-liked="<?= intval($is_liked) ?>">{{lang=<?= $is_liked ? "dislike" : "like" ?>}}</span>
+            </div>
+            <div class="flex flex-nowrap items-center gap-2 print-page no-print cursor-pointer font-semibold hover:underline text-gray-600 dark:text-gray-400" title="{{lang=print_page}}">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247M6.34 18H5.25A2.25 2.25 0 0 1 3 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 0 1 1.913-.247m10.5 0a48.536 48.536 0 0 0-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5Zm-3 0h.008v.008H15V10.5Z" />
                 </svg>
-                <span>{{lang=print_page}}</span>
-            </div>
-            <div class="my-4 flex flex-nowrap items-center gap-2 no-print cursor-pointer font-semibold hover:underline text-gray-600 dark:text-gray-400">
-                <svg id="like-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 <?= $is_liked ? "" : "hidden" ?>">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.498 15.25H4.372c-1.026 0-1.945-.694-2.054-1.715a12.137 12.137 0 0 1-.068-1.285c0-2.848.992-5.464 2.649-7.521C5.287 4.247 5.886 4 6.504 4h4.016a4.5 4.5 0 0 1 1.423.23l3.114 1.04a4.5 4.5 0 0 0 1.423.23h1.294M7.498 15.25c.618 0 .991.724.725 1.282A7.471 7.471 0 0 0 7.5 19.75 2.25 2.25 0 0 0 9.75 22a.75.75 0 0 0 .75-.75v-.633c0-.573.11-1.14.322-1.672.304-.76.93-1.33 1.653-1.715a9.04 9.04 0 0 0 2.86-2.4c.498-.634 1.226-1.08 2.032-1.08h.384m-10.253 1.5H9.7m8.075-9.75c.01.05.027.1.05.148.593 1.2.925 2.55.925 3.977 0 1.487-.36 2.89-.999 4.125m.023-8.25c-.076-.365.183-.75.575-.75h.908c.889 0 1.713.518 1.972 1.368.339 1.11.521 2.287.521 3.507 0 1.553-.295 3.036-.831 4.398-.306.774-1.086 1.227-1.918 1.227h-1.053c-.472 0-.745-.556-.5-.96a8.95 8.95 0 0 0 .303-.54" />
-                </svg>
-                <svg id="dislike-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 <?= $is_liked ? "hidden" : "" ?>">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.633 10.25c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 0 1 2.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 0 0 .322-1.672V2.75a.75.75 0 0 1 .75-.75 2.25 2.25 0 0 1 2.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282m0 0h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 0 1-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 0 0-1.423-.23H5.904m10.598-9.75H14.25M5.904 18.5c.083.205.173.405.27.602.197.4-.078.898-.523.898h-.908c-.889 0-1.713-.518-1.972-1.368a12 12 0 0 1-.521-3.507c0-1.553.295-3.036.831-4.398C3.387 9.953 4.167 9.5 5 9.5h1.053c.472 0 .745.556.5.96a8.958 8.958 0 0 0-1.302 4.665c0 1.194.232 2.333.654 3.375Z" />
-                </svg>
-                <span id="like-article" data-liked="<?= intval($is_liked) ?>">{{lang=<?= $is_liked ? "dislike" : "like" ?>}}</span>
+                <span class="whitespace-nowrap">{{lang=print_page}}</span>
             </div>
         </div>
         <div class="mb-4">
@@ -263,6 +264,14 @@ $is_viewed = $article->isViewedByUuid(strval(cookies_get('uuid')));
     document.getElementById('like-article').addEventListener('click', function() {
         const liked = !!parseInt(this.dataset?.liked || 0)
 
+        const likedIcon = document.getElementById('liked-icon')
+
+        const likeIcon = document.getElementById('like-icon')
+
+        const likedArticleLabel = document.getElementById('article-liked-label')
+
+        const likesCounter = document.getElementById('likes-counter')
+
         this.dataset.liked = liked ? "0" : "1"
 
         fetch('/like/article/<?= $article->id ?>', {
@@ -274,19 +283,21 @@ $is_viewed = $article->isViewedByUuid(strval(cookies_get('uuid')));
         }).then((response) => {
             if (response.ok) {
                 if (liked) {
-                    document.getElementById('like-icon').classList.add('hidden')
-                    document.getElementById('dislike-icon').classList.remove('hidden')
+                    likeIcon.classList.add('hidden')
+                    likedIcon.classList.remove('hidden')
+                    likedArticleLabel.classList.add('hidden')
                     this.innerText = '{{lang=like}}'
                 } else {
-                    document.getElementById('like-icon').classList.remove('hidden')
-                    document.getElementById('dislike-icon').classList.add('hidden')
+                    likeIcon.classList.remove('hidden')
+                    likedIcon.classList.add('hidden')
+                    likedArticleLabel.classList.remove('hidden')
                     this.innerText = '{{lang=dislike}}'
                 }
 
                 return response.json().then(({
                     likes
                 }) => {
-                    document.getElementById('likes-counter').innerText = likes
+                    likesCounter.innerText = likes
                 })
             }
 
