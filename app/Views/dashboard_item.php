@@ -1,0 +1,1 @@
+<a class="flex w-full sm:w-auto items-center bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white p-4 rounded-xl shadow-xl font-medium" href="<?= $href ?? "#" ?>"><?= $label ?? "?" ?></a>

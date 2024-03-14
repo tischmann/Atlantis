@@ -1729,6 +1729,10 @@ h6 {
   .sm\:flex-nowrap {
     flex-wrap: nowrap;
   }
+
+  .sm\:items-center {
+    align-items: center;
+  }
 }
 
 @media (min-width: 768px) {

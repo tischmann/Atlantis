@@ -33,4 +33,14 @@ class IndexController extends Controller
     {
         View::send('sitemap');
     }
+
+    /**
+     * Вывод админпанели
+     *
+     * @return void
+     */
+    public function showDashboard(): void
+    {
+        View::send('dashboard');
+    }
 }

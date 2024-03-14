@@ -53,6 +53,7 @@ return [
     'updated_at' => 'Изменено',
     'articles_by_tag' => 'Статьи по тегу',
     'none' => 'Нет',
+    'dashboard' => 'Админпанель',
     // Ошибки Json Web Token
     'jwt_missing_public_key' => 'Отсутствует публичный ключ',
     'jwt_wrong_segment_amount' => 'Неверное количество сегментов',
@@ -72,6 +73,7 @@ return [
     'signin_submit' => 'Войти',
     'signout_submit' => 'Выйти',
     // Пользователи
+    'users' => 'Пользователи',
     'user_not_found' => 'Пользователь не найден',
     'user_save_error' => 'Ошибка сохранения пользователя',
     'user_delete_error' => 'Ошибка удаления пользователя',
@@ -126,6 +128,7 @@ return [
     'locale_' => 'Все',
     'locale_ru' => 'Русский',
     // Категории
+    'categories' => 'Категории',
     'catgories_list' => 'Список категорий',
     'category_new' => 'Новая категория',
     'category_edit' => 'Редактирование категории',
@@ -137,6 +140,7 @@ return [
     'category_parent_id' => 'Родительская категория',
     'category_not_found' => 'Категория не найдена',
     // Статьи
+    'articles' => 'Статьи',
     'article_edit' => 'Редактирование статьи',
     'article_new' => 'Новая статья',
     'articles_list' => 'Список статей',

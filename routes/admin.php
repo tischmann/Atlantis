@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Controllers\{
     ArticlesController,
     CategoriesController,
+    IndexController,
     UsersController
 };
 
@@ -14,7 +15,19 @@ use Tischmann\Atlantis\{
     Route
 };
 
-if (App::getCurrentUser()->isAdmin()) {
+$user = App::getCurrentUser();
+
+if ($user->isAdmin() || $user->canModerate() || $user->canAuthor()) {
+    Router::add(new Route(
+        controller: new IndexController(),
+        path: 'dashboard',
+        action: 'showDashboard',
+        method: 'GET',
+        title: get_str('dashboard')
+    ));
+}
+
+if ($user->isAdmin()) {
     Router::add(new Route(
         controller: new UsersController(),
         path: 'users',
