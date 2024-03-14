@@ -19,5 +19,12 @@ if (window.location.protocol === 'http:') {
 }
 
 document.head.querySelectorAll('link[rel="preload"]').forEach((link) => {
-    link.setAttribute('rel', 'stylesheet')
+    switch (link.getAttribute('as')) {
+        case 'style':
+            link.setAttribute('rel', 'stylesheet')
+            break
+        case 'script':
+            link.setAttribute('rel', 'script')
+            break
+    }
 })
