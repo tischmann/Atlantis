@@ -1,3 +1,6 @@
+import Progress from './atlantis.progress.min.js'
+import Select from './atlantis.select.min.js'
+
 export default class Article {
     constructor({ form = null } = {}) {
         this.form = form
@@ -103,11 +106,11 @@ export default class Article {
 
         const attachementsContainer = this.getAttachementsContainer()
 
-        const categorySelect = document
-            .querySelector(`select[name="category_id"]`)
-            .select()
+        const categorySelect = new Select(
+            document.querySelector(`select[name="category_id"]`)
+        )
 
-        document.querySelector('select[name="locale"]').select({
+        new Select(document.querySelector('select[name="locale"]'), {
             onchange: (value) => {
                 fetch(`/locale/categories/${value}`)
                     .then((response) => response.json())
@@ -117,9 +120,9 @@ export default class Article {
             }
         })
 
-        this.imageSizeSelect = document
-            .querySelector(`select[name="image_size"]`)
-            .select({
+        this.imageSizeSelect = new Select(
+            document.querySelector(`select[name="image_size"]`),
+            {
                 onchange: (value) => {
                     const img = this.getImageElement()
 
@@ -140,11 +143,12 @@ export default class Article {
 
                     img.setAttribute('height', height)
                 }
-            })
+            }
+        )
 
-        this.gallerySizeSelect = document
-            .querySelector(`select[name="gallery_image_size"]`)
-            .select()
+        this.gallerySizeSelect = new Select(
+            document.querySelector(`select[name="gallery_image_size"]`)
+        )
 
         document.getElementById('pre-upload-image').addEventListener(
             'click',
@@ -598,7 +602,7 @@ export default class Article {
                 Array.from(event.target.files).forEach((file) => {
                     const container = this.getGalleryContainer()
 
-                    const progress = container.progress()
+                    const progress = new Progress(container)
 
                     const size = this.gallerySizeSelect.getValue()
 
@@ -758,7 +762,7 @@ export default class Article {
                 Array.from(event.target.files).forEach((file) => {
                     const container = this.getVideosContainer()
 
-                    const progress = container.progress()
+                    const progress = new Progress(container)
 
                     this.uploadVideo({
                         file: file,
@@ -1034,7 +1038,7 @@ export default class Article {
                 Array.from(event.target.files).forEach((file) => {
                     const container = this.getAttachementsContainer()
 
-                    const progress = container.progress()
+                    const progress = new Progress(container)
 
                     this.uploadAttachement({
                         file: file,

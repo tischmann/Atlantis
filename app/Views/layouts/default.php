@@ -20,10 +20,10 @@
     <title>{{title}}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" />
     <link rel="stylesheet" href="/app.min.css" media="all">
     <script src="/js/prototypes.min.js" nonce="{{nonce}}"></script>
-    <script src="/app.min.js" nonce="{{nonce}}"></script>
+    <script src="/app.min.js" nonce="{{nonce}}" type="module"></script>
 </head>
 
 <body class="bg-white text-gray-800 dark:bg-gray-800 dark:text-white antialiased m-0 p-0">

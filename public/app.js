@@ -1,3 +1,9 @@
+import Cookie from '/js/atlantis.cookie.min.js'
+
+const cookie = new Cookie()
+
+if (!cookie.get('uuid')) cookie.set('uuid', self.crypto.randomUUID())
+
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/service-worker.min.js')
 }
@@ -12,6 +18,6 @@ if (window.location.protocol === 'http:') {
     requireHTTPS.classList.remove('hidden')
 }
 
-if (!document.getCookie('uuid')) {
-    document.setCookie('uuid', self.crypto.randomUUID())
-}
+document.head.querySelectorAll('link[rel="preload"]').forEach((link) => {
+    link.setAttribute('rel', 'stylesheet')
+})

@@ -121,68 +121,68 @@ $category->children = $category->fetchChildren();
         </div>
     </form>
 </main>
-<script nonce="{{nonce}}">
-    (function() {
-        const form = document.querySelector('form[data-category]')
+<script nonce="{{nonce}}" type="module">
+    import Select from '/js/atlantis.select.min.js'
 
-        ;
-        ['locale', 'parent_id'].forEach((name) => {
-            document.querySelector(`select[name="${name}"]`).select()
+    const form = document.querySelector('form[data-category]')
+
+    ;
+    ['locale', 'parent_id'].forEach((name) => {
+        new Select(document.querySelector(`select[name="${name}"]`))
+    })
+
+    document
+        .querySelector('button[data-save]')
+        ?.addEventListener('click', () => {
+            fetch(`/category/${form.dataset.category}`, {
+                method: 'PUT',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(Object.fromEntries(new FormData(form)))
+            }).then((response) => {
+                response.json().then((json) => {
+                    alert(json.message)
+                    window.location.reload()
+                })
+            })
         })
 
-        document
-            .querySelector('button[data-save]')
-            ?.addEventListener('click', () => {
-                fetch(`/category/${form.dataset.category}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(Object.fromEntries(new FormData(form)))
-                }).then((response) => {
-                    response.json().then((json) => {
-                        alert(json.message)
-                        window.location.reload()
-                    })
+    document
+        .querySelector('button[data-add]')
+        ?.addEventListener('click', () => {
+            fetch(`/category`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(Object.fromEntries(new FormData(form)))
+            }).then((response) => {
+                response.json().then((json) => {
+                    alert(json.message)
+                    window.location.href = `/edit/category/${json.id}`
                 })
             })
+        })
 
-        document
-            .querySelector('button[data-add]')
-            ?.addEventListener('click', () => {
-                fetch(`/category`, {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(Object.fromEntries(new FormData(form)))
-                }).then((response) => {
-                    response.json().then((json) => {
-                        alert(json.message)
-                        window.location.href = `/edit/category/${json.id}`
-                    })
+    document
+        .querySelector('button[data-delete]')
+        ?.addEventListener('click', (event) => {
+            if (!confirm(`{{lang=confirm_delete_category}}`)) return
+
+            fetch(`/category/${form.dataset.category}`, {
+                method: 'DELETE',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            }).then((response) => {
+                response.json().then((json) => {
+                    alert(json.message)
+                    window.location.href = '/edit/categories'
                 })
             })
-
-        document
-            .querySelector('button[data-delete]')
-            ?.addEventListener('click', (event) => {
-                if (!confirm(`{{lang=confirm_delete_category}}`)) return
-
-                fetch(`/category/${form.dataset.category}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                }).then((response) => {
-                    response.json().then((json) => {
-                        alert(json.message)
-                        window.location.href = '/edit/categories'
-                    })
-                })
-            })
-    })()
+        })
 </script>
