@@ -194,6 +194,8 @@ class Article extends Model
      */
     public function getViews(): int
     {
+        if (!$this->exists()) return 0;
+
         $this->views = static::getCache(
             "article_{$this->id}_views",
             function () {
@@ -212,7 +214,7 @@ class Article extends Model
      */
     public function setView(string $uuid): void
     {
-        if ($uuid) {
+        if ($uuid && $this->exists()) {
             if (View::setArticleView($this->id, $uuid)) {
                 $this->views = View::getArticleViews($this->id);
             }
@@ -227,7 +229,7 @@ class Article extends Model
      */
     public function isViewedByUuid(string $uuid): bool
     {
-        if (!$uuid) return false;
+        if (!$uuid || !$this->exists()) return false;
 
         return View::query()
             ->where('article_id', $this->id)
@@ -242,6 +244,8 @@ class Article extends Model
      */
     public function getLikes(): int
     {
+        if (!$this->exists()) return 0;
+
         $this->likes = static::getCache(
             "article_{$this->id}_likes",
             function () {
@@ -260,7 +264,7 @@ class Article extends Model
      */
     public function setLike(string $uuid): void
     {
-        if ($uuid) {
+        if ($uuid && $this->exists()) {
             if (Like::setArticleLike($this->id, $uuid)) {
                 $this->likes = Like::getArticleLikes($this->id);
             }
@@ -275,7 +279,7 @@ class Article extends Model
      */
     public function deleteLike(string $uuid): void
     {
-        if ($uuid) {
+        if ($uuid && $this->exists()) {
             if (Like::deleteArticleLike($this->id, $uuid)) {
                 $this->likes = Like::getArticleLikes($this->id);
             }
@@ -290,7 +294,7 @@ class Article extends Model
      */
     public function isLikedByUuid(string $uuid): bool
     {
-        if (!$uuid) return false;
+        if (!$uuid || !$this->exists()) return false;
 
         return Like::query()
             ->where('article_id', $this->id)

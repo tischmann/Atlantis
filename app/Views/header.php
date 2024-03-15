@@ -1,7 +1,17 @@
+<?php
+
+use Tischmann\Atlantis\Request;
+
+$request = Request::instance();
+
+$search_query = strval($request->request('query'));
+?>
+<!-- HEADER -->
 <header class="my-8">
     <div class="md:container mx-8 md:mx-auto">
         <div class="flex flex-row md:items-center flex-wrap md:justify-between gap-4">
             <div class="flex-grow flex flex-col sm:flex-row sm:items-center gap-8">
+                <!-- LOGO -->
                 <a href="/{{env=APP_LOCALE}}" class="flex items-center" aria-label="{{env=APP_TITLE}}">
                     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 400 400" xml:space="preserve" width="32" height="32" class="text-sky-600 w-8 h-8">
                         <path fill="currentColor" d="M99.9,199.8C45,291.1,0,365.8,0,366s19.1,0.4,42.5,0.2l42.5-0.2l57.4-96c31.5-52.7,57.4-96,57.6-96s71.6,118.1,72,119.4
@@ -10,6 +20,8 @@
                     </svg>
                     <div class="uppercase text-4xl leading-8 font-bold -ml-1 tracking-wide select-none">TLANTIS</div>
                 </a>
+                <!-- LOGO -->
+                <!-- VISUALLY IMPAIRED VERSION -->
                 <div id="visually-impaired-version" class="no-print flex items-center gap-2 hover:underline font-medium cursor-pointer text-gray-800 dark:text-white">
                     <svg id="visually-impaired-version-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
@@ -20,6 +32,17 @@
                     </svg>
                     <span>{{lang=visually_impaired_version}}</span>
                 </div>
+                <!-- VISUALLY IMPAIRED VERSION -->
+                <!-- SEARCH -->
+                <div class="relative sm:ml-auto group/search">
+                    <input id="search-articles" type="text" class="w-full sm:w-64 px-3 py-2 pr-10 rounded-xl bg-gray-200 dark:bg-gray-700 dark:text-white border-2 border-gray-300 dark:border-gray-600 outline-none ring-0 focus:ring-0 hover:border-sky-600 group-hover/search:border-sky-600 focus:border-sky-600 transition-all" value="<?= $search_query ?>" />
+                    <div class="absolute right-0 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                        </svg>
+                    </div>
+                </div>
+                <!-- SEARCH -->
             </div>
             <div class="no-print flex items-center gap-4">
 
@@ -62,22 +85,37 @@
         </div>
     </div>
 </header>
-<script nonce="{{nonce}}">
+<script nonce="{{nonce}}" type="module">
+    import Cookie from '/js/atlantis.cookie.min.js'
     (function() {
-        const normalIcon = document.getElementById('normal-version-icon');
-        const visuallyImpairedIcon = document.getElementById('visually-impaired-version-icon');
-        document.getElementById('visually-impaired-version').addEventListener('click', function() {
+        const cookie = new Cookie()
+
+        const viButton = document.getElementById('visually-impaired-version')
+
+        let isVisuallyImpaired = cookie.get('vi') === 'true'
+
+        function visuallyImparedHandler() {
             document.documentElement.classList.toggle('visually-impaired')
-            const span = this.querySelector('span')
-            if (document.documentElement.classList.contains('visually-impaired')) {
-                visuallyImpairedIcon.classList.add('hidden')
-                normalIcon.classList.remove('hidden')
-                span.textContent = '{{lang=normal_version}}'
-            } else {
-                visuallyImpairedIcon.classList.remove('hidden')
-                normalIcon.classList.add('hidden')
-                span.textContent = '{{lang=visually_impaired_version}}'
-            }
+            document.getElementById('visually-impaired-version-icon').classList.toggle('hidden')
+            document.getElementById('normal-version-icon').classList.toggle('hidden')
+            viButton.querySelector('span').textContent = document.documentElement.classList.contains('visually-impaired') ?
+                '{{lang=normal_version}}' :
+                '{{lang=visually_impaired_version}}'
+        }
+
+        viButton.addEventListener('click', function() {
+            cookie.set('vi', isVisuallyImpaired ? 'false' : 'true')
+            visuallyImparedHandler()
+        })
+
+        if (isVisuallyImpaired) visuallyImparedHandler()
+
+        document.getElementById('search-articles').addEventListener('keydown', function(event) {
+            if (event.key !== 'Enter') return
+            const url = new URL(`${window.location.origin}/{{env=APP_LOCALE}}/search`)
+            url.searchParams.set('query', this.value)
+            window.location.href = url.toString()
         })
     })()
 </script>
+<!-- HEADER -->

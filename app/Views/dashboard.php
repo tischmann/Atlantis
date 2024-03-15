@@ -1,4 +1,4 @@
-<main class="md:container mx-4 md:mx-auto mb-4">
+<main class="md:container mx-4 md:mx-auto mb-4 min-h-screen">
     <div class="flex flex-col sm:flex-row sm:items-center gap-4">
         <?php
 

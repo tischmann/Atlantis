@@ -86,3 +86,10 @@ Router::add(new Route(
     action: 'dislikeArticle',
     method: 'DELETE',
 ));
+
+Router::add(new Route(
+    controller: new IndexController(),
+    path: 'search',
+    action: 'search',
+    method: 'GET',
+));
