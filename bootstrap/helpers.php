@@ -237,13 +237,15 @@ function csrf_set(): object
 
     $token = bin2hex(random_bytes(32));
 
+    $expires = time() + 3600;
+
     $tokens = csrf_tokens();
 
-    $tokens[$key] = $token;
+    $tokens[$key] = (object)['token' => $token, 'expires' => $expires];
 
     session_set(csrf_session_key(), $tokens);
 
-    return (object)['key' => $key, 'token' => $token];
+    return (object)['key' => $key, 'token' => $token, 'expires' => $expires];
 }
 
 /**
@@ -253,29 +255,27 @@ function csrf_set(): object
  */
 function csrf_verify(): bool
 {
-    $method = mb_strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
-
-    if (!in_array($method, ['POST', 'PUT', 'DELETE'])) return true;
+    foreach (csrf_tokens() as $key => $token) {
+        if ($token->expires < time()) csrf_flush($key);
+    }
 
     $token = apache_request_headers()['X-Csrf-Token'] ?? null;
 
-    $key = $token !== null ? array_search($token, csrf_tokens()) : false;
-
-    if ($key !== false) {
-        csrf_flush($key);
-        return true;
+    if ($token !== null) {
+        foreach (csrf_tokens() as $token_key => $token_value) {
+            if ($token_value->token !== $token) continue;
+            csrf_flush($token_key);
+            return true;
+        }
     }
 
     foreach (csrf_tokens() as $key => $token) {
         if (array_key_exists($key, $_REQUEST)) {
-            if ($_REQUEST[$key] === $token) {
-                csrf_flush($key);
-                return true;
-            }
+            if ($_REQUEST[$key] !== $token->token) continue;
+            csrf_flush($key);
+            return true;
         }
     }
-
-    csrf_flush();
 
     return false;
 }

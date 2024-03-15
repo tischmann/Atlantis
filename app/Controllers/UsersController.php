@@ -178,7 +178,7 @@ class UsersController extends Controller
             );
         }
 
-        $user->refresh_token = Auth::signIn();
+        $user->refresh_token = Auth::signIn($user);
 
         $user->save();
 

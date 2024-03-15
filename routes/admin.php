@@ -103,7 +103,7 @@ if ($user->isAdmin()) {
     Router::add(new Route(
         controller: new ArticlesController(),
         path: 'article',
-        action: 'insertArticle',
+        action: 'updateArticle',
         method: 'POST',
         args: ['id' => 0]
     ));

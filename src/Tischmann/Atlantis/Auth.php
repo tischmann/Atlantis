@@ -48,18 +48,6 @@ final class Auth
     }
 
     /**
-     * Установка пользователя
-     *
-     * @param User $user Пользователь
-     * 
-     * @return User Пользователь
-     */
-    private static function setUser(User $user): User
-    {
-        return static::$user = $user;
-    }
-
-    /**
      * Получение закрытого ключа
      *
      * @return string
@@ -106,43 +94,37 @@ final class Auth
      */
     public static function authorize(): User
     {
-        $user = static::getUser();
-
         if (
             !static::isLastAccessValid()
             || !static::isClientUserAgentValid()
             || !static::isClientAddressValid()
         ) {
             session_kill();
-            return $user;
+            return static::getUser();
         }
 
         $jwt = Request::authorization() ?: cookies_get('jwt');
 
         $jwr = cookies_get('jwr');
 
-        if (!$jwt || !$jwr) return $user;
+        if (!$jwt || !$jwr) return static::getUser();
 
         try {
             $decoded = static::decodeToken($jwt);
 
-            $user = User::find($decoded->data->id, 'id');
-
-            static::setUser($user);
+            static::$user = User::find($decoded->data->id, 'id');
         } catch (TokenExpiredException $e) {
             $jwt = static::refreshToken($jwt, $jwr);
 
             $decoded = static::decodeToken($jwt);
 
-            $user = User::find($decoded->data->id, 'id');
-
-            static::setUser($user);
+            static::$user = User::find($decoded->data->id, 'id');
 
             static::$token = $jwt;
 
-            $user->refresh_token = $jwr;
+            static::$user->refresh_token = $jwr;
 
-            $user->save();
+            static::$user->save();
 
             $expires = time() + 2678400;
 
@@ -151,13 +133,11 @@ final class Auth
             die('Подпись токена недействительна');
         } catch (BeforeValidException $e) {
             die('Токен еще не вступил в силу');
-        } catch (TokenExpiredException $e) {
-            die('Срок дейстаия токена истёк');
         }
 
         session_set('LAST_ACCESS', time());
 
-        return $user;
+        return static::getUser();
     }
 
     /**
@@ -165,8 +145,10 @@ final class Auth
      *
      * @return string Токен обновления
      */
-    public static function signIn(): string
+    public static function signIn(User $user): string
     {
+        static::$user = $user;
+
         session_regenerate_id();
 
         static::$token = static::createToken(static::createPayload());
@@ -234,7 +216,7 @@ final class Auth
         $user = User::find($payload?->id ?? 0);
 
         if ($user->refresh_token !== $refresh_token || !$refresh_token) {
-            throw new TokenExpiredException();
+            die('Токен обновления недействителен');
         }
 
         return static::createToken($payload);

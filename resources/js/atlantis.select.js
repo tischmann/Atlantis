@@ -1,12 +1,14 @@
 export default class Select {
     options = new Set()
     uuid = self.crypto.randomUUID()
-    constructor(element, { onchange = function () {} } = {}) {
+    constructor(element, { onchange = function () {}, token = '' } = {}) {
         if (!element) return
 
         this.element = element
 
         this.onchange = onchange
+
+        this.token = token
 
         this.wrapper = document.createElement('div')
 
