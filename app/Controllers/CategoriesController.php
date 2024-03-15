@@ -199,13 +199,6 @@ class CategoriesController extends Controller
     {
         $this->checkAdmin(type: 'json');
 
-        if (csrf_failed()) {
-            Response::json([
-                'title' => get_str('warning'),
-                'message' => get_str('csrf_failed')
-            ], 403);
-        }
-
         try {
             $locale = mb_strtolower($this->route->args('locale') ?? getenv('APP_LOCALE'));
 
@@ -235,7 +228,7 @@ class CategoriesController extends Controller
                 ];
             }
 
-            Response::json(['items' => $items, 'token' => csrf_set()->token]);
+            Response::json(['items' => $items]);
         } catch (Exception $e) {
             Response::json([
                 'title' => get_str('warning'),

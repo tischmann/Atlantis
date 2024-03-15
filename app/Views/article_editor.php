@@ -553,22 +553,18 @@ list($image_width, $image_height) = $article->getImageSizes();
 
         const localeSelect = new Select(
             form.querySelector('select[name="locale"]'), {
-                token: '{{csrf-token}}',
                 onchange: (value) => {
                     fetch(`/locale/categories/${value}`, {
                             method: 'GET',
                             headers: {
                                 'Accept': 'application/json',
-                                'Content-Type': 'application/json',
-                                'X-CSRF-Token': localeSelect.token
+                                'Content-Type': 'application/json'
                             }
                         })
                         .then((response) => response.json())
                         .then(({
-                            items,
-                            token
+                            items
                         }) => {
-                            localeSelect.token = token
                             categorySelect.update(items)
                         })
                 }
@@ -1124,8 +1120,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                 method: 'PUT',
                 headers: {
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'X-CSRF-Token': '{{csrf-token}}'
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(Object.fromEntries(new FormData(form)))
             }).then((response) => {
@@ -1143,8 +1138,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'X-CSRF-Token': '{{csrf-token}}'
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(Object.fromEntries(new FormData(form)))
             }).then((response) => {
@@ -1167,8 +1161,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                 method: 'DELETE',
                 headers: {
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'X-CSRF-Token': '{{csrf-token}}'
+                    'Content-Type': 'application/json'
                 },
                 body
             }).then((response) => {

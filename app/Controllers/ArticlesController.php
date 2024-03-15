@@ -727,13 +727,6 @@ class ArticlesController extends Controller
     {
         $this->checkAdmin(type: 'json');
 
-        if (csrf_failed()) {
-            Response::json([
-                'title' => get_str('warning'),
-                'message' => get_str('csrf_failed')
-            ], 403);
-        }
-
         try {
             $id = $this->route->args('id');
 
@@ -764,13 +757,6 @@ class ArticlesController extends Controller
      */
     public function updateArticle()
     {
-        if (csrf_failed()) {
-            Response::json([
-                'title' => get_str('warning'),
-                'message' => get_str('csrf_failed')
-            ], 403);
-        }
-
         try {
             $user = App::getUser();
 
