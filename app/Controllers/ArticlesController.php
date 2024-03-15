@@ -97,7 +97,7 @@ class ArticlesController extends Controller
         string $type = 'html',
         ?Article $article = null
     ): mixed {
-        $user = App::getCurrentUser();
+        $user = App::getUser();
 
         $is_admin = $user->isAdmin();
 
@@ -149,7 +149,7 @@ class ArticlesController extends Controller
     {
         $this->checkEditRights(type: 'html');
 
-        $user = App::getCurrentUser();
+        $user = App::getUser();
 
         $request = Request::instance();
 
@@ -768,7 +768,7 @@ class ArticlesController extends Controller
     public function updateArticle()
     {
         try {
-            $user = App::getCurrentUser();
+            $user = App::getUser();
 
             $request = Request::instance();
 
@@ -853,7 +853,7 @@ class ArticlesController extends Controller
             $article->created_at = new DateTime($date);
 
             if (!$article->exists()) {
-                $article->author_id = App::getCurrentUser()->id;
+                $article->author_id = App::getUser()->id;
 
                 if (!$article->save()) {
                     throw new Exception(get_str('not_saved'));

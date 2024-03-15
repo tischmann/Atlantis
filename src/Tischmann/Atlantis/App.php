@@ -18,28 +18,12 @@ final class App
 
     public static string $title = ''; // Заголовок страницы
 
-    public static ?string $assets_prefix = null; // Префикс для ассетов
-
-    public static ?bool $is_in_development = null; // Режим разработки
-
-    /**
-     * Проверяет, находится ли приложение в режиме разработки
-     *
-     * @return bool
-     */
-    public static function isInDevelopment(): bool
-    {
-        static::$is_in_development ??= boolval(cookies_get('DEV_MODE'));
-
-        return static::$is_in_development;
-    }
-
     /**
      * Возвращает текущего пользователя
      *
      * @return User
      */
-    public static function getCurrentUser(): User
+    public static function getUser(): User
     {
         static::$user ??= new User();
 

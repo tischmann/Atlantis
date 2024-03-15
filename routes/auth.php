@@ -12,7 +12,7 @@ use Tischmann\Atlantis\{
     Route
 };
 
-if (App::getCurrentUser()->exists()) {
+if (App::getUser()->exists()) {
     Router::add(new Route(
         controller: new UsersController(),
         path: 'signout',

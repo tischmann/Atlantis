@@ -4,7 +4,7 @@
 
         use Tischmann\Atlantis\{App, Template};
 
-        if (App::getCurrentUser()->isAdmin()) {
+        if (App::getUser()->isAdmin()) {
 
             Template::echo(
                 template: 'dashboard_item',

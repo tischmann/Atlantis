@@ -42,7 +42,7 @@ class Controller
      */
     protected function checkAdmin(string $type = 'html'): mixed
     {
-        $is_admin = App::getCurrentUser()->isAdmin();
+        $is_admin = App::getUser()->isAdmin();
 
         switch (mb_strtolower($type)) {
             case 'json':

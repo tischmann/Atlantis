@@ -15,7 +15,7 @@ use Tischmann\Atlantis\{
     Route
 };
 
-$user = App::getCurrentUser();
+$user = App::getUser();
 
 if ($user->isAdmin() || $user->canModerate() || $user->canAuthor()) {
     Router::add(new Route(

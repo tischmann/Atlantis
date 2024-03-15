@@ -194,7 +194,7 @@ class UsersController extends Controller
      */
     public function signOut(): void
     {
-        $user = App::getCurrentUser();
+        $user = App::getUser();
 
         if (!$user->exists()) Response::redirect('/');
 

@@ -6,7 +6,7 @@ use Tischmann\Atlantis\{App, Request};
 
 assert($article instanceof Article);
 
-$user = App::getCurrentUser();
+$user = App::getUser();
 
 $request = Request::instance();
 

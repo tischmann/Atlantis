@@ -50,7 +50,7 @@ $search_query = strval($request->request('query'));
 
                 use Tischmann\Atlantis\App;
 
-                $user = App::getCurrentUser();
+                $user = App::getUser();
 
                 if ($user->exists()) {
                     if ($user->canModerate() ||  $user->canAuthor() || $user->isAdmin()) {

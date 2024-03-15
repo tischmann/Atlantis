@@ -16,8 +16,6 @@ session_init(name: 'PHPSESSID', id: cookies_get('PHPSESSID'));
 
 cookies_set('PHPSESSID', session_id());
 
-cookies_set('DEV_MODE', 1); // Установка куки для режима разработки
-
 require_once "routes.php";
 
 Router::bootstrap();

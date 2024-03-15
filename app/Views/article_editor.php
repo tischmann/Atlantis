@@ -6,7 +6,7 @@ use Tischmann\Atlantis\{App, DateTime, Locale, Template};
 
 assert($article instanceof Article);
 
-$user = App::getCurrentUser();
+$user = App::getUser();
 
 if (!$article->exists()) {
     $article->created_at = new DateTime();
