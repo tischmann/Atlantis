@@ -20,7 +20,7 @@ body {
     }
 }
 
-figcaption {
+article figcaption {
     padding: 0.25rem 0;
     font-size: 1rem;
     font-style: italic;
@@ -28,41 +28,45 @@ figcaption {
     color: #4a5568;
 }
 
-p {
+article p {
     margin: 1rem 0;
 }
 
-h1 {
+article a:hover {
+    text-decoration: underline;
+}
+
+article h1 {
     font-size: 2rem;
     font-weight: 600;
     margin: 1rem 0;
 }
 
-h2 {
+article h2 {
     font-size: 1.5rem;
     font-weight: 600;
     margin: 1rem 0;
 }
 
-h3 {
+article h3 {
     font-size: 1.25rem;
     font-weight: 600;
     margin: 1rem 0;
 }
 
-h4 {
+article h4 {
     font-size: 1rem;
     font-weight: 600;
     margin: 1rem 0;
 }
 
-h5 {
+article h5 {
     font-size: 0.875rem;
     font-weight: 600;
     margin: 1rem 0;
 }
 
-h6 {
+article h6 {
     font-size: 0.75rem;
     font-weight: 600;
     margin: 1rem 0;
