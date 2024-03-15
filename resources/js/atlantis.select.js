@@ -276,6 +276,8 @@ export default class Select {
 
         const value = target.dataset.value
 
+        const changed = value !== this.getValue()
+
         this.setValue(value, target.textContent)
 
         this.options.forEach((el) => {
@@ -283,7 +285,7 @@ export default class Select {
             else el.classList.remove('bg-sky-600', 'text-white')
         })
 
-        this.onchange(value)
+        this.onchange(value, changed)
     }
 
     update(items = {}) {

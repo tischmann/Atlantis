@@ -553,7 +553,9 @@ list($image_width, $image_height) = $article->getImageSizes();
 
         const localeSelect = new Select(
             form.querySelector('select[name="locale"]'), {
-                onchange: (value) => {
+                onchange: (value, changed) => {
+                    if (!changed) return
+
                     fetch(`/locale/categories/${value}`, {
                             method: 'GET',
                             headers: {
@@ -585,11 +587,10 @@ list($image_width, $image_height) = $article->getImageSizes();
 
         const imageSizeSelect = new Select(
             form.querySelector(`select[name="image_size"]`), {
-                onchange: (proportion) => {
+                onchange: (proportion, changed) => {
+                    if (!changed) return
                     const height = getProportionalHeight(articleImageElement.getAttribute('width'), proportion)
-
                     articleImageElement.src = `/images/placeholder_${proportion}.svg`
-
                     articleImageElement.setAttribute('height', height)
                 }
             }

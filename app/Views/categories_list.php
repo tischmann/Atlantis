@@ -38,7 +38,8 @@ use Tischmann\Atlantis\{Template};
 
     ['locale'].forEach((name) => {
         new Select(document.querySelector(`select[name="${name}"]`), {
-            onchange: (value) => {
+            onchange: (value, changed) => {
+                if (!changed) return
                 const url = new URL(window.location.href)
                 url.searchParams.set(name, value)
                 window.location.href = url.toString()
