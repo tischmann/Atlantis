@@ -1,15 +1,25 @@
 <header class="my-8">
     <div class="md:container mx-8 md:mx-auto">
         <div class="flex flex-row md:items-center flex-wrap md:justify-between gap-4">
-            <div class="flex-grow flex items-center gap-4">
+            <div class="flex-grow flex flex-col sm:flex-row sm:items-center gap-8">
                 <a href="/{{env=APP_LOCALE}}" class="flex items-center" aria-label="{{env=APP_TITLE}}">
-                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 400 400" xml:space="preserve" width="32px" height="32px" class="text-sky-600">
+                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 400 400" xml:space="preserve" width="32" height="32" class="text-sky-600 w-8 h-8">
                         <path fill="currentColor" d="M99.9,199.8C45,291.1,0,365.8,0,366s19.1,0.4,42.5,0.2l42.5-0.2l57.4-96c31.5-52.7,57.4-96,57.6-96s71.6,118.1,72,119.4
                 c0.2,0.2-13.1,0.4-28.8,0.4h-29L193,329.7c-11.7,19.5-21.3,35.7-21.5,36.1c-0.2,0.4,40.1,0.4,114.1,0.4c62.9,0,114.3-0.2,114.3-0.4
                 c0-0.4-199.7-332.2-199.9-332.2C199.9,33.9,154.9,108.5,99.9,199.8z" />
                     </svg>
                     <div class="uppercase text-4xl leading-8 font-bold -ml-1 tracking-wide select-none">TLANTIS</div>
                 </a>
+                <div id="visually-impaired-version" class="flex items-center gap-2 hover:underline font-medium cursor-pointer text-gray-800 dark:text-white">
+                    <svg id="visually-impaired-version-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+                    </svg>
+                    <svg id="normal-version-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 hidden">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    </svg>
+                    <span>{{lang=visually_impaired_version}}</span>
+                </div>
             </div>
             <div class="no-print flex items-center gap-4">
 
@@ -52,3 +62,22 @@
         </div>
     </div>
 </header>
+<script nonce="{{nonce}}">
+    (function() {
+        const normalIcon = document.getElementById('normal-version-icon');
+        const visuallyImpairedIcon = document.getElementById('visually-impaired-version-icon');
+        document.getElementById('visually-impaired-version').addEventListener('click', function() {
+            document.documentElement.classList.toggle('visually-impaired')
+            const span = this.querySelector('span')
+            if (document.documentElement.classList.contains('visually-impaired')) {
+                visuallyImpairedIcon.classList.add('hidden')
+                normalIcon.classList.remove('hidden')
+                span.textContent = '{{lang=normal_version}}'
+            } else {
+                visuallyImpairedIcon.classList.remove('hidden')
+                normalIcon.classList.add('hidden')
+                span.textContent = '{{lang=visually_impaired_version}}'
+            }
+        })
+    })()
+</script>

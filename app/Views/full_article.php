@@ -45,7 +45,7 @@ $is_viewed = $article->isViewedByUuid(strval(cookies_get('uuid')));
         --f-thumb-border-radius: 0.5rem;
     }
 </style>
-<main class="mx-8 lg:mx-auto lg:max-w-screen-lg">
+<main class="container mx-4 sm:mx-auto">
     <article class="full-article gallery-container">
         <h2 class="mb-1 font-semibold text-2xl flex items-center w-full line-clamp-1"><?= $article->title ?>
             <?php
@@ -132,9 +132,9 @@ $is_viewed = $article->isViewedByUuid(strval(cookies_get('uuid')));
 
                 echo <<<HTML
                 <div class="select-none no-print">
-                    <div class="f-carousel" data-carousel>
-                        <div class="f-carousel__slide" data-fancybox="carousel" data-src="/images/articles/{$article->id}/image/{$image}" data-thumb-src="/images/articles/{$article->id}/image/thumb_{$image}">
-                            <img src="/images/articles/{$article->id}/image/{$image}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="rounded-md" decoding="async" loading="auto">
+                    <div class="f-carousel rounded-md" data-carousel>
+                        <div class="f-carousel__slide rounded-md" data-fancybox="carousel" data-src="/images/articles/{$article->id}/image/{$image}" data-thumb-src="/images/articles/{$article->id}/image/thumb_{$image}">
+                            <img src="/images/articles/{$article->id}/image/{$image}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="rounded-md w-full" decoding="async" loading="auto">
                         </div>
                 HTML;
 
@@ -144,8 +144,8 @@ $is_viewed = $article->isViewedByUuid(strval(cookies_get('uuid')));
                     );
 
                     echo <<<HTML
-                     <div class="f-carousel__slide" data-fancybox="carousel" data-src="/images/articles/{$article->id}/gallery/{$filename}" data-thumb-src="/images/articles/{$article->id}/gallery/thumb_{$filename}">
-                        <img src="/images/articles/{$article->id}/gallery/{$filename}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="rounded-md" decoding="async" loading="lazy">
+                     <div class="f-carousel__slide rounded-md" data-fancybox="carousel" data-src="/images/articles/{$article->id}/gallery/{$filename}" data-thumb-src="/images/articles/{$article->id}/gallery/thumb_{$filename}">
+                        <img src="/images/articles/{$article->id}/gallery/{$filename}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="rounded-md w-full" decoding="async" loading="lazy">
                     </div>
                     HTML;
                 }

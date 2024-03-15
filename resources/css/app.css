@@ -6,6 +6,12 @@ body {
     font-family: 'Montserrat', sans-serif;
     margin: 0;
     padding: 0;
+    transition: font-size 0.2s ease;
+}
+
+.visually-impaired {
+    font-size: 24px;
+    transition: font-size 0.2s ease;
 }
 
 @media print {

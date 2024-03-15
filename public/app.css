@@ -837,6 +837,10 @@ video {
   width: 1.5rem;
 }
 
+.w-8 {
+  width: 2rem;
+}
+
 .w-full {
   width: 100%;
 }
@@ -1458,6 +1462,12 @@ body {
   font-family: 'Montserrat', sans-serif;
   margin: 0;
   padding: 0;
+  transition: font-size 0.2s ease;
+}
+
+.visually-impaired {
+  font-size: 24px;
+  transition: font-size 0.2s ease;
 }
 
 @media print {
@@ -1718,6 +1728,11 @@ article h6 {
 }
 
 @media (min-width: 640px) {
+  .sm\:mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
   .sm\:w-auto {
     width: auto;
   }

@@ -84,9 +84,9 @@ class ArticlesController extends Controller
         $pagination = new Pagination(query: $query, limit: 12);
 
         View::send(
-            view: 'articles_by_tag',
+            view: 'articles_by',
             args: [
-                'tag' => $tag,
+                'label' => get_str('articles_by_tag') . " #{$tag}",
                 'pagination' => $pagination,
                 'articles' => Article::all($query)
             ]

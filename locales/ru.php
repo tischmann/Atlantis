@@ -58,6 +58,8 @@ return [
     'like' => 'Нравится',
     'dislike' => 'Не нравится',
     'alticle_liked' => 'Вам понравилась эта статья',
+    'visually_impaired_version' => 'Версия для слабовидящих',
+    'normal_version' => 'Обычная версия',
     // Ошибки Json Web Token
     'jwt_missing_public_key' => 'Отсутствует публичный ключ',
     'jwt_wrong_segment_amount' => 'Неверное количество сегментов',

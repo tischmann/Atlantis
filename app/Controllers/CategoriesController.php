@@ -46,9 +46,9 @@ class CategoriesController extends Controller
         $pagination = new Pagination(query: $query, limit: 12);
 
         View::send(
-            view: 'articles_in_category',
+            view: 'articles_by',
             args: [
-                'category' => $category->title,
+                'label' => get_str('articles_in_category') . ": {$category->title}",
                 'pagination' => $pagination,
                 'articles' => Article::all($query)
             ]
