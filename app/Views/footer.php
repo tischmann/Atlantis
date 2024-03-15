@@ -1,8 +1,8 @@
-<footer class="no-print bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white w-full block">
-    <div class="w-full py-8 px-4 border-b-2 border-b-gray-600">
+<footer class="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white w-full block">
+    <div class="no-print w-full py-8 px-4 border-b-2 border-b-gray-600">
 
     </div>
-    <div class="hidden sm:block sm:container mx-auto py-8">
+    <div class="no-print hidden sm:block sm:container mx-auto py-8">
         <ul class="flex items-start justify-evenly flex-row flex-wrap gap-8">
             <?php
 

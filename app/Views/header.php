@@ -7,8 +7,8 @@ $request = Request::instance();
 $search_query = strval($request->request('query'));
 ?>
 <!-- HEADER -->
-<header class="my-8">
-    <div class="md:container mx-4 md:mx-auto">
+<header class="py-8 sm:sticky top-0 bg-white dark:bg-gray-800 z-50 transition-all">
+    <div class="sm:container mx-4 md:mx-auto">
         <div class="flex flex-row md:items-center flex-wrap md:justify-between gap-4">
             <div class="flex-grow flex flex-col sm:flex-row sm:items-center gap-8">
                 <!-- LOGO -->
@@ -34,7 +34,7 @@ $search_query = strval($request->request('query'));
                 </div>
                 <!-- VISUALLY IMPAIRED VERSION -->
                 <!-- SEARCH -->
-                <div class="relative sm:ml-auto group/search">
+                <div class="relative sm:ml-auto group/search no-print">
                     <input id="search-articles" type="text" class="w-full sm:w-64 px-3 py-2 pr-10 rounded-xl bg-gray-200 dark:bg-gray-700 dark:text-white border-2 border-gray-300 dark:border-gray-600 outline-none ring-0 focus:ring-0 hover:border-sky-600 group-hover/search:border-sky-600 focus:border-sky-600 transition-all" value="<?= $search_query ?>" title="{{lang=search}}" />
                     <div class="absolute right-0 top-1/2 -translate-x-1/2 -translate-y-1/2">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -119,6 +119,24 @@ $search_query = strval($request->request('query'));
                 const url = new URL(`${window.location.origin}/{{env=APP_LOCALE}}/search`)
                 url.searchParams.set('query', this.value)
                 window.location.href = url.toString()
+            })
+
+            const header = document.querySelector('header')
+
+            let compact = false
+
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 0) {
+                    if (compact) return
+                    compact = true
+                    header.classList.remove('py-8')
+                    header.classList.add('shadow-lg', 'py-4')
+                } else {
+                    if (!compact) return
+                    compact = false
+                    header.classList.add('py-8')
+                    header.classList.remove('shadow-lg', 'py-4')
+                }
             })
         })
     })()

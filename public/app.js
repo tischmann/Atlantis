@@ -2,7 +2,11 @@ import Cookie from '/js/atlantis.cookie.min.js'
 
 const cookie = new Cookie()
 
-if (!cookie.get('uuid')) cookie.set('uuid', self.crypto.randomUUID())
+if (!cookie.get('uuid')) {
+    cookie.set('uuid', self.crypto.randomUUID(), {
+        expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
+    })
+}
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/service-worker.min.js')

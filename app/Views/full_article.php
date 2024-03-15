@@ -45,8 +45,8 @@ $is_viewed = $article->isViewedByUuid(strval(cookies_get('uuid')));
         --f-thumb-border-radius: 0.5rem;
     }
 </style>
-<main class="container mx-4 sm:mx-auto">
-    <article class="full-article gallery-container">
+<main class="sm:container mx-4 sm:mx-auto">
+    <article class="gallery-container">
         <h2 class="mb-1 font-semibold text-2xl flex items-center w-full line-clamp-1"><?= $article->title ?>
             <?php
 
@@ -74,7 +74,7 @@ $is_viewed = $article->isViewedByUuid(strval(cookies_get('uuid')));
             <?php
             if ($article->updated_at) {
                 echo <<<HTML
-                <span class="opacity-50 lowercase">{{lang=updated_at}} {$article->updated_at->getElapsedTime(getenv('APP_LOCALE'))}</span>
+                <span class="opacity-50 lowercase no-print">{{lang=updated_at}} {$article->updated_at->getElapsedTime(getenv('APP_LOCALE'))}</span>
                 HTML;
             }
             ?>
@@ -134,7 +134,7 @@ $is_viewed = $article->isViewedByUuid(strval(cookies_get('uuid')));
                 <div class="select-none no-print">
                     <div class="f-carousel rounded-md" data-carousel>
                         <div class="f-carousel__slide rounded-md" data-fancybox="carousel" data-src="/images/articles/{$article->id}/image/{$image}" data-thumb-src="/images/articles/{$article->id}/image/thumb_{$image}">
-                            <img src="/images/articles/{$article->id}/image/{$image}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="rounded-md w-full" decoding="async" loading="auto">
+                            <img src="/images/articles/{$article->id}/image/{$image}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="rounded-md w-full shadow-lg" decoding="async" loading="auto">
                         </div>
                 HTML;
 
@@ -145,7 +145,7 @@ $is_viewed = $article->isViewedByUuid(strval(cookies_get('uuid')));
 
                     echo <<<HTML
                      <div class="f-carousel__slide rounded-md" data-fancybox="carousel" data-src="/images/articles/{$article->id}/gallery/{$filename}" data-thumb-src="/images/articles/{$article->id}/gallery/thumb_{$filename}">
-                        <img src="/images/articles/{$article->id}/gallery/{$filename}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="rounded-md w-full" decoding="async" loading="lazy">
+                        <img src="/images/articles/{$article->id}/gallery/{$filename}" alt="{$article->title}" width="{$image_width}" height="{$image_height}" class="rounded-md w-full shadow-lg" decoding="async" loading="lazy">
                     </div>
                     HTML;
                 }
@@ -174,7 +174,7 @@ $is_viewed = $article->isViewedByUuid(strval(cookies_get('uuid')));
 
             foreach ($article->getAttachements() as $file) {
                 echo <<<HTML
-                <a href="/uploads/articles/{$article->id}/attachements/{$file}" class="grow sm:grow-0 flex items-center flex-nowrap gap-2 w-full sm:w-auto rounded-xl bg-gray-100 dark:bg-gray-700 px-3 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 hover:underline" download>
+                <a href="/uploads/articles/{$article->id}/attachements/{$file}" class="grow sm:grow-0 flex items-center flex-nowrap gap-2 w-full sm:w-auto rounded-xl bg-gray-100 dark:bg-gray-700 px-3 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 hover:underline shadow-lg" title="{{lang=download}}" download>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                     </svg>
@@ -197,7 +197,7 @@ $is_viewed = $article->isViewedByUuid(strval(cookies_get('uuid')));
 
             foreach ($article_videos as $video) {
                 echo <<<HTML
-                <video src="/uploads/articles/{$article->id}/video/{$video}" class="block w-full rounded-xl" controls ></video>
+                <video src="/uploads/articles/{$article->id}/video/{$video}" class="block w-full rounded-xl shadow-lg" controls ></video>
                 HTML;
             }
 
@@ -213,7 +213,7 @@ $is_viewed = $article->isViewedByUuid(strval(cookies_get('uuid')));
 
             foreach ($article->tags as $tag) {
                 echo <<<HTML
-                <a href="/{{env=APP_LOCALE}}/tags/{$tag}" class="rounded-xl bg-gray-200 dark:bg-gray-700 px-3 py-2 hover:bg-gray-300 dark:hover:bg-gray-600 hover:underline" title="{$tag}">#{$tag}</a>
+                <a href="/{{env=APP_LOCALE}}/tags/{$tag}" class="rounded-xl bg-gray-200 dark:bg-gray-700 px-3 py-2 hover:bg-gray-300 dark:hover:bg-gray-600 hover:underline shadow-lg" title="{$tag}">#{$tag}</a>
                 HTML;
             }
 
