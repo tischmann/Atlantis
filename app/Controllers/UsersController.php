@@ -178,9 +178,7 @@ class UsersController extends Controller
             );
         }
 
-        $auth = new Auth($user);
-
-        $user->refresh_token = $auth->signIn();
+        $user->refresh_token = Auth::signIn();
 
         $user->save();
 
@@ -198,7 +196,7 @@ class UsersController extends Controller
 
         if (!$user->exists()) Response::redirect('/');
 
-        Auth::instance($user)->signOut();
+        Auth::signOut();
 
         $user->refresh_token = '';
 

@@ -12,9 +12,7 @@ use App\Models\User;
  */
 final class App
 {
-    protected static ?User $user = null; // Текущий пользователь
-
-    protected static ?Auth $auth = null; // Авторизация
+    private static ?User $user = null; // Текущий пользователь
 
     public static string $title = ''; // Заголовок страницы
 
@@ -27,9 +25,7 @@ final class App
     {
         static::$user ??= new User();
 
-        static::$auth = new Auth(static::$user);
-
-        static::$user = static::$auth->authorize();
+        static::$user = Auth::authorize();
 
         return static::$user;
     }

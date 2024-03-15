@@ -14,33 +14,49 @@ use Tischmann\Atlantis\Exceptions\{
 
 /**
  * Класс для работы с авторизацией
+ * 
+ * Авторизация реализована на основе JWT (JSON Web Token)
  */
 final class Auth
 {
-    public const JWT_ALGORITHM = 'RS256'; // Алгоритм шифрования
+    private const JWT_ALGORITHM = 'RS256'; // Алгоритм шифрования
 
-    public const JWT_EXPIRES = 600; // Время жизни токена в секундах
+    private const JWT_EXPIRES = 600; // Время жизни токена в секундах
 
-    protected static ?string $privateKey = null; // Закрытый ключ
+    private static ?string $privateKey = null; // Закрытый ключ
 
-    protected static ?string $publicKey = null; // Открытый ключ
+    private static ?string $publicKey = null; // Открытый ключ
 
-    protected string $token = ''; // Токен
+    private static ?User $user = null; // Пользователь
 
-    public function __construct(public User $user = new User())
+    private static string $token = ''; // Токен
+
+    // Запрещаем создание экземпляра класса
+    private function __construct()
     {
     }
 
     /**
-     * Получение объекта авторизации
+     * Получение пользователя
+     *
+     * @return User Пользователь
+     */
+    private static function getUser(): User
+    {
+        static::$user ??= new User();
+        return static::$user;
+    }
+
+    /**
+     * Установка пользователя
      *
      * @param User $user Пользователь
      * 
-     * @return self
+     * @return User Пользователь
      */
-    public static function instance(User $user = new User()): self
+    private static function setUser(User $user): User
     {
-        return new self($user);
+        return static::$user = $user;
     }
 
     /**
@@ -48,7 +64,7 @@ final class Auth
      *
      * @return string
      */
-    protected static function getPrivateKey(): string
+    private static function getPrivateKey(): string
     {
         if (static::$privateKey) return static::$privateKey;
 
@@ -68,7 +84,7 @@ final class Auth
      *
      * @return string
      */
-    protected static function getPublicKey(): string
+    private static function getPublicKey(): string
     {
         if (!static::$publicKey) {
             if (!is_file(__DIR__ . "/../../../public.pem")) {
@@ -88,45 +104,45 @@ final class Auth
      *
      * @return User Пользователь 
      */
-    public function authorize(): User
+    public static function authorize(): User
     {
-        if (!static::isLastAccessValid()) {
-            session_kill();
-            return $this->user;
-        }
+        $user = static::getUser();
 
-        if (!static::isClientUserAgentValid()) {
+        if (
+            !static::isLastAccessValid()
+            || !static::isClientUserAgentValid()
+            || !static::isClientAddressValid()
+        ) {
             session_kill();
-            return $this->user;
-        }
-
-        if (!static::isClientAddressValid()) {
-            session_kill();
-            return $this->user;
+            return $user;
         }
 
         $jwt = Request::authorization() ?: cookies_get('jwt');
 
         $jwr = cookies_get('jwr');
 
-        if (!$jwt || !$jwr) return $this->user;
+        if (!$jwt || !$jwr) return $user;
 
         try {
-            $decoded = $this->decodeToken($jwt);
+            $decoded = static::decodeToken($jwt);
 
-            $this->user = User::find($decoded->data->id, 'id');
+            $user = User::find($decoded->data->id, 'id');
+
+            static::setUser($user);
         } catch (TokenExpiredException $e) {
-            $jwt = $this->refreshToken($jwt, $jwr);
+            $jwt = static::refreshToken($jwt, $jwr);
 
-            $decoded = $this->decodeToken($jwt);
+            $decoded = static::decodeToken($jwt);
 
-            $this->user = User::find($decoded->data->id, 'id');
+            $user = User::find($decoded->data->id, 'id');
 
-            $this->token = $jwt;
+            static::setUser($user);
 
-            $this->user->refresh_token = $jwr;
+            static::$token = $jwt;
 
-            $this->user->save();
+            $user->refresh_token = $jwr;
+
+            $user->save();
 
             $expires = time() + 2678400;
 
@@ -141,7 +157,7 @@ final class Auth
 
         session_set('LAST_ACCESS', time());
 
-        return $this->user;
+        return $user;
     }
 
     /**
@@ -149,11 +165,11 @@ final class Auth
      *
      * @return string Токен обновления
      */
-    public function signIn(): string
+    public static function signIn(): string
     {
         session_regenerate_id();
 
-        $this->token = $this->createToken($this->createPayload());
+        static::$token = static::createToken(static::createPayload());
 
         $refresh_token = static::createRefreshToken();
 
@@ -161,7 +177,7 @@ final class Auth
 
         cookies_set('jwr', $refresh_token, ['expires' => $expires]);
 
-        cookies_set('jwt', $this->token, ['expires' => $expires]);
+        cookies_set('jwt', static::$token, ['expires' => $expires]);
 
         session_set('LAST_ACCESS', time());
 
@@ -175,17 +191,15 @@ final class Auth
     /**
      * Выход
      *
-     * @return self
+     * @return void
      */
-    public function signOut(): self
+    public static function signOut(): void
     {
         cookies_del('jwt');
 
         cookies_del('jwr');
 
-        $this->token = '';
-
-        return $this;
+        static::$token = '';
     }
 
     /**
@@ -195,7 +209,7 @@ final class Auth
      * 
      * @return object Объект
      */
-    protected function decodeToken(string $token): object
+    private static function decodeToken(string $token): object
     {
         return JsonWebToken::decode($token, static::getPublicKey(), [self::JWT_ALGORITHM]);
     }
@@ -211,11 +225,11 @@ final class Auth
      * 
      * @throws TokenExpiredException
      */
-    protected function refreshToken(string $token, string $refresh_token): string
+    private static function refreshToken(string $token, string $refresh_token): string
     {
-        $payload = $this->getPayload($token)?->data ?? null;
+        $payload = static::getPayload($token)?->data ?? null;
 
-        $payload ??= $this->createPayload();
+        $payload ??= static::createPayload();
 
         $user = User::find($payload?->id ?? 0);
 
@@ -223,7 +237,7 @@ final class Auth
             throw new TokenExpiredException();
         }
 
-        return $this->createToken($payload);
+        return static::createToken($payload);
     }
 
     /**
@@ -233,7 +247,7 @@ final class Auth
      * 
      * @return string Токен
      */
-    protected function createToken(object $payload): string
+    private static function createToken(object $payload): string
     {
         $payload = [
             "iat" => time(),
@@ -250,10 +264,10 @@ final class Auth
      * 
      * @return object Данные токена
      */
-    protected function createPayload(): object
+    private static function createPayload(): object
     {
         return (object) [
-            'id' => $this->user->id
+            'id' => static::getUser()->id
         ];
     }
 
@@ -264,7 +278,7 @@ final class Auth
      * 
      * @return object Объект токена
      */
-    protected function getPayload(string $token): object
+    private static function getPayload(string $token): object
     {
         $segments = explode('.', $token);
 
@@ -286,7 +300,7 @@ final class Auth
      * 
      * @return string Токен обновления
      */
-    public static function createRefreshToken(): string
+    private static function createRefreshToken(): string
     {
         return bin2hex(random_bytes(128));
     }
@@ -296,7 +310,7 @@ final class Auth
      *
      * @return boolean true - проверка прошла успешно, false - проверка не прошла
      */
-    public static function isClientAddressValid(): bool
+    private static function isClientAddressValid(): bool
     {
         if (!session_has('REMOTE_ADDR')) return true;
 
@@ -308,7 +322,7 @@ final class Auth
      *
      * @return boolean true - проверка прошла успешно, false - проверка не прошла
      */
-    public static function isClientUserAgentValid()
+    private static function isClientUserAgentValid()
     {
         if (!session_has('USER_AGENT')) return true;
 
@@ -320,7 +334,7 @@ final class Auth
      * 
      * @return boolean true - проверка прошла успешно, false - проверка не прошла
      */
-    public static function isLastAccessValid(int $seconds = 1440): bool
+    private static function isLastAccessValid(int $seconds = 1440): bool
     {
         if (!session_has('LAST_ACCESS')) return true;
 
