@@ -36,7 +36,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                 <div class="mb-8">
                     <?php
                     Template::echo(
-                        template: 'admin/input_field',
+                        template: 'fields/input_field',
                         args: [
                             'type' => 'text',
                             'name' => 'title',
@@ -66,7 +66,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                 <div class="mb-8">
                     <?php
                     Template::echo(
-                        template: 'admin/select_field',
+                        template: 'fields/select_field',
                         args: [
                             'name' => 'category_id',
                             'title' => get_str('article_category'),
@@ -87,7 +87,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                     HTML;
 
                     $content .= Template::html(
-                        template: 'admin/select_field',
+                        template: 'fields/select_field',
                         args: [
                             'name' => 'image_size',
                             'title' => get_str('article_image_size'),
@@ -118,7 +118,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                 <div class="mb-8">
                     <?php
                     Template::echo(
-                        template: 'admin/textarea_field',
+                        template: 'fields/textarea_field',
                         args: [
                             'name' => 'short_text',
                             'label' => get_str('article_short_text'),
@@ -158,7 +158,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                     HTML;
 
                     $content .= Template::html(
-                        template: 'admin/select_field',
+                        template: 'fields/select_field',
                         args: [
                             'name' => 'gallery_image_size',
                             'title' => get_str('article_image_size'),
@@ -294,7 +294,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                 <div class="mb-8">
                     <?php
                     Template::echo(
-                        template: 'admin/input_field',
+                        template: 'fields/input_field',
                         args: [
                             'type' => 'datetime-local',
                             'name' => 'created_at',
@@ -309,7 +309,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                 <div class="mb-8">
                     <?php
                     Template::echo(
-                        template: 'admin/radio_field',
+                        template: 'fields/radio_field',
                         args: [
                             'name' => 'visible',
                             'label' => get_str('article_visible'),
@@ -325,7 +325,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                 <div class="mb-8">
                     <?php
                     Template::echo(
-                        template: 'admin/radio_field',
+                        template: 'fields/radio_field',
                         args: [
                             'name' => 'fixed',
                             'label' => get_str('article_fixed'),
@@ -345,7 +345,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                     HTML;
 
                     Template::echo(
-                        template: 'admin/radio_field',
+                        template: 'fields/radio_field',
                         args: [
                             'name' => 'moderated',
                             'label' => get_str('article_moderated'),

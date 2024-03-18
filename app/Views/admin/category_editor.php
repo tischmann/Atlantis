@@ -28,7 +28,7 @@ $category->children = $category->fetchChildren();
         <div class="mb-8">
             <?php
             Template::echo(
-                template: 'admin/input_field',
+                template: 'fields/input_field',
                 args: [
                     'type' => 'text',
                     'name' => 'title',
@@ -43,7 +43,7 @@ $category->children = $category->fetchChildren();
         <div class="mb-8">
             <?php
             Template::echo(
-                template: 'admin/input_field',
+                template: 'fields/input_field',
                 args: [
                     'type' => 'text',
                     'name' => 'slug',
@@ -58,7 +58,7 @@ $category->children = $category->fetchChildren();
         <div class="mb-8">
             <?php
             Template::echo(
-                template: 'admin/select_field',
+                template: 'fields/select_field',
                 args: [
                     'name' => 'locale',
                     'title' => get_str('category_locale'),
@@ -70,7 +70,7 @@ $category->children = $category->fetchChildren();
         <div class="mb-8">
             <?php
             Template::echo(
-                template: 'admin/select_field',
+                template: 'fields/select_field',
                 args: [
                     'name' => 'parent_id',
                     'title' => get_str('category_parent_id'),

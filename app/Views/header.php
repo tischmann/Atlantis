@@ -7,7 +7,7 @@ $request = Request::instance();
 $search_query = strval($request->request('query'));
 ?>
 <!-- HEADER -->
-<header class="py-8 sm:sticky top-0 bg-white dark:bg-gray-800 z-50 transition-all">
+<header class="py-8 bg-white dark:bg-gray-800">
     <div class="sm:container mx-4 md:mx-auto">
         <div class="flex flex-row md:items-center flex-wrap md:justify-between gap-4">
             <div class="flex-grow flex flex-col sm:flex-row sm:items-center gap-8">
@@ -119,24 +119,6 @@ $search_query = strval($request->request('query'));
                 const url = new URL(`${window.location.origin}/{{env=APP_LOCALE}}/search`)
                 url.searchParams.set('query', this.value)
                 window.location.href = url.toString()
-            })
-
-            const header = document.querySelector('header')
-
-            let compact = false
-
-            window.addEventListener('scroll', function() {
-                if (window.scrollY > 0) {
-                    if (compact) return
-                    compact = true
-                    header.classList.remove('py-8')
-                    header.classList.add('shadow-lg', 'py-4')
-                } else {
-                    if (!compact) return
-                    compact = false
-                    header.classList.add('py-8')
-                    header.classList.remove('shadow-lg', 'py-4')
-                }
             })
         })
     })()

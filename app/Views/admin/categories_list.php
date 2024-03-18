@@ -17,7 +17,7 @@ use Tischmann\Atlantis\{Template};
     <div class="mb-4 flex flex-col sm:flex-row gap-4">
         <?php
         Template::echo(
-            template: 'admin/select_field',
+            template: 'fields/select_field',
             args: [
                 'name' => 'locale',
                 'title' => get_str('article_locale'),
@@ -31,7 +31,7 @@ use Tischmann\Atlantis\{Template};
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
     </a>
-    <?php include 'admin/categories_list_list.php' ?>
+    <?php include 'categories_list_list.php' ?>
 </main>
 <script nonce="{{nonce}}" type="module">
     import Select from '/js/atlantis.select.min.js'

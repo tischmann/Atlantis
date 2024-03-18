@@ -7,7 +7,7 @@ use Tischmann\Atlantis\{Template};
     <div class="mb-4 flex flex-col sm:flex-row gap-4">
         <?php
         Template::echo(
-            template: 'admin/select_field',
+            template: 'fields/select_field',
             args: [
                 'name' => 'order',
                 'title' => get_str('order'),
@@ -16,7 +16,7 @@ use Tischmann\Atlantis\{Template};
         );
 
         Template::echo(
-            template: 'admin/select_field',
+            template: 'fields/select_field',
             args: [
                 'name' => 'direction',
                 'title' => get_str('direction'),
@@ -33,11 +33,11 @@ use Tischmann\Atlantis\{Template};
     <ul class="grid grid-cols-1 gap-2">
         <?php
         foreach ($users as $user) {
-            include "admin/users_list_item.php";
+            include "users_list_item.php";
         }
         ?>
     </ul>
-    <div class="my-4"><?php include 'pagination.php'; ?></div>
+    <div class="my-4"><?php include __DIR__ . '/../pagination.php'; ?></div>
 </main>
 <script nonce="{{nonce}}" type="module">
     import Select from '/js/atlantis.select.min.js'
