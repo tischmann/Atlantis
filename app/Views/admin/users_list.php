@@ -7,7 +7,7 @@ use Tischmann\Atlantis\{Template};
     <div class="mb-4 flex flex-col sm:flex-row gap-4">
         <?php
         Template::echo(
-            template: 'select_field',
+            template: 'admin/select_field',
             args: [
                 'name' => 'order',
                 'title' => get_str('order'),
@@ -16,7 +16,7 @@ use Tischmann\Atlantis\{Template};
         );
 
         Template::echo(
-            template: 'select_field',
+            template: 'admin/select_field',
             args: [
                 'name' => 'direction',
                 'title' => get_str('direction'),
@@ -33,7 +33,7 @@ use Tischmann\Atlantis\{Template};
     <ul class="grid grid-cols-1 gap-2">
         <?php
         foreach ($users as $user) {
-            include "users_list_item.php";
+            include "admin/users_list_item.php";
         }
         ?>
     </ul>

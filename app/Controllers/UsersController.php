@@ -88,7 +88,7 @@ class UsersController extends Controller
         }
 
         View::send(
-            view: 'users_list',
+            view: 'admin/users_list',
             args: [
                 'pagination' => $pagination,
                 'order_options' => $order_options,
@@ -240,7 +240,7 @@ class UsersController extends Controller
         }
 
         View::send(
-            view: 'user_editor',
+            view: 'admin/user_editor',
             layout: 'default',
             args: ['user' => $user]
         );

@@ -107,7 +107,7 @@ class CategoriesController extends Controller
         $category = Category::find($this->route->args('id'));
 
         View::send(
-            view: 'category_editor',
+            view: 'admin/category_editor',
             args: [
                 'category' => $category,
                 'locale_options' => $locale_options,
@@ -184,7 +184,7 @@ class CategoriesController extends Controller
         $categories = Category::all($query);
 
         View::send(
-            view: 'categories_list',
+            view: 'admin/categories_list',
             args: [
                 'categories' => $categories,
                 'locale_options' => $locale_options

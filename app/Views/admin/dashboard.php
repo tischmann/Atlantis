@@ -7,7 +7,7 @@
         if (App::getUser()->isAdmin()) {
 
             Template::echo(
-                template: 'dashboard_item',
+                template: 'admin/dashboard_item',
                 args: [
                     'href' => '/{{env=APP_LOCALE}}/users',
                     'label' => <<<HTML
@@ -22,7 +22,7 @@
             );
 
             Template::echo(
-                template: 'dashboard_item',
+                template: 'admin/dashboard_item',
                 args: [
                     'href' => '/{{env=APP_LOCALE}}/edit/categories',
                     'label' => <<<HTML
@@ -38,7 +38,7 @@
         }
 
         Template::echo(
-            template: 'dashboard_item',
+            template: 'admin/dashboard_item',
             args: [
                 'href' => '/{{env=APP_LOCALE}}/edit/articles',
                 'label' => <<<HTML

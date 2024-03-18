@@ -9,7 +9,7 @@ use Tischmann\Atlantis\{Template};
     <div class="mb-4 flex flex-col sm:flex-row gap-4">
         <?php
         Template::echo(
-            template: 'select_field',
+            template: 'admin/select_field',
             args: [
                 'name' => 'order',
                 'title' => get_str('order'),
@@ -18,7 +18,7 @@ use Tischmann\Atlantis\{Template};
         );
 
         Template::echo(
-            template: 'select_field',
+            template: 'admin/select_field',
             args: [
                 'name' => 'direction',
                 'title' => get_str('direction'),
@@ -30,7 +30,7 @@ use Tischmann\Atlantis\{Template};
     <div class="mb-4 flex flex-col sm:flex-row gap-4">
         <?php
         Template::echo(
-            template: 'select_field',
+            template: 'admin/select_field',
             args: [
                 'name' => 'locale',
                 'title' => get_str('article_locale'),
@@ -39,7 +39,7 @@ use Tischmann\Atlantis\{Template};
         );
 
         Template::echo(
-            template: 'select_field',
+            template: 'admin/select_field',
             args: [
                 'name' => 'category_id',
                 'title' => get_str('article_category'),
@@ -48,7 +48,7 @@ use Tischmann\Atlantis\{Template};
         );
 
         Template::echo(
-            template: 'select_field',
+            template: 'admin/select_field',
             args: [
                 'name' => 'visible',
                 'title' => get_str('article_visible'),
@@ -57,7 +57,7 @@ use Tischmann\Atlantis\{Template};
         );
 
         Template::echo(
-            template: 'select_field',
+            template: 'admin/select_field',
             args: [
                 'name' => 'fixed',
                 'title' => get_str('article_fixed'),
@@ -66,7 +66,7 @@ use Tischmann\Atlantis\{Template};
         );
 
         Template::echo(
-            template: 'select_field',
+            template: 'admin/select_field',
             args: [
                 'name' => 'moderated',
                 'title' => get_str('article_moderated'),
@@ -89,7 +89,7 @@ use Tischmann\Atlantis\{Template};
 
         foreach ($articles as $article) {
             assert($article instanceof Article);
-            include  'article_list_item.php';
+            include  'admin/article_list_item.php';
         }
 
         echo <<<HTML

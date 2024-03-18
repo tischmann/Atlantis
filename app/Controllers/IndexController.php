@@ -58,7 +58,7 @@ class IndexController extends Controller
      */
     public function showDashboard(): void
     {
-        View::send('dashboard');
+        View::send('admin/dashboard');
     }
 
     /**

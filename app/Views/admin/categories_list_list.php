@@ -9,7 +9,7 @@
         assert($category instanceof Category);
 
         Template::echo(
-            template: 'category_list_item',
+            template: 'admin/category_list_item',
             args: [
                 'category' => $category
             ]

@@ -336,7 +336,7 @@ class ArticlesController extends Controller
         $articles = Article::all($query);
 
         View::send(
-            view: 'articles_list',
+            view: 'admin/articles_list',
             args: [
                 'pagination' => $pagination,
                 'articles' => $articles,
@@ -433,7 +433,7 @@ class ArticlesController extends Controller
         ];
 
         View::send(
-            view: 'article_editor',
+            view: 'admin/article_editor',
             args: [
                 'article' => $article,
                 'category_options' => $category_options,

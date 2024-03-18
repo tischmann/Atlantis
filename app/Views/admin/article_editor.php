@@ -36,7 +36,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                 <div class="mb-8">
                     <?php
                     Template::echo(
-                        template: 'input_field',
+                        template: 'admin/input_field',
                         args: [
                             'type' => 'text',
                             'name' => 'title',
@@ -66,7 +66,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                 <div class="mb-8">
                     <?php
                     Template::echo(
-                        template: 'select_field',
+                        template: 'admin/select_field',
                         args: [
                             'name' => 'category_id',
                             'title' => get_str('article_category'),
@@ -87,7 +87,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                     HTML;
 
                     $content .= Template::html(
-                        template: 'select_field',
+                        template: 'admin/select_field',
                         args: [
                             'name' => 'image_size',
                             'title' => get_str('article_image_size'),
@@ -107,7 +107,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                     HTML;
 
                     Template::echo(
-                        template: 'container_field',
+                        template: 'fields/container_field',
                         args: [
                             'label' => get_str('article_image'),
                             'content' => $content,
@@ -118,7 +118,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                 <div class="mb-8">
                     <?php
                     Template::echo(
-                        template: 'textarea_field',
+                        template: 'admin/textarea_field',
                         args: [
                             'name' => 'short_text',
                             'label' => get_str('article_short_text'),
@@ -134,7 +134,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                     $article_text = htmlentities(strval($article->text));
 
                     Template::echo(
-                        template: 'container_field',
+                        template: 'fields/container_field',
                         args: [
                             'label' => get_str('article_text'),
                             'content' => <<<HTML
@@ -158,7 +158,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                     HTML;
 
                     $content .= Template::html(
-                        template: 'select_field',
+                        template: 'admin/select_field',
                         args: [
                             'name' => 'gallery_image_size',
                             'title' => get_str('article_image_size'),
@@ -185,7 +185,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                         }
 
                         $content .= Template::html(
-                            template: 'article_gallery_item',
+                            template: 'admin/article_gallery_item',
                             args: [
                                 'gallery_thumb_width' => $gallery_thumb_width,
                                 'gallery_thumb_height' => $gallery_thumb_height,
@@ -199,7 +199,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                     HTML;
 
                     Template::echo(
-                        template: 'container_field',
+                        template: 'fields/container_field',
                         args: [
                             'label' => get_str('article_gallery'),
                             'content' => $content,
@@ -224,7 +224,7 @@ list($image_width, $image_height) = $article->getImageSizes();
 
                     foreach ($article->getVideos() as $video) {
                         $content .= Template::html(
-                            template: 'article_video_item',
+                            template: 'admin/article_video_item',
                             args: [
                                 'gallery_video_src' => "/uploads/articles/{$article->id}/video/{$video}"
                             ]
@@ -236,7 +236,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                     HTML;
 
                     Template::echo(
-                        template: 'container_field',
+                        template: 'fields/container_field',
                         args: [
                             'label' => get_str('article_video'),
                             'content' => $content,
@@ -261,7 +261,7 @@ list($image_width, $image_height) = $article->getImageSizes();
 
                     foreach ($article->getAttachements() as $attachement) {
                         $content .= Template::html(
-                            template: 'article_attachements_item',
+                            template: 'admin/article_attachements_item',
                             args: [
                                 'attachement_label' => $attachement,
                                 'attachement_href' => "/uploads/articles/{$article->id}/attachements/{$attachement}"
@@ -274,7 +274,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                     HTML;
 
                     Template::echo(
-                        template: 'container_field',
+                        template: 'fields/container_field',
                         args: [
                             'label' => get_str('article_attachement'),
                             'content' => $content,
@@ -294,7 +294,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                 <div class="mb-8">
                     <?php
                     Template::echo(
-                        template: 'input_field',
+                        template: 'admin/input_field',
                         args: [
                             'type' => 'datetime-local',
                             'name' => 'created_at',
@@ -309,7 +309,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                 <div class="mb-8">
                     <?php
                     Template::echo(
-                        template: 'radio_field',
+                        template: 'admin/radio_field',
                         args: [
                             'name' => 'visible',
                             'label' => get_str('article_visible'),
@@ -325,7 +325,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                 <div class="mb-8">
                     <?php
                     Template::echo(
-                        template: 'radio_field',
+                        template: 'admin/radio_field',
                         args: [
                             'name' => 'fixed',
                             'label' => get_str('article_fixed'),
@@ -345,7 +345,7 @@ list($image_width, $image_height) = $article->getImageSizes();
                     HTML;
 
                     Template::echo(
-                        template: 'radio_field',
+                        template: 'admin/radio_field',
                         args: [
                             'name' => 'moderated',
                             'label' => get_str('article_moderated'),
@@ -705,7 +705,7 @@ list($image_width, $image_height) = $article->getImageSizes();
         }) {
             const wrapper = document.createElement('div')
 
-            wrapper.innerHTML = `<?= Template::html(template: 'article_gallery_item') ?>`
+            wrapper.innerHTML = `<?= Template::html(template: 'admin/article_gallery_item') ?>`
 
             const li = wrapper.querySelector('li')
 
@@ -857,7 +857,7 @@ list($image_width, $image_height) = $article->getImageSizes();
         }) {
             const wrapper = document.createElement('div')
 
-            wrapper.innerHTML = `<?= Template::html(template: 'article_video_item') ?>`
+            wrapper.innerHTML = `<?= Template::html(template: 'admin/article_video_item') ?>`
 
             const li = wrapper.querySelector('li')
 
@@ -968,7 +968,7 @@ list($image_width, $image_height) = $article->getImageSizes();
         }) {
             const wrapper = document.createElement('div')
 
-            wrapper.innerHTML = `<?= Template::html(template: 'article_attachements_item') ?>`
+            wrapper.innerHTML = `<?= Template::html(template: 'admin/article_attachements_item') ?>`
 
             const li = wrapper.querySelector('li')
 

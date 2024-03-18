@@ -13,7 +13,7 @@ assert($user instanceof User);
         <div class="mb-8">
             <?php
             Template::echo(
-                template: 'input_field',
+                template: 'admin/input_field',
                 args: [
                     'type' => 'text',
                     'name' => 'name',
@@ -28,7 +28,7 @@ assert($user instanceof User);
         <div class="mb-8">
             <?php
             Template::echo(
-                template: 'input_field',
+                template: 'admin/input_field',
                 args: [
                     'type' => 'text',
                     'name' => 'login',
@@ -43,7 +43,7 @@ assert($user instanceof User);
         <div class="mb-8">
             <?php
             Template::echo(
-                template: 'input_field',
+                template: 'admin/input_field',
                 args: [
                     'type' => 'password',
                     'name' => 'password',
@@ -58,7 +58,7 @@ assert($user instanceof User);
         <div class="mb-8">
             <?php
             Template::echo(
-                template: 'input_field',
+                template: 'admin/input_field',
                 args: [
                     'type' => 'password',
                     'name' => 'password_repeat',
@@ -73,7 +73,7 @@ assert($user instanceof User);
         <div class="mb-8">
             <?php
             Template::echo(
-                template: 'textarea_field',
+                template: 'admin/textarea_field',
                 args: [
                     'name' => 'remarks',
                     'label' => get_str('user_remarks'),
@@ -85,7 +85,7 @@ assert($user instanceof User);
         <div class="mb-8">
             <?php
             Template::echo(
-                template: 'radio_field',
+                template: 'admin/radio_field',
                 args: [
                     'name' => 'role',
                     'label' => get_str('user_role'),
@@ -104,7 +104,7 @@ assert($user instanceof User);
         <div class="mb-8">
             <?php
             Template::echo(
-                template: 'radio_field',
+                template: 'admin/radio_field',
                 args: [
                     'name' => 'status',
                     'label' => get_str('user_status'),
