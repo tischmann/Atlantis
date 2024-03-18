@@ -7,7 +7,7 @@ use Tischmann\Atlantis\{Template};
 $isVisuallyImpaired = cookies_get('vi') === 'true';
 
 ?>
-<main class="md:container mx-4 md:mx-auto mb-4">
+<main class="md:container mx-4 my-4 md:mx-auto mb-4">
     <div class="mb-4 flex flex-col sm:flex-row gap-4">
         <?php
         Template::echo(

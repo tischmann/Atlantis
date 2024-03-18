@@ -3,7 +3,7 @@
 use Tischmann\Atlantis\{Template};
 
 ?>
-<main class="md:container mx-4 md:mx-auto">
+<main class="md:container mx-4 my-4 md:mx-auto">
     <div class="mb-4 flex flex-col sm:flex-row gap-4">
         <?php
         Template::echo(

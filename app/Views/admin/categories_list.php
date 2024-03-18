@@ -13,7 +13,7 @@ use Tischmann\Atlantis\{Template};
 </style>
 <script src="/js/jquery.min.js" nonce="{{nonce}}"></script>
 <script src="/js/jquery-ui.min.js" nonce="{{nonce}}"></script>
-<main class="md:container mx-4 md:mx-auto mb-4 select-none">
+<main class="md:container mx-4 my-4 md:mx-auto mb-4 select-none">
     <div class="mb-4 flex flex-col sm:flex-row gap-4">
         <?php
         Template::echo(
