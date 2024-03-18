@@ -385,8 +385,19 @@ list($image_width, $image_height) = $article->getImageSizes();
 <script nonce="{{nonce}}" type="module">
     import Progress from '/js/atlantis.progress.min.js'
     import Select from '/js/atlantis.select.min.js'
+    import Cookie from '/js/atlantis.cookie.min.js'
 
     (function() {
+        const cookie = new Cookie()
+
+        const isDakrMode = cookie.get('dark') === 'true'
+
+        const isVisuallyImpaired = cookie.get('vi') === 'true'
+
+        const content_css = isDakrMode ? ['/app.min.css', '/dark.css'] : ['/app.min.css']
+
+        if (isVisuallyImpaired) content_css.push('/vi.css')
+
         const form = document.querySelector('[data-article]')
 
         const articleImageElement = document.getElementById('article-image')
@@ -430,8 +441,8 @@ list($image_width, $image_height) = $article->getImageSizes();
             toolbar_mode: 'sliding',
             contextmenu: 'link image table',
             image_caption: true,
-            skin: darkMode ? 'oxide-dark' : 'oxide',
-            content_css: darkMode ? ['/app.min.css', '/dark.css'] : '/app.min.css',
+            skin: isDakrMode ? 'oxide-dark' : 'oxide',
+            content_css,
             font_css: 'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap',
             image_advtab: true,
             image_class_list: [{

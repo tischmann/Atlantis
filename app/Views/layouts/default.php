@@ -1,5 +1,10 @@
 <!DOCTYPE html>
-<html lang="{{env=APP_LOCALE}}">
+<?php
+$isDarkMode = cookies_get('dark') === 'true';
+
+$isVisuallyImpaired = cookies_get('vi') === 'true';
+?>
+<html lang="{{env=APP_LOCALE}}" class="<?= $isVisuallyImpaired ? "visually-impaired" : "" ?> <?= $isDarkMode ? "dark" : "" ?>">
 
 <head>
     <meta charset="utf-8">

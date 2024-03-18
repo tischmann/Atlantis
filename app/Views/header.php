@@ -5,6 +5,7 @@ use Tischmann\Atlantis\Request;
 $request = Request::instance();
 
 $search_query = strval($request->request('query'));
+
 ?>
 <!-- HEADER -->
 <header class="py-4 bg-white dark:bg-gray-800 sm:sticky top-0 z-50">
@@ -23,14 +24,14 @@ $search_query = strval($request->request('query'));
                 <!-- LOGO -->
                 <!-- VISUALLY IMPAIRED VERSION -->
                 <div id="visually-impaired-version" class="no-print flex items-center gap-2 hover:underline font-medium cursor-pointer text-gray-800 dark:text-white whitespace-nowrap">
-                    <svg id="visually-impaired-version-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 <?= $isVisuallyImpaired ? "hidden" : "" ?>">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
                     </svg>
-                    <svg id="normal-version-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 <?= $isVisuallyImpaired ? "" : "hidden" ?>">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                     </svg>
-                    <span>{{lang=visually_impaired_version}}</span>
+                    <span><?= $isVisuallyImpaired ? get_str('normal_version') : get_str('visually_impaired_version') ?></span>
                 </div>
                 <!-- VISUALLY IMPAIRED VERSION -->
                 <!-- DARK MODE -->
@@ -42,7 +43,7 @@ $search_query = strval($request->request('query'));
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
                         </svg>
                     </div>
-                    <span>{{lang=dark_mode}}</span>
+                    <span><?= $isDarkMode ? get_str('light_mode') : get_str('dark_mode') ?></span>
                 </div>
                 <!-- DARK MODE -->
                 <!-- SEARCH -->
@@ -104,58 +105,7 @@ $search_query = strval($request->request('query'));
     (function() {
         const cookie = new Cookie()
 
-        let isVisuallyImpaired = cookie.get('vi') === 'true'
-
-        let isDakrMode = cookie.get('dark') === 'true'
-
         const header = document.querySelector('header')
-
-        const darkModeSwitch = document.getElementById('dark-mode-switch')
-
-        const visuallyImparedSwitch = document.getElementById('visually-impaired-version')
-
-        function setVisuallyImpared(active = false) {
-            if (active) {
-                document.documentElement.classList.add('visually-impaired')
-                document.getElementById('visually-impaired-version-icon').classList.remove('hidden')
-                document.getElementById('normal-version-icon').classList.add('hidden')
-            } else {
-                document.documentElement.classList.remove('visually-impaired')
-                document.getElementById('visually-impaired-version-icon').classList.add('hidden')
-                document.getElementById('normal-version-icon').classList.remove('hidden')
-            }
-
-            document.querySelectorAll('iframe').forEach((iframe) => {
-                if (active) iframe.contentDocument.documentElement.classList.add('visually-impaired')
-                else iframe.contentDocument.documentElement.classList.remove('visually-impaired')
-            })
-
-            visuallyImparedSwitch.querySelector('span').textContent = active ?
-                '{{lang=normal_version}}' :
-                '{{lang=visually_impaired_version}}'
-        }
-
-        function setMode(dark = false) {
-            if (dark) document.documentElement.classList.add('dark')
-            else document.documentElement.classList.remove('dark')
-            document.querySelectorAll('iframe').forEach((iframe) => {
-                if (dark) iframe.contentDocument.documentElement.classList.add('dark')
-                else iframe.contentDocument.documentElement.classList.remove('dark')
-            })
-            cookie.set('dark', dark ? 'true' : 'false')
-            darkModeSwitch.querySelector('span').textContent = dark ?
-                '{{lang=light_mode}}' :
-                '{{lang=dark_mode}}'
-        }
-
-        darkModeSwitch.addEventListener('click', function() {
-            if (isDakrMode) setMode()
-            else setMode(true)
-            isDakrMode = !isDakrMode
-        })
-
-        if (isDakrMode) setMode(true)
-        else setMode()
 
         document.getElementById('search-articles').addEventListener('search', function(event) {
             if (this.value == '') window.location.href = `${window.location.origin}/{{env=APP_LOCALE}}`
@@ -166,14 +116,14 @@ $search_query = strval($request->request('query'));
             else header.classList.add('sm:shadow-xl')
         })
 
-        window.addEventListener('load', function() {
-            visuallyImparedSwitch.addEventListener('click', function() {
-                isVisuallyImpaired = !isVisuallyImpaired
-                cookie.set('vi', isVisuallyImpaired ? 'true' : 'false')
-                setVisuallyImpared(isVisuallyImpaired)
-            })
+        document.getElementById('dark-mode-switch').addEventListener('click', function() {
+            cookie.set('dark', cookie.get('dark') === 'true' ? 'false' : 'true')
+            window.location.reload()
+        })
 
-            if (isVisuallyImpaired) setVisuallyImpared(isVisuallyImpaired)
+        document.getElementById('visually-impaired-version').addEventListener('click', function() {
+            cookie.set('vi', cookie.get('vi') === 'true' ? 'false' : 'true')
+            window.location.reload()
         })
     })()
 </script>
