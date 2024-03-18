@@ -1,7 +1,9 @@
+<!-- FOOTER -->
 <footer class="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white w-full block">
     <div class="no-print w-full py-8 px-4 border-b-2 border-b-gray-200 dark:border-b-gray-600">
 
     </div>
+    <!-- NAVIGATION -->
     <div class="no-print hidden sm:block sm:container mx-auto py-8">
         <ul class="flex items-start justify-evenly flex-row flex-wrap gap-8 text-gray-800 dark:text-white">
             <?php
@@ -49,5 +51,9 @@
             ?>
         </ul>
     </div>
+    <!-- NAVIGATION -->
+    <!-- COPYRIGHT -->
     <div class="p-4 text-sm bg-gray-200 dark:bg-gray-600 flex items-center justify-center">© <?= date("Y") ?> Copyright:<span class="font-medium mx-1">{{env=APP_TITLE}}</span></div>
+    <!-- COPYRIGHT -->
 </footer>
+<!-- FOOTER -->
