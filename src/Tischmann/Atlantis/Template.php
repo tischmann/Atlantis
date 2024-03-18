@@ -135,6 +135,9 @@ final class Template
                 case 'csrf-token':
                     $replace = csrf_set()->token;
                     break;
+                case 'pagination':
+                    $replace = Template::html(template: 'pagination', args: $args);
+                    break;
                 default:
                     $replace = $this->parse($key, $args);
                     break;

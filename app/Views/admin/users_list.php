@@ -37,7 +37,7 @@ use Tischmann\Atlantis\{Template};
         }
         ?>
     </ul>
-    <div class="my-4"><?php include __DIR__ . '/../pagination.php'; ?></div>
+    <div class="my-4">{{pagination}}</div>
 </main>
 <script nonce="{{nonce}}" type="module">
     import Select from '/js/atlantis.select.min.js'

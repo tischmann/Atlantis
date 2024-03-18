@@ -8,5 +8,5 @@
 
         ?>
     </div>
-    <div class="my-4"><?php include 'pagination.php'; ?></div>
+    <div class="my-4">{{pagination}}</div>
 </main>
