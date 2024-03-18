@@ -107,7 +107,7 @@ $search_query = strval($request->request('query'));
 
         const header = document.querySelector('header')
 
-        document.getElementById('search-articles').addEventListener('search', function(event) {
+        document.getElementById('search-articles').addEventListener('search', function() {
             if (this.value == '') window.location.href = `${window.location.origin}/{{env=APP_LOCALE}}`
         })
 
