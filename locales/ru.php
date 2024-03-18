@@ -63,6 +63,8 @@ return [
     'search' => 'Поиск',
     'search_results' => 'Результаты поиска по запросу',
     'download' => 'Скачать',
+    'dark_mode' => 'Тёмный режим',
+    'light_mode' => 'Светлый режим',
     // Ошибки Json Web Token
     'jwt_missing_public_key' => 'Отсутствует публичный ключ',
     'jwt_wrong_segment_amount' => 'Неверное количество сегментов',

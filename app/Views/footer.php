@@ -1,9 +1,9 @@
 <footer class="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white w-full block">
-    <div class="no-print w-full py-8 px-4 border-b-2 border-b-gray-600">
+    <div class="no-print w-full py-8 px-4 border-b-2 border-b-gray-200 dark:border-b-gray-600">
 
     </div>
     <div class="no-print hidden sm:block sm:container mx-auto py-8">
-        <ul class="flex items-start justify-evenly flex-row flex-wrap gap-8">
+        <ul class="flex items-start justify-evenly flex-row flex-wrap gap-8 text-gray-600 dark:text-gray-400">
             <?php
 
             use App\Models\Category;
