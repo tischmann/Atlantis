@@ -35,7 +35,7 @@ $search_query = strval($request->request('query'));
                 <!-- VISUALLY IMPAIRED VERSION -->
                 <!-- SEARCH -->
                 <div class="relative sm:ml-auto group/search no-print">
-                    <input id="search-articles" type="text" class="w-full sm:w-64 px-3 py-2 pr-10 rounded-xl bg-gray-200 dark:bg-gray-700 dark:text-white border-2 border-gray-300 dark:border-gray-600 outline-none ring-0 focus:ring-0 hover:border-sky-600 group-hover/search:border-sky-600 focus:border-sky-600 transition-all" value="<?= $search_query ?>" title="{{lang=search}}" />
+                    <input id="search-articles" type="text" class="w-full sm:w-64 px-3 py-2 pr-10 rounded-xl bg-gray-200 dark:bg-gray-700 dark:text-white border-2 border-gray-300 dark:border-gray-600 outline-none ring-0 focus:ring-0 hover:border-sky-600 group-hover/search:border-sky-600 focus:border-sky-600" value="<?= $search_query ?>" title="{{lang=search}}" />
                     <div class="absolute right-0 top-1/2 -translate-x-1/2 -translate-y-1/2">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
