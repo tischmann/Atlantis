@@ -3,7 +3,7 @@
 
     </div>
     <div class="no-print hidden sm:block sm:container mx-auto py-8">
-        <ul class="flex items-start justify-evenly flex-row flex-wrap gap-8 text-gray-600 dark:text-gray-400">
+        <ul class="flex items-start justify-evenly flex-row flex-wrap gap-8 text-gray-800 dark:text-white">
             <?php
 
             use App\Models\Category;
