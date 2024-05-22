@@ -4,15 +4,15 @@ use App\Models\{Category};
 
 use Tischmann\Atlantis\{Template};
 ?>
-<link rel="stylesheet" href="/css/jquery-ui.min.css" media="screen">
+<link rel="stylesheet" href="/jquery-ui.min.css" media="screen">
 <style>
     .ui-state-highlight {
         min-height: 3.5rem;
         border-radius: .5rem;
     }
 </style>
-<script src="/js/jquery.min.js" nonce="{{nonce}}"></script>
-<script src="/js/jquery-ui.min.js" nonce="{{nonce}}"></script>
+<script src="/jquery.min.js" nonce="{{nonce}}"></script>
+<script src="/jquery-ui.min.js" nonce="{{nonce}}"></script>
 <main class="md:container mx-4 my-4 md:mx-auto mb-4 select-none">
     <div class="mb-4 flex flex-col sm:flex-row gap-4">
         <?php
@@ -34,7 +34,7 @@ use Tischmann\Atlantis\{Template};
     <?php include 'categories_list_list.php' ?>
 </main>
 <script nonce="{{nonce}}" type="module">
-    import Select from '/js/atlantis.select.min.js'
+    import Select from 'Select'
 
     ['locale'].forEach((name) => {
         new Select(document.querySelector(`select[name="${name}"]`), {

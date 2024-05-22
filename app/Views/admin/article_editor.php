@@ -19,9 +19,9 @@ $category = $article->getCategory();
 list($image_width, $image_height) = $article->getImageSizes();
 
 ?>
-<link rel="stylesheet" href="/css/jquery-ui.min.css" media="screen">
-<script src="/js/jquery.min.js" nonce="{{nonce}}"></script>
-<script src="/js/jquery-ui.min.js" nonce="{{nonce}}"></script>
+<link rel="stylesheet" href="/jquery-ui.min.css" media="screen">
+<script src="/jquery.min.js" nonce="{{nonce}}"></script>
+<script src="/jquery-ui.min.js" nonce="{{nonce}}"></script>
 <style>
     .ui-state-highlight {
         min-height: 2.5rem;
@@ -383,9 +383,9 @@ list($image_width, $image_height) = $article->getImageSizes();
 </main>
 <script src="/tinymce/tinymce.min.js" nonce="{{nonce}}"></script>
 <script nonce="{{nonce}}" type="module">
-    import Progress from '/js/atlantis.progress.min.js'
-    import Select from '/js/atlantis.select.min.js'
-    import Cookie from '/js/atlantis.cookie.min.js'
+    import Progress from 'Progress'
+    import Select from 'Select'
+    import Cookie from 'Cookie'
 
     (function() {
         const cookie = new Cookie()

@@ -4,7 +4,17 @@ declare(strict_types=1);
 
 use App\Models\{Category};
 
-use Tischmann\Atlantis\{Date, DateTime, Locale, Time};
+use Tischmann\Atlantis\{App, Date, DateTime, Locale, Time};
+
+/**
+ * Возвращает версию ресурсов
+ * 
+ * @return string  - Версия ресурсов
+ */
+function get_resource_version(): string
+{
+    return App::getResourcesVersion();
+}
 
 /**
  * Получение значения куки

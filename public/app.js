@@ -1,4 +1,4 @@
-import Cookie from '/js/atlantis.cookie.min.js'
+import Cookie from 'Cookie'
 
 const cookie = new Cookie()
 

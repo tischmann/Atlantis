@@ -101,7 +101,7 @@ $search_query = strval($request->request('query'));
     </div>
 </header>
 <script nonce="{{nonce}}" type="module">
-    import Cookie from '/js/atlantis.cookie.min.js'
+    import Cookie from 'Cookie'
     (function() {
         const cookie = new Cookie()
 

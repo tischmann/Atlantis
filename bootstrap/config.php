@@ -67,4 +67,18 @@ foreach (file($config, FILE_SKIP_EMPTY_LINES) as $line) {
     }
 }
 
+$config_version = dirname(__FILE__, 2) . "/version.env";
+
+if (is_file($config_version)) {
+    foreach (file($config_version, FILE_SKIP_EMPTY_LINES) as $line) {
+        if (preg_match("/^\s*([A-Z_0-9]+=.*)$/", $line)) {
+            $key = explode('=', $line)[0];
+
+            $env[] = $key;
+
+            putenv(trim($line));
+        }
+    }
+}
+
 define('ENVIRONMENT_VARIABLES', $env);

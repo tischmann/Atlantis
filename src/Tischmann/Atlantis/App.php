@@ -16,6 +16,20 @@ final class App
 
     public static string $title = ''; // Заголовок страницы
 
+    public static ?string $resource_version = null; // Версия ресурсов
+
+    /**
+     * Возвращает версию ресурсов
+     * 
+     * @return string  - Версия ресурсов (по умолчанию 1.0)
+     */
+    public static function getResourcesVersion(): string
+    {
+        static::$resource_version ??= getenv('VERSION') ?: '1.0';
+
+        return static::$resource_version;
+    }
+
     /**
      * Возвращает текущего пользователя
      *

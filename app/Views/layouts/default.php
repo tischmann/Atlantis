@@ -1,10 +1,20 @@
 <!DOCTYPE html>
 <?php
-$isDarkMode = cookies_get('dark') === 'true';
+$is_dark_mode = cookies_get('dark') === 'true';
 
-$isVisuallyImpaired = cookies_get('vi') === 'true';
+$is_visually_impaired = cookies_get('vi') === 'true';
+
+$resource_version = get_resource_version();
+
+$imports = [];
+
+foreach (glob(getenv("APP_ROOT") . "/public/js/*.js") as $file) {
+    $filename = basename($file, ".min.js");
+    $imports[] = "\"{$filename}\": \"/js/{$filename}.min.js?v={$resource_version}\"";
+}
+
 ?>
-<html lang="{{env=APP_LOCALE}}" class="<?= $isVisuallyImpaired ? "visually-impaired" : "" ?> <?= $isDarkMode ? "dark" : "" ?>">
+<html lang="{{env=APP_LOCALE}}" class="<?= $is_visually_impaired ? "visually-impaired" : "" ?> <?= $is_dark_mode ? "dark" : "" ?>">
 
 <head>
     <meta charset="utf-8">
@@ -27,6 +37,11 @@ $isVisuallyImpaired = cookies_get('vi') === 'true';
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" />
     <link rel="stylesheet" href="/app.min.css" media="all">
+    <script type="importmap" nonce="{{nonce}}">
+        {
+            "imports": { <?= implode(",\n", $imports) ?>}
+        }
+    </script>
     <script src="/app.min.js" nonce="{{nonce}}" type="module"></script>
 </head>
 

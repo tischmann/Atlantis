@@ -107,7 +107,7 @@ $isVisuallyImpaired = cookies_get('vi') === 'true';
     <div class="my-4">{{pagination}}</div>
 </main>
 <script nonce="{{nonce}}" type="module">
-    import Select from '/js/atlantis.select.min.js'
+    import Select from 'Select'
 
 
     [

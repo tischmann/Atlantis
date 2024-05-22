@@ -14,15 +14,15 @@ if (!$category->exists()) {
 $category->children = $category->fetchChildren();
 
 ?>
-<link rel="stylesheet" href="/css/jquery-ui.min.css" media="screen">
+<link rel="stylesheet" href="/jquery-ui.min.css" media="screen">
 <style>
     .ui-state-highlight {
         min-height: 3.5rem;
         border-radius: .5rem;
     }
 </style>
-<script src="/js/jquery.min.js" nonce="{{nonce}}"></script>
-<script src="/js/jquery-ui.min.js" nonce="{{nonce}}"></script>
+<script src="/jquery.min.js" nonce="{{nonce}}"></script>
+<script src="/jquery-ui.min.js" nonce="{{nonce}}"></script>
 <main class="md:container mx-8 md:mx-auto">
     <form class="mb-8" data-category="<?= $category->id ?>">
         <div class="mb-8">
@@ -122,7 +122,7 @@ $category->children = $category->fetchChildren();
     </form>
 </main>
 <script nonce="{{nonce}}" type="module">
-    import Select from '/js/atlantis.select.min.js'
+    import Select from 'Select'
 
     const form = document.querySelector('form[data-category]')
 

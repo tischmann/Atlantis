@@ -40,7 +40,7 @@ use Tischmann\Atlantis\{Template};
     <div class="my-4">{{pagination}}</div>
 </main>
 <script nonce="{{nonce}}" type="module">
-    import Select from '/js/atlantis.select.min.js'
+    import Select from 'Select'
 
     ['order', 'direction'].forEach((name) => {
         new Select(document.querySelector(`select[name="${name}"]`), {

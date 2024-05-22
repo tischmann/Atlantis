@@ -33,8 +33,8 @@ $is_liked = $article->isLikedByUuid(strval(cookies_get('uuid')));
 $is_viewed = $article->isViewedByUuid(strval(cookies_get('uuid')));
 
 ?>
-<link rel="stylesheet" href="/css/fancybox.min.css" />
-<link rel="stylesheet" href="/css/carousel.min.css" />
+<link rel="stylesheet" href="/fancybox.min.css" />
+<link rel="stylesheet" href="/carousel.min.css" />
 <style>
     .f-carousel {
         --f-carousel-spacing: 0.5rem;
@@ -228,13 +228,13 @@ $is_viewed = $article->isViewedByUuid(strval(cookies_get('uuid')));
 <script nonce="{{nonce}}" type="module">
     import {
         Fancybox
-    } from '/js/fancybox.min.js'
+    } from '/fancybox.min.js'
     import {
         Carousel
-    } from '/js/carousel.min.js'
+    } from '/carousel.min.js'
     import {
         Thumbs
-    } from '/js/carousel.thumbs.min.js'
+    } from '/carousel.thumbs.min.js'
 
     document.querySelectorAll('[data-carousel]').forEach((element) => {
         new Carousel(
