@@ -1,9 +1,5 @@
 <!DOCTYPE html>
 <?php
-$is_dark_mode = cookies_get('dark') === 'true';
-
-$is_visually_impaired = cookies_get('vi') === 'true';
-
 $resource_version = get_resource_version();
 
 $imports = [];
@@ -14,7 +10,7 @@ foreach (glob(getenv("APP_ROOT") . "/public/js/*.js") as $file) {
 }
 
 ?>
-<html lang="{{env=APP_LOCALE}}" class="<?= $is_visually_impaired ? "visually-impaired" : "" ?> <?= $is_dark_mode ? "dark" : "" ?>">
+<html lang="{{env=APP_LOCALE}}" class="<?= is_visually_impaired() ? "visually-impaired" : "" ?> <?= is_dark_mode() ? "dark" : "" ?>">
 
 <head>
     <meta charset="utf-8">

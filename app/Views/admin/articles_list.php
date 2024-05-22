@@ -4,8 +4,6 @@ use App\Models\{Article};
 
 use Tischmann\Atlantis\{Template};
 
-$isVisuallyImpaired = cookies_get('vi') === 'true';
-
 ?>
 <main class="md:container mx-4 my-4 md:mx-auto mb-4">
     <div class="mb-4 flex flex-col sm:flex-row gap-4">
@@ -80,7 +78,7 @@ $isVisuallyImpaired = cookies_get('vi') === 'true';
     <?php
 
     if ($articles) {
-        $grid = $isVisuallyImpaired ? "md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4" : "sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6";
+        $grid = is_visually_impaired() ? "md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4" : "sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6";
 
         echo <<<HTML
         <a href="/{{env=APP_LOCALE}}/new/article" title="{{lang=article_new}}" class="mb-4 flex items-center justify-center p-3 rounded-lg bg-sky-600 hover:bg-sky-500 shadow hover:shadow-lg transition">

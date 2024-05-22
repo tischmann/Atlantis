@@ -6,6 +6,16 @@ use App\Models\{Category};
 
 use Tischmann\Atlantis\{App, Date, DateTime, Locale, Time};
 
+
+function is_visually_impaired()
+{
+    return cookies_get('vi') === 'true';
+}
+
+function is_dark_mode()
+{
+    return cookies_get('dark') === 'true';
+}
 /**
  * Возвращает версию ресурсов
  * 
