@@ -7,11 +7,21 @@ use App\Models\{Category};
 use Tischmann\Atlantis\{App, Date, DateTime, Locale, Time};
 
 
+/**
+ * Проверка на версию для слабовидящих
+ *
+ * @return boolean true - если версия для слабовидящих, false - если нет
+ */
 function is_visually_impaired()
 {
     return cookies_get('vi') === 'true';
 }
 
+/**
+ * Проверка на темный режим
+ *
+ * @return boolean true - если темный режим, false - если нет
+ */
 function is_dark_mode()
 {
     return cookies_get('dark') === 'true';
