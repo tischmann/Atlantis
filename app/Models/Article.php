@@ -85,6 +85,37 @@ class Article extends Model
         return Category::find($this->category_id);
     }
 
+    public function getImages(bool $thumb = false): array
+    {
+        $images = [];
+
+        $article_dir = getenv('APP_ROOT') . "/public/images/articles/{$this->id}";
+
+        $images_dir = "{$article_dir}/images";
+
+        if (!is_dir($images_dir)) return $images;
+
+        if (!preg_match_all('/<img[^>]+>/i', $this->text, $matches)) {
+            return $images;
+        }
+
+        foreach ($matches[0] as $match) {
+            if (!preg_match('/src="([^"]+)"([^>]*)>/i', $match, $src)) {
+                continue;
+            }
+
+            $image = basename($src[1]);
+
+            if (!$thumb) {
+                $image = str_replace('thumb_', '', $image);
+            }
+
+            $images[] = $image;
+        }
+
+        return $images;
+    }
+
     public function getGalleryImages(): array
     {
         $images = [];

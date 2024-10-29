@@ -284,4 +284,42 @@ abstract class Model
 
         return self::instance($query);
     }
+
+    /**
+     * Возвращает последние n моделей из базы данных
+     *
+     * @param Query|null $query Запрос
+     * @param int $amount Количество моделей
+     * @param string $order_by Столбец сортировки
+     * @return self Модель
+     */
+    public static function last(?Query $query = null, ?int $amount = 1, ?string $order_by = 'id'): self
+    {
+        $amount = max(1, $amount);
+
+        $query ??= self::query();
+
+        $query->order($order_by, 'desc')->limit($amount);
+
+        return self::instance($query);
+    }
+
+    /**
+     * Возвращает первые n моделей из базы данных
+     *
+     * @param Query|null $query Запрос
+     * @param int $amount Количество моделей
+     * @param string $order_by Столбец сортировки
+     * @return self Модель
+     */
+    public static function first(?Query $query = null, ?int $amount = 1, ?string $order_by = 'id'): self
+    {
+        $amount = max(1, $amount);
+
+        $query ??= self::query();
+
+        $query->order($order_by, 'asc')->limit($amount);
+
+        return self::instance($query);
+    }
 }

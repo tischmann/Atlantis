@@ -32,9 +32,7 @@ final class Auth
     private static string $token = ''; // Токен
 
     // Запрещаем создание экземпляра класса
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
     /**
      * Получение пользователя
@@ -216,7 +214,11 @@ final class Auth
         $user = User::find($payload?->id ?? 0);
 
         if ($user->refresh_token !== $refresh_token || !$refresh_token) {
-            die('Токен обновления недействителен');
+            cookies_del('jwt');
+            cookies_del('jwr');
+            static::$token = '';
+            header('Location: /');
+            exit;
         }
 
         return static::createToken($payload);

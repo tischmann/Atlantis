@@ -35,20 +35,17 @@ final class Route
         public string $title = '',
         public array $args = [],
     ) {
-        $this->method = strtoupper($this->method);
+        $this->action = trim($this->action);
+
+        $this->method = mb_strtoupper($this->method);
 
         $this->path = trim($this->path);
+
+        $this->title = trim($this->title);
 
         $this->uri = $this->path ? explode('/', $this->path) : [];
     }
 
-    /**
-     * Валидация маршрута
-     *
-     * @param array $uri URI запроса
-     * 
-     * @return bool true - маршрут валиден, false - маршрут не валиден
-     */
     public function validate(array $uri): bool
     {
         if (count($uri) !== count($this->uri)) return false;
@@ -64,9 +61,7 @@ final class Route
 
             $key = $matches[2];
 
-            if (!strlen($value) && !$optional) {
-                continue;
-            }
+            if (!mb_strlen($value) && !$optional) continue;
 
             $this->uri[$index] = $args[$key] = $value;
         }
@@ -78,13 +73,6 @@ final class Route
         return true;
     }
 
-    /**
-     * Выполнение маршрута
-     * 
-     * @param Request $request Запрос
-     *
-     * @return void
-     */
     public function resolve(): void
     {
         if ($this->title) App::setTitle($this->title);

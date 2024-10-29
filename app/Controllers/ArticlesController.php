@@ -14,6 +14,7 @@ use Tischmann\Atlantis\{
     DateTime,
     Image,
     Locale,
+    Log,
     Pagination,
     Request,
     Response,
@@ -907,7 +908,7 @@ class ArticlesController extends Controller
         }
     }
 
-    protected function updateArticleImages(Article $article): self
+    protected function updateArticleImages(Article &$article): self
     {
         if (!preg_match_all('/<img[^>]+>/i', $article->text, $matches)) {
             return $this;
@@ -929,7 +930,11 @@ class ArticlesController extends Controller
 
         foreach ($old_matches[0] as $match) {
             if (preg_match('/src="([^"]+)"/i', $match, $src)) {
-                $old_images[] = basename($src[1]);
+                $filename = basename($src[1]);
+
+                if (is_file("{$images_dir}/{$filename}")) {
+                    $old_images[] = basename($src[1]);
+                }
             }
         }
 
@@ -938,17 +943,21 @@ class ArticlesController extends Controller
         $images = [];
 
         foreach ($matches[0] as $match) {
-            if (preg_match('/src="([^"]+)"([^>]+)>/i', $match, $src)) {
-                $image = basename($src[1]);
-
-                $all_images[] = $image;
-
-                if (in_array($image, $old_images)) continue;
-
-                $images[] = $image;
-
-                $article->text = str_replace($src[1], "/images/articles/{$article->id}/images/{$image}", $article->text);
+            if (!preg_match('/src="([^"]+)"([^>]*)>/i', $match, $src)) {
+                continue;
             }
+
+            $image = basename($src[1]);
+
+            $all_images[] = $image;
+
+            if (in_array($image, $old_images)) {
+                continue;
+            }
+
+            $images[] = $image;
+
+            $article->text = str_replace($src[1], "/images/articles/{$article->id}/images/{$image}", $article->text);
         }
 
         // Перемещение новых изображений
@@ -993,7 +1002,7 @@ class ArticlesController extends Controller
         return $this;
     }
 
-    protected function updateArticleImage(Article $article, string $image): self
+    protected function updateArticleImage(Article &$article, string $image): self
     {
         $article_dir = getenv('APP_ROOT') . "/public/images/articles/{$article->id}";
 
@@ -1037,7 +1046,7 @@ class ArticlesController extends Controller
         return $this;
     }
 
-    protected function updateArticleGallery(Article $article, array $images): self
+    protected function updateArticleGallery(Article &$article, array $images): self
     {
         $article_dir = getenv('APP_ROOT') . "/public/images/articles/{$article->id}";
 
@@ -1111,7 +1120,7 @@ class ArticlesController extends Controller
         return $this;
     }
 
-    protected function updateArticleVideos(Article $article, array $videos): self
+    protected function updateArticleVideos(Article &$article, array $videos): self
     {
         $uploads_dir = getenv('APP_ROOT') . "/public/uploads/articles/{$article->id}";
 
@@ -1161,7 +1170,7 @@ class ArticlesController extends Controller
         return $this;
     }
 
-    protected function updateArticleAttachements(Article $article, array $attachements): self
+    protected function updateArticleAttachements(Article &$article, array $attachements): self
     {
         $uploads_dir = getenv('APP_ROOT') . "/public/uploads/articles/{$article->id}";
 

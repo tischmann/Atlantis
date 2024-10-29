@@ -13,30 +13,10 @@ use Exception;
  */
 final class Router
 {
-    public static array $routes = []; // Маршруты приложения
+    private static array $routes = [];
 
-    public function __construct(
-        public string $method = '',
-        public array $uri = [],
-    ) {
-        $this->method = $this->method ?: Request::method();
-        $this->uri = $this->uri ?: Request::uri();
-    }
+    private function __construct() {}
 
-    /**
-     * Запуск маршрутизатора
-     */
-    public static function bootstrap(): void
-    {
-        (new static())->resolve();
-    }
-
-    /**
-     * Добавление маршрута
-     *
-     * @param Route $route Маршрут
-     * @return void
-     */
     public static function add(Route $route): void
     {
         static::$routes[$route->method] ??= [];
@@ -44,60 +24,30 @@ final class Router
         static::$routes[$route->method][] = $route;
     }
 
-    /**
-     * Разрешение маршрута
-     *
-     * @return mixed
-     * @throws Exception
-     */
-    public function resolve(): mixed
+    public static function resolve()
     {
-        foreach ($this->routes() as $route) {
+        $uri = Request::uri();
+
+        foreach (static::$routes[Request::method()] ?? [] as $route) {
             assert($route instanceof Route);
 
-            if ($route->uri xor $this->uri) continue;
+            if ($route->uri xor $uri) continue;
 
-            if (!$route->uri && !$this->uri) {
-                return $route->resolve();
-            }
+            if (!$route->uri && !$uri) return $route->resolve();
 
-            if ($route->validate($this->uri)) {
-                return $route->resolve();
-            }
+            if ($route->validate($uri)) return $route->resolve();
         }
 
-        $this->routeNotFound();
-    }
-
-    /**
-     * Маршрут не найден
-     *
-     * @return void
-     */
-    protected function routeNotFound(): void
-    {
         View::send(
             view: 'error',
             layout: 'default',
             args: [
-                'exception' => new Exception(
-                    get_str('route_not_found') . ": '{$_SERVER['REQUEST_URI']}'"
-                ),
+                'exception' => new Exception(get_str('route_not_found') . ": '{$uri}'"),
                 'title' => get_str('not_found'),
                 'code' => '404'
             ],
             exit: true,
             code: 404
         );
-    }
-
-    /**
-     * Получение маршрутов
-     *
-     * @return array Маршруты
-     */
-    protected function routes(): array
-    {
-        return static::$routes[$this->method] ?? [];
     }
 }
