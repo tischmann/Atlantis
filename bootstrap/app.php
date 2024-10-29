@@ -18,4 +18,4 @@ cookies_set('PHPSESSID', session_id());
 
 require_once "routes.php";
 
-Router::resolve();
+Router::bootstrap();

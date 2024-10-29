@@ -20,6 +20,7 @@ return [
     'json_error' => 'Ошибка JSON',
     'not_found' => 'Запрашиваемый ресурс не найден',
     'route_not_found' => 'Маршрут не найден',
+    'bad_route' => 'Плохой маршрут',
     'template_not_found' => 'Шаблон не найден',
     'variable_required' => 'Переменная обязательна',
     'invalid_type' => 'Неверный тип',

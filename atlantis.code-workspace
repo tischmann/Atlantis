@@ -46,6 +46,7 @@
                     "command": "./minify.sh"
                 }
             ]
-        }
+        },
+        "win-ca.inject": "append"
     }
 }

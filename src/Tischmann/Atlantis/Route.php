@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tischmann\Atlantis;
 
+use Exception;
+
 /**
  * Маршрут
  * 
@@ -11,9 +13,6 @@ namespace Tischmann\Atlantis;
  */
 final class Route
 {
-    public array $uri = []; // URI маршрута
-
-    public const REGEX_ARGS = "/^\{(\?)?(\w+)\}$/"; // Регулярное выражение для аргументов
     /**
      * @param Controller $controller Контроллер маршрута
      * 
@@ -26,6 +25,8 @@ final class Route
      * @param string $title Заголовок страницы 
      * 
      * @param array $args Аргументы запроса
+     * 
+     * @param  array  $uri URI маршрута
      */
     public function __construct(
         public ?Controller $controller = new Controller(),
@@ -34,6 +35,7 @@ final class Route
         public string $path = '',
         public string $title = '',
         public array $args = [],
+        public array $uri = []
     ) {
         $this->action = trim($this->action);
 
@@ -43,45 +45,31 @@ final class Route
 
         $this->title = trim($this->title);
 
-        $this->uri = $this->path ? explode('/', $this->path) : [];
-    }
-
-    public function validate(array $uri): bool
-    {
-        if (count($uri) !== count($this->uri)) return false;
-
-        $args = [];
-
-        foreach ($this->uri as $index => $chunk) {
-            if (!preg_match(self::REGEX_ARGS, $chunk, $matches)) continue;
-
-            $value = strval($uri[$index]);
-
-            $optional = $matches[1] === '?';
-
-            $key = $matches[2];
-
-            if (!mb_strlen($value) && !$optional) continue;
-
-            $this->uri[$index] = $args[$key] = $value;
+        if (!$this->uri && $this->path) {
+            $this->uri = $this->path ? explode('/', $this->path) : [];
         }
-
-        if (array_diff($uri, $this->uri)) return false;
-
-        $this->args = array_merge($this->args, $args);
-
-        return true;
     }
 
-    public function resolve(): void
+    public function resolve()
     {
         if ($this->title) App::setTitle($this->title);
 
         $this->controller->route = $this;
 
+        if (!method_exists($this->controller, $this->action)) {
+            die(get_str("bad_route"));
+        }
+
         $this->controller->{$this->action}();
     }
 
+    /**
+     * Возвращает значение аргумента запроса
+     * 
+     * @param string $key Ключ аргумента
+     * 
+     * @return mixed Значение аргумента
+     */
     public function args(string $key): mixed
     {
         return $this->args[$key] ?? null;
