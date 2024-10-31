@@ -34,6 +34,7 @@ final class Route
         public string $method = 'GET',
         public string $path = '',
         public string $title = '',
+        public array $tags = [],
         public array $args = [],
         public array $uri = []
     ) {
@@ -53,6 +54,8 @@ final class Route
     public function resolve()
     {
         if ($this->title) App::setTitle($this->title);
+
+        if ($this->tags) App::setTags($this->tags);
 
         $this->controller->route = $this;
 

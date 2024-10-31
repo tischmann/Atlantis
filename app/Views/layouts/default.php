@@ -16,6 +16,7 @@ foreach (glob(getenv("APP_ROOT") . "/public/js/*.js") as $file) {
     <meta charset="utf-8">
     <meta name="theme-color" content="#ffffff" />
     <meta name="Description" content="{{env=APP_DESCR}}">
+    <meta name="keywords" content="{{tags}}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content="{{env=APP_AUTHOR}}">
     <meta name="keywords" content="{{env=APP_KEYWORDS}}">

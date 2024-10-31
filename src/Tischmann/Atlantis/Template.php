@@ -225,13 +225,12 @@ final class Template
 
         $uniqid = uniqid(more_entropy: true);
 
-        $title = App::getTitle();
-
         static::$cached_args = [
             ...$env,
             ...$strings,
             'nonce' => getenv('APP_NONCE'),
-            'title' => $title,
+            'title' => App::getTitle(),
+            'tags' => App::getTags(),
             'uniqid' => $uniqid,
         ];
 

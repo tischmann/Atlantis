@@ -16,6 +16,8 @@ final class App
 
     public static string $title = ''; // Заголовок страницы
 
+    public static string $tags = ''; // Теги
+
     public static ?string $resource_version = null; // Версия ресурсов
 
     /**
@@ -59,6 +61,18 @@ final class App
     }
 
     /**
+     * Возвращает теги страницы
+     *
+     * @return string - Теги страницы, разделенные запятыми
+     */
+    public static function getTags(): string
+    {
+        return static::$tags
+            ? static::$tags . (", " . getenv('APP_KEYWORDS') ?: 'atlantis')
+            : getenv('APP_KEYWORDS');
+    }
+
+    /**
      * Устанавливает заголовок страницы
      *
      * @param string $title - Заголовок страницы
@@ -67,5 +81,16 @@ final class App
     public static function setTitle(string $title): string
     {
         return (static::$title = $title);
+    }
+
+    /**
+     * Устанавливает теги страницы
+     *
+     * @param array $tags - Теги страницы
+     * @return string - Теги страницы, разделенные запятыми
+     */
+    public static function setTags(array $tags): string
+    {
+        return (static::$tags = implode(', ', $tags));
     }
 }

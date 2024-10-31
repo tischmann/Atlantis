@@ -19,6 +19,7 @@ use Tischmann\Atlantis\{
  */
 Router::add(new Route(
     controller: new IndexController(),
+    tags: ['home'],
 ));
 
 /**
